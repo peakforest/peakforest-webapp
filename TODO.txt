@@ -1,0 +1,4 @@
+# PACKAGE RENAME
+set in controllers.xml
+	remove <context:component-scan base-package="fr.metabohub.spectralDatabase.mvc" />
+	remove all stuff in *mvc package (template demo)

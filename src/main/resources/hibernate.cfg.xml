@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<!-- MYSQL -->
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost/metaboHubTest</property>
+		<!-- POSTGRES -->
+		<!-- <property name="hibernate.connection.driver_class">org.postgresql.Driver</property> -->
+		<!-- <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/metaboHubTest</property> -->
+
+		<property name="hibernate.connection.username">metaboHub</property>
+		<property name="hibernate.connection.password">9nnbbjanzq4rVKb3</property>
+		<property name="hibernate.connection.pool_size">1</property>
+
+		<!-- MYSQL -->
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<!-- POSTGRES -->
+		<!-- <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property> -->
+
+		<property name="show_sql">true</property>
+
+		<property name="hibernate.c3p0.timeout">7200</property>
+		<property name="hibernate.c3p0.max_statements">10</property>
+
+		<!-- validate: validate the schema, makes no changes to the database. update: 
+			update the schema. create: creates the schema, destroying previous data. 
+			create-drop: drop the schema at the end of the session. -->
+		<property name="hbm2ddl.auto">update</property>
+		<!-- abstract -->
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.PutativeCompound" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.CompoundSpectre" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.Peak" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.Spectre" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.Metadata" />
+		<mapping
+			class="fr.metabohub.spectralDatabaseAPI.model.ReferenceChemicalCompound" />
+		<!-- chemical compounds -->
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.Compound" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.GenericCompound" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.ChemicalCompound" />
+		<!-- label / name compounds -->
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.CompoundName" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.Putative2Reference" />
+		<!-- peaks -->
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.NMRPeak" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.MassPeak" />
+		<!-- spectra -->
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.NMRSpectre" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.MassSpectre" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.FragmentationSpectre" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.ScanSpectre" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.UVSpectre" />
+		<!-- other -->
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.BiologicalMatrix" />
+		<mapping class="fr.metabohub.spectralDatabaseAPI.model.Chromatogramme" />
+	</session-factory>
+</hibernate-configuration>
