@@ -19,7 +19,7 @@ function affiUsage {
 # DIRECTORY="~/Workspace";
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-GITLAB_SERVER="https://services.pfem.clermont.inra.fr/gitlab";
+GITLAB_SERVER="https://services.pfem.clermont.inrae.fr/gitlab";
 GITLAB_API_URL="api/v4/projects";
 
 GITLAB_API_TOKEN="";

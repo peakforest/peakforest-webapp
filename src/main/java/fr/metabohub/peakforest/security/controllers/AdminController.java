@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
@@ -490,9 +491,12 @@ public class AdminController {
 	// ////////////////////////////////////////////////////////////////////////
 	// ontologies
 
-	@RequestMapping(value = "/list-ontologies", method = RequestMethod.GET)
-	@ResponseBody
-	public List<HashMap<String, Object>> getListOntologies() throws Exception {
+	@RequestMapping(//
+			method = RequestMethod.GET, //
+			value = "/list-ontologies", //
+			produces = MediaType.APPLICATION_JSON_VALUE//
+	)
+	public @ResponseBody List<HashMap<String, Object>> getListOntologies() throws Exception {
 		List<HashMap<String, Object>> listClean = new ArrayList<>();
 		for (final AnalyticalMatrix matrix : AnalyticalMatrixMetadataDao.readAll()) {
 			final HashMap<String, Object> data = new HashMap<>();
@@ -507,9 +511,12 @@ public class AdminController {
 		return listClean;
 	}
 
-	@RequestMapping(value = "/list-std-matrix", method = RequestMethod.GET)
-	@ResponseBody
-	public List<HashMap<String, Object>> getListStdMatrix() throws Exception {
+	@RequestMapping(//
+			method = RequestMethod.GET, //
+			value = "/list-std-matrix", //
+			produces = MediaType.APPLICATION_JSON_VALUE//
+	)
+	public @ResponseBody List<HashMap<String, Object>> getListStdMatrix() throws Exception {
 		final List<HashMap<String, Object>> listClean = new ArrayList<HashMap<String, Object>>();
 		for (final StandardizedMatrix matrix : StandardizedMatrixMetadataDao.readAll()) {
 			final HashMap<String, Object> data = new HashMap<>();
@@ -523,18 +530,40 @@ public class AdminController {
 		return listClean;
 	}
 
-	@RequestMapping(value = "/add-analytical-matrix", method = RequestMethod.POST, params = { "key" })
-	@ResponseBody
-	public boolean addAnalyticalMatrix(@RequestParam("key") String key, HttpServletRequest request) throws Exception {
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/add-analytical-matrix", //
+//			produces = MediaType.APPLICATION_JSON_VALUE// , //
+			params = { "key" }//
+	)
+	public @ResponseBody boolean addAnalyticalMatrix(//
+			final @RequestParam("key") String key, //
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final Model model, //
+			final HttpSession session//
+	) throws Exception {
 		// log
 		adminLog("add analytical matrix: " + key);
 		return AnalyticalMatrixManagementService.setFavourite(key, true) > 0;
 	}
 
-	@RequestMapping(value = "/add-std-matrix", method = RequestMethod.POST, params = { "text" })
-	@ResponseBody
-	public boolean addStdMatrix(@RequestParam("text") String text, @RequestParam("html") String html,
-			HttpServletRequest request) throws Exception {
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/add-std-matrix", //
+//			produces = MediaType.APPLICATION_JSON_VALUE// , //
+			params = { "text" }//
+	)
+	public @ResponseBody boolean addStdMatrix(//
+			final @RequestParam("text") String text, //
+			final @RequestParam("html") String html, //
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final Model model, //
+			final HttpSession session//
+	) throws Exception {
 		// log
 		// <a href="http://srm1950.nist.gov/" target="_blank">NIST plasma</a>
 		adminLog("add std matrix: " + text);

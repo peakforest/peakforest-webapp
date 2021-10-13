@@ -60,9 +60,11 @@
 			<select id="downloadTemplateSpectrumType" class="form-control downloadTemplateForm">
 				<option value="" selected="selected"></option>
 				<option value="gc-ms">GC-MS</option>
+				<option value="ic-ms">IC-MS</option>
 				<option value="lc-ms">LC-MS</option>
-				<option value="nmr">NMR</option>
 				<option value="lc-msms">LC-MSMS</option>
+				<option value="nmr">NMR</option>
+				<option value="ic-msms" disabled="disabled">IC-MSMS</option>
 				<option value="lc-nmr" disabled="disabled">LC-NMR</option>
 			</select>
 		</div>
@@ -121,6 +123,20 @@
 			</label>
 			<label class="radio-inline"> 
 				<input type="radio" name="downloadTemplatePresfield-gcms" id="downloadTemplatePresfieldN-gcms" value="false" checked="checked" class="downloadTemplateForm"> No 
+			</label>
+		</div>
+	</div>
+	<div class="col-lg-4 ">&nbsp;</div>
+</div>
+<div class="col-lg-10 downloadTemplateUploadFile downloadTemplateUploadFile-icms" style="display: none;">
+	<div class="col-lg-8 ">
+		<div id="uploadFileICMS" class="form-group" style="">
+			<label>Autofield template with method: &nbsp;&nbsp;&nbsp;</label>
+			<label class="radio-inline">
+				<input type="radio" name="downloadTemplatePresfield-icms" id="downloadTemplatePresfieldY-icms" value="true" class="downloadTemplateForm"> Yes
+			</label>
+			<label class="radio-inline"> 
+				<input type="radio" name="downloadTemplatePresfield-icms" id="downloadTemplatePresfieldN-icms" value="false" checked="checked" class="downloadTemplateForm"> No 
 			</label>
 		</div>
 	</div>
@@ -211,6 +227,19 @@
 			</select>
 		</div>
 		<div id="generatingTemplate-gcms-file" class="generatingTemplate" style="display: none;">
+			<img src="<c:url value="/resources/img/ajax-loader.gif" />" title="please wait" />
+		</div>
+	</div>
+	<div class="col-lg-4 ">&nbsp;</div>
+</div>
+<div class="col-lg-10 downloadTemplateSelectUploadFile downloadTemplateSelectUploadFile-icms" style="display: none;">
+	<div class="col-lg-8 ">
+		<div class="form-group input-group">
+			<span class="input-group-addon">IC-MS Method</span> 
+			<select id="generateFromICMSmethod" class="form-control downloadTemplateForm">
+			</select>
+		</div>
+		<div id="generatingTemplate-icms-file" class="generatingTemplate" style="display: none;">
 			<img src="<c:url value="/resources/img/ajax-loader.gif" />" title="please wait" />
 		</div>
 	</div>

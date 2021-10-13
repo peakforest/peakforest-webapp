@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,15 +39,23 @@ public class TemplateController {
 		return new ModelAndView("redirect:" + "home?page=template");
 	}
 
-	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/dumpTemplate", method = RequestMethod.POST, headers = { "Content-type=application/json" })
+//	@SuppressWarnings("unchecked")
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/dumpTemplate", //
+			headers = { "Content-type=application/json" }//
+	)
 	@ResponseBody
-	public Object dumpTemplate(@RequestBody Map<String, Object> jsonData, HttpServletRequest request) throws Exception {
+	public Object dumpTemplate(//
+			final @RequestBody Map<String, Object> jsonData, //
+			final HttpServletRequest request) //
+			throws Exception {
 
 		// init / db connect
 		// process flag
-		String clientSessionId = ProcessProgressManager.XLSM_DUMP_SPECTRAL_TEMPLATE + request.getSession().getId();
-		boolean success = true;
+		final String clientSessionId = ProcessProgressManager.XLSM_DUMP_SPECTRAL_TEMPLATE
+				+ request.getSession().getId();
+		boolean success = Boolean.TRUE;
 		String error = "";
 
 		// put to 0% the process progression
@@ -57,6 +66,8 @@ public class TemplateController {
 		boolean isLCMS = false;
 		boolean isLCMSMS = false;
 		boolean isNMR = false;
+		boolean isICMS = false;
+		boolean isICMSMS = false;
 		// boolean isLCNMR = false;
 		String dumperKey = "all_";
 		String dumperVersion = PeakForestUtils.getBundleConfElement("spectralDataXlsmTemplate.version") + "_";
@@ -76,7 +87,15 @@ public class TemplateController {
 
 		if (jsonData.containsKey("analytical_sample") && jsonData.get("analytical_sample").toString() != null) {
 
-			Map<String, Object> jsonDataSample = (Map<String, Object>) jsonData.get("analytical_sample");
+			// convert raw json data to java object
+			final Map<String, Object> jsonDataSample = new HashMap<String, Object>();
+			if (jsonData.get("analytical_sample") instanceof LinkedHashMap<?, ?>) {
+				for (Entry<?, ?> entry : ((LinkedHashMap<?, ?>) jsonData.get("analytical_sample")).entrySet()) {
+					jsonDataSample.put(entry.getKey().toString(), entry.getValue());
+				}
+			}
+
+//			Map<String, Object> jsonDataSample = (HashMap<String, Object>) jsonData.get("analytical_sample");
 			if (jsonDataSample.containsKey("sample_type") && jsonDataSample.get("sample_type") instanceof String) {
 				switch (jsonDataSample.get("sample_type").toString()) {
 				case "analytical-matrix":
@@ -89,9 +108,9 @@ public class TemplateController {
 					} else if (filter.equalsIgnoreCase("allOntoFW")) {
 						// not scheduled... yet!
 					}
-					List<LinkedHashMap<String, Object>> listClean = new ArrayList<>();
-					for (AnalyticalMatrix matrix : listRaw) {
-						LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+					final List<LinkedHashMap<String, Object>> listClean = new ArrayList<>();
+					for (final AnalyticalMatrix matrix : listRaw) {
+						final LinkedHashMap<String, Object> data = new LinkedHashMap<>();
 						// data.put("id", matrix.getId());
 						data.put("key", matrix.getKey());
 						data.put("naturalLanguage", matrix.getNaturalLanguage());
@@ -124,6 +143,14 @@ public class TemplateController {
 				isGCMS = true;
 				dumperKey = "GC-MS_";
 				break;
+			case "ic-ms":
+				isICMS = true;
+				dumperKey = "IC-MS_";
+				break;
+			case "ic-msms":
+				isICMSMS = true;
+				dumperKey = "IC-MSMS_";
+				break;
 			// reserved for lc-nmr / fia / ...
 			default:
 				// not supported
@@ -146,16 +173,21 @@ public class TemplateController {
 
 				// init peak forest data mapper
 				PeakForestDataMapper dataMapper = null;
-				if (isLCMS)
+				if (isLCMS) {
 					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_LC_MS);
-				else if (isLCMSMS)
+				} else if (isLCMSMS) {
 					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_LC_MSMS);
-				else if (isNMR)
+				} else if (isNMR) {
 					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_NMR);
-				else if (isGCMS)
+				} else if (isGCMS) {
 					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_GC_MS);
-				else
+				} else if (isICMS) {
+					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_IC_MS);
+				} else if (isICMSMS) {
+					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_IC_MSMS);
+				} else {
 					dataMapper = new PeakForestDataMapper();
+				}
 
 				// fulfill peakforest data mapper from JSON object
 				success = JsonTools.jsonToMapper(jsonData, dataMapper);
@@ -164,7 +196,7 @@ public class TemplateController {
 				ProcessProgressManager.getInstance().updateProcessProgress(clientSessionId, 50);
 
 				// dump DataMapper into XLSM file
-				if (success)
+				if (success) {
 					try {
 						SpectrumTemplateXLSMDumper.dumpXLSM(templateFile, dumperFile, dataMapper);
 					} catch (IOException | InvalidFormatException | SpectralIOException | NullPointerException e) {
@@ -180,11 +212,11 @@ public class TemplateController {
 						error = "could_not_create_dumper_file";
 						e.printStackTrace();
 					}
-				else
+				} else {
 					error = "json_format_error";
+				}
 				// success => create and return URL to download it
 				// FAIL => delete created file
-
 			} else {
 				success = false;
 				error = "template_file_not_found";
@@ -197,22 +229,22 @@ public class TemplateController {
 
 		// handed 9080 or other port
 		String port = request.getServerPort() + "";
-		if (port.equals("80"))
+		if (port.equals("80")) {
 			port = "";
-		else
+		} else {
 			port = ":" + port;
-
+		}
 		// url
-		String xlsmFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
+		final String xlsmFileUrl = "//" + request.getServerName() + port + "/"
 				+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
 				+ PeakForestUtils.getBundleConfElement("generatedXlsmExport.folder") + "/" + dumperFileName;
 
 		// object with boolean 'success' and string url
-		Map<String, Object> response = new HashMap<String, Object>();
+		final Map<String, Object> response = new HashMap<String, Object>();
 		response.put("success", success);
-		if (!success)
+		if (!success) {
 			response.put("error", error);
-		else {
+		} else {
 			response.put("fileName", dumperFile.getName());
 			response.put("fileURL", xlsmFileUrl);
 		}

@@ -17,9 +17,16 @@
 		<ul class="list-group" style="max-width: 600px;">
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbCC" text="Number of Chemical Compound:" /> <span id="nbCC"><i class="fa fa-refresh fa-spin"></i></span></li>
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbRCC" text="Number of Reference Chemical Compound:" /> <span id="nbRCC"><i class="fa fa-refresh fa-spin"></i></span></li>
-		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbNMRspectra" text="Number of NMR spectrum:" /> <span id="nbNMRspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
-		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbLCMSspectra" text="Number of LC-MS spectrum:" /> <span id="nbLCMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
-		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbLCMSMSspectra" text="Number of LC-MSMS spectrum:" /> <span id="nbLCMSMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
+		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbNMRspectra" text="Number of NMR spectra:" /> <span id="nbNMRspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
+		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbLCMSspectra" text="Number of LC-MS spectra:" /> <span id="nbLCMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
+		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbLCMSMSspectra" text="Number of LC-MSMS spectra:" /> <span id="nbLCMSMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
+		  <!-- new 2.1 -->
+		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbGCMSspectra" text="Number of GC-MS spectra:" /> <span id="nbGCMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
+		  <!-- new 2.3 -->
+		  
+		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbICMSspectra" text="Number of IC-MS spectra:" /> <span id="nbICMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
+<%-- 		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbICMSMSspectra" text="Number of IC-MSMS spectra:" /> <span id="nbICMSMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li> --%>
+		  <!-- meta stat -->
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.perCentRccOneSpectra" text="Percentage of Ref. Chemical Compound with at least one spectrum:" /> <span id="perCentRccOneSpectra"><i class="fa fa-refresh fa-spin"></i></span>%</li>
 		</ul>
 <%
@@ -61,6 +68,12 @@ $( document ).ready(function() {
 		$("#nbNMRspectra").html(jsonData.number_nmr_spectra);
 		$("#nbLCMSspectra").html(jsonData.number_lcms_spectra);
 		$("#nbLCMSMSspectra").html(jsonData.number_lcmsms_spectra);
+		// new 2.1
+		$("#nbGCMSspectra").html(jsonData.number_gcms_spectra);
+		// new 2.3
+		$("#nbICMSspectra").html(jsonData.number_icms_spectra);
+		$("#nbICMSMSspectra").html(jsonData.number_icmsms_spectra);
+		// meta
 		var percent = roundNumber((jsonData.number_of_compound_with_one_or_more_spectrum/nbRCC) *100,2);
 		$("#perCentRccOneSpectra").html(percent);
 		// date

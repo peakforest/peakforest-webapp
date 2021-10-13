@@ -23,21 +23,16 @@ public class MapManagerDaoTest {
 
 	@Test
 	public void test() {
-
-		// testSessionFactory
-		if (MapManagerDao.exists(MapManager.MAP_METEXPLORE))
+		if (MapManagerDao.exists(MapManager.MAP_METEXPLORE)) {
 			MapManagerDao.delete(MapManager.MAP_METEXPLORE);
-
-		MapManager test = new MapManager(MapManager.MAP_METEXPLORE);
+		}
+		final MapManager test = new MapManager(MapManager.MAP_METEXPLORE);
 		test.addMapEntities(new MapEntity(test));
 		test.addMapEntities(new MapEntity(test));
 		test.addMapEntities(new MapEntity(test));
-
 		MapManagerDao.create(test);
-
-		MapManager test2 = MapManagerDao.read(MapManager.MAP_METEXPLORE);
-
-		Assert.assertEquals("[error]", test2.getMapEntities().size(), 3);
+		final MapManager test2 = MapManagerDao.read(MapManager.MAP_METEXPLORE);
+		Assert.assertEquals(3, test2.getMapEntities().size(), 0);
 
 	}
 

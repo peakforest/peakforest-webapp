@@ -27,10 +27,11 @@
 	
 	Object[] seriesMetadata = (Object[]) request.getAttribute("spectrum_series_metadata");
 	
-	boolean loadLegend = (Boolean) request.getAttribute("spectrum_load_legend");
-	Boolean[] showCompoAdducts = (Boolean[]) request.getAttribute("spectrum_show_compo_adducts");
-	Boolean[] loadTopPeaksLabel = (Boolean[]) request.getAttribute("spectrum_load_top_peaks_label");
-	Boolean[] showTinySymbols = (Boolean[]) request.getAttribute("spectrum_show_tiny_symbols");
+	final boolean loadLegend = (Boolean) request.getAttribute("spectrum_load_legend");
+	final Boolean[] showCompoAdducts = (Boolean[]) request.getAttribute("spectrum_show_compo_adducts");
+	final Boolean[] loadTopPeaksLabel = (Boolean[]) request.getAttribute("spectrum_load_top_peaks_label");
+	final Integer[] loadTopPeaksCount = (Integer[]) request.getAttribute("spectrum_load_top_peaks_count");
+	final Boolean[] showTinySymbols = (Boolean[]) request.getAttribute("spectrum_show_tiny_symbols");
 	String spectrumDivId = (String) request.getAttribute("spectrum_div_id");
 	%>
 	// data spectra 
@@ -125,7 +126,7 @@
 							},
 							//<c:if test="${!mode_light}">
 							subtitle : {
-								text : 'Select area to zoom; ' + '<small> <a target="_BLANK" href="' + "<spring:message code="link.site.massbankdoc" text="https://github.com/MassBank/MassBank-web/blob/master/Documentation/manuals/UserManual_en.pdf" />" +'" title="MassBank Record documentation"><i class="fa fa-question-circle"></i> about MassBank Record documentation </a></small>',
+								text : 'Select area to zoom; ' + '<small> <a target="_BLANK" href="' + "<spring:message code="link.site.massbankdoc" text="https://github.com/MassBank/MassBank-web/blob/main/Documentation/MassBankRecordFormat.md#212-record_title" />" +'" title="MassBank Record documentation"><i class="fa fa-question-circle"></i> about MassBank Record documentation </a></small>',
 								useHTML: true
 							},
 							//</c:if>
@@ -200,9 +201,10 @@
 										enabled: true,
 										formatter: function() { 
 										<% for (int i = 0; i < seriesShow.length; i++) {
-											out.print("  if ("+loadTopPeaksLabel[i]+" && this.series.index == "+(seriesShow.length+i)+")\n");
-											out.print("    return ((sortedSeriesShow"+ spectrumDivId + i + 
-																".indexOf(this.y) >= 10) ? null : this.x);\n");
+											out.print("  if ("+loadTopPeaksLabel[i]+" && this.series.index == "+(seriesShow.length+i)+") {\n");
+											out.print("    return ((sortedSeriesShow" + spectrumDivId + i + 
+																".indexOf(this.y) >= " + loadTopPeaksCount[i] + ") ? null : this.x);\n");
+											out.print("}\n");
 										} // for
 										%>
 										} // formatter

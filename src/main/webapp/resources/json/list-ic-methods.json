@@ -1,0 +1,20 @@
+{
+	"methods": [
+		{
+			"name": "NA",
+			"value": "NA"
+		},
+		{
+			"name": "Toulouse - MetaToul",
+			"separator": "==================================================="
+		},
+		{
+			"name": "MetaToul MC QEx ESI- (IC-MS procedures_Toulouse-MetaToul)",
+			"value": "qex-msi-ms__toul"
+		},
+		{
+			"name": "MetaToul MC QEx ESI- (capIC-MS procedures_Toulouse-MetaToul)",
+			"value": "qex-msi-capic-ms__toul"
+		}
+	]
+}

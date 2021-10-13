@@ -318,7 +318,7 @@ int randomID = randomGenerator.nextInt(1000000);
 												</ul>
 												<div class="tab-content">
 													<div id="showMol-2D-modal" class="tab-pane fade active in">
-														<img class="molStructSVG" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+														<img class="molStructSVG" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 													</div>
 													<div id="showMol-3D-modal" class="tab-pane fade">
 														<div id="glmol<%=randomID %>" class="molGL"></div>
@@ -347,7 +347,7 @@ ${mol}</textarea>
 											
 											</c:if>
 											<c:if test="${not mol_ready}">
-												<img class="molStructSVG" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+												<img class="molStructSVG" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 											</c:if>
 <!-- 											</div> -->
 											<!--  ++++++++++++++++++++++++++++ end card 3  -->
@@ -438,7 +438,7 @@ ${mol}</textarea>
 														<i class="fa fa-info-circle"></i> 
 														${compoundNames.get(0).name}
 														<br><i> ${inchikey} </i>
-														<div style="display:none;"><img  class="molStructSVGsmall" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/generic/${inchikey}.svg" alt="${compoundNames.get(0).name}"></div>
+														<div style="display:none;"><img  class="molStructSVGsmall" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/generic/${inchikey}" alt="${compoundNames.get(0).name}"></div>
 													</a>
 													</c:if>
 													<c:if test="${!alt_structure_isGeneric}">
@@ -446,7 +446,7 @@ ${mol}</textarea>
 														<i class="fa fa-info-circle"></i> 
 														<span id="nameOfGC${alt_structure_parent.id}"></span>
 														<br><i> ${alt_structure_parent.inChIKey} </i>
-														<div style="display:none;"><img  class="molStructSVGsmall" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/generic/${alt_structure_parent.inChIKey}.svg" alt=""></div>
+														<div style="display:none;"><img  class="molStructSVGsmall" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/generic/${alt_structure_parent.inChIKey}" alt=""></div>
 													</a>
 													</c:if>
 												</td>
@@ -481,7 +481,7 @@ ${mol}</textarea>
 															listChildren += '<i class="fa fa-info-circle"></i>'; 
 															listChildren += ' ' + value.names[0].name + '';
 															listChildren += '<br><i> ' + value.inChIKey + ' </i>';
-															listChildren += '<div style="display:none;"><img class="molStructSVGsmall" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/chemical/'+value.inChIKey+'.svg" alt="'+value.names[0].name+'"></div>';
+															listChildren += '<div style="display:none;"><img class="molStructSVGsmall" src="<spring:message code="peakforest.uri" text="https://peakforest.org/" />/image/chemical/'+value.inChIKey+'" alt="'+value.names[0].name+'"></div>';
 															listChildren += '</a>';
 															listChildren += '</li>';
 														});

@@ -74,7 +74,7 @@ $( document ).ready(function() {
 <tr>
 	<td>
 		<span class="avatar">
-			<img class="compoundSVG" src="image/{%= type%}/{%= inchikey%}.svg" alt="{%= name%}" />
+			<img class="compoundSVG" src="image/{%= type%}/{%= inchikey%}" alt="{%= name%}" />
 		</span>
 	</td>
 	<td>

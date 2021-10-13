@@ -110,7 +110,7 @@ int randomID = randomGenerator.nextInt(1000000);
 					</ul>
 					<div class="tab-content">
 						<div id="showMol-2D2" class="tab-pane fade active in">
-							<img class="molStructSVGsmall" src="image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+							<img class="molStructSVGsmall" src="image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 						</div>
 						<div id="showMol-3D2" class="tab-pane fade">
 							<div id="glmol<%=randomID %>2"
@@ -138,7 +138,7 @@ ${mol}</textarea>
 					</div>
 				</c:if>
 				<c:if test="${not mol_ready}">
-					<img class="molStructSVGsmall" src="image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+					<img class="molStructSVGsmall" src="image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 				</c:if>
 														</td>
 														<td style="width: 100px;"><spring:message code="modal.show.basicInfos.name" text="Name" /></td>
@@ -518,7 +518,7 @@ loadStarListener<%=randomID %>();
 												</ul>
 												<div class="tab-content">
 													<div id="showMol-2D" class="tab-pane fade active in">
-														<img class="molStructSVG" src="image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+														<img class="molStructSVG" src="image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 													</div>
 <c:if test="${mol_ready}">
 													<div id="showMol-3D" class="tab-pane fade">
@@ -846,7 +846,7 @@ function startUpload2() {
 														<i class="fa fa-info-circle"></i> 
 														${compoundNames.get(0).name}
 														<br><i> ${inchikey} </i>
-														<div style="display:none;"><img  class="molStructSVGsmall" src="image/generic/${inchikey}.svg" alt="${compoundNames.get(0).name}"></div>
+														<div style="display:none;"><img  class="molStructSVGsmall" src="image/generic/${inchikey}" alt="${compoundNames.get(0).name}"></div>
 													</a>
 													</c:if>
 													<c:if test="${!alt_structure_isGeneric}">
@@ -854,7 +854,7 @@ function startUpload2() {
 														<i class="fa fa-info-circle"></i> 
 														<span id="nameOfGC${alt_structure_parent.id}_sheet"></span>
 														<br><i> ${alt_structure_parent.inChIKey} </i>
-														<div style="display:none;"><img  class="molStructSVGsmall" src="image/generic/${alt_structure_parent.inChIKey}.svg" alt=""></div>
+														<div style="display:none;"><img  class="molStructSVGsmall" src="image/generic/${alt_structure_parent.inChIKey}" alt=""></div>
 													</a>
 													</c:if>
 												</td>
@@ -887,9 +887,9 @@ function startUpload2() {
 															listChildren_sheet += '<li id="cc_child_'+value.id+'" class="list-group-item">';
 															listChildren_sheet += '<a class="compoundzoom btn '+classS+'" '+hrefS+' style="text-align: left;">';
 															listChildren_sheet += '<i class="fa fa-info-circle"></i>'; 
-															listChildren_sheet += ' ' + value.names[0].name + '';
+															listChildren_sheet += ' ' + value.mainName + '';
 															listChildren_sheet += '<br><i> ' + value.inChIKey + ' </i>';
-															listChildren_sheet += '<div style="display:none;"><img class="molStructSVGsmall" src="image/chemical/'+value.inChIKey+'.svg" alt="'+value.names[0].name+'"></div>';
+															listChildren_sheet += '<div style="display:none;"><img class="molStructSVGsmall" src="image/chemical/'+value.inChIKey+'" alt="'+value.mainName+'"></div>';
 															listChildren_sheet += '</a>';
 															listChildren_sheet += '</li>';
 														});
@@ -971,9 +971,9 @@ function startUpload2() {
 															listChildren_sheet += '<li id="cc_derivative_'+value.id+'" class="list-group-item">';
 															listChildren_sheet += '<a class="compoundzoom btn '+classS+'" '+hrefS+' style="text-align: left;">';
 															listChildren_sheet += '<i class="fa fa-info-circle"></i>'; 
-															listChildren_sheet += ' ' + value.names[0].name + '';
+															listChildren_sheet += ' ' + value.mainName + '';
 															listChildren_sheet += '<br><i> ' + value.inChIKey + ' </i>';
-															listChildren_sheet += '<div style="display:none;"><img class="molStructSVGsmall" src="image/chemical/'+value.inChIKey+'.svg" alt="'+value.names[0].name+'"></div>';
+															listChildren_sheet += '<div style="display:none;"><img class="molStructSVGsmall" src="image/gc-derived/'+value.inChIKey+'" alt="'+value.mainName+'"></div>';
 															listChildren_sheet += '</a>';
 															listChildren_sheet += '</li>';
 														});
@@ -1066,18 +1066,46 @@ function startUpload2() {
 													</tr>
 													</c:if>
 													<c:if test="${not empty cas}">
+													<tr>
+														<td><spring:message code="modal.show.inOtherDatabases.cas.simple" text="CAS" /></td>
+														<td>
+															<c:forEach var="casEntity" items="${cas}">
+																<br /> ${casEntity.getCasNumber()};${casEntity.getCasProviderAsString()};${casEntity.getCasReferencer()}
+															</c:forEach>
+														</td>
+													</tr>
+													</c:if>
+													<c:if test="${not empty externalIds}">
 														<tr>
-															<td><spring:message code="modal.show.inOtherDatabases.cas.simple" text="CAS" /></td>
+															<td>Ext. IDs</td>
 															<td>
-																<c:forEach var="casEntity" items="${cas}">
-																	<br />${casEntity.getCasNumber()};${casEntity.getCasProviderAsString()};${casEntity.getCasReferencer()}
+																<c:forEach var="externalId" items="${externalIds}">
+																	<br /> <a href="${externalId.url != '' ? externalId.url : 'javascript:void(0)' }" target="_blank">${externalId.label}: ${externalId.value}</a>
 																</c:forEach>
 															</td>
 														</tr>
 													</c:if>
+													
 												</table>
 									</div>
 								</div>
+								
+								<c:if test="${not empty chebi}">
+									<div id="panel-metabolights-studies" class="panel panel-default">
+										<div class="panel-heading">
+											<h4 class="panel-title">
+												<spring:message code="modal.show.metabolightsStudies" text="Metabolights Studies" /> <i class="fa fa-book"></i>
+											</h4>
+										</div>
+										<div id="cardSheet_metabolights" class="">
+										</div>
+									</div>
+<script type='text/javascript'>
+//<![CDATA[
+	listMetabolightsStudies('${chebi}');
+//]]>
+</script>
+								</c:if>
 								<% /*
 								<div id="MEViz__module" class="panel panel-default">
 									<div class="panel-heading">
@@ -1279,10 +1307,11 @@ function startUpload2() {
 														$('#cc_addNewCitationID').val('');
 														// TODO ajax async : overwrite this alert, set correct ids in new citation object
 														$.ajax({
-															type: "post",
+															type: "get",
 															url: "get-citation-data",
-															data: "query=" + id,
-															//contentType: 'application/json'
+															data: 'query='+ id + '',
+															dataType: 'json',
+															// contentType: 'application/json',
 															success: function(data) {
 																console.log(data);
 																if(data.success) { 
@@ -1298,7 +1327,7 @@ function startUpload2() {
 																	$('#CITE-RESULT-'+idMessage).html(newResult);
 																	newCitations[idMessage] = { "apa" : apa, "doi" : doi, "pmid" : pmid}; //"url" : url, 
 																} else {
-																	$('#CITE-RESULT-'+idMessage).html("ERROR: could not retrive publication.");
+																	$('#CITE-RESULT-'+idMessage).html("ERROR: could not retrive the publication.");
 																	$('#CITE-'+idMessage+'').removeClass("alert-warning");
 																	$('#CITE-'+idMessage+'').addClass("alert-danger");
 																	delete newCitations[idMessage];
@@ -1306,7 +1335,7 @@ function startUpload2() {
 															}, 
 															error : function(data) {
 																console.log(data);
-																$('#CITE-RESULT-'+idMessage).html("FATAL: could not retrive publication.");
+																$('#CITE-RESULT-'+idMessage).html("FATAL: could not retrive the publication.");
 																$('#CITE-'+idMessage+'').removeClass("alert-warning");
 																$('#CITE-'+idMessage+'').addClass("alert-danger");
 																delete newCitations[idMessage];

@@ -68,6 +68,8 @@
 			class="fr.metabohub.peakforest.model.compound.CompoundName" />
 		<mapping class="fr.metabohub.peakforest.model.compound.CAS" />
 		<mapping
+			class="fr.metabohub.peakforest.model.compound.ExternalId" />
+		<mapping
 			class="fr.metabohub.peakforest.model.compound.Putative2Reference" />
 		<!-- peaks -->
 		<mapping
@@ -94,6 +96,10 @@
 			class="fr.metabohub.peakforest.model.spectrum.FragmentationLCSpectrum" />
 		<mapping
 			class="fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.FragmentationICSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.FullScanICSpectrum" />
 		<mapping
 			class="fr.metabohub.peakforest.model.spectrum.UVSpectrum" />
 		<!-- nmr spec -->
@@ -124,6 +130,8 @@
 			class="fr.metabohub.peakforest.model.metadata.LiquidChromatography" />
 		<mapping
 			class="fr.metabohub.peakforest.model.metadata.GazChromatography" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.IonChromatography" />
 		<mapping
 			class="fr.metabohub.peakforest.model.metadata.AnalyzerGasMassIonization" />
 		<mapping

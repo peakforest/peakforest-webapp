@@ -1,4 +1,4 @@
-[![pipeline status](https://services.pfem.clermont.inra.fr/gitlab/peakforest/peakforest-webapp/badges/dev/pipeline.svg)](https://services.pfem.clermont.inra.fr/gitlab/peakforest/peakforest-webapp/commits/dev)
+[![pipeline status](https://services.pfem.clermont.inrae.fr/gitlab/peakforest/peakforest-webapp/badges/dev/pipeline.svg)](https://services.pfem.clermont.inrae.fr/gitlab/peakforest/peakforest-webapp/commits/dev)
 
 # PeakForest - WebApp
 
@@ -18,7 +18,7 @@ This project uses and requires:
 - [Open Babel](http://openbabel.org/wiki/Main_Page) 
     - version `2.3.2`, with java bundle
     - version `40bc0f10` (cf doc)
-- Webservice Dependencies: see [PForest - Ext. Banks API](https://services.pfem.clermont.inra.fr/gitlab/peakforest/externalbanks-api) for further details
+- Webservice Dependencies: see [PForest - Ext. Banks API](https://services.pfem.clermont.inrae.fr/gitlab/peakforest/externalbanks-api) for further details
 
 ### Prerequisites
 
@@ -26,7 +26,7 @@ Use [STS](https://spring.io/tools) IDE.
 
 ### Install / Build
 
-- get project data `git clone git@services.pfem.clermont.inra.fr:peakforest/peakforest-webapp.git`
+- get project data `git clone git@services.pfem.clermont.inrae.fr:peakforest/peakforest-webapp.git`
 - Build command `mvn clean install` produce:
    - `peakforest-webapp-X.war` (java bin file, ready for a tomcat server deploy; `X` matching the current version number)
 
@@ -68,14 +68,14 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Versioning
 
-We use [GitLab](https://services.pfem.clermont.inra.fr/gitlab/your/project) for versioning. 
-For the versions available, see the [tags on this repository](https://services.pfem.clermont.inra.fr/gitlab/your/project/tags). 
+We use [GitLab](https://services.pfem.clermont.inrae.fr/gitlab/your/project) for versioning. 
+For the versions available, see the [tags on this repository](https://services.pfem.clermont.inrae.fr/gitlab/your/project/tags). 
 
 ## Authors
 
 * **Firstname lastname** - *Initial work* - 
 
-See also the list of [contributors](https://services.pfem.clermont.inra.fr/gitlab/your/projectcontributors) who participated in this project.
+See also the list of [contributors](https://services.pfem.clermont.inrae.fr/gitlab/your/projectcontributors) who participated in this project.
 
 ## License
 
@@ -90,7 +90,7 @@ This project is licensed under the XXX License - see the [LICENSE.md](LICENSE.md
 
 ### Deploy
 
-- get project data `git clone git@services.pfem.clermont.inra.fr:peakforest/peakforest-webapp.git`
+- get project data `git clone git@services.pfem.clermont.inrae.fr:peakforest/peakforest-webapp.git`
 - configuration files:
    - `src/main/resources/conf.properties`
    - `src/main/resources/info.properties`
@@ -99,7 +99,7 @@ This project is licensed under the XXX License - see the [LICENSE.md](LICENSE.md
 
 ### Warning
 
-See [PForest - Developers documentation](https://services.pfem.clermont.inra.fr/gitlab/metabohub/doc-pforest_devs) for Open Babel and Databases configuration.
+See [PForest - Developers documentation](https://services.pfem.clermont.inrae.fr/gitlab/metabohub/doc-pforest_devs) for Open Babel and Databases configuration.
 
 ## Services provided
 

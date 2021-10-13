@@ -199,11 +199,10 @@ function loadSearchResults() {
 								var rawFromula = this.compound.formula;
 								var formatedFormula = rawFromula + "";
 								try {
-									$.each($.unique( rawFromula.match(/\d/g)), function (keyF, valF) {
-										var re = new RegExp(valF,"g");
+									$.each($.unique(rawFromula.match(/\d/g)), function (keyF, valF) {
+										var re = new RegExp(valF, "g");
 										formatedFormula = formatedFormula.replace(re, "<sub>" + valF + "</sub>");
 									});
-									formatedFormula = formatedFormula.replace("</sub><sub>", "");
 								} catch (e) {}
 								var type = "?";
 								if (this.compound.hasOwnProperty("parent")) 
@@ -244,11 +243,10 @@ function loadSearchResults() {
 							var rawFromula = this.formula;
 							var formatedFormula = rawFromula + "";
 							try {
-								$.each($.unique( rawFromula.match(/\d/g)), function (keyF, valF) {
+								$.each($.unique(rawFromula.match(/\d/g)), function (keyF, valF) {
 									var re = new RegExp(valF,"g");
 									formatedFormula = formatedFormula.replace(re, "<sub>" + valF + "</sub>");
 								});
-								formatedFormula = formatedFormula.replace("</sub><sub>", "");
 							} catch (e) {}
 							var type = "?";
 							if (this.hasOwnProperty("parent")) 
@@ -306,7 +304,10 @@ function loadSearchResults() {
 					} // if(json.hasOwnProperty('nmrCandidates')) {
 					var containsNMRspectra = false;
 					var containsLCMSspectra = false;
-					var containsLCMSMSspectra = false;
+					// 2.1
+					var containsGCMSspectra = false;
+					// 2.3
+					var containsICMSspectra = false;
 					
 					if(json.hasOwnProperty('nmrSpectra') && !json.hasOwnProperty('nmrCandidates')) {
 						$.each(json.nmrSpectra, function() {
@@ -355,6 +356,7 @@ function loadSearchResults() {
 								var object = { 
 									id: rawSpectra.id,
 									name: rawSpectra.massBankName,
+									metaCol: rawSpectra.liquidChromatography.methodProtocol,
 									score: roundNumber(this.matchingScore, 3),
 									type: "lcms",
 									img: spectraImg,
@@ -374,7 +376,7 @@ function loadSearchResults() {
 						} 
 						// add img
 						$.each(arrayMSspectra, function() {
-							containsLCMSspectra = true;
+							containsGCMSspectra = true;
 							var rawSpectra = this;
 							if (rawSpectra !== undefined) {
 								var spectraImg = "lcms-light";
@@ -387,6 +389,7 @@ function loadSearchResults() {
 								var object = { 
 									id: rawSpectra.id,
 									name: rawSpectra.massBankName,
+									metaCol: rawSpectra.gazChromatography.methodProtocol,
 									score: roundNumber(this.matchingScore, 3),
 									type: "gcms",
 									img: spectraImg,
@@ -398,9 +401,41 @@ function loadSearchResults() {
 							}
 						});
 					}
+					// new 2.3
+					if(json.hasOwnProperty('icmsSpectra') || json.hasOwnProperty('icmsmsSpectra')) {
+						var arrayMSspectra = [];
+						// concat
+						if (json.hasOwnProperty('icmsSpectra')) {
+							arrayMSspectra = arrayMSspectra.concat(json.icmsSpectra);
+						} 
+						if (json.hasOwnProperty('icmsmsSpectra')) {
+							arrayMSspectra = arrayMSspectra.concat(json.icmsmsSpectra);
+						}
+						// add img
+						$.each(arrayMSspectra, function() {
+							containsICMSspectra = true;
+							var rawSpectra = this;
+							if (rawSpectra !== undefined) {
+								var spectraImg = getSpectrumImage( rawSpectra );
+								var cpd = getSpectrumCpd( rawSpectra );
+								var object = { 
+									id: rawSpectra.id,
+									name: rawSpectra.massBankName,
+									metaCol: rawSpectra.ionChromatography.methodProtocol,
+									score: roundNumber(this.matchingScore, 3),
+									type: "icms",
+									img: spectraImg,
+									compound: cpd,
+									pfID: rawSpectra.pfID
+								};
+								spectraDataTmp.push(object);
+								spectrumCount++;
+							}
+						});
+					}
 					
 					// sort
-					if (containsNMRspectra || containsLCMSspectra)
+					if (containsNMRspectra || containsLCMSspectra || containsGCMSspectra || containsICMSspectra)
 						spectraDataTmp.sort(function(a, b) { 
 						    return b.score - a.score;
 						});
@@ -1358,6 +1393,16 @@ function getSearchRequestFormated(searchRequest, rawSearchRequestQuery) {
 						qFilterType = Utils_SEARCH_COMPOUND_FORMULA
 						qFilterVal = filterVal;
 						qFilterVal2 = "";
+						specialQuery = true;
+						break;
+					case "LOGP":
+						var logpData = filterVal.split("d");
+						var logp = logpData[0];
+						var tol = logpData[1];
+						qFilterEntity = "compounds";
+						qFilterType = Utils_SEARCH_COMPOUND_LOGP
+						qFilterVal = logp;
+						qFilterVal2 = tol;
 						specialQuery = true;
 						break;
 					case "NMR":

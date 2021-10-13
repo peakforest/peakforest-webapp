@@ -1,5 +1,7 @@
-<beans:beans xmlns="http://www.springframework.org/schema/security"
-	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans:beans
+	xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/security
@@ -8,18 +10,26 @@
 	<http auto-config="true">
 		<!-- rights -->
 		<intercept-url pattern="/import*" access="ROLE_USER" />
-		<intercept-url pattern="/upload-compound-file*" access="ROLE_USER" />
-		<intercept-url pattern="/add-compounds*" access="ROLE_USER" />
-		<intercept-url pattern="/update-compound*" access="ROLE_USER" />
-		<intercept-url pattern="/backoffice*" access="ROLE_ADMIN" />
+		<intercept-url pattern="/upload-compound-file*"
+			access="ROLE_USER" />
+		<intercept-url pattern="/add-compounds*"
+			access="ROLE_USER" />
+		<intercept-url pattern="/update-compound*"
+			access="ROLE_USER" />
+		<intercept-url pattern="/backoffice*"
+			access="ROLE_ADMIN" />
 		<!-- login / logout -->
 		<form-login login-page="/login" default-target-url="/home"
-			always-use-default-target="true" authentication-failure-url="/loginfailed" />
+			always-use-default-target="true"
+			authentication-failure-url="/loginfailed" />
 		<logout logout-success-url="/" />
 		<!-- <custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" 
 			/> -->
-<!-- 		<session-management -->
-<!-- 			session-authentication-strategy-ref="sas" invalid-session-url="/home" /> -->
+		<!-- <session-management -->
+		<!-- session-authentication-strategy-ref="sas" invalid-session-url="/home" 
+			/> -->
+
+		<!-- <csrf disabled="true"/> -->
 	</http>
 
 	<!-- <authentication-manager> -->
@@ -49,8 +59,10 @@
 	<beans:bean id="peakforestAuthenticationProvider"
 		class="fr.metabohub.peakforest.security.SpectralDatabaseAuthenticationProvider" />
 	<authentication-manager>
-		<authentication-provider ref="peakforestAuthenticationProvider"></authentication-provider>
+		<authentication-provider
+			ref="peakforestAuthenticationProvider"></authentication-provider>
 	</authentication-manager>
+
 
 	<!-- <ldap-server id="ldapServer" -->
 	<!-- url="ldap://ldap.inra.fr:PORT/dc=example,dc=com" /> -->
@@ -59,6 +71,7 @@
 	<!-- user-dn-pattern="uid={0},ou=people" /> -->
 	<!-- </authentication-manager> -->
 
-	<global-method-security secured-annotations="enabled" />
+	<global-method-security
+		secured-annotations="enabled" />
 
 </beans:beans>

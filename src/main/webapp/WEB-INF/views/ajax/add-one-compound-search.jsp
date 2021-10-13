@@ -21,17 +21,17 @@
 				<c:forEach var="compound" items="${compounds}">
 				<tr class="success selectCC-step2" onclick="loadCompoundDetails(${compound.id}, ${compound.type});">
 					<td style="vertical-align: middle;">
-						${compound.listOfCompoundNames.get(0).name}
+						${compound.getMainName()}
 					</td>
 					<td style="vertical-align: middle;" class="compoundMass">${compound.exactMass}</td>
 					<!-- 		  <td>194.1906</td> -->
 					<td style="vertical-align: middle;" class="compoundFormula">${compound.formula}</td>
 					<td><span class="avatar">
 						<c:if test="${compound.type == 101}">
-						<img class="compoundSVG" src="image/chemical/${compound.inChIKey}.svg" alt="${compound.listOfCompoundNames.get(0).name}" />
+						<img class="compoundSVG" src="image/chemical/${compound.inChIKey}" alt="${compound.getMainName()}" />
 						</c:if>
 						<c:if test="${compound.type == 100}">
-						<img class="compoundSVG" src="image/generic/${compound.inChIKey}.svg" alt="${compound.listOfCompoundNames.get(0).name}" />
+						<img class="compoundSVG" src="image/generic/${compound.inChIKey}" alt="${compound.getMainName()}" />
 						</c:if>
 						</span></td>
 				</tr>
@@ -49,7 +49,7 @@ $.each($(".compoundFormula"), function(id, elem) {
 	var rawFromula = $(elem).text();
 	var formatedFormula = rawFromula;
 	try {
-	$.each($.unique( rawFromula.match(/\d/g)), function (keyF, valF) {
+	$.each($.unique( rawFromula.match(/\d+/g)), function (keyF, valF) {
 		var re = new RegExp(valF,"g");
 		formatedFormula = formatedFormula.replace(re, "<sub>" + valF + "</sub>");
 	});
@@ -176,7 +176,7 @@ deepSearch = function () {
 					var rawFromula = $(elem).text();
 					var formatedFormula = rawFromula;
 					try {
-					$.each($.unique( rawFromula.match(/\d/g)), function (keyF, valF) {
+					$.each($.unique( rawFromula.match(/\d+/g)), function (keyF, valF) {
 						var re = new RegExp(valF,"g");
 						formatedFormula = formatedFormula.replace(re, "<sub>" + valF + "</sub>");
 					});

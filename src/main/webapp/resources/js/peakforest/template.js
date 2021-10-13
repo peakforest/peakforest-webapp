@@ -24,6 +24,12 @@ defaultFileDownload = function(subid) {
 	} else if (technology == 'gc-ms') {
 		$("#generatingTemplate-empty").show();
 		dumpEmptyFile("gcms", sampleType);
+	} else if (technology == 'ic-ms') {
+		$("#generatingTemplate-empty").show();
+		dumpEmptyFile("icms", sampleType);
+	} else if (technology == 'ic-msms') {
+		$("#generatingTemplate-empty").show();
+		dumpEmptyFile("icmsms", sampleType);
 	} 
 }
 
@@ -75,6 +81,7 @@ $(document).ready(function() {
 	$("#generateFromLCMSmethod").append('<option value="" selected="selected" disabled="disabled"></option>');
 	$("#generateFromLCMSMSmethod").append('<option value="" selected="selected" disabled="disabled"></option>');
 	$("#generateFromGCMSmethod").append('<option value="" selected="selected" disabled="disabled"></option>');
+	$("#generateFromICMSmethod").append('<option value="" selected="selected" disabled="disabled"></option>');
 	$.getJSON("resources/json/list-lc-methods.json", function(data) {
 		// load data from json
 		$.each(data.methods,function(){
@@ -105,6 +112,18 @@ $(document).ready(function() {
 					$("#generateFromGCMSmethod").append('<option value="'+this.value+'">'+this.name+'</option>');
 				else
 					$("#generateFromGCMSmethod").append('<option disabled>'+this.name+'</option>');
+			}
+		});
+	});
+	$.getJSON("resources/json/list-ic-methods.json", function(data) {
+		// load data from json
+		$.each(data.methods,function(){
+			if (this.name !==undefined) {
+				if (this.value !==undefined) {
+					$("#generateFromICMSmethod").append('<option value="'+this.value+'">'+this.name+'</option>');
+				} else {
+					$("#generateFromICMSmethod").append('<option disabled>'+this.name+'</option>');
+				}
 			}
 		});
 	});
@@ -145,6 +164,11 @@ $(document).ready(function() {
 			$(".downloadTemplateSelectUploadFile-gcms").show();
 			$(".downloadTemplateDownloadFile").hide();
 			break;
+		case 'downloadTemplatePresfieldY-icms':
+			$("#generateFromICMSmethod").val("");
+			$(".downloadTemplateSelectUploadFile-icms").show();
+			$(".downloadTemplateDownloadFile").hide();
+			break;
 		case 'downloadTemplatePresfieldN-lcms':
 			defaultFileDownload('lcms');
 			break;
@@ -171,6 +195,9 @@ $(document).ready(function() {
 		case 'generateFromGCMSmethod':
 			dumpGCSpectralDataFromJson($(this).val());
 			break;
+		case 'generateFromICMSmethod':
+			dumpICSpectralDataFromJson($(this).val());
+			break;
 		}
 	});
 });
@@ -184,6 +211,7 @@ dumpEmptyTemplate = function() {
 	$("#generateFromLCMSmethod").val("");
 	$("#generateFromLCMSMSmethod").val("");
 	$("#generateFromGCMSmethod").val("");
+	$("#generateFromICMSmethod").val("");
 	// lock
 	$("input[name='matrixToDump']").attr("disabled", true);
 	switch($("#downloadTemplateSpectrumType").val()) {
@@ -214,6 +242,20 @@ dumpEmptyTemplate = function() {
 		$("#downloadTemplatePresfieldY-gcms").prop('checked', false);
 		$("#downloadTemplatePresfieldN-gcms").prop('checked', true);
 		defaultFileDownload('gcms');
+		break;
+	case "ic-ms":
+		// choose to prefield
+		$(".downloadTemplateUploadFile-icms").show();
+		$("#downloadTemplatePresfieldY-icms").prop('checked', false);
+		$("#downloadTemplatePresfieldN-icms").prop('checked', true);
+		defaultFileDownload('icms');
+		break;
+	case "ic-msms":
+		// choose to prefield
+		$(".downloadTemplateUploadFile-msms").show();
+		$("#downloadTemplatePresfieldY-msms").prop('checked', false);
+		$("#downloadTemplatePresfieldN-msms").prop('checked', true);
+		defaultFileDownload('icms');
 		break;
 	default:
 		// TODO other spec here or just before 
@@ -261,6 +303,26 @@ dumpGCSpectralDataFromJson = function(jsonFileName) {
 	});
 }
 
+/**
+ * Dump JSON file data into a XLSM file for GC-MS methods.
+ */
+dumpICSpectralDataFromJson = function(jsonFileName) { 
+	// start process progress
+	$("#generatingTemplate-icms-file").show();
+	// get JSON data and dump them into XLSM file
+	$.getJSON("resources/json/ic-methods/"+jsonFileName+".json", function(json) {
+		// $.POST
+		dumpJsonDataInXLSMfile(json);
+	}).error(function(event, jqxhr, exception) {
+		if (event.status == 404) {
+			$(".generatingTemplate").hide();
+			$(".downloadTemplateDownloadFile").show();
+			cleanLinkDnlTemplate();
+			$("#alertBoxDumpTemplate").html(_alert_unablePresFieldData);
+		}
+	});
+}
+
 cleanLinkDnlTemplate = function() {
 	var eTmp = $("div.downloadTemplateDownloadFile a");
 	eTmp.attr('href', "");
@@ -280,6 +342,10 @@ dumpEmptyFile = function(method, sampleType) {
 		json["dumper_type"] = "nmr";
 	else if (method =="gcms")
 		json["dumper_type"] = "gc-ms";
+	else if (method =="icms")
+		json["dumper_type"] = "ic-ms";
+	else if (method =="icmsms")
+		json["dumper_type"] = "ic-msms";
 	else
 		json["dumper_type"] = method;
 	if (sampleType!==null && sampleType!==undefined && sampleType!="") {
@@ -352,6 +418,7 @@ dumpJsonDataInXLSMfile = function(json) {
 	$("#generateFromLCMSmethod").attr("disabled", false);
 	$("#generateFromLCMSMSmethod").attr("disabled", false);
 	$("#generateFromGCMSmethod").attr("disabled", false);
+	$("#generateFromICMSmethod").attr("disabled", false);
 	$.ajax({
 		type: "post",
 		url: "dumpTemplate",

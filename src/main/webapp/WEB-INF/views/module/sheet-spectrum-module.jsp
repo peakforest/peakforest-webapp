@@ -35,13 +35,19 @@ int randomID = randomGenerator.nextInt(1000000);
 												<c:if test="${spectrum_type == 'gc-fullscan'}">
 													<a href="spectrum-gcms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
 												</c:if>
+												<c:if test="${spectrum_type == 'ic-fullscan'}">
+													<a href="spectrum-icms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
+												</c:if>
+												<c:if test="${spectrum_type == 'ic-fragmentation'}">
+													<a href="spectrum-icmsms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
+												</c:if>
 												<a id="linkDumpSpectrum" href="#" ><i class="fa fa-file-excel-o"></i></a>
 											</span>
 										</h4>
 									</div>
 									<div id="cardSheet1" class="">
 									
-									<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'gc-fullscan'}">
+									<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'gc-fullscan' || spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation'}">
 									<!--container-->
 									<div id="containerMSspectrum<%=randomID %>"
 										style="width: 100%; min-width: 650px; height: 500px; margin: 0 auto">
@@ -51,7 +57,7 @@ int randomID = randomGenerator.nextInt(1000000);
 									</div>
 									</c:if>
 									
-									<c:if test="${spectrum_type == 'nmr'}">
+									<c:if test="${spectrum_type == 'nmr-1d' || spectrum_type == 'nmr-2d'}">
 										<c:if test="${not display_real_spectrum}">
 											<c:choose>
 												<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'JRES-2D' || spectrum_nmr_analyzer_data_acquisition == 'COSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'TOCSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-2D' || spectrum_nmr_analyzer_data_acquisition == 'HMBC-2D' || spectrum_nmr_analyzer_data_acquisition == 'HSQC-2D'}">
@@ -97,7 +103,7 @@ int randomID = randomGenerator.nextInt(1000000);
 			<table style="width:100%">					
 				<tr>
 					<td width="20%">
-					<img src="image/${spectrum_derivative_type}/${spectrum_derivative_inchikey}.svg" alt="${fn:escapeXml(spectrum_derivative_name)}">
+					<img src="image/${spectrum_derivative_type}/${spectrum_derivative_inchikey}" alt="${fn:escapeXml(spectrum_derivative_name)}">
 					</td>
 					<td width="80%">
 					<ul class="list-group" style="max-width: 600px;">
@@ -170,13 +176,13 @@ int randomID = randomGenerator.nextInt(1000000);
 <ul class="nav nav-tabs" style="margin-bottom: 15px;">
 	<li class="active"><a href="#analytical_sample" data-toggle="tab"><i class="fa fa fa-flask"></i> <spring:message code="page.spectrum.tag.analyticalSample" text="Analytical Sample" /></a></li>
 	<!-- MS ONLY -->
-	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'gc-fullscan'}">
+	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'gc-fullscan' || spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation'}">
 	<li><a href="#chromatography" data-toggle="tab"><i class="fa fa-area-chart"></i> <spring:message code="page.spectrum.tag.chromatography" text="Chromatography" /></a></li>
 	<li><a href="#MS_analyzer" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.massAnalyze" text="Mass Analyzer" /></a></li>
 	<li><a href="#MS_peaks" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakList" text="Peak List" /></a></li>
 	</c:if>
 	<!-- NMR ONLY -->
-	<c:if test="${spectrum_type == 'nmr'}">
+	<c:if test="${spectrum_type == 'nmr-1d' || spectrum_type == 'nmr-2d'}">
 	<li><a href="#NMR_analyzer" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.nmrAnalyzer" text="NMR Analyzer" /></a></li>
 	<li><a href="#NMR_peaks" onclick="try{refreshJSmol();}catch(e){}" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakListnmr" text="Peak List" /></a></li>
 	</c:if>
@@ -199,7 +205,7 @@ int randomID = randomGenerator.nextInt(1000000);
 <table style="width:100%">
 	<tr> 
 		<td width="20%">
-		<img src="image/${spectrum_sample_compound_type}/${spectrum_sample_compound_inchikey}.svg" alt="${fn:escapeXml(spectrum_sample_compound_name)}">
+		<img src="image/${spectrum_sample_compound_type}/${spectrum_sample_compound_inchikey}" alt="${fn:escapeXml(spectrum_sample_compound_name)}">
 		</td>
 		<td width="40%">
 <ul class="list-group" style="max-width: 600px;">
@@ -253,7 +259,7 @@ int randomID = randomGenerator.nextInt(1000000);
 						<td style="max-width:50%">
 							<c:if test="${spectrum_has_main_compound}">
 								All peaks are related to one compound: <a href="show-compound-modal/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getId()}" data-toggle="modal" data-target="#modalShowCompound">${fn:escapeXml(spectrum_main_compound.getMainName())}</a>
-								<img class="compoundSVG" src="image/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getInChIKey()}.svg" alt="${fn:escapeXml(spectrum_main_compound.getMainName())}">
+								<img class="compoundSVG" src="image/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getInChIKey()}" alt="${fn:escapeXml(spectrum_main_compound.getMainName())}">
 								<br />
 								<br />
 							</c:if>
@@ -271,7 +277,7 @@ int randomID = randomGenerator.nextInt(1000000);
 										<tr>
 											<td>
 												<span class="avatar">
-													<img class="compoundSVG" src="image/${compound.getTypeString()}/${compound.getInChIKey()}.svg" alt="${fn:escapeXml(compound.getMainName())}">
+													<img class="compoundSVG" src="image/${compound.getTypeString()}/${compound.getInChIKey()}" alt="${fn:escapeXml(compound.getMainName())}">
 												</span>
 											</td>
 											<td style="white-space: nowrap;">
@@ -298,7 +304,7 @@ int randomID = randomGenerator.nextInt(1000000);
 					<br />
 					<br />
 					All peaks are related to one compound: <a href="show-compound-modal/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getId()}" data-toggle="modal" data-target="#modalShowCompound">${fn:escapeXml(spectrum_main_compound.getMainName())}</a>
-					<img class="compoundSVG" src="image/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getInChIKey()}.svg" alt="${fn:escapeXml(spectrum_main_compound.getMainName())}">
+					<img class="compoundSVG" src="image/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getInChIKey()}" alt="${fn:escapeXml(spectrum_main_compound.getMainName())}">
 				</c:if>
 				<c:if test="${spectrum_sample_mix_display}">
 					<br />
@@ -315,7 +321,7 @@ int randomID = randomGenerator.nextInt(1000000);
 							<c:forEach var="compound" items="${spectrum_sample_mix_tab}">
 							<tr>
 								<td>
-									<span class="avatar">    <img class="compoundSVG" src="image/${compound.getTypeString()}/${compound.getInChIKey()}.svg" alt="gamma-aminobutyric acid">   </span>
+									<span class="avatar">    <img class="compoundSVG" src="image/${compound.getTypeString()}/${compound.getInChIKey()}" alt="gamma-aminobutyric acid">   </span>
 								</td>
 								<td style="white-space: nowrap;">
 									<a href="show-compound-modal/${compound.getTypeString()}/${compound.getId()}" data-toggle="modal" data-target="#modalShowCompound">${fn:escapeXml(compound.getMainName())}</a>
@@ -342,7 +348,7 @@ int randomID = randomGenerator.nextInt(1000000);
 	</c:when>
 </c:choose>
 <!-- nmr specific data -->
-<c:if test="${spectrum_type == 'nmr'}">
+<c:if test="${spectrum_type == 'nmr-1d' || spectrum_type == 'nmr-2d'}">
 			<div class="panel-heading">	
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelNMRtubePrep" text="NMR tube preparation" /></h3>
 			</div>
@@ -405,7 +411,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">Column name: ${fn:escapeXml(spectrum_chromatography_col_name)}</li>
 				<li class="list-group-item">Column length: ${spectrum_chromatography_col_length} (mm)</li>
 				<li class="list-group-item">Column diameter: ${spectrum_chromatography_col_diameter} (mm)</li>
-				<li class="list-group-item">Particule size: ${spectrum_chromatography_col_particule_size} (&micro;m)</li>
+				<li class="list-group-item">Particle size: ${spectrum_chromatography_col_particule_size} (&micro;m)</li>
 				<li class="list-group-item">Column temperature: ${spectrum_chromatography_col_temperature} (&#8451;)</li>
 				<li class="list-group-item">LC mode: ${spectrum_chromatography_mode_lc}</li>
 				<li class="list-group-item">Separation flow rate: ${spectrum_chromatography_separation_flow_rate} (&micro;L/min)</li>
@@ -460,7 +466,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">Column name: ${fn:escapeXml(spectrum_chromatography_col_name)}</li>
 				<li class="list-group-item">Column length: ${spectrum_chromatography_col_length} (m)</li>
 				<li class="list-group-item">Column diameter: ${spectrum_chromatography_col_diameter} (mm)</li>
-				<li class="list-group-item">Particule size: ${spectrum_chromatography_col_particule_size} (&micro;m)</li>
+				<li class="list-group-item">Particle size: ${spectrum_chromatography_col_particule_size} (&micro;m)</li>
 				<li class="list-group-item">Injection volume: ${spectrum_chromatography_injection_volume} (&micro;L)</li>
 				<li class="list-group-item">Injection mode: ${spectrum_chromatography_injection_mode}</li>
 				<li class="list-group-item">Split ratio: ${spectrum_chromatography_split_ratio} (:1)</li>
@@ -490,6 +496,60 @@ int randomID = randomGenerator.nextInt(1000000);
 						<td style="width: 100px;">${temp}</td>
 						<td>${spectrum_chromatography_stp.get(temp)[0]}</td>
 						<td>${spectrum_chromatography_stp.get(temp)[1]}</td>
+					</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</td>
+	</tr>
+</table>
+			</div>
+	</c:when>
+	<c:when test="${spectrum_chromatography == 'ic'}">
+			<div class="panel-heading">
+				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelICChromato" text="IC Chromatography" /></h3>
+			</div>
+			<div class="panel-body">
+<table style="width:100%">
+	<tr> 
+		<td width="50%">
+			<ul class="list-group" style="max-width: 600px;">
+				<li class="list-group-item">Method: ${spectrum_chromatography_method}</li>
+				<li class="list-group-item">Column constructor: ${fn:escapeXml(spectrum_chromatography_col_constructor)}</li>
+<!-- 				<li class="list-group-item">Column constructor (other): xxx</li> -->
+				<li class="list-group-item">Column name: ${fn:escapeXml(spectrum_chromatography_col_name)}</li>
+				
+				<li class="list-group-item">Ionic config.: ${spectrum_chromatography_col_ionic_config}</li>
+				<li class="list-group-item">Suppressor constructor: ${spectrum_chromatography_col_suppressor_constructor}</li>
+				<li class="list-group-item">Suppressor name: ${spectrum_chromatography_col_suppressor_name}</li>
+				<c:if test="${spectrum_chromatography_col_is_makeup }">
+					<li class="list-group-item">Make-up: ${spectrum_chromatography_col_makeup}</li>
+					<li class="list-group-item">Make-up flow rate : ${spectrum_chromatography_col_makeup_flow_rate} (&micro;L/min)</li>
+				</c:if>				
+				<li class="list-group-item">Column length: ${spectrum_chromatography_col_length} (mm)</li>
+				<li class="list-group-item">Column diameter: ${spectrum_chromatography_col_diameter} (mm)</li>
+				<li class="list-group-item">Particle size: ${spectrum_chromatography_col_particule_size} (&micro;m)</li>
+				<li class="list-group-item">Column temperature: ${spectrum_chromatography_col_temperature} (&#8451;)</li>
+				<li class="list-group-item">IC mode: ${spectrum_chromatography_mode_ic}</li>
+				<li class="list-group-item">Separation flow rate: ${spectrum_chromatography_separation_flow_rate} (&micro;L/min)</li>
+				<li class="list-group-item">Separation solvent: ${spectrum_chromatography_solvent}</li>
+			</ul>
+		</td>
+		<td width="50%">
+			<b>Separation flow gradient</b>
+			<br>
+			<table class="table" style="max-width: 300px;">
+				<thead>
+					<tr>
+						<td style="width: 100px;">Time (min)</td>
+						<td style="width: 100px;">Solv. (mM)</td>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="time" items="${spectrum_chromatography_sfg_time}">
+					<tr>
+						<td style="width: 100px;">${time}</td>
+						<td>${spectrum_chromatography_sfg.get(time)}</td>
 					</tr>
 					</c:forEach>
 				</tbody>
@@ -1364,7 +1424,7 @@ function startUpload() {
 				</script>
 			</div>
 		</div>
-		<c:if test="${spectrum_type == 'nmr'}">
+		<c:if test="${spectrum_type == 'nmr-1d' || spectrum_type == 'nmr-2d'}">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.rawFileData" text="Extracted from the raw file" /></h3>
@@ -1556,7 +1616,7 @@ $.each($(".cpdFormula"), function(k,v) {
 	var elem = $(v);
 	var rawFromula = elem.html();
 	var formatedFormula = rawFromula + "";
-	$.each($.unique( rawFromula.match(/\d/g)), function (keyF, valF) {
+	$.each($.unique( rawFromula.match(/\d+/g)), function (keyF, valF) {
 		var re = new RegExp(valF,"g");
 		formatedFormula = formatedFormula.replace(re, "<sub>" + valF + "</sub>");
 	});
@@ -1721,23 +1781,35 @@ $.each($(".cpdFormula"), function(k,v) {
 		var rawSpectrumTitle = titleSpectrum;
 		titleSpectrum = encodeURIComponent(titleSpectrum);
 		if (typeSpectrum == 'lc-fullscan' || typeSpectrum == 'lc-fragmentation'
-				|| typeSpectrum == 'gc-fullscan') {
+				|| typeSpectrum == 'gc-fullscan'
+				|| typeSpectrum == 'ic-fullscan'
+				|| typeSpectrum == 'ic-fragmentation'
+				) {
 			// set element to load
 			var spectrumFullScanLCToLoad = [];
 			var spectrumFragLCToLoad = [];
 			var spectrumFullScanGCToLoad = [];
+			var spectrumFullScanICToLoad = [];
+			var spectrumFragICToLoad = [];
 			if (typeSpectrum == 'lc-fullscan')
 				spectrumFullScanLCToLoad.push(idSpectrum);
 			else if ( typeSpectrum == 'lc-fragmentation')
 				spectrumFragLCToLoad.push(idSpectrum);
 			else if (typeSpectrum == 'gc-fullscan')
 				spectrumFullScanGCToLoad.push(idSpectrum);
+			else if (typeSpectrum == 'ic-fullscan')
+				spectrumFullScanICToLoad.push(idSpectrum);
+			else if (typeSpectrum == 'ic-fragmentation')
+				spectrumFragICToLoad.push(idSpectrum);
 			// load ajax
 			$.ajax({
 				type: "post",
 				url: "load-ms-spectra",
 				data: "fullscan-lc=" + spectrumFullScanLCToLoad + "&frag-lc=" + spectrumFragLCToLoad 
-						+ "&fullscan-gc=" + spectrumFullScanGCToLoad +"&name="+ titleSpectrum
+						+ "&fullscan-gc=" + spectrumFullScanGCToLoad
+						+ "&fullscan-ic=" + spectrumFullScanICToLoad
+						+ "&frag-ic=" + spectrumFragICToLoad
+						+"&name="+ titleSpectrum
 						+"&mode=single&id=<%=randomID %>",
 				// dataType: "script",
 				async: false,
@@ -1790,7 +1862,7 @@ $.each($(".cpdFormula"), function(k,v) {
 	$(document).ready(function(){
 		var initialEvent = $('#linkDumpSpectrum')[0].onclick;
 		$('#linkDumpSpectrum').click(function(){
-			var id = ${spectrum_id};
+			var id = Number(0${spectrum_id});
 			// get name
 			var name = "${fn:escapeXml(spectrum_name)}";
 			// load icon

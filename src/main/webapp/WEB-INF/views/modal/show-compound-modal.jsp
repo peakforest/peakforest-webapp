@@ -412,7 +412,7 @@ loadStarListener<%=randomID %>();
 												</ul>
 												<div class="tab-content">
 													<div id="showMol-2D-modal" class="tab-pane fade active in">
-														<img class="molStructSVG" src="image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+														<img class="molStructSVG" src="image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 													</div>
 													<div id="showMol-3D-modal" class="tab-pane fade">
 														<div id="glmol<%=randomID %>" class="molGL"></div>
@@ -441,7 +441,7 @@ ${mol}</textarea>
 											
 											</c:if>
 											<c:if test="${not mol_ready}">
-												<img class="molStructSVG" src="image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+												<img class="molStructSVG" src="image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 											</c:if>
 <!-- 											</div> -->
 											<!--  ++++++++++++++++++++++++++++ end card 3  -->
@@ -532,7 +532,7 @@ ${mol}</textarea>
 														<i class="fa fa-info-circle"></i> 
 														${compoundNames.get(0).name}
 														<br><i> ${inchikey} </i>
-														<div style="display:none;"><img  class="molStructSVGsmall" src="image/generic/${inchikey}.svg" alt="${compoundNames.get(0).name}"></div>
+														<div style="display:none;"><img  class="molStructSVGsmall" src="image/generic/${inchikey}" alt="${compoundNames.get(0).name}"></div>
 													</a>
 													</c:if>
 													<c:if test="${!alt_structure_isGeneric}">
@@ -540,7 +540,7 @@ ${mol}</textarea>
 														<i class="fa fa-info-circle"></i> 
 														<span id="nameOfGC${alt_structure_parent.id}"></span>
 														<br><i> ${alt_structure_parent.inChIKey} </i>
-														<div style="display:none;"><img  class="molStructSVGsmall" src="image/generic/${alt_structure_parent.inChIKey}.svg" alt=""></div>
+														<div style="display:none;"><img  class="molStructSVGsmall" src="image/generic/${alt_structure_parent.inChIKey}" alt=""></div>
 													</a>
 													</c:if>
 												</td>
@@ -575,7 +575,7 @@ ${mol}</textarea>
 															listChildren += '<i class="fa fa-info-circle"></i>'; 
 															listChildren += ' ' + value.names[0].name + '';
 															listChildren += '<br><i> ' + value.inChIKey + ' </i>';
-															listChildren += '<div style="display:none;"><img class="molStructSVGsmall" src="image/chemical/'+value.inChIKey+'.svg" alt="'+value.names[0].name+'"></div>';
+															listChildren += '<div style="display:none;"><img class="molStructSVGsmall" src="image/chemical/'+value.inChIKey+'" alt="'+value.names[0].name+'"></div>';
 															listChildren += '</a>';
 															listChildren += '</li>';
 														});
@@ -682,6 +682,16 @@ ${mol}</textarea>
 														<td>
 															<c:forEach var="casEntity" items="${cas}">
 																<br /> ${casEntity.getCasNumber()};${casEntity.getCasProviderAsString()};${casEntity.getCasReferencer()}
+															</c:forEach>
+														</td>
+													</tr>
+													</c:if>
+													<c:if test="${not empty externalIds}">
+													<tr>
+														<td>Ext. IDs</td>
+														<td>
+															<c:forEach var="externalId" items="${externalIds}">
+																<br /> <a href="${externalId.url != '' ? externalId.url : 'javascript:void(0)' }" target="_blank">${externalId.label}: ${externalId.value}</a>
 															</c:forEach>
 														</td>
 													</tr>
@@ -801,10 +811,9 @@ ${mol}</textarea>
 														$('#cc_addNewCitationID').val('');
 														// TODO ajax async : overwrite this alert, set correct ids in new citation object
 														$.ajax({
-															type: "post",
+															type: "get",
 															url: "get-citation-data",
-															data: "query=" + id,
-															//contentType: 'application/json'
+															data: 'query='+ id + '',
 															success: function(data) {
 																console.log(data);
 																if(data.success) { 
@@ -820,7 +829,7 @@ ${mol}</textarea>
 																	$('#CITE-RESULT-'+idMessage).html(newResult);
 																	newCitations[idMessage] = { "apa" : apa, "doi" : doi, "pmid" : pmid}; //"url" : url, 
 																} else {
-																	$('#CITE-RESULT-'+idMessage).html("ERROR: could not retrive publication.");
+																	$('#CITE-RESULT-'+idMessage).html("ERROR: could not retrive the publication.");
 																	$('#CITE-'+idMessage+'').removeClass("alert-warning");
 																	$('#CITE-'+idMessage+'').addClass("alert-danger");
 																	delete newCitations[idMessage];
@@ -828,7 +837,7 @@ ${mol}</textarea>
 															}, 
 															error : function(data) {
 																console.log(data);
-																$('#CITE-RESULT-'+idMessage).html("FATAL: could not retrive publication.");
+																$('#CITE-RESULT-'+idMessage).html("FATAL: could not retrive the publication.");
 																$('#CITE-'+idMessage+'').removeClass("alert-warning");
 																$('#CITE-'+idMessage+'').addClass("alert-danger");
 																delete newCitations[idMessage];

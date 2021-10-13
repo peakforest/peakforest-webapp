@@ -1,0 +1,42 @@
+{
+	"dumper_type": "ic-ms",
+	"lc_chromatography": {
+		"method": "NA",
+		"column_constructor": "",
+		"column_constructor_other": "",
+		"column_name": "",
+		"column_length": null,
+		"column_diameter": null,
+		"particule_size": null,
+		"column_temperature": null,
+		"IC_mode": "",
+		"separation_flow_rate": null,
+		"separation_solvent": "",
+		"separation_flow_gradient": null
+	},
+	"ms_analyzer": {
+		"instrument": "",
+		"model": "",
+		"resolution_FWHM": "",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization": {
+		"mode_pos": null,
+		"mode_neg": {
+			"ionisation_method": null,
+			"spray_gaz_flow": null,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		}
+	},
+	"other": {
+		"data_authors": "",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": ""
+	}
+}

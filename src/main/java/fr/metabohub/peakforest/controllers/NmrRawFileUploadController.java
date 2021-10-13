@@ -51,11 +51,14 @@ public class NmrRawFileUploadController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	@Secured("ROLE_EDITOR")
-	public String processUpload(HttpServletRequest request, @RequestParam MultipartFile file,
-			@RequestParam(value = "spectrum_id", required = true) long spectrumID, Model model,
-			@RequestParam(value = "aq_file", required = false) String aqFile,
-			@RequestParam(value = "proc_file", required = false) String procFile)
-			throws IOException, Exception, PeakForestManagerException {
+	public String processUpload(//
+			final HttpServletRequest request, //
+			final Model model, //
+			final @RequestParam MultipartFile file, //
+			final @RequestParam(value = "spectrum_id", required = true) long spectrumID, //
+			final @RequestParam(value = "aq_file", required = false) String aqFile, //
+			final @RequestParam(value = "proc_file", required = false) String procFile//
+	) throws IOException, Exception, PeakForestManagerException {
 
 		// // -1 - check server OK
 		// if (!ProcessProgressManager.isThreadSvgMolFilesGenerationFree()) {
@@ -78,15 +81,17 @@ public class NmrRawFileUploadController {
 		// String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL +
 		// requestID;
 		String keyRawFile = System.currentTimeMillis() + "_";
-		if (spectrumID != -1)
+		if (spectrumID != -1) {
 			keyRawFile += spectrumID;
-		else
+		} else {
 			keyRawFile += "NEW";
+		}
 
 		// create upload dir if empty
 		File uploadDir = new File(PeakForestUtils.getBundleConfElement("uploadedFiles.folder"));
-		if (!uploadDir.exists())
+		if (!uploadDir.exists()) {
 			uploadDir.mkdirs();
+		}
 
 		// get NMR raw file path
 		String uploadedNmrRawFilePath = PeakForestUtils.getBundleConfElement("rawFile.nmr.folder");
@@ -106,10 +111,11 @@ public class NmrRawFileUploadController {
 			fos.write(file.getBytes());
 			fos.close(); // setting the value of fileUploaded variable
 		}
-		if (upLoadedfile != null)
+		if (upLoadedfile != null) {
 			model.addAttribute("tmpFileName", upLoadedfile.getName());
-		else
+		} else {
 			model.addAttribute("tmpFileName", null);
+		}
 
 		String uploadedFileCheckExt = upLoadedfile.getName().toLowerCase();
 		// String ext =

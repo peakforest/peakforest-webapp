@@ -15,7 +15,9 @@ import fr.metabohub.peakforest.utils.PeakForestApiHibernateUtils;
  */
 public class MapManagerManagementService {
 
-	public static long create(MapManager newMapManager) throws Exception {
+	public static long create(//
+			final MapManager newMapManager//
+	) throws Exception {
 		Long id = null;
 		final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession();
 		Transaction transaction = null;
@@ -32,23 +34,33 @@ public class MapManagerManagementService {
 		return id;
 	}
 
-	public static Long create(Session session, MapManager mapManager) {
+	public static Long create(//
+			final Session session, //
+			final MapManager mapManager//
+	) {
 		return MapManagerDao.create(session, mapManager);
 	}
 
-	public static MapManager read(Session session, Short mapSource) throws Exception {
+	public static MapManager read(//
+			final Session session, //
+			Short mapSource//
+	) throws Exception {
 		return MapManagerDao.read(session, mapSource);
 	}
 
-	public static MapManager read(Short mapSource) throws Exception {
+	public static MapManager read(//
+			final Short mapSource//
+	) throws Exception {
 		return MapManagerDao.read(mapSource);
 	}
 
-	public static boolean exists(Short mapManagerSource) throws Exception {
-		boolean exists = false;
+	public static boolean exists(//
+			final Short mapManagerSource//
+	) throws Exception {
+		boolean exists = Boolean.FALSE;
 		try (final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession()) {
 			exists = MapManagerDao.exists(session, mapManagerSource);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		return exists;
@@ -58,20 +70,24 @@ public class MapManagerManagementService {
 		return MapManagerDao.readAll();
 	}
 
-	public static boolean delete(final Short mapSource) throws Exception {
+	public static boolean delete(//
+			final Short mapSource//
+	) throws Exception {
 		Transaction transaction = null;
 		final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession();
+		boolean success = Boolean.FALSE;
 		try {
 			transaction = session.beginTransaction();
 			MapManagerDao.delete(session, mapSource);
 			transaction.commit();
+			success = Boolean.TRUE;
 		} catch (final Exception e) {
 			transaction.rollback();
 			e.printStackTrace();
 		} finally {
 			session.close();
 		}
-		return true;
+		return success;
 	}
 
 }

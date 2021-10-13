@@ -10,7 +10,7 @@
 				<a id="about-peakforest" href="about-peakforest" data-toggle="modal" data-target="#modalAbout"><spring:message code="block.footer.about" text="About" /></a>
 			</li>
 			<li class="li-info-footer">
-				<a href="<spring:message code="link.site.mypeakforest" text="http://peakforest.org" />" target="_blank"><spring:message code="block.footer.myPeakforest" text="My PeakForest" /></a>
+				<a href="<spring:message code="link.site.mypeakforest" text="https://peakforest.org/mypeakforest" />" target="_blank"><spring:message code="block.footer.myPeakforest" text="My PeakForest" /></a>
 			</li>
 			<li class="li-info-footer">
 				<a href="<spring:message code="link.site.metabohub" text="http://metabohub.fr" />" target="_blank"><spring:message code="block.footer.metaboHUB" text="metaboHUB" /></a>

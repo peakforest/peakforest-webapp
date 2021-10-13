@@ -19,17 +19,12 @@ import javax.persistence.Table;
 @PrimaryKeyJoinColumn(name = "id_map_manager")
 public class MapManager extends AbstractMapObject {
 
+	// ////////////////////////////////////////////////////////////////////////
 	// map type
 	public static final short MAP_METEXPLORE = 0;
 
-	// public static final short STRATEGY_FIRST = 0;
-	// public static final short STRATEGY_MOST_REPRESENTATIVE = 1;
-	// public static final short STRATEGY_SPECIFIC_SOURCE = 2;
-
 	// ////////////////////////////////////////////////////////////////////////
 	// no database data
-	// private Map<String, Short> bioSource2strategy = new HashMap<String, Short>();
-	private short defaultStrategy;
 
 	// ////////////////////////////////////////////////////////////////////////
 	// database fields
@@ -41,47 +36,32 @@ public class MapManager extends AbstractMapObject {
 	@JoinColumn(name = "map_manager_id")
 	protected List<MapEntity> mapEntities = new ArrayList<MapEntity>();
 
-	// @Column(name = "map_token", nullable = false)
-	// private String token;
+	// ////////////////////////////////////////////////////////////////////////
+	// constructors
 
 	public MapManager() {
 		this(null);
 	}
 
-	public MapManager(Short mapSource) {
+	public MapManager(final Short mapSource) {
 		super();
 		this.mapSource = mapSource;
-		// for (String bioSource : bioSourceKeys)
-		// bioSource2strategy.put(bioSource, defaultStrategy);
-		mapEntities = new ArrayList<MapEntity>();
+		this.mapEntities = new ArrayList<MapEntity>();
 	}
 
-	public Short getMapSource() {
-		return mapSource;
+	// ////////////////////////////////////////////////////////////////////////
+	// accessors
+
+	public boolean addMapEntities(final MapEntity mapEntity) {
+		return this.mapEntities.add(mapEntity);
 	}
 
-	public void setMapSource(Short mapSource) {
-		this.mapSource = mapSource;
+	public int countEntities() {
+		return mapEntities.size();
 	}
 
 	public List<MapEntity> getMapEntities() {
 		return mapEntities;
-	}
-
-	public void setMapEntities(List<MapEntity> mapEntities) {
-		this.mapEntities = mapEntities;
-	}
-
-	public boolean addMapEntities(MapEntity mapEntity) {
-		return this.mapEntities.add(mapEntity);
-	}
-
-	public short getDefaultStrategy() {
-		return defaultStrategy;
-	}
-
-	public void setDefaultStrategy(short defaultStrategy) {
-		this.defaultStrategy = defaultStrategy;
 	}
 
 }

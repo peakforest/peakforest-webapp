@@ -103,7 +103,7 @@
 		<img class="minispectra" src="resources/img/spectra/{%= img%}.png" alt="{%= img%}" />
 		{%if compound.inchikey%}
 		<span class="avatar">
-			<img class="compoundSVG" src="image/{%= compound.type%}/{%= compound.inchikey%}.svg" alt="{%= compound.name%}" />
+			<img class="compoundSVG" src="image/{%= compound.type%}/{%= compound.inchikey%}" alt="{%= compound.name%}" />
 		</span>
 		{%/if%}
 	</td>

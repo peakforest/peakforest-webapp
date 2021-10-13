@@ -78,7 +78,7 @@ int randomID = randomGenerator.nextInt(1000000);
 					</ul>
 					<div class="tab-content">
 						<div id="showMol-2D" class="tab-pane fade active in">
-							<img class="molStructSVGsmall" src="image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+							<img class="molStructSVGsmall" src="image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 						</div>
 						<div id="showMol-3D" class="tab-pane fade">
 							<div id="glmol<%=randomID %>" class="molGL" style="height:200px; width: 350px;"></div>
@@ -104,7 +104,7 @@ ${mol}</textarea>
 					</div>
 				</c:if>
 				<c:if test="${not mol_ready}">
-					<img class="molStructSVGsmall" src="image/${type}/${inchikey}.svg" alt="${compoundNames.get(0).name}">
+					<img class="molStructSVGsmall" src="image/${type}/${inchikey}" alt="${compoundNames.get(0).name}">
 				</c:if>
 
 			</td>
@@ -569,10 +569,9 @@ loadStarListener<%=randomID %>();
 				$('#cc_addNewCitationID').val('');
 				// TODO ajax async : overwrite this alert, set correct ids in new citation object
 				$.ajax({
-					type: "post",
+					type: "get",
 					url: "get-citation-data",
-					data: "query=" + id,
-					//contentType: 'application/json'
+					data: 'query='+ id + '',
 					success: function(data) {
 						console.log(data);
 						if(data.success) { 
@@ -588,7 +587,7 @@ loadStarListener<%=randomID %>();
 							$('#CITE-RESULT-'+idMessage).html(newResult);
 							newCitations[idMessage] = { "apa" : apa, "doi" : doi, "pmid" : pmid}; //"url" : url, 
 						} else {
-							$('#CITE-RESULT-'+idMessage).html("ERROR: could not retrive publication.");
+							$('#CITE-RESULT-'+idMessage).html("ERROR: could not retrive the publication.");
 							$('#CITE-'+idMessage+'').removeClass("alert-warning");
 							$('#CITE-'+idMessage+'').addClass("alert-danger");
 							delete newCitations[idMessage];
@@ -596,7 +595,7 @@ loadStarListener<%=randomID %>();
 					}, 
 					error : function(data) {
 						console.log(data);
-						$('#CITE-RESULT-'+idMessage).html("FATAL: could not retrive publication.");
+						$('#CITE-RESULT-'+idMessage).html("FATAL: could not retrive the publication.");
 						$('#CITE-'+idMessage+'').removeClass("alert-warning");
 						$('#CITE-'+idMessage+'').addClass("alert-danger");
 						delete newCitations[idMessage];

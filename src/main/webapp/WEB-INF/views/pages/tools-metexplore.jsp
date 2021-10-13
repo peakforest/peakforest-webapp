@@ -51,26 +51,20 @@ $.get("get-map/<%=MapManager.MAP_METEXPLORE%>", function(data) {
 	}
 	$.each(data, function(){
 		var raw = {};
-		raw.id = this.extMappingID;
-		raw.name = "" +this.orga;
-		if (this.source!=null)
-			raw.source = " (" +this.source + ")";
-		else
-			raw.source = "";
-		if (this.displayDefault)
-			raw.display = true;
-		else
-			raw.display = false;
-		raw.match = this.numberInChIMatch;
-		raw.total = this.numberInChITotal;
-		raw.percent = roundNumber(((this.numberInChIMatch/this.numberInChITotal)*100), 2);
+		raw.biosourceId = this.biosourceId;
+		raw.organism = "" + this.organism;
+		raw.biosource = (this.biosource != null) ? " (" +this.biosource + ")" : "";
+		raw.display = (this.displayDefault);
+		raw.nbCpdMatched = this.nbMetabolitesMappedFromPForestInBiosource;
+		raw.nbCpdTotBiosource = this.nbMetabolitesInBiosource;
+		raw.coverage = this.coverage;
+		// add to table
 		dataInTable.push(raw);
 		lastUpdateDate = this.created;
 	});
 	if (lastUpdateDate!=null) {
 		try {
 			var date = new Date(lastUpdateDate);
-// 			var dateString = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() ;
 			var dateString = date.toGMTString();
 			$("#dateString").html(dateString);
 		} catch (e) {}
@@ -91,15 +85,20 @@ showAllMetExplore = function() {
 </script>
 
 <script  type="text/x-jquery-tmpl" id="templateMetExplore">
-		{%if display == true %}
-		<tr class="" style="white-space: nowrap;">
-		{%/if%}
-		{%if display == false %}
-		<tr class="hiddenMetExplore" style="display:none; white-space: nowrap;" >
-		{%/if%}
-			<td class=""><a href="<spring:message code="resources.maplink.metexplore" text="http://metexplore.toulouse.inra.fr/metexplore2/?idMapping=" />{%= id%}" target="_blank"><i>{%= name%}</i>{%= source%}</a></td>
-			<td>{%= total%}</td>
-			<td>{%= match%}</td>
-			<td>{%= percent%} %</td>
+	{%if display == true %}
+		<tr class="" style=""><!--  white-space: nowrap; -->
+	{%/if%}
+	{%if display == false %}
+		<tr class="hiddenMetExplore" style="display:none;" ><!--  white-space: nowrap; -->
+	{%/if%}
+			<td class="">
+				<a href="<spring:message code="resources.maplink.metexplore" text="http://metexplore.toulouse.inra.fr/metexplore2/?idBioSource=" />{%= biosourceId%}" target="_blank">
+					<em>{%= organism%}</em>
+					<small>{%= biosource%}</small>
+				</a>
+			</td>
+			<td>{%= nbCpdTotBiosource%}</td>
+			<td>{%= nbCpdMatched%}</td>
+			<td>{%= coverage%} %</td>
 		</tr>
 </script>

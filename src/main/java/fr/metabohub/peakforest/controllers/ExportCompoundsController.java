@@ -80,7 +80,7 @@ public class ExportCompoundsController {
 			}
 
 			// url
-			String xlsFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
+			String xlsFileUrl = "//" + request.getServerName() + port + "/"
 					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
 					+ PeakForestUtils.getBundleConfElement("generatedXlsExport.folder") + "/" + newFileName;
 

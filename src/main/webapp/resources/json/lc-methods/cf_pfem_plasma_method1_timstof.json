@@ -1,7 +1,7 @@
 {
 	"dumper_type": "lc-ms",
 	"lc_chromatography" : {
-		"method": "CF_PFEM_plasma_method1_QTOF",
+		"method": "CF_PFEM_plasma_method1_TIMSTOF",
 		"column_constructor": "Waters",
 		"column_constructor_other": null,
 		"column_name": "UPLC HSS T3",
@@ -25,10 +25,10 @@
 		]
 	},
 	"ms_analyzer" : {
-		"instrument": "QTOF Bruker",
+		"instrument": "TIMSTOF Bruker",
 		"model": "Impact II",
 		"resolution_FWHM": "15000",
-		"ion_analyzer_type": "QTOF",
+		"ion_analyzer_type": "TIMSTOF",
 		"detector": "",
 		"detection_protocol": ""
 	},
@@ -53,9 +53,9 @@
 		}
 	},
 	"other": {
-		"data_authors": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - INRA Theix)",
+		"data_authors": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - INRAE Theix)",
 		"data_validator": "",
 		"acquisition_date": "",
-		"data_ownership": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - INRA Theix)"
+		"data_ownership": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - INRAE Theix)"
 	}
 }

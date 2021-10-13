@@ -111,6 +111,9 @@ if (request.getParameter("cpd")!=null) {
 <script type="text/javascript" src="<c:url value="/resources/js/tablesorter/tables.min.js" />"></script>
 <!-- NMRPro -->
 <link rel="stylesheet" href="<c:url value="/resources/nmrpro/specdraw.min.css" />" type="text/css">
+<!-- web semantic -->
+<script type="text/javascript" src="<c:url value="/resources/js/web-semantic/discovery-web.js" />"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/web-semantic/metabolights.js" />"></script>
 </head>
 <body>
 	<div id="wrapper">

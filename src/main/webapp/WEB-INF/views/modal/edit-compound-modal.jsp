@@ -402,6 +402,35 @@ function saveIupacName() {
 														</td>
 													</tr>
 <%-- 													</c:if> --%>
+<%-- =================================== External IDs --%>
+													<tr>
+														<td><spring:message code="modal.show.inOtherDatabases.externalIds" text="External Ids" /></td>
+														<td>
+															<ul id="externalIds" style="max-width: 300px;">
+																<c:forEach items="${externalIds}" var="externalId">
+																	<li id="externalId_${externalId.id}" style="margin-bottom: 10px;">
+																		<a href="${externalId.url != '' ? externalId.url : 'javascript:void(0)' }" target="_blank">${externalId.label}: ${externalId.value}</a>
+																		<span class="pull-right" style="">
+																			<a id="btn-delete-externalId-${externalId.id}" class="btn btn-danger btn-xs " onclick="deleteExternalId('${externalId.id}');" href="#"> 
+																				<i class="fa fa-trash-o fa-1"></i>
+																			</a>
+																		</span>
+																	</li>
+																</c:forEach>
+															</ul>
+															
+															<div id="inputAdd_externalId" class="form-group input-group input-sm" style="max-width: 550px;">
+																<input id="input_addExtId_url" style="width: 210px;" type="text" class="form-control input-active-enter-key" value="" placeholder="URL (e.g.: https://url/id)">
+																<input id="input_addExtId_label" style="width: 150px;" type="text" class="form-control input-active-enter-key" value="" placeholder="Label (e.g.: BioCyc)">
+																<input id="input_addExtId_value" style="width: 130px;" type="text" class="form-control input-active-enter-key" value="" placeholder="ID (e.g.: AB0012)">
+																<span style="width: 40px;" class="input-group-btn">
+																	<button class="btn btn-success" type="button" onclick="addExternalId();"><i class="fa fa-search fa-plus"></i></button>
+																</span>
+															</div>
+														</td>
+													</tr>
+<%-- =================================== External IDs --%>
+
 
 													<tr>
 														<td><spring:message code="modal.show.inOtherDatabases.cas.simple" text="CAS" /></td>
@@ -554,6 +583,43 @@ function saveIupacName() {
 												function deleteCas(id) {
 													$("#casId_"+id).remove();
 													deleteCASs.push(Number(id)); 
+												}
+												
+
+												///
+												function addExternalId() {
+													var newExtIdUrl = $("#input_addExtId_url").val();
+													var newExtIdLabel = $("#input_addExtId_label").val();
+													var newExtIdValue = $("#input_addExtId_value").val();
+													let newID = (newExtIdLabel + "_" + newExtIdValue).replace(" ", "_")
+													if($('#externalId_'+newID).length != 0) {
+														alert("Network ID already exists");
+													} else {
+														var newDiv = '<li id="externalId_'+newID+'" style="margin-bottom: 10px;">';
+														newDiv += '<a href="'+newExtIdUrl+'" target="_blank">'+newExtIdLabel+':'+newExtIdValue+'</a>';
+														newDiv += '<span class="pull-right" style=" "><a id="btn-delete-network-'+newID+'" class="btn btn-danger btn-xs " onclick="deleteExternalId(\''+newID+'\');" href="javascript:void(0)"> <i class="fa fa-trash-o fa-1"></i></a></span>';
+														//newDiv += '<br />';
+														newDiv += '</li>';
+														$("#externalIds").append(newDiv);
+														$("#input_addExtId_url").val("");
+														$("#input_addExtId_label").val("");
+														$("#input_addExtId_value").val("");
+														if ($.inArray(newID, newExternalIds)!=0) {
+															newExternalIds.push({'url':newExtIdUrl,'label':newExtIdLabel,'value':newExtIdValue});
+														}
+														if ($.inArray(newID, deleteExternalIds)==0){
+															deleteExternalIds.splice($.inArray(newID, deleteExternalIds), 1);
+														};
+													};
+												}
+												function deleteExternalId(id) {
+													$("#externalId_"+id).remove();
+													if ($.inArray(id, newExternalIds)==0){
+														newExternalIds.splice($.inArray(id, newExternalIds),1);
+													}
+													if ($.inArray(id, deleteExternalIds)!=0){
+														deleteExternalIds.push(Number(id)); 
+													}
 												}
 												
 												</script>
@@ -776,10 +842,9 @@ function saveIupacName() {
 														$('#cc_addNewCitationIDCurator').val('');
 														// TODO ajax async : overwrite this alert, set correct ids in new citation object
 														$.ajax({
-															type: "post",
+															type: "get",
 															url: "get-citation-data",
-															data: "query=" + id,
-															//contentType: 'application/json'
+															data: 'query='+ id + '',
 															success: function(data) {
 																console.log(data);
 																if(data.success) { 
@@ -797,7 +862,7 @@ function saveIupacName() {
 																	$('#CITE-curator-'+idMessage+'').addClass("alert-success");
 																	newCitationsCurator[idMessage] = { "apa" : apa, "doi" : doi, "pmid" : pmid}; //"url" : url, 
 																} else {
-																	$('#CITE-RESULT-'+idMessage).html("ERROR: could not retrive publication.");
+																	$('#CITE-RESULT-'+idMessage).html("ERROR: could not retrive the publication.");
 																	$('#CITE-curator-'+idMessage+'').removeClass("alert-warning");
 																	$('#CITE-curator-'+idMessage+'').addClass("alert-danger");
 																	delete newCitationsCurator[idMessage];
@@ -805,7 +870,7 @@ function saveIupacName() {
 															}, 
 															error : function(data) {
 																console.log(data);
-																$('#CITE-RESULT-'+idMessage).html("FATAL: could not retrive publication.");
+																$('#CITE-RESULT-'+idMessage).html("FATAL: could not retrive the publication.");
 																$('#CITE-curator-'+idMessage+'').removeClass("alert-warning");
 																$('#CITE-curator-'+idMessage+'').addClass("alert-danger");
 																delete newCitationsCurator[idMessage];
@@ -881,6 +946,7 @@ function saveIupacName() {
 				var nameSwitchedToIUPAC = null;
 				var newIupacName = null;
 				var newCASs = [], deleteCASs = [];
+				var newExternalIds = [], deleteExternalIds = [];
 				var newNetworksIDs = [], deleteNetworksIDs = [];
 				
 				updateCurrentCompoundCurator = function(type, id) {
@@ -920,6 +986,8 @@ function saveIupacName() {
 							newIupacName: newIupacName,
 							newCASs: newCASs,
 							deleteCASs: deleteCASs,
+							newExternalIds: newExternalIds,
+							deleteExternalIds: deleteExternalIds,
 							curationUpdate: curationUpdate
 						}),
 						contentType: 'application/json',

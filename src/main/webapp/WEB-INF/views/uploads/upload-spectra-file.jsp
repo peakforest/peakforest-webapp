@@ -45,8 +45,12 @@
 		<script type="text/javascript">
 			// init var
 			var listSpectraNMRids = '${idsNMRspectra}';
- 			var listSpectraLCMSids = ${idsLCMSspectra};
-			
+			var listSpectraLCMSids = ${idsLCMSspectra};
+			var listSpectraLCMSMSids = ${idsLCMSMSspectra};
+			var listSpectraGCMSids = ${idsGCMSspectra};
+			// new 2.3
+			var listSpectraICMSids = ${idsICMSspectra};
+			var listSpectraICMSMSids = ${idsICMSMSspectra};
 		</script>
 		</c:if>
 	</div>

@@ -120,6 +120,7 @@ $("#link-pm-lcmsms").click();
 var Utils_SEARCH_COMPOUND_AVERAGE_MASS = "<%=PeakForestUtils.SEARCH_COMPOUND_AVERAGE_MASS%>";
 var Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS = "<%=PeakForestUtils.SEARCH_COMPOUND_MONOISOTOPIC_MASS%>";
 var Utils_SEARCH_COMPOUND_FORMULA = "<%=PeakForestUtils.SEARCH_COMPOUND_FORMULA%>";
+var Utils_SEARCH_COMPOUND_LOGP = "<%=PeakForestUtils.SEARCH_COMPOUND_LOGP%>";
 
 </script>
 <script src="<c:url value="/resources/js/md5.min.js" />"></script>

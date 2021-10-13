@@ -174,6 +174,21 @@ public class ToolsController {
 					dataJson = dataJson.subList(0, 30);
 				searchResults.put("gcmsSpectra", dataJson);
 			}
+			// new 2.3
+			if (searchResults.containsKey("icmsSpectra")) {
+				List<AbstractDatasetObject> dataJson = PeakForestPruneUtils
+						.prune((List<AbstractDatasetObject>) searchResults.get("icmsSpectra"));
+				if (dataJson.size() > 30)
+					dataJson = dataJson.subList(0, 30);
+				searchResults.put("icmsSpectra", dataJson);
+			}
+			if (searchResults.containsKey("icmsmsSpectra")) {
+				List<AbstractDatasetObject> dataJson = PeakForestPruneUtils
+						.prune((List<AbstractDatasetObject>) searchResults.get("icmsmsSpectra"));
+				if (dataJson.size() > 30)
+					dataJson = dataJson.subList(0, 30);
+				searchResults.put("icmsmsSpectra", dataJson);
+			}
 			// success
 			searchResults.put("success", Boolean.TRUE);
 		} catch (final Exception e) {
@@ -404,26 +419,22 @@ public class ToolsController {
 					case "BIH":
 						results = LCMSPeakMatchingService.runPeakMatching(queryMass, null, null, deltaMass, null,
 								LCMSPeakMatchingService.PM_ALGO_BIH_MASS,
-								LCMSPeakMatchingService.PM_ALGO_BIH_SCORING_MATCH_SPECTRA, modeN, resolutionN, null,
-								null, null);
+								LCMSPeakMatchingService.PM_ALGO_BIH_SCORING_MATCH_SPECTRA, modeN, resolutionN);
 						break;
 					case "BIHRT":
 						results = LCMSPeakMatchingService.runPeakMatching(queryMass, queryRT, filterColumns, deltaMass,
 								deltaRT, LCMSPeakMatchingService.PM_ALGO_BIH_MASS_RT,
-								LCMSPeakMatchingService.PM_ALGO_BIH_SCORING_MATCH_SPECTRA, modeN, resolutionN, null,
-								null, null);
+								LCMSPeakMatchingService.PM_ALGO_BIH_SCORING_MATCH_SPECTRA, modeN, resolutionN);
 						break;
 					case "LCMSMATCHING":
 						results = LCMSPeakMatchingService.runPeakMatching(queryMass, null, null, deltaMass, null,
 								LCMSPeakMatchingService.PM_ALGO_SACLAY_MASS,
-								LCMSPeakMatchingService.PM_ALGO_SACLAY_SCORING_MATCH_SPECTRA, modeN, resolutionN, null,
-								null, null);
+								LCMSPeakMatchingService.PM_ALGO_SACLAY_SCORING_MATCH_SPECTRA, modeN, resolutionN);
 						break;
 					case "LCMSMATCHINGRT":
 						results = LCMSPeakMatchingService.runPeakMatching(queryMass, queryRT, filterColumns, deltaMass,
 								deltaRT, LCMSPeakMatchingService.PM_ALGO_SACLAY_MASS_RT,
-								LCMSPeakMatchingService.PM_ALGO_SACLAY_SCORING_MATCH_SPECTRA, modeN, resolutionN, null,
-								null, null);
+								LCMSPeakMatchingService.PM_ALGO_SACLAY_SCORING_MATCH_SPECTRA, modeN, resolutionN);
 						break;
 					default:
 						break;
@@ -584,25 +595,34 @@ public class ToolsController {
 		return searchResults;
 	}
 
-	@RequestMapping(value = "/image/{type}/{inchikey}") // , produces =
-														// MediaType.APPLICATION_OCTET_STREAM_VALUE
-	public @ResponseBody void showImage(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			@PathVariable String type, @PathVariable String inchikey) throws PeakForestManagerException, IOException {
+	@RequestMapping(value = "/image/{type}/{inchikey}")
+	public @ResponseBody void showImage(//
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final @PathVariable String type, //
+			final @PathVariable String inchikey)//
+			throws PeakForestManagerException, IOException {
 
 		// get images path
-		String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
-		if (!(new File(svgImagesPath)).exists())
-			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
+		final String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
+		if (!(new File(svgImagesPath)).exists()) {
+			(new File(svgImagesPath)).mkdirs();
+		}
+		final String pngImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesPNG.folder");
+		if (!(new File(pngImagesPath)).exists()) {
+			(new File(pngImagesPath)).mkdirs();
+		}
 
 		// case 1 - return PNG image
-		File imgPNGPath = new File(svgImagesPath + File.separator + inchikey + ".png");
+		final File imgPNGPath = new File(pngImagesPath + File.separator + inchikey + ".png");
 		if (imgPNGPath.exists()) {
 			displayImage(imgPNGPath, "png", response);
 			return;
 		}
 
 		// case 2 - return SVG image
-		File imgSVGPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
+		final File imgSVGPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
 
 		if (!imgSVGPath.exists()) {
 			// case 3 - image does not exists (yet!) -> create SVG image via open babel
@@ -633,11 +653,11 @@ public class ToolsController {
 						displayErrorSvgImage(response);
 						return;
 					}
-
 				} else if (type.equalsIgnoreCase("gc-derived")) {
-					GCDerivedCompound c = GCDerivedCompoundDao.read(inchikey, false, false, false, false, false, false);
+					final GCDerivedCompound c = GCDerivedCompoundDao.read(inchikey, false, false, false, false, false,
+							false);
 					if (c != null) {
-						ArrayList<StructureChemicalCompound> compoundsList = new ArrayList<>();
+						final ArrayList<StructureChemicalCompound> compoundsList = new ArrayList<>();
 						compoundsList.add(c);
 						CompoundsImagesAndMolFilesGeneratorThread ci = new CompoundsImagesAndMolFilesGeneratorThread(
 								compoundsList, svgImagesPath, null);
@@ -662,7 +682,7 @@ public class ToolsController {
 		try {
 			displayImage(imgSVGPath, "svg", response);
 			return;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			displayErrorSvgImage(response);
 			return;
@@ -670,19 +690,39 @@ public class ToolsController {
 
 	}
 
+	@RequestMapping(value = "/image/{inchikey}")
+	public @ResponseBody void showImageQuick_noext(//
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final @PathVariable String inchikey)//
+			throws PeakForestManagerException, IOException {
+		showImageQuick(request, response, locale, inchikey);
+	}
+
 	@RequestMapping(value = "/image/{inchikey}.svg")
-	public @ResponseBody void showImageQuick(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			@PathVariable String inchikey) throws PeakForestManagerException, IOException {
+	public @ResponseBody void showImageQuick(//
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final @PathVariable String inchikey)//
+			throws PeakForestManagerException, IOException {
 
 		// get images path
-		String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
-		if (!(new File(svgImagesPath)).exists())
-			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
+		final String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
+		if (!(new File(svgImagesPath)).exists()) {
+			(new File(svgImagesPath)).mkdirs();
+		}
+		final String pngImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesPNG.folder");
+		if (!(new File(pngImagesPath)).exists()) {
+			(new File(pngImagesPath)).mkdirs();
+		}
 
 		// set images files
-		File imgPNGPath = new File(svgImagesPath + File.separator + inchikey + ".png");
-		File imgSvgPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
+		final File imgPNGPath = new File(pngImagesPath + File.separator + inchikey + ".png");
+		final File imgSvgPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
 
+		// display if exists
 		if (imgPNGPath.exists()) {
 			displayImage(imgPNGPath, "png", response);
 			return;
@@ -690,29 +730,32 @@ public class ToolsController {
 			displayImage(imgPNGPath, "svg", response);
 			return;
 		}
-		// TODO if do not exist create it
+		// if do not exist create it
 		else {
 			displayErrorSvgImage(response);
 			return;
 		}
 	}
 
-	private String svgImageError(String imgPath) {
+	private String svgImageError(final String imgPath) {
 		try {
-			return SimpleFileReader.readFile(new File(getClass().getClassLoader()
-					.getResource(PeakForestUtils.getBundleConfElement("compoundImagesSVG.notFound")).getFile())
-							.getAbsolutePath(),
+			return SimpleFileReader.readFile(//
+					new File(getClass().getClassLoader().getResource(//
+							PeakForestUtils.getBundleConfElement("compoundImagesSVG.notFound"))//
+							.getFile())//
+									.getAbsolutePath(),
 					StandardCharsets.UTF_8);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 		return "";
 	}
 
-	private void displayErrorSvgImage(HttpServletResponse response) throws IOException, PeakForestManagerException {
-		File fileToDisplay = new File(getClass().getClassLoader()
+	private void displayErrorSvgImage(final HttpServletResponse response)
+			throws IOException, PeakForestManagerException {
+		final File fileToDisplay = new File(getClass().getClassLoader()
 				.getResource(PeakForestUtils.getBundleConfElement("compoundImagesSVG.notFound")).getFile());
-		String ext = "svg";
+		final String ext = "svg";
 		displayImage(fileToDisplay, ext, response);
 	}
 

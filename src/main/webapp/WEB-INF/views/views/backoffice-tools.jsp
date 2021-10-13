@@ -853,6 +853,7 @@ function listOntologiesInDatabase () {
  		url: "admin/list-ontologies",
  		async: true,
 // 		data: "query=" + $('#search').val(),
+		dataType: 'json',
  		success: function(data) {
  			// console.log(data);
  			$("#manageOntologies").empty();
@@ -883,14 +884,16 @@ function addOntologyInDatabase () {
  		url: "admin/add-analytical-matrix",
  		async: true,
  		data: "key=" + ontologyKey,
+ 		dataType: 'json',
  		success: function(data) {
  			if (data) {
  				$("#add-new-ontology").val("");
  				listOntologiesInDatabase ();
+ 				loadMatrixPicker();
  			} else {
  	 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
  	 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
- 	 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could add ontology.';
+ 	 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could NOT add ontology.';
  	 			alert += ' </div>';
  	 			$("#backOfficeToolsAltert").html(alert);
  			}
@@ -900,7 +903,7 @@ function addOntologyInDatabase () {
  			console.log(xhr);
  			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
  			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
- 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could add ontology.';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could NOT add ontology.';
  			alert += ' </div>';
  			$("#backOfficeToolsAltert").html(alert);
  		}
@@ -918,6 +921,7 @@ function addStdMatrixInDatabase () {
  		url: "admin/add-std-matrix",
  		async: true,
  		data: "text=" + matrixText + "&html=" + matrixHtml,
+ 		dataType: 'json',
  		success: function(data) {
  			if (data) {
  				$("#stdMatrixTxtDescription").val("");
@@ -949,6 +953,7 @@ function listStdMatrixInDatabase () {
  		url: "admin/list-std-matrix",
  		async: true,
 // 		data: "query=" + $('#search').val(),
+		dataType: 'json',
  		success: function(data) {
  			// console.log(data);
  			$("#manageStdMatrix").empty();
@@ -1033,40 +1038,43 @@ function setStdMatrixFavourite (id, isFav) {
 
 function deleteStdMatrix (id) { alert("TODO"); }
 
-$("#add-new-ontology").select2({
-	ajax: {
-		url: '<spring:message code="peakforest.admin.ontologiesFWproxy" text="https://pfem.clermont.inra.fr/elasticsearch-proxies/ontologies/_search" />',
-		dataType: 'jsonp',
-		delay: 250,
-		data: function (params) {
-			return {
-				q: params.term, // search term
-				page: params.page
-			};
+function loadMatrixPicker() {
+	$("#add-new-ontology").select2({
+		ajax: {
+			url: '<spring:message code="peakforest.admin.ontologiesFWproxy" text="https://pfem.clermont.inra.fr/elasticsearch-proxies/ontologies/_search" />',
+			dataType: 'jsonp',
+			delay: 250,
+			data: function (params) {
+				return {
+					q: params.term, // search term
+					page: params.page
+				};
+			},
+			processResults: function (data, params) {
+				//console.log(data); 
+				var controle = [];
+				if (data.hasOwnProperty("hits") && data.hits.hasOwnProperty("hits") ) { 
+					$.each(data.hits.hits, function(){
+						var e = this['_source'];
+						controle.push({"id": e.id, "text": e.naturalLanguage});
+					});
+				}
+				return {
+					results: controle
+				};
+			},
+			cache: true
 		},
-		processResults: function (data, params) {
-			//console.log(data); 
-			var controle = [];
-			if (data.hasOwnProperty("hits") && data.hits.hasOwnProperty("hits") ) { 
-				$.each(data.hits.hits, function(){
-					var e = this['_source'];
-					controle.push({"id": e.id, "text": e.naturalLanguage});
-				});
-			}
-			return {
-				results: controle
-			};
-		},
-		cache: true
-	},
-	escapeMarkup: function (markup) { return markup; }, 
-	minimumInputLength: 6
-});
+		escapeMarkup: function (markup) { return markup; }, 
+		minimumInputLength: 6
+	});
+}
 
 $(document).ready(function(){
 	$('.datepicker').datepicker();
 	listOntologiesInDatabase ();
 	listStdMatrixInDatabase ();
+	loadMatrixPicker();
 });
 
 </script>

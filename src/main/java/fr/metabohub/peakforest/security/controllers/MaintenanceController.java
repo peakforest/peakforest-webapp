@@ -195,7 +195,7 @@ public class MaintenanceController {
 			}
 
 			// url
-			String xlsFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
+			String xlsFileUrl = "//" + request.getServerName() + port + "/"
 					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
 					+ PeakForestUtils.getBundleConfElement("generatedXlsExport.folder") + "/" + newFileName;
 
@@ -273,7 +273,7 @@ public class MaintenanceController {
 			}
 
 			// url
-			String zipFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
+			String zipFileUrl = "//" + request.getServerName() + port + "/"
 					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
 					+ PeakForestUtils.getBundleConfElement("generatedZipExport.folder") + "/" + newFileName;
 

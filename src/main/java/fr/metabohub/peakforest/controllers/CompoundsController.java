@@ -46,6 +46,7 @@ import fr.metabohub.peakforest.model.compound.ChemicalCompound;
 import fr.metabohub.peakforest.model.compound.Citation;
 import fr.metabohub.peakforest.model.compound.Compound;
 import fr.metabohub.peakforest.model.compound.CompoundName;
+import fr.metabohub.peakforest.model.compound.ExternalId;
 import fr.metabohub.peakforest.model.compound.GCDerivedCompound;
 import fr.metabohub.peakforest.model.compound.GenericCompound;
 import fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound;
@@ -98,8 +99,11 @@ public class CompoundsController {
 		return "modal/print-compound-modal";
 	}
 
-	private void loadCompoundData(String type, Model model, StructureChemicalCompound refCompound,
-			HttpServletRequest request) throws PeakForestManagerException {
+	private void loadCompoundData(//
+			final String type, //
+			final Model model, //
+			final StructureChemicalCompound refCompound, //
+			final HttpServletRequest request) throws PeakForestManagerException {
 		String formula = refCompound.getFormula();
 		Pattern pattern = Pattern.compile("(\\d)");
 		Matcher tagmatch = pattern.matcher(formula);
@@ -234,6 +238,11 @@ public class CompoundsController {
 			for (String rawKegg : keggs)
 				keggIDs.add(Jsoup.clean(rawKegg, Whitelist.basic()));
 			model.addAttribute("keggs", keggIDs);
+		}
+
+		// new 2.2.1
+		if (refCompound.getExternalIds() != null && !refCompound.getExternalIds().isEmpty()) {
+			model.addAttribute("externalIds", refCompound.getExternalIds());
 		}
 
 		List<String> networks = null;
@@ -803,8 +812,9 @@ public class CompoundsController {
 			}
 		}
 		// deleteCASs
-		for (int i : (List<Integer>) data.get("deleteCASs"))
+		for (int i : (List<Integer>) data.get("deleteCASs")) {
 			removeCasIds.add(Long.parseLong(i + ""));
+		}
 
 		if (!newCasObjs.isEmpty() || !removeCasIds.isEmpty()) {
 			if (type.equalsIgnoreCase("chemical"))
@@ -820,6 +830,37 @@ public class CompoundsController {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+		}
+
+		// new 2.2 add / remove External IDs
+		final List<ExternalId> newExternalIdsObjs = new ArrayList<>();
+		final List<Long> removeExternalIds = new ArrayList<>();
+		// newExternalIds
+		for (final Object rawEntry : ((ArrayList<Object>) data.get("newExternalIds"))) {
+			if (rawEntry instanceof LinkedHashMap<?, ?>) {
+				final LinkedHashMap<String, String> entry = (LinkedHashMap<String, String>) rawEntry;
+				final String url = entry.get("url");
+				final String label = entry.get("label");
+				final String value = entry.get("value");
+				final ExternalId newExtId = new ExternalId(label, value, url, refCompound);
+				newExternalIdsObjs.add(newExtId);
+			}
+		}
+		// deleteExternalIds
+		for (int i : (List<Integer>) data.get("deleteExternalIds")) {
+			removeExternalIds.add(Long.parseLong(i + ""));
+		}
+		// call DAO
+		if (!newExternalIdsObjs.isEmpty() || !removeExternalIds.isEmpty()) {
+			try {
+				if (type.equalsIgnoreCase("chemical")) {
+					ChemicalCompoundManagementService.addRemoveExternalIds(id, newExternalIdsObjs, removeExternalIds);
+				} else if (type.equalsIgnoreCase("generic")) {
+					GenericCompoundManagementService.addRemoveExternalIds(id, newExternalIdsObjs, removeExternalIds);
+				}
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		// new 2.0: set curation flag / do curation action
@@ -1088,52 +1129,64 @@ public class CompoundsController {
 		}
 	}
 
-	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/get-citation-data", method = RequestMethod.POST, params = { "query" })
-	public @ResponseBody Object loadCitationData(@RequestParam("query") String query)
-			throws PeakForestManagerException {
-
-		query = query.trim();
+//	@Secured("ROLE_EDITOR")
+	@RequestMapping(//
+			method = RequestMethod.GET, //
+			value = "/get-citation-data", //
+//			headers = { "Content-type=application/json" }, //
+//			produces = MediaType.APPLICATION_JSON_VALUE, //
+			params = { "query" }//
+	)
+	public @ResponseBody Object loadCitationData(//
+			final @RequestParam("query") String query //
+	)//
+	{
+		// init
+		String queryClean = query.trim();
 		// rexep
-		Pattern patternURL = Pattern.compile("^(https?)://dx.doi.org/(.*)$");
-		Matcher matcherURL = patternURL.matcher(query);
-
-		Pattern patternURLBad = Pattern.compile("^dx.doi.org/(.*)$");
-		Matcher matcherURLBad = patternURLBad.matcher(query);
-
-		Pattern patternDOI = Pattern.compile("^doi:(.*)$");
-		Matcher matcherDOI = patternDOI.matcher(query);
-
+		final Pattern patternURL = Pattern.compile("^(https?)://dx.doi.org/(.*)$");
+		final Matcher matcherURL = patternURL.matcher(queryClean);
+		final Pattern patternURLBad = Pattern.compile("^dx.doi.org/(.*)$");
+		final Matcher matcherURLBad = patternURLBad.matcher(queryClean);
+		final Pattern patternDOI = Pattern.compile("^doi:(.*)$");
+		final Matcher matcherDOI = patternDOI.matcher(queryClean);
 		// 10.1093/bioinformatics/btu813
 		if (matcherURL.find()) {
-			query = matcherURL.group(2);
+			queryClean = matcherURL.group(2);
 		} else if (matcherURLBad.find()) {
-			query = matcherURLBad.group(1);
+			queryClean = matcherURLBad.group(1);
 		} else if (matcherDOI.find()) {
-			query = matcherDOI.group(1);
+			queryClean = matcherDOI.group(1);
 		}
-		if (query.contains("/"))
-			query = "" + query;
-
+		if (queryClean.contains("/")) {
+			queryClean = "" + queryClean;
+		}
 		final Map<String, Object> data = new HashMap<String, Object>();
 		data.put("success", Boolean.FALSE);
-		EbiPubResults epubDataMapper = EbiPubClient.search(query);
-		if (epubDataMapper.getResultList() != null && !epubDataMapper.getResultList().getResult().isEmpty()) {
-			final EbiPubResult pubData = epubDataMapper.getResultList().getResult().get(0);
-			data.put("doi", pubData.getDoi());
-			data.put("pmid", pubData.getPmid());
-			data.put("apa", pubData.getApa());
-			data.put("success", Boolean.TRUE);
+		try {
+			final EbiPubResults epubDataMapper = EbiPubClient.search(queryClean);
+			if (epubDataMapper != null && //
+					epubDataMapper.getResult() != null) {
+				final EbiPubResult pubData = epubDataMapper.getResult();
+				data.put("doi", pubData.getDoi());
+				data.put("pmid", pubData.getPmid());
+				data.put("apa", pubData.getApa());
+				data.put("success", Boolean.TRUE);
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
-
-		// compoundLog("loaded citation @doi='" + newRefClient.getDoi() + "' @apa='" +
-		// newRefClient.getApa()
-		// + "'");
 		return data;
 	}
 
-	@RequestMapping(value = "/get-cpd-data", method = RequestMethod.GET, params = { "inchikey" })
-	public @ResponseBody Object loadCompoundData(@RequestParam("inchikey") String inchikey)
+	@RequestMapping(//
+			method = RequestMethod.GET, //
+			value = "/get-cpd-data", //
+			params = { "inchikey" }//
+	)
+	public @ResponseBody Object loadCompoundData(//
+			@RequestParam("inchikey") String inchikey//
+	)//
 			throws PeakForestManagerException {
 
 		// init request
@@ -1403,31 +1456,40 @@ public class CompoundsController {
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/pick-one-compound-search", method = RequestMethod.POST, params = { "query", "filter" })
-	public String pickCompoundViewSearchCompound(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, Model model, @RequestParam("query") String query, @RequestParam("filter") int filter) {
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/pick-one-compound-search", //
+			params = { "query", "filter" }//
+	)
+	public String pickCompoundViewSearchCompound(//
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final Model model, //
+			final @RequestParam("query") String query, //
+			final @RequestParam("filter") int filter) {
 		// init request
-		List<ReferenceChemicalCompound> resultsRaw = null;
-		List<ReferenceChemicalCompound> resultsClean = new ArrayList<ReferenceChemicalCompound>();
+		final List<ReferenceChemicalCompound> resultsRaw = new ArrayList<ReferenceChemicalCompound>();
+		final List<ReferenceChemicalCompound> resultsClean = new ArrayList<ReferenceChemicalCompound>();
 		// search
 		try {
-			resultsRaw = SearchService.searchCompound(query, filter, SearchService.MAX_CPD_NAME_PER_CPD);
-			if (resultsRaw == null || resultsRaw.isEmpty()) {
-				resultsRaw = SearchService.searchCompound(query, PeakForestUtils.SEARCH_COMPOUND_INCHIKEY,
-						SearchService.MAX_CPD_NAME_PER_CPD);
+			resultsRaw.addAll(SearchService.searchCompound(query, filter, SearchService.MAX_CPD_NAME_PER_CPD));
+			if (resultsRaw.isEmpty()) {
+				resultsRaw.addAll(SearchService.searchCompound(query, PeakForestUtils.SEARCH_COMPOUND_INCHIKEY,
+						SearchService.MAX_CPD_NAME_PER_CPD));
 			}
 			// keep unic
-			List<Long> listOfUnicIds = new ArrayList<Long>();
-
-			if (resultsRaw != null) {
-				for (ReferenceChemicalCompound ref : resultsRaw)
+			final List<Long> listOfUnicIds = new ArrayList<Long>();
+			if (!resultsRaw.isEmpty()) {
+				for (final ReferenceChemicalCompound ref : resultsRaw) {
 					if (!listOfUnicIds.contains(ref.getId())) {
 						listOfUnicIds.add(ref.getId());
 						resultsClean.add(ref);
 					}
+				}
 			}
 			model.addAttribute("compounds", resultsClean);
-		} catch (PeakForestManagerException e) {
+		} catch (final PeakForestManagerException e) {
 			e.printStackTrace();
 			model.addAttribute("success", false);
 			model.addAttribute("error", e.getMessage());
@@ -1435,7 +1497,6 @@ public class CompoundsController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		if (resultsClean.isEmpty()) {
 			model.addAttribute("success", false);
 			model.addAttribute("error", PeakForestManagerException.NO_RESULTS_MATCHED_THE_QUERY);

@@ -17,14 +17,16 @@ import fr.metabohub.peakforest.utils.PeakForestApiHibernateUtils;
 
 public class MapManagerDao {
 
-	public static Long create(MapManager mapManager) throws HibernateException {
+	public static Long create(//
+			final MapManager mapManager)//
+			throws HibernateException {
 		Transaction transaction = null;
 		Long id = null;
 		try (final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			id = create(session, mapManager);
 			transaction.commit();
-		} catch (HibernateException e) {
+		} catch (final HibernateException e) {
 			transaction.rollback();
 			e.printStackTrace();
 			throw e;
@@ -32,23 +34,24 @@ public class MapManagerDao {
 		return id;
 	}
 
-	public static Long create(Session session, MapManager mapManager) throws HibernateException {
-		Long id;
+	public static Long create(//
+			final Session session, //
+			final MapManager mapManager)//
+			throws HibernateException {
 		mapManager.setCreated(new Date());
 		mapManager.setUpdated(new Date());
-		id = (Long) session.save(mapManager);
-		return id;
+		return (Long) session.save(mapManager);
 	}
 
-	public static MapManager read(Short mapSource) throws HibernateException {
+	public static MapManager read(final Short mapSource) throws HibernateException {
 		Transaction transaction = null;
 		MapManager mapManager = null;
 		try (final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			mapManager = read(session, mapSource);
-			mapManager.getMapEntities().size();
+			mapManager.countEntities();
 			transaction.commit();
-		} catch (HibernateException e) {
+		} catch (final HibernateException e) {
 			transaction.rollback();
 			e.printStackTrace();
 			throw e;
@@ -56,63 +59,61 @@ public class MapManagerDao {
 		return mapManager;
 	}
 
-	public static MapManager read(Session session, Short mapSource) throws HibernateException {
-		String queryString = "from " + MapManager.class.getSimpleName() + " where map_source =:source";
-		MapManager mapManager = (MapManager) session.createQuery(queryString).setParameter("source", mapSource)
+	public static MapManager read(//
+			final Session session, //
+			final Short mapSource)//
+			throws HibernateException {
+		final String queryString = "from " + MapManager.class.getSimpleName() + " where map_source =:source";
+		final MapManager mapManager = (MapManager) session.createQuery(queryString).setParameter("source", mapSource)
 				.uniqueResult();
-		mapManager.getMapEntities().size();
+		mapManager.countEntities();
 		return mapManager;
 	}
 
-	public static boolean exists(Session session, Short mapSource) throws HibernateException {
-		boolean exists = false;
-		String hqlQuery = "select count(*) from " + MapManager.class.getSimpleName() + " where map_source =:source";
-		TypedQuery<Long> query = session.createQuery(hqlQuery, Long.class);
+	public static boolean exists(//
+			final Session session, //
+			final Short mapSource)//
+			throws HibernateException {
+		final String hqlQuery = "select count(*) from " + MapManager.class.getSimpleName()
+				+ " where map_source =:source";
+		final TypedQuery<Long> query = session.createQuery(hqlQuery, Long.class);
 		query.setParameter("source", mapSource);
-		Object queryResult = query.getSingleResult();
-		exists = queryResult != null && ((Long) queryResult).intValue() == 1;
-		return exists;
-
+		final Object queryResult = query.getSingleResult();
+		return queryResult != null && ((Long) queryResult).intValue() == 1;
 	}
 
-	public static boolean exists(Short mapSource) throws HibernateException {
-		Transaction transaction = null;
-		boolean exists = false;
+	public static boolean exists(//
+			final Short mapSource)//
+			throws HibernateException {
+		boolean exists = Boolean.FALSE;
 		try (final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession()) {
-			transaction = session.beginTransaction();
 			exists = MapManagerDao.exists(session, mapSource);
-			transaction.commit();
-		} catch (Exception e) {
-			transaction.rollback();
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		return exists;
 	}
 
 	public static List<MapManager> readAll() {
-		Transaction transaction = null;
 		List<MapManager> mapManagers = null;
 		try (final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession()) {
-			transaction = session.beginTransaction();
 			mapManagers = MapManagerDao.readAll(session);
-			transaction.commit();
 		} catch (Exception e) {
-			transaction.rollback();
 			e.printStackTrace();
 		}
 		return mapManagers;
 	}
 
-	public static List<MapManager> readAll(Session session) {
+	public static List<MapManager> readAll(final Session session) {
 		return session.createQuery("from " + MapManager.class.getSimpleName(), MapManager.class).list();
 	}
 
-	public static void delete(Session session, Short mapSource) throws HibernateException {
-		MapManager mapManager = read(session, mapSource);
+	public static void delete(final Session session, final Short mapSource) throws HibernateException {
+		final MapManager mapManager = read(session, mapSource);
 		session.delete(mapManager);
 	}
 
-	public static void delete(Short mapSource) throws HibernateException {
+	public static void delete(final Short mapSource) throws HibernateException {
 		Transaction transaction = null;
 		try (final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();

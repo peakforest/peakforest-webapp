@@ -2,7 +2,6 @@
 
 <!--
 ## Template
-- **@tag**: xxx
 - **@version**: xxx
 - **@notes**:
   - describe this release's reasons
@@ -15,14 +14,111 @@
 - **@known bugs**:
   - pforest#xx - short description
 -->
+<!--
+2.3
 
-## latest: `2.1.2 - improve GCMS spectra management`
 
-- **@tag**: v2.1.2
-- **@version**: 2.1.2
+-->
+
+## latest: `2.3.0 - new ICMS support`
+
+
+- **@version**: 2.3.0
+- **@notes**:
+  - add Ion Chromatography support
+- **@new**:
+  - pforest#299 - add annotation in MassBank record sheets (mass spectra)
+  - pforest#321 - support ICMS spectra (import/export from/to XLSM files; search; view)
+  - pforest#345 - add new LCMS sample prep. solvent - H20+0.1% FA / ACN+0.1% FA (50/50, V/V)
+  - pforest#350 - display top 3 peaks labels on LCMS/LCMSMS spectra viewers
+- **@bugs fixed**:
+  - pforest#341 - fix bug prevention 2D-NMR spectra deletion
+  - pforest#347 - display compound first name in search windows instead of showing the main one
+  - pforest#348 - allow a curator to edit MS2 spectra fragmentation energy
+  - pforest#354 - add missing CAS number on compounds sheets
+  - pforest#355 - add missing GCMS spectra in compounds info modal view
+  - pforest#357 - fix derived compound image display / recompute
+  - pforest#360 - fix documentation file hosting
+  - pforest#367 - fix REST/V2 webservice on `getSpectra` method - `ionization_method` filter
+  - pforest#368 - see pforest#367
+  - pforest#369 - fix Monoisotopic Mass search (with ± proton mass)
+- **@other**:
+  - pforest#344 - remove LCMS method `CF_UBP_PLASMA_TOF`, add `CF_PFEM_plasma_method1_TIMSTOF`
+- **@known bugs**:
+  - pforest#xx - short description
+
+## previous releases
+
+### `2021-04-12`
+
+- **@version**: 2.2.6
+- **@notes**:
+  - small bug fixes
+- **@new**:
+  - pforest#322 - new MTBLS studies list formatting
+  - pforest#343 - add LC/GC chromatography method name in spectra listing (search/peakmatching)
+- **@bugs fixed**:
+  - pforest#325 - fix values in LCMS method `CF_PFEM_plasma_method1_QTOF`
+  - pforest#326 - update MassBank record doc. URL
+  - pforest#328 - fix search by HMDB ID direct input
+  - pforest#330 - list / add ontologies and std matrix in backoffice
+  - pforest#331 - new MetExplore biosources coverage/mapping
+  - pforest#333 - fix issues with compound curation lvl update / filtering via rest/v2 
+  - pforest#340 - increase tomcat session timeout from 30 minutes to 2 hours
+  - pforest#342 - fix nightly database reset on re-deploy
+- **@known bugs**:
+  - pforest#341 - cloud not delete some NMR spectra
+  - pforest#348 - Cannot update a parameter in MS2 (Frag. Energy)
+
+```sql
+drop table if exists map_entity;
+drop table if exists map_manager;
+```
+
+### `2021-03-12`
+
+- **@version**: 2.2.2
+- **@notes**:
+  - fix small bugs
+- **@new**:
+  - ras
+- **@bugs fixed**:
+  - pforest#301 - fix expected JSON response from citations service
+  - pforest#318 - fix PForest generated link with HTTP protocol instead of HTTPS
+  - pforest#319 - fix PForest REST/V1 `LazyInitializationException` error on `/get-range-clean/` path
+  - pforest#320 - remove ALogPS webservice (down) replace it with OChem one
+  - pforest#323 - fix compounds formula formating
+  - pforest#324 - restart peakforest instances with a cron daily (cmd `docker restart`)
+- **@other**:
+  - pforest#302 - add reference for Discovery tool in about page
+- **@known bugs**:
+  - ras
+
+### `2021-02-24`
+
+- **@version**: 2.2.1
+- **@notes**:
+  - add new small features and fix minor bugs
+- **@new**:
+  - pforest#37 - new search option: search compounds by LogP value
+  - pforest#35 - new search regex: search compounds by SMILES
+  - pforest#284 - new naive peakmatching REST webservices (v2 - OpenAPI)
+  - pforest#300 - add PeakPattern for 1D NMR spectra in REST webservices (v2 - OpenAPI)  
+  - pforest#294 - add 'metabolights pub. using websementic tech' section in compounds sheets
+  - pforest#295 - support compounds external IDs
+- **@bugs fixed**:
+  - pforest#286 - fix 302 error on MetExplore WebServices
+  - pforest#301 - update mapping from objects returned by EBI REST WS (for citations)
+  - pforest#314 - fix link to `my pforest` page
+  - pforest#dev - allow web browser CORS requests in REST webservices (v2 - OpenAPI; HTTP header auth.)
+
+### `2020-11-26`
+
+- **@version**: 2.2.0
 - **@notes**:
   - pforest#98 - epic GCMS
   - pforest#267 - update MexExplore webservices
+  - pforest#225 - add and impl. OpenAPI webservices
 - **@new**:
   - pforest#260 - add backoffice method to recompute LC chromatography columns codes
 - **@bug fixed**:
@@ -37,11 +133,8 @@
   - pforest#272 - add OpenAPI projects in nightly CI
   - pforest#273 - add OpenAPI projects in release manager
 
-## previous releases
-
 ### `2020-08-24`
 
-- **@tag**: v2.1.1
 - **@version**: 2.1.1
 - **@notes**:
   - pforest#98 - epic GCMS
@@ -55,7 +148,6 @@
 
 ### `2020-07-22`
 
-- **@tag**: v2.1.0
 - **@version**: 2.1.0
 - **@notes**:
   - pforest#98 - epic GCMS
@@ -70,7 +162,6 @@
 
 ### `2020-05-11`
 
-- **@tag**: v2.0.4
 - **@version**: 2.0.4
 - **@notes**:
   - release for bugfix
@@ -92,7 +183,6 @@
 
 ### `2019-12-02`
 
-- **@tag**: v2.0.3
 - **@version**: 2.0.3
 - **@notes**:
   - minor update of PeakForest, update architecture
@@ -127,7 +217,6 @@
 
 ### `2018-03-07`
 
-- **@tag**: v2.0.1
 - **@version**: 2.0.1
 - **@notes**:
   - minor update of PeakForest
@@ -148,7 +237,6 @@
 
 ### `2017-09-27`
 
-- **@tag**: v2.0.0
 - **@version**: 2.0.0
 - **@notes**:
   - fourth WebApp release!
@@ -166,7 +254,6 @@
 
 ### `2017-03-16`
 
-- **@tag**: v1.8.0
 - **@version**: 1.8.0
 - **@notes**:
   - third WebApp release!
@@ -185,7 +272,6 @@
 
 ### `2016-07-12`
 
-- **@tag**: v1.5
 - **@version**: 1.5
 - **@notes**:
   - third WebApp release!
@@ -205,7 +291,6 @@
 
 ### `2016-02-18`
 
-- **@tag**: v1.1
 - **@version**: 1.1
 - **@notes**:
   - second WebApp release!
@@ -223,7 +308,6 @@
 
 ### `2015-12-15`
 
-- **@tag**: v1.0
 - **@version**: 1.0
 - **@notes**:
   - first WebApp release!

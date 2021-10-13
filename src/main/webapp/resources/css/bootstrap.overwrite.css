@@ -275,3 +275,63 @@ img.molStructSVGmedium {
     margin-left: 0px !important;
     margin-right: 0px !important;
 }
+
+#cardSheet_metabolights {
+	max-height: 250px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding: 10px;
+}
+
+/* span.mtbls-comment { */
+/* 	max-width: 750px; */
+/* 	display: inline-block; */
+/* 	white-space: nowrap; */
+/* 	overflow: hidden !important; */
+/* 	text-overflow: ellipsis; */
+/* } */
+
+/* span.mtbls-comment:hover { */
+/* 	white-space: normal !important; */
+/* } */
+
+.mtbls-technology-type {
+	font-family: times, Times New Roman, times-roman, georgia, serif;
+    letter-spacing: 1px;
+    color: #444;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    font-weight: 100;
+}
+
+.mtbls-technology-type {
+/* 	font-family: times, Times New Roman, times-roman, georgia, serif; */
+    letter-spacing: 1px;
+    color: #444;
+/*     margin: 0 0 0 0; */
+/*     padding: 0 0 0 0; */
+/*     font-weight: 100; */
+}
+
+.mtbls-label {
+	font-weight: bold;
+}
+
+.mtbls-organism_part{
+	font-style: italic;
+}
+
+.mtbls-organism {
+	color: cadetblue;
+    font-size: 12px;
+}
+
+.mtbls-keyword {
+	border-radius: 5%;
+    color: darkslategrey;
+    box-shadow: 1px 2px 4px 0px darkolivegreen;
+    padding: 2px;
+    margin: 2px;
+    white-space: nowrap;
+    display: inline-block;
+}

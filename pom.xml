@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.metabohub</groupId>
 	<artifactId>peakforest-webapp</artifactId>
-	<version>2.2.0</version>
+	<version>2.3.0</version>
 	<packaging>war</packaging>
 
 	<name>PeakForest - Webapp</name>
@@ -28,7 +28,7 @@
 		<org.slf4j-version>1.7.22</org.slf4j-version>
 		<javassist.version>3.18.0-GA</javassist.version>
 		<!-- PForest APIs version -->
-		<peakforest.version>2.2.0</peakforest.version>
+		<peakforest.version>2.3.0</peakforest.version>
 		<!-- build infos -->
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -44,18 +44,15 @@
 
 	<dependencies>
 
-		<!-- tar gz files -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>1.8</version>
-		</dependency>
+	<scm>
+		<connection>scm:git:git@services.pfem.clermont.inra.fr:peakforest/peakforest-webapp.git</connection>
+	</scm>
 
 		<!-- hibernate persistence -->
 		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis-jaxrpc</artifactId>
-			<version>1.2</version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
 		</dependency>
 
 		<!-- Spring -->

@@ -1,0 +1,83 @@
+{
+	"dumper_type": "ic-ms",
+	"ic_chromatography": {
+		"method": "MetaToul MC QEx ESI- (IC-MS procedures_Toulouse-MetaToul)",
+		"column_constructor": "Thermo",
+		"column_constructor_other": "",
+		"column_name": "Ion Pac AS11-HC (Guard Column AG11-HC)",
+		"ionic_config": "anionic",
+		"suppressor_constructor": "Thermo",
+		"suppressor_name": "AERS 500e",
+		"column_length": 250.0,
+		"column_diameter": 2.0,
+		"particule_size": 9.0,
+		"column_temperature": 25.0,
+		"IC_mode": "gradient",
+		"separation_flow_rate": 390.0,
+		"separation_solvent": "KOH",
+		"separation_flow_gradient": [
+			{
+				"time": 1,
+				"solv": 7
+			},
+			{
+				"time": 9.5,
+				"solv": 15
+			},
+			{
+				"time": 20,
+				"solv": 15
+			},
+			{
+				"time": 30,
+				"solv": 45
+			},
+			{
+				"time": 33,
+				"solv": 70
+			},
+			{
+				"time": 33.1,
+				"solv": 100
+			},
+			{
+				"time": 42,
+				"solv": 100
+			},
+			{
+				"time": 42.5,
+				"solv": 7
+			},
+			{
+				"time": 50,
+				"solv": 7
+			}
+		]
+	},
+	"ms_analyzer": {
+		"instrument": "QFT",
+		"model": "Thermo",
+		"resolution_FWHM": "70000@400",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization": {
+		"mode_pos": null,
+		"mode_neg": {
+			"ionisation_method": "ESI",
+			"voltage": 2.75,
+			"spray_gaz_flow": 50.0,
+			"vaporizer_gaz_flow": 350.0,
+			"vaporizer_temperature": 10.0,
+			"source_gaz_flow": 0.0,
+			"tube_temperature": 350.0,
+			"desolvation_zone": 65.0
+		}
+	},
+	"other": {
+		"data_authors": "MetaToul",
+		"data_validator": "MetaToul",
+		"acquisition_date": "",
+		"data_ownership": "MetaToul"
+	}
+}

@@ -61,5 +61,21 @@ int randomID = randomGenerator.nextInt(1000000);
 			</ul>
 		</li>
 	</c:if>
-	<!-- missing: GCMS -->
+	<!-- GCMS -->
+	<c:if test="${not empty spectrum_mass_fullscan_gc}">
+		<li class="list-group-item"> <spring:message code="module.spectra.tag.gcms" text="GC-MS" /> </li>
+		<li class="list-group-item">
+			<ul class="list-group">
+				<c:forEach var="spectrum" items="${spectrum_mass_fullscan_gc}">
+					<li class="list-group-item">
+						<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}">${spectrum.getPeakForestID()}</a>
+						/
+						<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}" class="pforest-spectra-name-${spectrum.getPeakForestID()}">
+							${fn:escapeXml((spectrum.getMassBankNameHTML()))}
+						</a>
+					</li>
+				</c:forEach>
+			</ul>
+		</li>
+	</c:if>
 </ul>

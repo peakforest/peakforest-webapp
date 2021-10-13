@@ -15,16 +15,12 @@ public class MetExploreRequestJobTest {
 
 	@Test
 	public void test() {
-		// display log
-
-		// MetExploreRequestJob test = new MetExploreRequestJob();
 		try {
-			MetExploreRequestJob.updateMappingData(1);
-		} catch (Exception e) {
+			MetExploreRequestJob.updateMappingData();
+		} catch (final Exception e) {
 			e.printStackTrace();
 			Assert.fail("[fatal] exception occured");
 		}
-
 	}
 
 }

@@ -122,7 +122,7 @@
 	<li><a href="#MS_peaks-modal" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakList" text="Peak List" /></a></li>
 	</c:if>
 	<!-- NMR ONLY -->
-	<c:if test="${spectrum_type == 'nmr'}">
+	<c:if test="${spectrum_type == 'nmr-1d' || spectrum_type == 'nmr-2d'}">
 	<li><a href="#NMR_analyzer-modal" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.nmrAnalyzer" text="NMR Analyzer" /></a></li>
 	<li><a href="#NMR_peaks-modal" onclick="try{refreshJSmol();}catch(e){}" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakListnmr" text="Peak List" /></a></li>
 	</c:if>
@@ -196,7 +196,7 @@
 							</ul>
 <%-- 							<c:if test="${spectrum_has_main_compound}"> --%>
 <%-- 								All peaks are related to one compound: <a href="show-compound-modal/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getId()}" data-toggle="modal" data-target="#modalShowCompound">${fn:escapeXml(spectrum_main_compound.getMainName())}</a> --%>
-<%-- 								<img class="compoundSVG" src="image/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getInChIKey()}.svg" alt="${fn:escapeXml(spectrum_main_compound.getMainName())}"> --%>
+<%-- 								<img class="compoundSVG" src="image/${spectrum_main_compound.getTypeString()}/${spectrum_main_compound.getInChIKey()}" alt="${fn:escapeXml(spectrum_main_compound.getMainName())}"> --%>
 <!-- 								<br /> -->
 <!-- 								<br /> -->
 <%-- 							</c:if> --%>
@@ -213,7 +213,7 @@
 										<tr>
 											<td>
 												<span class="avatar">
-													<img class="compoundSVG" src="image/${compound.getTypeString()}/${compound.getInChIKey()}.svg" alt="${fn:escapeXml(compound.getMainName())}">
+													<img class="compoundSVG" src="image/${compound.getTypeString()}/${compound.getInChIKey()}" alt="${fn:escapeXml(compound.getMainName())}">
 												</span>
 												<script type="text/javascript">
  
@@ -261,7 +261,7 @@
 										<tr>
 											<td>
 												<span class="avatar">
-													<img class="compoundSVG" src="image/${compound.getTypeString()}/${compound.getInChIKey()}.svg" alt="${fn:escapeXml(compound.getMainName())}">
+													<img class="compoundSVG" src="image/${compound.getTypeString()}/${compound.getInChIKey()}" alt="${fn:escapeXml(compound.getMainName())}">
 												</span>
 												<script type="text/javascript">
 													var currentCpt = { 
@@ -298,7 +298,7 @@
 	</c:when>
 </c:choose>
 <!-- nmr specific data -->
-<c:if test="${spectrum_type == 'nmr'}">
+<c:if test="${spectrum_type == 'nmr-1d' || spectrum_type == 'nmr-2d'}">
 			<div class="panel-heading">	
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelNMRtubePrep" text="NMR tube preparation" /></h3>
 			</div>
@@ -892,7 +892,8 @@
 									</c:if>
 								</ul>
 							</td>
-							<td width="50%"></td>
+							<td width="50%">
+							</td>
 						</tr>
 					</c:if>
 					<tr> 
@@ -918,6 +919,23 @@
 									</div>
 									<a id="btn-edit_spectrum_ms_analyzer_resolution_fwhm" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_analyzer_resolution_fwhm');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 								</li>
+								
+								<!-- // MSMS data -->
+								<c:if test="${spectrum_msms_isMSMS}">
+									<li class="list-group-item">
+										Fragmentation energy: 
+										<span id="input_spectrum_ms_analyzer_frag_energy">${frag_energy}</span>
+										<div id="inputEdit_spectrum_ms_analyzer_frag_energy" class="form-group input-group" style="max-width: 400px; display: none;">
+											<input type="text" class="form-control input-active-enter-key" style="" value="${frag_energy}" placeholder="${frag_energy}">
+											<span class="input-group-btn">
+												<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_analyzer_frag_energy');"><i class="fa fa-check-square-o"></i></button>
+											</span>
+										</div>
+										<a id="btn-edit_spectrum_ms_analyzer_frag_energy" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_analyzer_frag_energy');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+									</li>
+								</c:if> 
+								<!-- end MSMS only -->
+								
 							</ul>
 						</td>
 						<td width="50%">
@@ -982,6 +1000,7 @@
 				</table>
 			</div>
 		</div>
+		
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelPeakListMZ" text="Peak List" /></h3>
@@ -3481,7 +3500,7 @@ $(document).ready(function() {
 <tr>
 	<td>
 		<span class="avatar">
-			<img class="compoundSVG" src="image/{%= type%}/{%= inchikey%}.svg" alt="{%= name%}" />
+			<img class="compoundSVG" src="image/{%= type%}/{%= inchikey%}" alt="{%= name%}" />
 		</span>
 	</td>
 	<td style="white-space: nowrap;">

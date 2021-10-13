@@ -22,141 +22,114 @@ public class MapEntity extends AbstractMapObject {
 	private MapManager mapManagerSource;
 
 	@Column(name = "map_display_default")
-	private Boolean displayDefault = false;
+	private Boolean displayDefault = Boolean.FALSE;
 
-	@Column(name = "map_orga")
-	private String orga;
+	@Column(name = "map_organism")
+	private String organism;
 
-	@Column(name = "map_source")
-	private String source;
+	@Column(name = "map_biosource")
+	private String biosource;
 
-	@Column(name = "map_ext_id_mapping")
-	private Long extMappingID;
+	@Column(name = "map_biosource_id")
+	private String biosourceId;
 
-	@Column(name = "map_nb_inchi_match")
-	private Long numberInChIMatch;
+	@Column(name = "map_nb_cpd_in_biosource")
+	private Long nbMetabolitesInBiosource;
 
-	@Column(name = "map_nb_inchi_total")
-	private Long numberInChITotal;
+	@Column(name = "map_nb_cpd_with_inchikey_in_biosource")
+	private Long nbMetabolitesWithInchikeyInBiosource;
+
+	@Column(name = "map_nb_cpd_from_pforest_mapped_in_biosource")
+	private Long nbMetabolitesMappedFromPForestInBiosource;
+
+	@Column(name = "map_coverage_percent")
+	private Double coverage;
+
+	// ////////////////////////////////////////////////////////////////////////
+	// constructors
 
 	public MapEntity() {
 		this(null);
 	}
 
-	/**
-	 * @param manager
-	 */
-	public MapEntity(MapManager manager) {
+	public MapEntity(final MapManager manager) {
 		super();
 		this.mapManagerSource = manager;
 	}
 
-	/**
-	 * @return the mapManagerSource
-	 */
+	// ////////////////////////////////////////////////////////////////////////
+	// getters / setters
+
 	public MapManager getMapManagerSource() {
 		return mapManagerSource;
 	}
 
-	/**
-	 * @param mapManagerSource
-	 *            the mapManagerSource to set
-	 */
-	public void setMapManagerSource(MapManager mapManagerSource) {
+	public void setMapManagerSource(final MapManager mapManagerSource) {
 		this.mapManagerSource = mapManagerSource;
 	}
 
-	/**
-	 * @return the displayDefault
-	 */
 	public Boolean getDisplayDefault() {
 		return displayDefault;
 	}
 
-	/**
-	 * @param displayDefault
-	 *            the displayDefault to set
-	 */
-	public void setDisplayDefault(Boolean displayDefault) {
+	public void setDisplayDefault(final Boolean displayDefault) {
 		this.displayDefault = displayDefault;
 	}
 
-	/**
-	 * @return the orga
-	 */
-	public String getOrga() {
-		return orga;
+	public String getOrganism() {
+		return organism;
 	}
 
-	/**
-	 * @param orga
-	 *            the orga to set
-	 */
-	public void setOrga(String orga) {
-		this.orga = orga;
+	public void setOrganism(final String organism) {
+		this.organism = organism;
 	}
 
-	/**
-	 * @return the source
-	 */
-	public String getSource() {
-		return source;
+	public String getBiosource() {
+		return biosource;
 	}
 
-	/**
-	 * @param source
-	 *            the source to set
-	 */
-	public void setSource(String source) {
-		this.source = source;
+	public void setBiosource(final String biosource) {
+		this.biosource = biosource;
 	}
 
-	/**
-	 * @return the extMappingID
-	 */
-	public Long getExtMappingID() {
-		return extMappingID;
+	public String getBiosourceId() {
+		return biosourceId;
 	}
 
-	/**
-	 * @param extMappingID
-	 *            the extMappingID to set
-	 */
-	public void setExtMappingID(Long extMappingID) {
-		this.extMappingID = extMappingID;
+	public void setBiosourceId(final String biosourceId) {
+		this.biosourceId = biosourceId;
 	}
 
-	/**
-	 * @return the numberInChIMatch
-	 */
-	public Long getNumberInChIMatch() {
-		return numberInChIMatch;
+	public Long getNbMetabolitesInBiosource() {
+		return nbMetabolitesInBiosource;
 	}
 
-	/**
-	 * @param numberInChIMatch
-	 *            the numberInChIMatch to set
-	 */
-	public void setNumberInChIMatch(Long numberInChIMatch) {
-		this.numberInChIMatch = numberInChIMatch;
+	public void setNbMetabolitesInBiosource(final Long nbMetabolitesInBiosource) {
+		this.nbMetabolitesInBiosource = nbMetabolitesInBiosource;
 	}
 
-	/**
-	 * @return the numberInChITotal
-	 */
-	public Long getNumberInChITotal() {
-		return numberInChITotal;
+	public Long getNbMetabolitesWithInchikeyInBiosource() {
+		return nbMetabolitesWithInchikeyInBiosource;
 	}
 
-	/**
-	 * @param numberInChITotal
-	 *            the numberInChITotal to set
-	 */
-	public void setNumberInChITotal(Long numberInChITotal) {
-		this.numberInChITotal = numberInChITotal;
+	public void setNbMetabolitesWithInchikeyInBiosource(final Long nbMetabolitesWithInchikeyInBiosource) {
+		this.nbMetabolitesWithInchikeyInBiosource = nbMetabolitesWithInchikeyInBiosource;
 	}
 
-	// @Column(name = "map_token", nullable = false)
-	// private String token;
+	public Long getNbMetabolitesMappedFromPForestInBiosource() {
+		return nbMetabolitesMappedFromPForestInBiosource;
+	}
+
+	public void setNbMetabolitesMappedFromPForestInBiosource(final Long nbMetabolitesMappedFromPForestInBiosource) {
+		this.nbMetabolitesMappedFromPForestInBiosource = nbMetabolitesMappedFromPForestInBiosource;
+	}
+
+	public Double getCoverage() {
+		return coverage;
+	}
+
+	public void setCoverage(final Double coverage) {
+		this.coverage = coverage;
+	}
 
 }

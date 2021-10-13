@@ -21,7 +21,7 @@
 				<c:forEach var="compound" items="${compounds}">
 				<tr class="success" onclick="loadCompoundInForm(${compound.id}, '${compound.inChIKey}', '${compound.inChI}', '${compound.formula}', '${compound.exactMass}' , ${compound.type});">
 					<td style="vertical-align: middle;" >
-						<span id="cpt-load-name-${compound.id}">${compound.listOfCompoundNames.get(0).name}</span> 
+						<span id="cpt-load-name-${compound.id}">${compound.getMainName()}</span> 
 						<c:if test="${compound.type == 100 && compound.hasChild()}">&nbsp;<sup><b>*</b></sup></c:if>
 						<br /><small style="white-space: nowrap;">${compound.inChIKey}</small>
 					</td>
@@ -30,10 +30,10 @@
 					<td style="vertical-align: middle;" class="compoundFormula">${compound.formula}</td>
 					<td><span class="avatar">
 						<c:if test="${compound.type == 101}">
-						<img class="compoundSVG" src="image/chemical/${compound.inChIKey}.svg" alt="${compound.listOfCompoundNames.get(0).name}" />
+						<img class="compoundSVG" src="image/chemical/${compound.inChIKey}" alt="${compound.getMainName()}" />
 						</c:if>
 						<c:if test="${compound.type == 100}">
-						<img class="compoundSVG" src="image/generic/${compound.inChIKey}.svg" alt="${compound.listOfCompoundNames.get(0).name}" />
+						<img class="compoundSVG" src="image/generic/${compound.inChIKey}" alt="${compound.getMainName()}" />
 						</c:if>
 						</span>
 					</td>
@@ -53,7 +53,7 @@ $.each($(".compoundFormula"), function(id, elem) {
 	var rawFromula = $(elem).text();
 	var formatedFormula = rawFromula;
 	try {
-	$.each($.unique( rawFromula.match(/\d/g)), function (keyF, valF) {
+	$.each($.unique( rawFromula.match(/\d+/g)), function (keyF, valF) {
 		var re = new RegExp(valF,"g");
 		formatedFormula = formatedFormula.replace(re, "<sub>" + valF + "</sub>");
 	});
@@ -104,7 +104,7 @@ loadCompoundInForm = function (id, inchikey, inchi, composition, exactMass, type
 				typeS = "generic";
 			else if (type == 101)
 				typeS = "chemical";
-			// '<img class="mixRCCadd'+multiPickLine+' compoundSVGZoom" src="image/'+typeS+'/'+inchikey+'.svg" alt="'+name+'">'
+			// '<img class="mixRCCadd'+multiPickLine+' compoundSVGZoom" src="image/'+typeS+'/'+inchikey+'" alt="'+name+'">'
 			var currentCpt = { 
 					"name": name,
 					"type": typeS,
@@ -146,12 +146,12 @@ loadCompoundInForm = function (id, inchikey, inchi, composition, exactMass, type
 	else if (type == 101)
 		typeS = "chemical";
 	if (singlePick)
-		$("#sample-bonus-display").html('<img class="" src="image/'+typeS+'/'+inchikey+'.svg" alt="'+name+'">');
+		$("#sample-bonus-display").html('<img class="" src="image/'+typeS+'/'+inchikey+'" alt="'+name+'">');
 	else {
 		// delete
 		$("img.mixRCCadd"+multiPickLine).remove();
 		// add
-		$("#sample-bonus-display").append('<img class="mixRCCadd'+multiPickLine+' compoundSVGZoom" src="image/'+typeS+'/'+inchikey+'.svg" alt="'+name+'">');
+		$("#sample-bonus-display").append('<img class="mixRCCadd'+multiPickLine+' compoundSVGZoom" src="image/'+typeS+'/'+inchikey+'" alt="'+name+'">');
 		$("img.mixRCCadd"+multiPickLine+"").mouseenter(function() {
 			$(this).removeClass("compoundSVGZoom");
 		}).mouseleave(function() {

@@ -36,10 +36,13 @@ import fr.metabohub.peakforest.dao.metadata.AnalyzerMassIonizationMetadataDao;
 import fr.metabohub.peakforest.dao.metadata.AnalyzerMassSpectrometerDeviceMetadataDao;
 import fr.metabohub.peakforest.dao.metadata.AnalyzerNMRSpectrometerDeviceMetadataDao;
 import fr.metabohub.peakforest.dao.metadata.GazChromatographyMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.IonChromatographyMetadataDao;
 import fr.metabohub.peakforest.dao.metadata.LiquidChromatographyMetadataDao;
 import fr.metabohub.peakforest.dao.metadata.OtherMetadataDao;
 import fr.metabohub.peakforest.dao.metadata.SampleNMRTubeConditionsDao;
+import fr.metabohub.peakforest.dao.spectrum.FragmentationICSpectrumDao;
 import fr.metabohub.peakforest.dao.spectrum.FragmentationLCSpectrumDao;
+import fr.metabohub.peakforest.dao.spectrum.FullScanICSpectrumDao;
 import fr.metabohub.peakforest.dao.spectrum.FullScanLCSpectrumDao;
 import fr.metabohub.peakforest.dao.spectrum.NMR1DSpectrumDao;
 import fr.metabohub.peakforest.dao.spectrum.NMR2DSpectrumDao;
@@ -61,17 +64,21 @@ import fr.metabohub.peakforest.model.metadata.AnalyzerNMRSpectrometerDevice;
 import fr.metabohub.peakforest.model.metadata.GCDerivedCompoundMetadata;
 import fr.metabohub.peakforest.model.metadata.GasSampleMix;
 import fr.metabohub.peakforest.model.metadata.GazChromatography;
+import fr.metabohub.peakforest.model.metadata.IonChromatography;
 import fr.metabohub.peakforest.model.metadata.LiquidChromatography;
 import fr.metabohub.peakforest.model.metadata.LiquidSampleMix;
 import fr.metabohub.peakforest.model.metadata.OtherMetadata;
 import fr.metabohub.peakforest.model.metadata.SampleNMRTubeConditions;
 import fr.metabohub.peakforest.model.metadata.StandardizedMatrix;
 import fr.metabohub.peakforest.model.spectrum.CompoundSpectrum;
+import fr.metabohub.peakforest.model.spectrum.FragmentationICSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FragmentationLCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanGCSpectrum;
+import fr.metabohub.peakforest.model.spectrum.FullScanICSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.IFragmentationSpectrum;
 import fr.metabohub.peakforest.model.spectrum.IGCSpectrum;
+import fr.metabohub.peakforest.model.spectrum.IICSpectrum;
 import fr.metabohub.peakforest.model.spectrum.ILCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.ISampleSpectrum;
 import fr.metabohub.peakforest.model.spectrum.MassPeak;
@@ -90,8 +97,10 @@ import fr.metabohub.peakforest.services.CurationMessageManagementService;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.StructuralCompoundManagementService;
+import fr.metabohub.peakforest.services.spectrum.FragmentationICSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.FragmentationLCSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.FullScanGCSpectrumManagementService;
+import fr.metabohub.peakforest.services.spectrum.FullScanICSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.FullScanLCSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.ImportService;
 import fr.metabohub.peakforest.services.spectrum.NMR1DSpectrumManagementService;
@@ -237,6 +246,8 @@ public class SpectraController {
 			model.addAttribute("spectrum_nmr", new ArrayList<Spectrum>());
 			break;
 		case "nmr":
+		case "nmr-1d":
+		case "nmr-2d":
 			model.addAttribute("spectrum_mass_fullscan_lc", new ArrayList<Spectrum>());
 			model.addAttribute("spectrum_mass_fullscan_gc", new ArrayList<Spectrum>());
 			model.addAttribute("spectrum_mass_fragmt_lc", new ArrayList<Spectrum>());
@@ -262,13 +273,33 @@ public class SpectraController {
 		return "module/compound-spectra-carrousel-module";
 	}
 
-	@RequestMapping(value = "/load-ms-spectra", method = RequestMethod.POST, params = { "fullscan-lc", "frag-lc",
-			"fullscan-gc", "name", "mode", "id" })
-	public String loadScriptMS(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			@RequestParam("fullscan-lc") List<Long> fullscanLC, @RequestParam("frag-lc") List<Long> frag,
-			@RequestParam("fullscan-gc") List<Long> fullscanGC, @RequestParam("name") String name,
-			@RequestParam("mode") String mode, @RequestParam("id") String id, Model model)
-			throws PeakForestManagerException {
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/load-ms-spectra", //
+			params = { //
+					"fullscan-lc", //
+					"frag-lc", //
+					"fullscan-gc", //
+					"fullscan-ic", //
+					"frag-ic", //
+					"name", //
+					"mode", //
+					"id" //
+			}//
+	)
+	public String loadScriptMS(//
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final @RequestParam("fullscan-lc") List<Long> fullscanLC, //
+			final @RequestParam("frag-lc") List<Long> fragmentationLC, //
+			final @RequestParam("fullscan-gc") List<Long> fullscanGC, //
+			final @RequestParam("fullscan-ic") List<Long> fullscanIC, //
+			final @RequestParam("frag-ic") List<Long> fragmentationIC, //
+			final @RequestParam("name") String name, //
+			final @RequestParam("mode") String mode, //
+			final @RequestParam("id") String id, //
+			final Model model) throws PeakForestManagerException {
 
 		// init request
 		if (mode.equalsIgnoreCase("light")) {
@@ -298,7 +329,7 @@ public class SpectraController {
 
 		List<FragmentationLCSpectrum> listFragLcSpectra = new ArrayList<>();
 		try {
-			listFragLcSpectra = FragmentationLCSpectrumManagementService.read(frag);
+			listFragLcSpectra = FragmentationLCSpectrumManagementService.read(fragmentationLC);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -310,8 +341,24 @@ public class SpectraController {
 			e.printStackTrace();
 		}
 
+		final List<FullScanICSpectrum> listFullScanIcSpectra = new ArrayList<>();
+		try {
+			listFullScanIcSpectra.addAll(FullScanICSpectrumManagementService.read(fullscanIC));
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
+		final List<FragmentationICSpectrum> listFragmentationIcSpectra = new ArrayList<>();
+		try {
+			listFragmentationIcSpectra.addAll(FragmentationICSpectrumManagementService.read(fragmentationIC));
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
 		// I - load series
-		int seriesCount = listFullScanLcSpectra.size() + listFragLcSpectra.size() + listFullScanGcSpectra.size();
+		int seriesCount = listFullScanLcSpectra.size() + listFragLcSpectra.size() + listFullScanGcSpectra.size()//
+				+ listFullScanIcSpectra.size() + listFragmentationIcSpectra.size() //
+		;
 		// HashMap<String, String>[] seriesShow = new HashMap<String,
 		// String>[seriesCount];
 
@@ -329,25 +376,28 @@ public class SpectraController {
 		Double maxMass = 10.0, maxMassPeak = 10.0;
 
 		// I.D - load metadata
-		Object[] seriesSpectrumMetadata = new Object[seriesCount];
+		final Object[] seriesSpectrumMetadata = new Object[seriesCount];
 
 		// I.E - spectrum custom visualization
-		Boolean[] spectrumShowCompoAdducts = new Boolean[seriesCount];
-		Boolean[] spectrumLoadTopPeaksLabel = new Boolean[seriesCount];
-		Boolean[] spectrumShowTinySymbols = new Boolean[seriesCount];
+		final Boolean[] spectrumShowCompoAdducts = new Boolean[seriesCount];
+		final Boolean[] spectrumLoadTopPeaksLabel = new Boolean[seriesCount];
+		final Integer[] spectrumLoadTopPeaksCount = new Integer[seriesCount];
+		final Boolean[] spectrumShowTinySymbols = new Boolean[seriesCount];
 
-		List<MassSpectrum> listMassSpectra = new ArrayList<>();
+		final List<MassSpectrum> listMassSpectra = new ArrayList<>();
 		listMassSpectra.addAll(listFullScanLcSpectra);
 		listMassSpectra.addAll(listFragLcSpectra);
 		listMassSpectra.addAll(listFullScanGcSpectra);
+		listMassSpectra.addAll(listFullScanIcSpectra);
+		listMassSpectra.addAll(listFragmentationIcSpectra);
 
-		boolean hasGCSpectra = !listFullScanGcSpectra.isEmpty();
+		final boolean hasGCSpectra = !listFullScanGcSpectra.isEmpty();
 
 		// II.A - load series
 		int cpt = 0;
 		Double peakDelta = 0.0000001;
 		Double peakHideRI = -100.0;
-		for (MassSpectrum spectrum : listMassSpectra) {
+		for (final MassSpectrum spectrum : listMassSpectra) {
 			// basic data
 			Double currentMassMin = spectrum.getRangeMassFrom();
 			Double currentMassMax = spectrum.getRangeMassTo();
@@ -457,17 +507,17 @@ public class SpectraController {
 			metadata.put("owners", spectrum.getOtherMetadata().getAuthors().replaceAll("'", "\\'") + "");
 			metadata.put("license", spectrum.getOtherMetadata().getLicense() + "");
 			metadata.put("licenseOther", "");
-			if (spectrum.getOtherMetadata().getLicenseOther() != null)
+			if (spectrum.getOtherMetadata().getLicenseOther() != null) {
 				metadata.put("licenseOther", spectrum.getOtherMetadata().getLicenseOther().replaceAll("'", "\\'") + "");
-
+			}
 			seriesSpectrumMetadata[cpt] = metadata;
 
 			// GC-related customization
-			boolean isGCSpectrum = spectrum instanceof FullScanGCSpectrum;
+			final boolean isGCSpectrum = spectrum instanceof FullScanGCSpectrum;
 			spectrumShowCompoAdducts[cpt] = !isGCSpectrum;
-			spectrumLoadTopPeaksLabel[cpt] = isGCSpectrum;
-			spectrumShowTinySymbols[cpt] = isGCSpectrum;
-
+			spectrumLoadTopPeaksLabel[cpt] = Boolean.TRUE;//
+			spectrumLoadTopPeaksCount[cpt] = isGCSpectrum ? 10 : 3;
+			spectrumShowTinySymbols[cpt] = Boolean.TRUE;
 			cpt++;
 
 			// only for light
@@ -478,14 +528,10 @@ public class SpectraController {
 		model.addAttribute("spectrum_min_mass", minMass);
 		model.addAttribute("spectrum_max_mass", maxMass);
 		if (hasGCSpectra) {
-			model.addAttribute("spectrum_min_mass", Math.max(minMass, Math.floor(minMassPeak / 100d) * 100d)); // the
-																												// closest
-																												// lower
-																												// hundred
-			model.addAttribute("spectrum_max_mass", Math.min(maxMass, Math.ceil(maxMassPeak / 100d) * 100d)); // the
-																												// closest
-																												// higher
-																												// hundred
+			// the closest lower hundred
+			model.addAttribute("spectrum_min_mass", Math.max(minMass, Math.floor(minMassPeak / 100d) * 100d));
+			// the closest higher hundred
+			model.addAttribute("spectrum_max_mass", Math.min(maxMass, Math.ceil(maxMassPeak / 100d) * 100d));
 		}
 
 		// spectrum series
@@ -502,13 +548,17 @@ public class SpectraController {
 		// visualization customization
 		model.addAttribute("spectrum_show_compo_adducts", spectrumShowCompoAdducts);
 		model.addAttribute("spectrum_load_top_peaks_label", spectrumLoadTopPeaksLabel);
+		model.addAttribute("spectrum_load_top_peaks_count", spectrumLoadTopPeaksCount);
 		model.addAttribute("spectrum_show_tiny_symbols", spectrumShowTinySymbols);
 
 		// LOAD SPECTRUMS
 		return "module/load-ms-spectra-script";
 	}
 
-	private void loadSpectraData(final String type, final Model model, final StructureChemicalCompound refCompound,
+	private void loadSpectraData(//
+			final String type, //
+			final Model model, //
+			final StructureChemicalCompound refCompound, //
 			final HttpServletRequest request) throws PeakForestManagerException {
 
 		// COMPOUND
@@ -529,6 +579,10 @@ public class SpectraController {
 			final List<FullScanGCSpectrum> fullscanGcMsSpectrumList = new ArrayList<>();
 			final List<FragmentationLCSpectrum> fragLcMsSpectrumList = new ArrayList<>();
 			final List<NMRSpectrum> nmrSpectrumList = new ArrayList<>();
+			// new 2.3
+			final List<FullScanICSpectrum> fullscanIcMsSpectrumList = new ArrayList<>();
+			final List<FragmentationICSpectrum> fragIcMsSpectrumList = new ArrayList<>();
+
 			for (Spectrum s : refCompound.getListOfSpectra()) {
 				if (s instanceof FullScanLCSpectrum) {
 					s = FullScanLCSpectrumManagementService.read(s.getId());
@@ -545,6 +599,14 @@ public class SpectraController {
 				} else if (s instanceof NMR2DSpectrum) {
 					s = NMR2DSpectrumManagementService.read(s.getId());
 					nmrSpectrumList.add((NMR2DSpectrum) s);
+				}
+				// new 2.3
+				else if (s instanceof FullScanICSpectrum) {
+					s = FullScanICSpectrumManagementService.read(s.getId());
+					fullscanIcMsSpectrumList.add((FullScanICSpectrum) s);
+				} else if (s instanceof FragmentationICSpectrum) {
+					s = FragmentationICSpectrumManagementService.read(s.getId());
+					fragIcMsSpectrumList.add((FragmentationICSpectrum) s);
 				} else {
 					// other (NMR / uv)
 				}
@@ -560,15 +622,25 @@ public class SpectraController {
 			model.addAttribute("spectrum_mass_fragmt_lc", fragLcMsSpectrumList);
 			model.addAttribute("spectrum_nmr", nmrSpectrumList);
 
+			model.addAttribute("spectrum_mass_fullscan_ic", fullscanIcMsSpectrumList);
+			model.addAttribute("spectrum_mass_fragmt_ic", fragIcMsSpectrumList);
+
 			// first tab:
-			if (!fullscanLcMsSpectrumList.isEmpty())
+			if (!fullscanLcMsSpectrumList.isEmpty()) {
 				model.addAttribute("first_tab_open", "lc-ms");
-			else if (!fragLcMsSpectrumList.isEmpty())
+			} else if (!fragLcMsSpectrumList.isEmpty()) {
 				model.addAttribute("first_tab_open", "lc-msms");
-			else if (!nmrSpectrumList.isEmpty())
+			} else if (!nmrSpectrumList.isEmpty()) {
 				model.addAttribute("first_tab_open", "nmr");
-			else if (!fullscanGcMsSpectrumList.isEmpty())
+			} else if (!fullscanGcMsSpectrumList.isEmpty()) {
 				model.addAttribute("first_tab_open", "gc-ms");
+			}
+			// new 2.3
+			else if (!fullscanIcMsSpectrumList.isEmpty()) {
+				model.addAttribute("first_tab_open", "ic-ms");
+			} else if (!fragIcMsSpectrumList.isEmpty()) {
+				model.addAttribute("first_tab_open", "ic-msms");
+			}
 
 			// ...
 		}
@@ -677,6 +749,9 @@ public class SpectraController {
 			final List<FullScanGCSpectrum> fullscanGcMsSpectrumList = new ArrayList<>();
 			final List<FragmentationLCSpectrum> fragLcMsSpectrumList = new ArrayList<>();
 			final List<NMRSpectrum> nmrSpectrumList = new ArrayList<>();
+			// new 2.3
+			final List<FullScanICSpectrum> fullscanIcMsSpectrumList = new ArrayList<>();
+			final List<FragmentationICSpectrum> fragIcMsSpectrumList = new ArrayList<>();
 			for (Spectrum s : spectra) {
 				if (s instanceof FullScanLCSpectrum) {
 					s = FullScanLCSpectrumManagementService.read(s.getId());
@@ -693,6 +768,15 @@ public class SpectraController {
 				} else if (s instanceof NMR2DSpectrum) {
 					s = NMR2DSpectrumManagementService.read(s.getId());
 					nmrSpectrumList.add((NMR2DSpectrum) s);
+
+				}
+				// new 2.3
+				else if (s instanceof FullScanICSpectrum) {
+					s = FullScanICSpectrumManagementService.read(s.getId());
+					fullscanIcMsSpectrumList.add((FullScanICSpectrum) s);
+				} else if (s instanceof FragmentationICSpectrum) {
+					s = FragmentationICSpectrumManagementService.read(s.getId());
+					fragIcMsSpectrumList.add((FragmentationICSpectrum) s);
 				} else {
 					// other (NMR / uv)
 				}
@@ -721,14 +805,24 @@ public class SpectraController {
 			model.addAttribute("spectrum_mass_fullscan_gc", fullscanGcMsSpectrumList);
 			model.addAttribute("spectrum_mass_fragmt_lc", fragLcMsSpectrumList);
 			model.addAttribute("spectrum_nmr", nmrSpectrumList);
+			// new 2.3
+			model.addAttribute("spectrum_mass_fullscan_ic", fullscanIcMsSpectrumList);
+			model.addAttribute("spectrum_mass_fragmt_ic", fragIcMsSpectrumList);
 
 			// first tab:
-			if (!(fullscanLcMsSpectrumList.isEmpty() && fragLcMsSpectrumList.isEmpty()))
+			if (!(fullscanLcMsSpectrumList.isEmpty() && fragLcMsSpectrumList.isEmpty())) {
 				model.addAttribute("first_tab_open", "lc-ms");
-			else if (!nmrSpectrumList.isEmpty())
+			} else if (!nmrSpectrumList.isEmpty()) {
 				model.addAttribute("first_tab_open", "nmr");
-			else if (!fullscanGcMsSpectrumList.isEmpty())
+			} else if (!fullscanGcMsSpectrumList.isEmpty()) {
 				model.addAttribute("first_tab_open", "gc-ms");
+			}
+			// new 2.3
+			else if (!fullscanIcMsSpectrumList.isEmpty()) {
+				model.addAttribute("first_tab_open", "ic-ms");
+			} else if (!fragIcMsSpectrumList.isEmpty()) {
+				model.addAttribute("first_tab_open", "ic-msms");
+			}
 			// ...
 		}
 
@@ -738,11 +832,19 @@ public class SpectraController {
 	// ///////////////////////
 	// NMR
 
-	@RequestMapping(value = "/load-nmr-1d-spectra", method = RequestMethod.POST, params = { "nmr", "name", "mode",
-			"id" })
-	public String loadScriptNMR1D(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			@RequestParam("nmr") List<Long> nmr, @RequestParam("name") String name, @RequestParam("mode") String mode,
-			@RequestParam("id") String id, Model model) throws PeakForestManagerException {
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/load-nmr-1d-spectra", //
+			params = { "nmr", "name", "mode", "id" })
+	public String loadScriptNMR1D(//
+			HttpServletRequest request, //
+			HttpServletResponse response, //
+			Locale locale, //
+			@RequestParam("nmr") List<Long> nmr, //
+			@RequestParam("name") String name, //
+			@RequestParam("mode") String mode, //
+			@RequestParam("id") String id, //
+			Model model) throws PeakForestManagerException {
 
 		// init request
 		if (mode.equalsIgnoreCase("light")) {
@@ -962,13 +1064,15 @@ public class SpectraController {
 				isLCMSMS = true;
 				break;
 			case "nmr":
+			case "nmr-1d":
+			case "nmr-2d":
 				isNMR = true;
 				break;
 			case "gc-ms":
 				isGCMS = true;
 				break;
 
-			// TODO gc-ms / lc-nmr / ...
+			// TODO / lc-nmr / ...
 			default:
 				// not supported
 				break;
@@ -1076,13 +1180,24 @@ public class SpectraController {
 			try {
 				loadSpectraMetadata(model, spectrum, request);
 				model.addAttribute("contains_spectrum", true);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
-
-		} else
+			attachUserData(model, spectrum);
+		} else {
 			model.addAttribute("contains_spectrum", false);
+		}
 
+		return "module/sheet-spectrum-module";
+	}
+
+	/**
+	 * @param model
+	 * @param spectrum
+	 */
+	private void attachUserData(//
+			final Model model, //
+			final Spectrum spectrum) {
 		User user = null;
 		long userId = -1;
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
@@ -1092,23 +1207,23 @@ public class SpectraController {
 
 		if (user != null && user.isConfirmed()) {
 			model.addAttribute("editor", true);
-			List<CurationMessage> waitingCurationMessageUser = new ArrayList<CurationMessage>();
-			for (CurationMessage cm : spectrum.getCurationMessages())
+			final List<CurationMessage> waitingCurationMessageUser = new ArrayList<CurationMessage>();
+			for (final CurationMessage cm : spectrum.getCurationMessages())
 				if (cm.getStatus() == CurationMessage.STATUS_WAITING && cm.getUserID() == userId) {
 					cm.setMessage(Jsoup.clean(cm.getMessage(), Whitelist.basic()));
 					waitingCurationMessageUser.add(cm);
 				}
 			model.addAttribute("waitingCurationMessageUser", waitingCurationMessageUser);
-		} else
+		} else {
 			model.addAttribute("editor", false);
+		}
 
 		if (user != null && user.isCurator()) {
 			model.addAttribute("curator", true);
 			model.addAttribute("curationMessages", spectrum.getCurationMessages());
-		} else
+		} else {
 			model.addAttribute("curator", false);
-
-		return "module/sheet-spectrum-module";
+		}
 	}
 
 	@RequestMapping(value = "/data-ranking-spectrum/{id}", method = RequestMethod.GET)
@@ -1197,7 +1312,7 @@ public class SpectraController {
 				// (higher score)!
 				model.addAttribute("spectrum_derivative_name",
 						parentCompound.getMainName() + " (" + derivativeTypes + ")");
-				
+
 				final GCDerivedCompound derivative = gcMetadata.getStructureDerivedCompound();
 				if (derivative != null) {
 					model.addAttribute("spectrum_derivative_inchikey", derivative.getInChIKey());
@@ -1205,11 +1320,11 @@ public class SpectraController {
 					model.addAttribute("spectrum_derivative_type", derivative.getTypeString());
 					String pubchemID = null;
 					if (derivative.getPubChemID() != null && !derivative.getPubChemID().equals("")) {
-						pubchemID = derivative.getPubChemID(); 
+						pubchemID = derivative.getPubChemID();
 						model.addAttribute("spectrum_derivative_pubchem", Jsoup.clean(pubchemID, Whitelist.basic()));
 					}
 				}
-				
+
 			}
 		}
 
@@ -1367,6 +1482,7 @@ public class SpectraController {
 			model.addAttribute("spectrum_nmr_tube_prep", (abstractSpec).getSampleNMRTubeConditionsMetadata());
 
 			if (spectrum instanceof NMR1DSpectrum) {
+				model.addAttribute("spectrum_type", "nmr-1d");
 				// name display
 				model.addAttribute("spectrum_name",
 						PeakForestPruneUtils.convertGreekCharToHTML(((NMR1DSpectrum) spectrum).getMassBankLikeName()));
@@ -1385,6 +1501,7 @@ public class SpectraController {
 				}
 				model.addAttribute("spectrum_nmr_peakpatterns", peakpatterns);
 			} else if (spectrum instanceof NMR2DSpectrum) {
+				model.addAttribute("spectrum_type", "nmr-2d");
 				// name display
 				model.addAttribute("spectrum_name",
 						PeakForestPruneUtils.convertGreekCharToHTML(((NMR2DSpectrum) spectrum).getMassBankLikeName()));
@@ -1402,8 +1519,14 @@ public class SpectraController {
 			model.addAttribute("display_real_spectrum", abstractSpec.hasRawData());
 			model.addAttribute("real_spectrum_code", abstractSpec.getRawDataFolder());
 
-		} else if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FragmentationLCSpectrum
-				|| spectrum instanceof FullScanGCSpectrum) {
+		} else if (//
+		spectrum instanceof FullScanLCSpectrum || //
+				spectrum instanceof FragmentationLCSpectrum || //
+				spectrum instanceof FullScanGCSpectrum
+				// new 2.3
+				|| spectrum instanceof FullScanICSpectrum//
+				|| spectrum instanceof FragmentationICSpectrum//
+		) {
 			// BASIC
 			model.addAttribute("spectrum_name",
 					PeakForestPruneUtils.convertGreekCharToHTML(((MassSpectrum) spectrum).getMassBankName()));
@@ -1414,6 +1537,12 @@ public class SpectraController {
 				model.addAttribute("spectrum_type", "lc-fragmentation");
 			else if (spectrum instanceof FullScanGCSpectrum)
 				model.addAttribute("spectrum_type", "gc-fullscan");
+			// new 2.3
+			else if (spectrum instanceof FullScanICSpectrum) {
+				model.addAttribute("spectrum_type", "ic-fullscan");
+			} else if (spectrum instanceof FragmentationICSpectrum) {
+				model.addAttribute("spectrum_type", "ic-fragmentation");
+			}
 
 			if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FragmentationLCSpectrum) {
 				// LC DATA
@@ -1488,6 +1617,44 @@ public class SpectraController {
 				model.addAttribute("spectrum_chromatography_stp_temperature", temperature);
 				model.addAttribute("spectrum_chromatography_stp", gcData.getSeparationTemperatureProgram());
 			}
+			// new 2.3
+			else if (spectrum instanceof IICSpectrum) {
+				// LC DATA
+				model.addAttribute("spectrum_chromatography", "ic");
+				IonChromatography icData = IonChromatographyMetadataDao
+						.read(((IICSpectrum) spectrum).getIonChromatography().getId());
+				model.addAttribute("spectrum_chromatography_method", icData.getMethodProtocolAsString());
+				model.addAttribute("spectrum_chromatography_col_constructor", icData.getColumnConstructorAString());
+				model.addAttribute("spectrum_chromatography_col_name", icData.getColumnName());
+				model.addAttribute("spectrum_chromatography_col_ionic_config", icData.getColumnIonicConfigAsString());
+				model.addAttribute("spectrum_chromatography_col_suppressor_constructor",
+						icData.getColumnSuppressorConstructorAsString());
+				model.addAttribute("spectrum_chromatography_col_suppressor_name",
+						icData.getColumnSuppressorNameAsString());
+				model.addAttribute("spectrum_chromatography_col_is_makeup",
+						icData.getColumnMakeup() != IonChromatography.IC_MAKEUP__NA);
+				model.addAttribute("spectrum_chromatography_col_makeup", icData.getColumnMakeupAsString());
+				model.addAttribute("spectrum_chromatography_col_makeup_flow_rate", icData.getColumnMakeupFlowRate());
+				model.addAttribute("spectrum_chromatography_col_length", icData.getColumnLength());
+				model.addAttribute("spectrum_chromatography_col_diameter", icData.getColumnDiameter());
+				model.addAttribute("spectrum_chromatography_col_particule_size", icData.getParticuleSize());
+				model.addAttribute("spectrum_chromatography_col_temperature", icData.getColumnTemperature());
+				model.addAttribute("spectrum_chromatography_mode_ic", icData.getICModeAsString());
+				model.addAttribute("spectrum_chromatography_solvent", icData.getSolventAsString());
+				model.addAttribute("spectrum_chromatography_separation_flow_rate", icData.getSeparationFlowRate());
+				// ..
+				// Separation flow grad
+				final List<Double> sortedKeys = new ArrayList<Double>(icData.getSeparationFlowGradient().keySet());
+				Collections.sort(sortedKeys);
+				Double[] time = new Double[sortedKeys.size()];
+				int i = 0;
+				for (final Double k : sortedKeys) {
+					time[i] = k;
+					i++;
+				}
+				model.addAttribute("spectrum_chromatography_sfg_time", time);
+				model.addAttribute("spectrum_chromatography_sfg", icData.getSeparationFlowGradient());
+			}
 
 			// IONIZATION
 			model.addAttribute("spectrum_ms_ionization", ((MassSpectrum) spectrum).getAnalyzerMassIonization());
@@ -1539,7 +1706,9 @@ public class SpectraController {
 			}
 			model.addAttribute("spectrum_ms_resolution_FWHM", ((MassSpectrum) spectrum).getInstrumentResolutionFWHM());
 
-			if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FullScanGCSpectrum)
+			if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FullScanGCSpectrum//
+					|| spectrum instanceof FullScanICSpectrum//
+			)
 				model.addAttribute("spectrum_ms_scan_type", "MS (fullscan)");
 			else if (spectrum instanceof FragmentationLCSpectrum) {
 				model.addAttribute("spectrum_ms_scan_type",
@@ -1552,7 +1721,19 @@ public class SpectraController {
 				model.addAttribute("center_isolation_window",
 						((FragmentationLCSpectrum) spectrum).getCenterIsolationWindow());
 				model.addAttribute("frag_energy", ((FragmentationLCSpectrum) spectrum).getFragEnery());
-
+			}
+			// new 2.3
+			else if (spectrum instanceof FragmentationICSpectrum) {
+				model.addAttribute("spectrum_ms_scan_type",
+						((FragmentationICSpectrum) spectrum).getFragmentationLevelString());
+				// new 2.0
+				model.addAttribute("isolation_mode", ((FragmentationICSpectrum) spectrum).getModeAsString());
+				model.addAttribute("qz_isolation", ((FragmentationICSpectrum) spectrum).getQzIsolationActivation());
+				model.addAttribute("activation_time", ((FragmentationICSpectrum) spectrum).getActivationTime());
+				model.addAttribute("isolation_window", ((FragmentationICSpectrum) spectrum).getIsolationWindow());
+				model.addAttribute("center_isolation_window",
+						((FragmentationICSpectrum) spectrum).getCenterIsolationWindow());
+				model.addAttribute("frag_energy", ((FragmentationICSpectrum) spectrum).getFragEnery());
 			}
 			model.addAttribute("spectrum_ms_range_from", ((MassSpectrum) spectrum).getRangeMassFrom());
 			model.addAttribute("spectrum_ms_range_to", ((MassSpectrum) spectrum).getRangeMassTo());
@@ -1584,6 +1765,13 @@ public class SpectraController {
 				model.addAttribute("spectrum_ri_alkane_to",
 						shortifyText(((IGCSpectrum) spectrum).getRangeRetentionIndexAlkaneTo()));
 			}
+			// new 2.3
+			else if (spectrum instanceof IICSpectrum) {
+				model.addAttribute("spectrum_rt_koh_from",
+						shortifyText(((IICSpectrum) spectrum).getRangeRetentionTimeEqPotassiumHydroxidePercentFrom()));
+				model.addAttribute("spectrum_rt_koh_to",
+						shortifyText(((IICSpectrum) spectrum).getRangeRetentionTimeEqPotassiumHydroxidePercentTo()));
+			}
 
 			// OTHER MSMS
 			if (spectrum instanceof FragmentationLCSpectrum) {
@@ -1601,6 +1789,12 @@ public class SpectraController {
 				// model.addAttribute("spectrum_msms_hasChild", !((FragmentationLCSpectrum)
 				// spectrum).getChildrenSpectra().isEmpty());
 			}
+			if (spectrum instanceof FragmentationICSpectrum) {
+				// is MSMS child
+				model.addAttribute("spectrum_msms_isMSMS",
+						((FragmentationICSpectrum) spectrum).getMsLevel() > FragmentationICSpectrum.FRAGMENTATION_MS);
+				model.addAttribute("spectrum_msms_parentIonMZ", ((FragmentationICSpectrum) spectrum).getParentIonMZ());
+			}
 
 			//
 			// PEAKLIST TAB
@@ -1611,14 +1805,13 @@ public class SpectraController {
 		}
 
 		// METADATA OTHER
-		OtherMetadata otherMetadata = spectrum.getOtherMetadata();
-		otherMetadata = OtherMetadataDao.read(otherMetadata.getId());
+		final OtherMetadata otherMetadata = OtherMetadataDao.read(spectrum.getOtherMetadata().getId());
 		model.addAttribute("spectrum_othermetadata", otherMetadata);
 
 		// RELATED SPECTRA (same other metadata)
-		List<Spectrum> relatedSpectra = new ArrayList<Spectrum>();
-		List<Spectrum> spectraChildren = new ArrayList<>();
-		FragmentationLCSpectrum parent = null;
+		final List<Spectrum> relatedSpectra = new ArrayList<Spectrum>();
+		final List<Spectrum> spectraChildren = new ArrayList<>();
+		MassSpectrum parent = null;
 
 		for (Spectrum s : otherMetadata.getSpectra()) {
 			if (s instanceof CompoundSpectrum) {
@@ -1628,8 +1821,9 @@ public class SpectraController {
 				}
 			}
 			s.setMetadata(spectrum.getMetadata());
-			if (s.getId() != spectrum.getId())
+			if (s.getId() != spectrum.getId()) {
 				relatedSpectra.add(s);
+			}
 			// parent / child
 			if (s instanceof FragmentationLCSpectrum) {
 				if (((FragmentationLCSpectrum) spectrum).getParentSpectrum() != null
@@ -1640,19 +1834,31 @@ public class SpectraController {
 					spectraChildren.add(s);
 				}
 			}
+			// new 2.3 parent -- child
+			if (s instanceof FragmentationICSpectrum) {
+				if (((FragmentationICSpectrum) spectrum).getParentSpectrum() != null
+						&& s.getId() == ((FragmentationICSpectrum) spectrum).getParentSpectrum().getId()) {
+					parent = (FragmentationICSpectrum) s;
+				} else if (((FragmentationICSpectrum) s).getParentSpectrum() != null
+						&& spectrum.getId() == ((FragmentationICSpectrum) s).getParentSpectrum().getId()) {
+					spectraChildren.add(s);
+				}
+			}
 		}
-		if (relatedSpectra.isEmpty())
+		if (relatedSpectra.isEmpty()) {
 			model.addAttribute("spectrum_has_related_spectra", false);
-		else
+		} else {
 			model.addAttribute("spectrum_has_related_spectra", true);
+		}
 		model.addAttribute("spectrum_related_spectra", relatedSpectra);
 
 		// children
 		if (!spectraChildren.isEmpty()) {
 			model.addAttribute("spectrum_msms_hasChild", true);
 			model.addAttribute("spectrum_msms_children", spectraChildren);
-		} else
+		} else {
 			model.addAttribute("spectrum_msms_hasChild", false);
+		}
 
 		// parent
 		if (parent != null) {
@@ -1662,7 +1868,10 @@ public class SpectraController {
 		// END
 	}
 
-	private void loadSpectraMeta(Model model, Spectrum spectrum, HttpServletRequest request) throws Exception {
+	private void loadSpectraMeta(//
+			final Model model, //
+			final Spectrum spectrum, //
+			final HttpServletRequest request) throws Exception {
 
 		// BASIC DATA
 		String spectrumName = PeakForestPruneUtils.convertGreekCharToHTML(spectrum.getName());
@@ -1728,6 +1937,16 @@ public class SpectraController {
 					.convertGreekCharToHTML(((FullScanGCSpectrum) spectrum).getMassBankName());
 			spectrumTechnique += ", GCMS";
 		}
+		// new 2.3
+		else if (spectrum instanceof FullScanICSpectrum) {
+			spectrumName = PeakForestPruneUtils
+					.convertGreekCharToHTML(((FullScanICSpectrum) spectrum).getMassBankName());
+			spectrumTechnique += ", ICMS";
+		} else if (spectrum instanceof FragmentationICSpectrum) {
+			spectrumName = PeakForestPruneUtils
+					.convertGreekCharToHTML(((FragmentationICSpectrum) spectrum).getMassBankName());
+			spectrumTechnique += ", ICMSMS";
+		}
 
 		// ranking
 		model.addAttribute("ranking_data", true);
@@ -1740,12 +1959,19 @@ public class SpectraController {
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/update-spectrum/{id}", method = RequestMethod.POST, headers = {
-			"Content-type=application/json" })
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/update-spectrum/{id}", //
+			headers = { //
+					"Content-type=application/json"//
+			}//
+	)
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	public boolean updateSpectrum(@PathVariable long id, @RequestBody Map<String, Object> data,
-			HttpServletRequest request) {
+	public boolean updateSpectrum(//
+			final @PathVariable long id, //
+			final @RequestBody Map<String, Object> data, //
+			final HttpServletRequest request) {
 		Spectrum spectrum;
 		try {
 			spectrum = SpectrumManagementService.read(id);
@@ -1761,13 +1987,14 @@ public class SpectraController {
 
 		// add curation messages
 		List<String> curationMessages = (List<String>) data.get("curationMessages");
-		if (!curationMessages.isEmpty())
+		if (!curationMessages.isEmpty()) {
 			try {
 				CurationMessageManagementService.create(curationMessages, user.getId(), spectrum);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
+		}
 
 		// log
 		spectrumLog("update spectrum @id=" + id + "; ");
@@ -1776,9 +2003,16 @@ public class SpectraController {
 	}
 
 	@Secured("ROLE_CURATOR")
-	@RequestMapping(value = "/edit-spectrum-modal/{id}", method = RequestMethod.GET)
-	public String spectrumEdit(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			@PathVariable int id, Model model) throws PeakForestManagerException {
+	@RequestMapping(//
+			method = RequestMethod.GET, //
+			value = "/edit-spectrum-modal/{id}"//
+	)
+	public String spectrumEdit(//
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final @PathVariable int id, //
+			final Model model) throws PeakForestManagerException {
 		// load data
 		Spectrum spectrum = null;
 		try {
@@ -1833,48 +2067,6 @@ public class SpectraController {
 		return "modal/edit-spectrum-modal";
 	}
 
-	// @RequestMapping(value = "/spectra-full-module/{ids}", method =
-	// RequestMethod.GET)
-	// public String showSpectraInSheet(HttpServletRequest request,
-	// HttpServletResponse response, Locale
-	// locale,
-	// @PathVariable String ids, Model model) throws PeakForestManagerException {
-	// // init request
-	// String dbName =
-	// Utils.getBundleConfElement("hibernate.connection.database.dbName");
-	// String username =
-	// Utils.getBundleConfElement("hibernate.connection.database.username");
-	// String password =
-	// Utils.getBundleConfElement("hibernate.connection.database.password");
-	//
-	// // string to longs
-	// List<Long> spectrumIDs = new ArrayList<Long>();
-	// // String rawList = ids.replaceAll("\\[", "").replaceAll("\\]", "");
-	// String[] rawTab = ids.split("-");
-	// for (String s : rawTab)
-	// try {
-	// spectrumIDs.add(Long.parseLong(s));
-	// } catch (NumberFormatException e) {
-	// }
-	//
-	// // load data
-	// List<Spectrum> listOfAllSpectrum = new ArrayList<Spectrum>();
-	// try {
-	// listOfAllSpectrum = SpectrumManagementService.read(spectrumIDs, dbName,
-	// username, password);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	//
-	// // init var
-	//
-	// // load data in model
-	// loadSpectraData(model, listOfAllSpectrum, request);
-	//
-	// // RETURN
-	// return "module/spectra-full-module";
-	// }
-
 	@Secured("ROLE_CURATOR")
 	@RequestMapping(//
 			value = "/delete-spectrum/{type}/{id}", //
@@ -1899,10 +2091,15 @@ public class SpectraController {
 				return FullScanLCSpectrumManagementService.delete(id);
 			case "lc-fragmentation":
 				return FragmentationLCSpectrumManagementService.delete(id);
-			case "nmr":
+			case "nmr-1d":
 				return NMR1DSpectrumManagementService.delete(id);
 			case "nmr-2d":
 				return NMR2DSpectrumManagementService.delete(id);
+			// new 2.3
+			case "ic-fullscan":
+				return FullScanICSpectrumManagementService.delete(id);
+			case "ic-fragmentation":
+				return FragmentationICSpectrumManagementService.delete(id);
 			default:
 				return Boolean.FALSE;
 			}
@@ -1913,11 +2110,18 @@ public class SpectraController {
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/edit-spectrum/{id}", method = RequestMethod.POST, headers = {
-			"Content-type=application/json" })
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/edit-spectrum/{id}", //
+			headers = { //
+					"Content-type=application/json"//
+			}//
+	)
 	@ResponseBody
 	@SuppressWarnings("unchecked")
-	public boolean editSpectrum(@PathVariable long id, @RequestBody Map<String, Object> data) {
+	public boolean editSpectrum(//
+			final @PathVariable long id, //
+			final @RequestBody Map<String, Object> data) {
 
 		// TODO remove @Secured annotation and begin this function with check if user
 		// either a curator of the
@@ -1927,9 +2131,9 @@ public class SpectraController {
 		try {
 			// 0 - init
 			// fetch spectrum in db;
-			Spectrum spectrum = SpectrumManagementService.read(id);
+			final Spectrum spectrum = SpectrumManagementService.read(id);
 			// ready to read json
-			Map<String, Object> spectrumDataToUpdate = (Map<String, Object>) data.get("newSpectrumData");
+			final Map<String, Object> spectrumDataToUpdate = (Map<String, Object>) data.get("newSpectrumData");
 
 			// I - update SAMPLE data
 			boolean updateSampleMetadata = false;
@@ -2380,23 +2584,165 @@ public class SpectraController {
 					LiquidChromatographyMetadataDao.update(lcMetadata.getId(), lcMetadata, newSFG);
 				}
 			}
+			// TODO missing GCMS
+			else if (spectrum instanceof IICSpectrum) {
+				// II.A - init var
+				boolean updateICchromatoData = Boolean.FALSE;
+				IonChromatography icMetadata = IonChromatographyMetadataDao
+						.read(((IICSpectrum) spectrum).getIonChromatography().getId());
+
+				// II.B - update object
+				// spectrum_chromatography_col_constructor: "Thermo"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_constructor")) {
+					updateICchromatoData = true;
+					icMetadata.setColumnConstructor(IonChromatography.getStandardizedColumnConstructor(
+							spectrumDataToUpdate.get("spectrum_chromatography_col_constructor").toString()));
+				}
+
+				// spectrum_chromatography_col_constructor_other
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_constructor_other")) {
+					updateICchromatoData = true;
+					icMetadata.setColumnOther(
+							spectrumDataToUpdate.get("spectrum_chromatography_col_constructor_other").toString());
+				}
+
+				// spectrum_chromatography_col_diameter: "2.1"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_diameter")) {
+					updateICchromatoData = true;
+					Double colDiam = null;
+					try {
+						colDiam = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_col_diameter").toString());
+					} catch (final NumberFormatException e) {
+					}
+					icMetadata.setColumnDiameter(colDiam);
+				}
+
+				// spectrum_chromatography_col_length: "100.0"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_length")) {
+					updateICchromatoData = true;
+					Double collength = null;
+					try {
+						collength = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_chromatography_col_length").toString());
+					} catch (final NumberFormatException e) {
+					}
+					icMetadata.setColumnLength(collength);
+				}
+
+				// spectrum_chromatography_col_name: "Hypersil Gold C18"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_name")) {
+					updateICchromatoData = true;
+					icMetadata.setColumnName(spectrumDataToUpdate.get("spectrum_chromatography_col_name").toString());
+				}
+
+				// spectrum_chromatography_col_particule_size: "1.9"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_particule_size")) {
+					updateICchromatoData = true;
+					Double colPartiSize = null;
+					try {
+						colPartiSize = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_col_particule_size").toString());
+					} catch (final NumberFormatException e) {
+					}
+					icMetadata.setParticuleSize(colPartiSize);
+				}
+
+				// spectrum_chromatography_col_temperature: "40.0"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_temperature")) {
+					updateICchromatoData = true;
+					Double colTemp = null;
+					try {
+						colTemp = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_col_temperature").toString());
+					} catch (final NumberFormatException e) {
+					}
+					icMetadata.setColumnTemperature(colTemp);
+				}
+
+				// spectrum_chromatography_method: undefined
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_method")) {
+					updateICchromatoData = true;
+					icMetadata.setMethodProtocol(IonChromatography.getStandardizedMethodProtocol(
+							spectrumDataToUpdate.get("spectrum_chromatography_method").toString()));
+				}
+
+				// spectrum_chromatography_mode_lc: "Isocratique"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_mode_ic")) {
+					updateICchromatoData = true;
+					icMetadata.setIcMode(IonChromatography.getStandardizedICMode(
+							spectrumDataToUpdate.get("spectrum_chromatography_mode_ic").toString()));
+				}
+
+				// spectrum_chromatography_separation_flow_rate: "300.0"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_separation_flow_rate")) {
+					updateICchromatoData = true;
+					Double sfgRate = null;
+					try {
+						sfgRate = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_separation_flow_rate").toString());
+					} catch (final NumberFormatException e) {
+					}
+					icMetadata.setSeparationFlowRate(sfgRate);
+				}
+
+				// spectrum_chromatography_solventA: "H2O / CH3OH / CH3CO2H (95/5/0.1)"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_solvent")) {
+					updateICchromatoData = true;
+					icMetadata.setSeparationSolvent(IonChromatography.getStandardizedSolventName(
+							spectrumDataToUpdate.get("spectrum_chromatography_solvent").toString()));
+				}
+
+				// spectrum_chromatography_sfg_time
+				Map<Double, Double> newSFG = icMetadata.getSeparationFlowGradient();
+				if (spectrumDataToUpdate.containsKey("spectrum_chromatography_sfg_time")
+						&& spectrumDataToUpdate.get("spectrum_chromatography_sfg_time") != null) {
+					if (spectrumDataToUpdate.get("spectrum_chromatography_sfg_time") instanceof ArrayList<?>) {
+						newSFG = new HashMap<>();
+						updateICchromatoData = true;
+						ArrayList<Map<String, Object>> rawSFG = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
+								.get("spectrum_chromatography_sfg_time");
+						for (final Map<String, Object> rawCpdMixData : rawSFG) {
+							if (rawCpdMixData.containsKey("time") && rawCpdMixData.get("time") != null
+									&& rawCpdMixData.containsKey("c") && rawCpdMixData.get("c") != null) {
+								String timeS = rawCpdMixData.get("time").toString();
+								String cS = rawCpdMixData.get("c").toString();
+								try {
+									final double time = Double.parseDouble(timeS);
+									final double c = Double.parseDouble(cS);
+									newSFG.put(time, c);
+								} catch (final NumberFormatException nfe) {
+								}
+							}
+						}
+					}
+				}
+
+				// II.C - save object (if needed)
+				if (updateICchromatoData) {
+					IonChromatographyMetadataDao.update(icMetadata.getId(), icMetadata, newSFG);
+				}
+			}
 
 			// III - update MASS analyzer data.
 			// III.A - init var
 			boolean updateMSanalyzer = false;
 			boolean updateMSionization = false;
 			boolean updateMSranges = false;
+			boolean updateMSMSdata = Boolean.FALSE;
 
 			Double msRangeMassFrom = null;
 			Double msRangeMassTo = null;
 			Double msRangeRTminFrom = null;
 			Double msRangeRTminTo = null;
-			Double msRangeRTmeohFrom = null;
-			Double msRangeRTmeohTo = null;
+			Double msRangeRTmeSFrom = null;
+			Double msRangeRTmeSTo = null;
 
 			Integer msResolutionFWHMresolution = null;
 			Integer msResolutionFWHMmass = null;
 			Integer msCurationLvl = null;
+
+			Double msmsFragEnery = null;
 
 			AnalyzerMassSpectrometerDevice msAnalyzerMetatada = null;
 			AnalyzerMassIonization msIonizationMetatada = null;
@@ -2567,10 +2913,10 @@ public class SpectraController {
 					}
 				}
 
-				// // spectrum_ms_analyzer_resolution_fwhm: "30000@"
+				// spectrum_ms_analyzer_resolution_fwhm: "30000@"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_analyzer_resolution_fwhm")) {
 					updateMSanalyzer = true;
-					String[] tabData = spectrumDataToUpdate.get("spectrum_ms_analyzer_resolution_fwhm").toString()
+					final String[] tabData = spectrumDataToUpdate.get("spectrum_ms_analyzer_resolution_fwhm").toString()
 							.split("@");
 					try {
 						if (tabData.length == 0) {
@@ -2596,21 +2942,49 @@ public class SpectraController {
 					} catch (NumberFormatException e) {
 					}
 				}
+
 			}
 
-			// TODO if instance of FRAG spectra update specific fields
+			// if instance of FRAG spectra update specific fields
+			if (spectrum instanceof FragmentationLCSpectrum) {
+				// init
+				msmsFragEnery = ((FragmentationLCSpectrum) spectrum).getFragEnery();
+
+				// bug 348
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_analyzer_frag_energy")) {
+					updateMSMSdata = true;
+					try {
+						msmsFragEnery = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_analyzer_frag_energy").toString());
+					} catch (final NumberFormatException e) {
+					}
+				}
+			}
+			// new 2.3
+			if (spectrum instanceof FragmentationICSpectrum) {
+				// init
+				msmsFragEnery = ((FragmentationICSpectrum) spectrum).getFragEnery();
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_analyzer_frag_energy")) {
+					updateMSMSdata = true;
+					try {
+						msmsFragEnery = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_analyzer_frag_energy").toString());
+					} catch (final NumberFormatException e) {
+					}
+				}
+			}
 
 			if (spectrum instanceof ILCSpectrum) {
 				// get original data
-				msRangeRTmeohFrom = ((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom();
-				msRangeRTmeohTo = ((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo();
+				msRangeRTmeSFrom = ((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom();
+				msRangeRTmeSTo = ((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo();
 
 				// get updated data
 				// spectrum_ms_rt_meoh_from: "40.16"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_rt_meoh_from")) {
 					updateMSranges = true;
 					try {
-						msRangeRTmeohFrom = Double
+						msRangeRTmeSFrom = Double
 								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_rt_meoh_from").toString());
 					} catch (NumberFormatException e) {
 					}
@@ -2620,8 +2994,33 @@ public class SpectraController {
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_rt_meoh_to")) {
 					updateMSranges = true;
 					try {
-						msRangeRTmeohTo = Double
+						msRangeRTmeSTo = Double
 								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_rt_meoh_to").toString());
+					} catch (NumberFormatException e) {
+					}
+				}
+			}
+			// new 2.3
+			else if (spectrum instanceof IICSpectrum) {
+				// get original data
+				msRangeRTmeSFrom = ((IICSpectrum) spectrum).getRangeRetentionTimeEqPotassiumHydroxidePercentFrom();
+				msRangeRTmeSTo = ((IICSpectrum) spectrum).getRangeRetentionTimeEqPotassiumHydroxidePercentTo();
+				// get updated data
+				// spectrum_ms_rt_meoh_from: "40.16"
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_rt_koh_from")) {
+					updateMSranges = true;
+					try {
+						msRangeRTmeSFrom = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_rt_koh_from").toString());
+					} catch (NumberFormatException e) {
+					}
+				}
+				// spectrum_ms_rt_meoh_to: "40.83"
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_rt_koh_to")) {
+					updateMSranges = true;
+					try {
+						msRangeRTmeSTo = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_rt_koh_to").toString());
 					} catch (NumberFormatException e) {
 					}
 				}
@@ -2639,15 +3038,31 @@ public class SpectraController {
 			if (updateMSranges) {
 				if (spectrum instanceof FullScanLCSpectrum) {
 					FullScanLCSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo, msRangeRTminFrom,
-							msRangeRTminTo, msRangeRTmeohFrom, msRangeRTmeohTo, msResolutionFWHMresolution,
+							msRangeRTminTo, msRangeRTmeSFrom, msRangeRTmeSTo, msResolutionFWHMresolution,
 							msResolutionFWHMmass, msCurationLvl);
 				} // else if instance of FragLC / GC / ...
 				else if (spectrum instanceof FragmentationLCSpectrum) {
 					// TODO update other MSMS specific fields
 					FragmentationLCSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo,
-							msRangeRTminFrom, msRangeRTminTo, msRangeRTmeohFrom, msRangeRTmeohTo,
+							msRangeRTminFrom, msRangeRTminTo, msRangeRTmeSFrom, msRangeRTmeSTo,
 							msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl);
 				}
+				// new 2.3
+				else if (spectrum instanceof FullScanICSpectrum) {
+					FullScanICSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo, msRangeRTminFrom,
+							msRangeRTminTo, msRangeRTmeSFrom, msRangeRTmeSTo, msResolutionFWHMresolution,
+							msResolutionFWHMmass, msCurationLvl);
+				} // else if instance of FragLC / GC / ...
+				else if (spectrum instanceof FragmentationICSpectrum) {
+					// TODO update other MSMS specific fields
+					FragmentationICSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo,
+							msRangeRTminFrom, msRangeRTminTo, msRangeRTmeSFrom, msRangeRTmeSTo,
+							msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl);
+				}
+			}
+
+			if (updateMSMSdata) {
+				FragmentationLCSpectrumDao.updateMS2Data(spectrum.getId(), msmsFragEnery);
 			}
 
 			// IV - update NMR analyzer data

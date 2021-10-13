@@ -64,6 +64,7 @@
 		<tr>
 			<th># <i class="fa fa-sort"></i></th>
 			<th><spring:message code="page.search.results.spectra.name" text="Name" /> <i class="fa fa-sort"></i></th>
+			<th></th>
 			<th><spring:message code="page.search.results.spectra.score" text="Score" /> <i class="fa fa-sort"></i> </th>
 			<th> </th>
 			<th> <spring:message code="page.search.results.spectra.preview" text="Preview" /></th>
@@ -88,12 +89,13 @@
 	<td>
 		<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />{%= pfID%}">{%= name%}</a>
 	</td>
+	<td>{%= metaCol%}</td>
 	<td>{%= score%}</td>
 	<td>
 		<img class="minispectra" src="resources/img/spectra/{%= img%}.png" alt="{%= img%}" />
 		{%if compound.inchikey%}
 		<span class="avatar">
-			<img class="compoundSVG" src="image/{%= compound.type%}/{%= compound.inchikey%}.svg" alt="{%= compound.name%}" />
+			<img class="compoundSVG" src="image/{%= compound.type%}/{%= compound.inchikey%}" alt="{%= compound.name%}" />
 		</span>
 		{%/if%}
 	</td>

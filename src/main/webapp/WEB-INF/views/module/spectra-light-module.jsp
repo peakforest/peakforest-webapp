@@ -138,6 +138,70 @@ var tabRawSpectrumName = [];
 			</div>
 			<% cptSpectrumDisplayed++; %>
 		</c:forEach>
+		
+		<c:forEach var="spectrum" items="${spectrum_mass_fullscan_ic}">
+			<div class="item <% if(cptSpectrumDisplayed ==0) { out.print("active");} %>">
+				<table class="table" style="width:90%">
+					<tr>
+						<td width="20px"></td>
+						<td width="">
+							<!--container-->
+							<div id="containerMSspectrum<%=randomID %><%=cptSpectrumDisplayed %>"
+								style="min-width: 650px; height: 300px; margin: 0 auto">
+								loading IC-MS spectra... <br />
+								<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
+									title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
+							</div>
+						</td>
+						<td width="20px"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td> &nbsp;</td>
+						<td></td>
+					</tr>
+				</table>
+				<div class="carousel-caption"></div>
+				<script type="text/javascript">
+				tabTypeSpectrum[<%=cptSpectrumDisplayed %>]='ic-fullscan';
+				tabIdSpectrum[<%=cptSpectrumDisplayed %>]=${spectrum.id};
+				tabNameSpectrum[<%=cptSpectrumDisplayed %>]='${fn:escapeXml((spectrum.getMassBankNameHTML()))}';
+				</script>
+			</div>
+			<% cptSpectrumDisplayed++; %>
+		</c:forEach>
+		<c:forEach var="spectrum" items="${spectrum_mass_fragmt_lc}">
+			<div class="item <% if(cptSpectrumDisplayed ==0) { out.print("active");} %>">
+				<table class="table" style="width:90%">
+					<tr>
+						<td width="20px"></td>
+						<td width="">
+							<!--container-->
+							<div id="containerMSspectrum<%=randomID %><%=cptSpectrumDisplayed %>"
+								style="min-width: 650px; height: 300px; margin: 0 auto">
+								loading IC-MS spectra... <br />
+								<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
+									title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
+							</div>
+						</td>
+						<td width="20px"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td> &nbsp;</td>
+						<td></td>
+					</tr>
+				</table>
+				<div class="carousel-caption"></div>
+				<script type="text/javascript">
+				tabTypeSpectrum[<%=cptSpectrumDisplayed %>]='ic-fragmentation';
+				tabIdSpectrum[<%=cptSpectrumDisplayed %>]=${spectrum.id};
+				tabNameSpectrum[<%=cptSpectrumDisplayed %>]='${fn:escapeXml((spectrum.getMassBankNameHTML()))}';
+				</script>
+			</div>
+			<% cptSpectrumDisplayed++; %>
+		</c:forEach>
+		
 		<c:forEach var="spectrum" items="${spectrum_nmr}">
 			<div class="item <% if(cptSpectrumDisplayed ==0) { out.print("active");} %>">
 				<table class="table" style="width:90%">
@@ -270,17 +334,25 @@ var tabRawSpectrumName = [];
 		// TODO load
 		var typeSpectrum = tabTypeSpectrum[cpt];
 		if (typeSpectrum == 'lc-fullscan' || typeSpectrum == 'lc-fragmentation'  
-				|| typeSpectrum == 'gc-fullscan') {
+				|| typeSpectrum == 'gc-fullscan'
+				|| typeSpectrum == 'ic-fullscan'
+				|| typeSpectrum == 'ic-fragmentation') {
 			// set element to load
 			var spectrumFullScanLCToLoad = [];
 			var spectrumFragLCToLoad = [];
 			var spectrumFullScanGCToLoad = [];
+			var spectrumFullScanICToLoad = [];
+			var spectrumFragICToLoad = [];
 			if (typeSpectrum == 'lc-fullscan')
 				spectrumFullScanLCToLoad.push(tabIdSpectrum[cpt]);
 			else if ( typeSpectrum == 'lc-fragmentation')
 				spectrumFragLCToLoad.push(tabIdSpectrum[cpt]);
 			else if (typeSpectrum == 'gc-fullscan')
 				spectrumFullScanGCToLoad.push(tabIdSpectrum[cpt]);
+			else if (typeSpectrum == 'ic-fullscan')
+				spectrumFullScanICToLoad.push(tabIdSpectrum[cpt]);
+			else if (typeSpectrum == 'ic-fragmentation')
+				spectrumFragICToLoad.push(tabIdSpectrum[cpt]);
 			// seek title
 			var titleSpectrum = encodeURIComponent("" + tabNameSpectrum[cpt]);
 			// load ajax
@@ -288,7 +360,10 @@ var tabRawSpectrumName = [];
 				type: "post",
 				url: "load-ms-spectra",
 				data: "fullscan-lc=" + spectrumFullScanLCToLoad + "&frag-lc=" + spectrumFragLCToLoad 
-						+ "&fullscan-gc=" + spectrumFullScanGCToLoad +"&name="+ titleSpectrum
+						+ "&fullscan-gc=" + spectrumFullScanGCToLoad
+						+ "&fullscan-ic=" + spectrumFullScanICToLoad 
+						+ "&frag-ic=" + spectrumFragICToLoad
+						+"&name="+ titleSpectrum
 						+"&mode=light&id=<%=randomID %>"+cpt,
 				// dataType: "script",
 				async: false,

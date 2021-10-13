@@ -70,7 +70,7 @@
 									<div class=" panel">
 										<!--	    <div class="panel-header">Structure</div>-->
 										<div class="panel-body">
-											<img src="image/${type}/${inchikey}.svg" alt="${name_rank1}"
+											<img src="image/${type}/${inchikey}" alt="${name_rank1}"
 												height="150" width="150">
 										</div>
 									</div>

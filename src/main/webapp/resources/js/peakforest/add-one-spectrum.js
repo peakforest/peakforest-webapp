@@ -1083,6 +1083,7 @@ function fulfillLCdata(jsonFileName) {
 // tech
 var isLC = false;
 var isGC = false;
+var isIC = false;
 var isMS = false;
 var isMSMS = false;
 var isNMR = false;
@@ -1163,6 +1164,12 @@ function resetFromColors() {
 			$("#linkActivateStep2-gc").trigger('click');
 			if ($("#step2-gc-sign").hasClass("fa-check-circle"))
 				$("#step2-gc-sign").removeClass("fa-check-circle").addClass("fa-question-circle");
+		} else if (isIC) {
+			$("#add1spectrum-chromatographyData-IC").show();
+			$("#linkActivateStep2-ic").trigger('click');
+			if ($("#step2-ic-sign").hasClass("fa-check-circle")) {
+				$("#step2-ic-sign").removeClass("fa-check-circle").addClass("fa-question-circle");
+			}
 		} else if (isNMR) { // GO FROM 1 TO 3
 			resetNMRprogramms();
 			$("#add1spectrum-analyserData-NMR").show();
@@ -1351,6 +1358,7 @@ function addOneSpectrum(type) {
 	// reset
 	isLC = false;
 	isGC = false;
+	isIC = false;
 	isMS = false;
 	isMSMS = false;
 	isNMR = false;
@@ -1424,6 +1432,19 @@ function addOneSpectrum(type) {
 		$(".opt-ms").show();
 		$(".opt-msms").show();
 		break;
+	case 6:
+		// IC-MS stuff
+		isIC = true;
+		isMS = true;
+		$(".opt-ms").show();
+		break;
+	case 7:
+		// IC-MSMS stuff
+		isIC = true;
+		isMSMS = true;
+		$(".opt-ms").show();
+		$(".opt-msms").show();
+		break;
 	}
 	// 
 	resetFromColors();
@@ -1483,7 +1504,7 @@ function loadJSCompound(inchikey) {
 				$("#add1spectrum-sample-inchi").change();
 				$("#add1spectrum-sample-commonName").val(data.name);
 				$("#add1spectrum-sample-commonName").change();
-				$("#sample-bonus-display").html('<img class="" src="image/'+data.type+'/'+data.inchikey+'.svg" alt="'+data.name+'">');
+				$("#sample-bonus-display").html('<img class="" src="image/'+data.type+'/'+data.inchikey+'" alt="'+data.name+'">');
 			}
 		}, 
 		error : function(data) {
@@ -2655,6 +2676,11 @@ loadFomDataIntoJsonObjects = function () {
 		jsonSpectrumType = "lc-msms";
 	else if (isNMR)
 		jsonSpectrumType = "nmr";
+	else if (isGC && isMS) {
+		jsonSpectrumType = "ic-ms";
+	} else if (isLC && isMS) {
+		jsonSpectrumType = "ic-msms";
+	}
 	if (jsonSpectrumType != null && jsonSpectrumType != "")
 		isJsonSpectrumTypeComplete = true;
 	
@@ -2790,6 +2816,12 @@ loadFomDataIntoJsonObjects = function () {
 			}
 		});
 		jsonChromato.separation_flow_gradient = jsonSFG;
+	}
+	
+	// III.D - IC	
+	if (isIC) {
+		isJsonChromatoComplete = false;
+		// TODO
 	}
 	
 	// IV - Analyzer
@@ -3391,8 +3423,13 @@ function gatherJsonObjects() {
 	var jsonData = {};
 	jsonData["dumper_type"] = jsonSpectrumType;
 	jsonData["analytical_sample"] = jsonSample;
-	if (isLC)
+	if (isLC) {
 		jsonData["lc_chromatography"] = jsonChromato;
+	} else if (isGC) {
+		jsonData["gc_chromatography"] = jsonChromato;
+	} else if (isIC) {
+		jsonData["ic_chromatography"] = jsonChromato;
+	} 
 	if (isMS) {
 		jsonData["ms_analyzer"] = jsonAnalyzer;
 		jsonData["molecule_ionization"] = jsonMolIonization;

@@ -93,6 +93,7 @@ public class MetExploreController {
 					idsPathways.toArray(new Long[idsPathways.size()])//
 			);
 			// overwrite
+			graph.mapInChIKeys(inchikeys.toArray(new String[inchikeys.size()]));
 //			graph.setMappingName("PeakForest_MappingInChIKey");
 //			graph.setMappingTagetLabel("inchikey");
 			// return

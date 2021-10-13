@@ -108,6 +108,8 @@
 							For further information please refer to <a href="http://metexplore.toulouse.inra.fr/metexploreViz/doc/documentation.php" target="_blank">MetExploreViz documentation</a> 
 							and the <a href="https://doi.org/10.1093/bioinformatics/btx588" target="_blank">Bioinformatics publication</a>.
 						<br />Powered by the <!-- amazing --> <a href="http://metexplore.toulouse.inra.fr/metexploreViz/doc/team.php" target="_blank">MetExplore Team</a>.
+						<hr style="margin-top: 5px; margin-bottom: 5px;" />
+						We use <a href="https://github.com/p2m2/Discovery" target="_blank">Discovery</a> tool to recover <a href="https://www.ebi.ac.uk/metabolights/" target="_blank">Metabolights'</a> publications from a compound's ChEBI ID.
 					</div>
 				</div>
 				

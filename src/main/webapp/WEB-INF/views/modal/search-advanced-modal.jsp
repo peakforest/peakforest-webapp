@@ -100,22 +100,30 @@ function tryLoadLCMSdata() {
 			case "LCMS":
 			case "LC-MSMS":
 			case "LCMSMS":
+			case "IC-MS":
+			case "ICMS":
+			case "IC-MSMS":
+			case "ICMSMS":
 				break;
 			case "POSITIVE":
-				$("#lcms-polarity-pos").prop('checked', true);
-				$("#lcmsms-polarity-pos").prop('checked', true);
+				$("#ms-polarity-value").val("positive");
+// 				$("#lcms-polarity-pos").prop('checked', true);
+// 				$("#lcmsms-polarity-pos").prop('checked', true);
 				break;
 			case "NEGATIVE":
-				$("#lcms-polarity-neg").prop('checked', true);
-				$("#lcmsms-polarity-neg").prop('checked', true);
+				$("#ms-polarity-value").val("negative");
+// 				$("#lcms-polarity-neg").prop('checked', true);
+// 				$("#lcmsms-polarity-neg").prop('checked', true);
 				break;
 			case "HIGH":
-				$("#lcms-resolution-high").prop('checked', true);
-				$("#lcmsms-resolution-high").prop('checked', true);
+				$("#ms-resolution-value").val("high");
+// 				$("#lcms-resolution-high").prop('checked', true);
+// 				$("#lcmsms-resolution-high").prop('checked', true);
 				break;
 			case "LOW":
-				$("#lcms-resolution-low").prop('checked', true);
-				$("#lcmsms-resolution-low").prop('checked', true);
+				$("#ms-resolution-value").val("low");
+// 				$("#lcms-resolution-low").prop('checked', true);
+// 				$("#lcmsms-resolution-low").prop('checked', true);
 				break;
 				//
 			case "ACPI":
@@ -128,8 +136,9 @@ function tryLoadLCMSdata() {
 			case "ITFT":
 			case "QTOF":
 			case "QQQ":
-				$("#lcms-ionAnalyzer").val(v.toUpperCase());
-				$("#lcmsms-ionAnalyzer").val(v.toUpperCase());
+				$("#ms-ionization_method-value").val(v.toUpperCase());
+// 				$("#lcms-ionAnalyzer").val(v.toUpperCase());
+// 				$("#lcmsms-ionAnalyzer").val(v.toUpperCase());
 				break;
 // 			case "EB":
 // 				$("#lcms-ionAnalyzer").val("EB");
@@ -141,8 +150,9 @@ function tryLoadLCMSdata() {
 			}
 		}
 	});
-	$("#lcms-cpd-name").val(query);
-	$("#lcmsms-cpd-name").val(query);
+	$("#ms-compound-name").val(query);
+// 	$("#lcms-cpd-name").val(query);
+// 	$("#lcmsms-cpd-name").val(query);
 }
 
 $('input[type=text]').focus(function(){
@@ -156,14 +166,14 @@ searchAdvanceSwitchPanel = function (entities) {
 	case 'compounds':
 		setTimeout(function(){$("#advancedSearchCompQuery").focus();},200);
 		break;
-	case 'lcms-spectra':
-		setTimeout(function(){$("#lcms-cpd-name").focus();},200);
-		tryLoadLCMSdata();
-		break;
-	case 'lcmsms-spectra':
-		setTimeout(function(){$("#lcmsms-cpd-name").focus();},200);
-		tryLoadLCMSdata();
-		break;
+// 	case 'lcms-spectra':
+// 		setTimeout(function(){$("#lcms-cpd-name").focus();},200);
+// 		tryLoadLCMSdata();
+// 		break;
+// 	case 'lcmsms-spectra':
+// 		setTimeout(function(){$("#lcmsms-cpd-name").focus();},200);
+// 		tryLoadLCMSdata();
+// 		break;
 	case 'nmr-spectra':
 		setTimeout(function(){$("#nmr-cpd-name").focus();},200);
 		tryLoadNMRdata();
@@ -171,6 +181,15 @@ searchAdvanceSwitchPanel = function (entities) {
 	case 'gcms-spectra':
 		setTimeout(function(){$("#gcms-cpd-name").focus();},200);
 		tryLoadGCMSdata();
+		break;
+	// new 2.3
+	case 'ms-spectra':
+	case 'lcms-spectra':
+	case 'lcmsms-spectra':
+	case 'icms-spectra':
+	case 'icmsms-spectra':
+		setTimeout(function(){$("#ms-compound-name").focus();},200);
+		tryLoadMSdata();
 		break;
 	default:  
 		break;
@@ -227,18 +246,113 @@ function tryLoadGCMSdata() {
 	$("#gcms-cpd-name").val(query);
 }
 
+// new 2.3
+var alreadyTryMSload = false;
+function tryLoadMSdata() {
+	alreadyTryMSload = true;
+	var rawQuery = $("#search").val();
+	var rawQueryTab = rawQuery.split(" ");
+	var query = "";
+	var openAdvSearch = false;
+	$.each(rawQueryTab, function(k, v) {
+		v = v.trim();
+		if (v != "") {
+			switch (v.toUpperCase()) {
+			case "LC-MS":
+			case "LCMS":
+				$("#ms-search-type").val("LCMS");
+				break;
+			case "IC-MS":
+			case "ICMS":
+				$("#ms-search-type").val("ICMS");
+				break;
+			case "LC-MSMS":
+			case "LCMSMS":
+				$("#ms-search-type").val("LCMSMS");
+				break;
+			case "IC-MSMS":
+			case "ICMSMS":
+				$("#ms-search-type").val("ICMSMS");
+				break;
+			case "POSITIVE":
+				$("#ms-polarity-value").val("positive");
+				break;
+			case "NEGATIVE":
+				$("#ms-polarity-value").val("negative");
+				break;
+			case "HIGH":
+				$("#ms-resolution-value").val("high");
+				break;
+			case "LOW":
+				$("#ms-resolution-value").val("low");
+				break;
+			case "ACPI":
+			case "APPI":
+			case "EI":
+			case "ESI":
+			case "FAB":
+			case "MALDI":
+			case "TOF":
+			case "ITFT":
+			case "QTOF":
+			case "QQQ":
+				$("#ms-ionization_method-value").val(v.toUpperCase());
+			default:
+				if ((!/~/i.test(v))) {
+					query += v + " ";
+				} else {
+					var msField = v.split("~");
+					var linker = msField[0];
+					var search = msField[1];
+					var value = msField[2];
+					switch (search) {
+					case "polarity":
+						$("#ms-polarity-linker").val(linker);
+						$("#ms-polarity-value").val(value); 
+						break;
+					case "resolution":
+						$("#ms-resolution-linker").val(linker);
+						$("#ms-resolution-value").val(value); 
+						break;
+					case "ionization":
+						$("#ms-ionization_method-linker").val(linker);
+						$("#ms-ionization_method-value").val(value); 
+						break;
+					case "analyzer":
+						$("#ms-analyzer-linker").val(linker);
+						$("#ms-analyzer-value").val(value); 
+						break;
+					default:
+						break;
+					}
+				}
+				break;
+			}
+		}
+	});
+	$("#ms-compound-name").val(query);
+}
 
-$( document ).ready(function() {
+
+$(document).ready(function() {
 	var rawQuery = $("#search").val().toUpperCase();
 	if (rawQuery.startsWith("LCMS ")) {
-		$("#link-searchAdvance-spectra-lcms").click();
+		$("#link-searchAdvance-spectra-ms").click();
     } else if (rawQuery.startsWith("LCMSMS ")) {
-    	$("#link-searchAdvance-spectra-lcmsms").click();
+    	$("#link-searchAdvance-spectra-ms").click();
     } else if (rawQuery.startsWith("GCMS ")) {
     	$("#link-searchAdvance-spectra-gcms").click();
     } else if (rawQuery.startsWith("NMR ")) {
     	$("#link-searchAdvance-spectra-nmr").click();
-    } else {
+    }
+	// new 2.3
+	else if (rawQuery.startsWith("ICMS ")) {
+    	$("#link-searchAdvance-spectra-ms").click();
+    } else if (rawQuery.startsWith("ICMSMS ")) {
+    	$("#link-searchAdvance-spectra-ms").click();
+    }
+    // classic
+    else {
     	$("#link-searchAdvance-compounds").click();
     }
 });
@@ -264,16 +378,22 @@ $( document ).ready(function() {
 									<i class="fa fa-flask"></i> <spring:message code="modal.advSearch.tabCompounds" text="Compounds" />
 								</a>
 							</li>
+							<!-- new 2.3 - all MS spectra togather -->
 							<li>
-								<a id="link-searchAdvance-spectra-lcms" href="#searchAdvance-spectra-lcms-panel"  onclick="searchAdvanceSwitchPanel('lcms-spectra');" data-toggle="tab">
-									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsLCMS" text="LC-MS Spectra" />
+								<a id="link-searchAdvance-spectra-ms" href="#searchAdvance-spectra-ms-panel" data-toggle="tab" onclick="searchAdvanceSwitchPanel('ms-spectra');">
+									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsMS" text="LC/IC - MS/MSMS Spectra" />
 								</a>
 							</li>
-							<li>
-								<a id="link-searchAdvance-spectra-lcmsms" href="#searchAdvance-spectra-lcmsms-panel"  onclick="searchAdvanceSwitchPanel('lcmsms-spectra');" data-toggle="tab">
-									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsLCMSMS" text="LC-MSMS Spectra" />
-								</a>
-							</li>
+<!-- 							<li> -->
+<!-- 								<a id="link-searchAdvance-spectra-lcms" href="#searchAdvance-spectra-lcms-panel"  onclick="searchAdvanceSwitchPanel('lcms-spectra');" data-toggle="tab"> -->
+<%-- 									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsLCMS" text="LC-MS Spectra" /> --%>
+<!-- 								</a> -->
+<!-- 							</li> -->
+<!-- 							<li> -->
+<!-- 								<a id="link-searchAdvance-spectra-lcmsms" href="#searchAdvance-spectra-lcmsms-panel"  onclick="searchAdvanceSwitchPanel('lcmsms-spectra');" data-toggle="tab"> -->
+<%-- 									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsLCMSMS" text="LC-MSMS Spectra" /> --%>
+<!-- 								</a> -->
+<!-- 							</li> -->
 							<li>
 								<a id="link-searchAdvance-spectra-nmr" href="#searchAdvance-spectra-nmr-panel" data-toggle="tab" onclick="searchAdvanceSwitchPanel('nmr-spectra');">
 									<i class="fa fa-bar-chart-o fa-flip-horizontal"></i> <spring:message code="modal.advSearch.tabSpectrumsNMR" text="NMR Spectra" />
@@ -284,6 +404,18 @@ $( document ).ready(function() {
 									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsGCMS" text="GCMS Spectra" />
 								</a>
 							</li>
+							<!-- new 2.3 -->
+<!-- 							<li> -->
+<!-- 								<a id="link-searchAdvance-spectra-icms" href="#searchAdvance-spectra-icms-panel" data-toggle="tab" onclick="searchAdvanceSwitchPanel('icms-spectra');"> -->
+<%-- 									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsICMS" text="ICMS Spectra" /> --%>
+<!-- 								</a> -->
+<!-- 							</li> -->
+<!-- 							<li> -->
+<!-- 								<a id="link-searchAdvance-spectra-icmsms" href="#searchAdvance-spectra-icmsms-panel" data-toggle="tab" onclick="searchAdvanceSwitchPanel('icmsms-spectra');"> -->
+<%-- 									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsICMSMS" text="ICMSMS Spectra" /> --%>
+<!-- 								</a> -->
+<!-- 							</li> -->
+							
 						</ul>
 						<div id="searchAdvance-mgmt" class="tab-content">
 							<div class="tab-pane fade active in" id="searchAdvance-compounds-panel">
@@ -298,10 +430,13 @@ $( document ).ready(function() {
 										<option value="2"><spring:message code="modal.advSearch.params.filterAVM" text="Average Mass (Da)" /></option>
 										<option value="3"><spring:message code="modal.advSearch.params.filterFOR" text="Formula" /></option>
 										<!-- <option value="5">Chemical Name</option> -->
+										<option value="4"><spring:message code="modal.advSearch.params.filterLOGP" text="LogP" /></option>
 									</select>
 									<input id="advancedSearchMassMass" class="form-control advancedSearch advancedSearchMass" style="width: 175px;" placeholder="<spring:message code="modal.advSearch.params.mass.ph" text="mass (e.g.: 180.03)" />">
 									<input id="advancedSearchMassTol" class="form-control advancedSearch advancedSearchMass" class="form-control" style="width: 175px;" placeholder="<spring:message code="modal.advSearch.params.tol.ph" text="tolerance (e.g.: 0.5)" />"> 
 									<input id="advancedSearchFormulaFor" class="form-control advancedSearch advancedSearchFormula" class="form-control" style="width: 350px; display: none;" placeholder="<spring:message code="modal.advSearch.params.for.ph" text="formula (e.g.: C8H10N4O2)" />">
+									<input id="advancedSearchLogPLogP" class="form-control advancedSearch advancedSearchLogP" style="width: 175px;" placeholder="<spring:message code="modal.advSearch.params.logp.ph" text="LogP (e.g.: -3.4)" />">
+									<input id="advancedSearchLogPTol" class="form-control advancedSearch advancedSearchLogP" class="form-control" style="width: 175px;" placeholder="<spring:message code="modal.advSearch.params.tol.ph" text="tolerance (e.g.: 0.5)" />">
 								</div>
 								<div>
 									<small>
@@ -659,6 +794,104 @@ $( document ).ready(function() {
 								</div>
 								
 							</div><!-- #/searchAdvance-spectra-gcms-panel -->
+							<!-- ######################################################################### -->
+							<div class="tab-pane fade" id="searchAdvance-spectra-ms-panel">
+								
+								<!-- search entities -->
+								<div class="form-group input-group" style="width: 490px;">
+<!-- 									<select id="ms-ionization-method-linker" class="form-control advancedSearch" style="width: 100px;"> -->
+<!-- 										<option value="OR"  selected>OR</option> -->
+<!-- 										<option value="AND" >AND</option>  -->
+<!-- 									</select> -->
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">search spectra</span>
+									<select id="ms-search-type" class="form-control advancedSearch" style="width: 310px;">
+										<option value="LCMS">LC-MS</option>
+										<option value="LCMSMS">LC-MSMS</option>
+										<option value="ICMS">IC-MS</option>
+										<option value="ICMSMS" disabled="disabled">IC-MSMS</option>
+									</select>
+								</div>
+								
+								<!-- compound name -->
+								<div class="form-group input-group" style="width: 450px;">
+									<span class="input-group-addon" 
+										style="width: 150px;">
+											<spring:message code="modal.advSearch.params.compoundLike" 
+												text="Compound like" />
+									</span>
+									<input id="ms-compound-name" 
+										style="width: 300px;" 
+										type="text" 
+										class="form-control advancedSearch" 
+										placeholder="<spring:message code="modal.advSearch.params.compoundLike.eg" text="e.g.: Gluc" />" 
+										value="" />
+								</div>
+								
+								<!-- polarity -->
+								<div class="form-group input-group" style="width: 600px;">
+									<select id="ms-polarity-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="or"  selected>OR</option>
+										<option value="and" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">
+										<spring:message code="modal.advSearch.params.polarity" text="Polarity" />&nbsp;
+									</span>
+									<select id="ms-polarity-value" class="form-control advancedSearch" style="width: 420px;">
+										<option selected="selected" disabled="disabled"></option>
+										<option value="positive" ><spring:message code="modal.advSearch.params.polarity.positive" text="positive" /></option> 
+										<option value="negative" ><spring:message code="modal.advSearch.params.polarity.negative" text="negative" /></option> 
+									</select>
+								</div>
+								
+								<!-- resolution -->
+								<div class="form-group input-group" style="width: 600px;">
+									<select id="ms-resolution-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="or"  selected>OR</option>
+										<option value="and" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">
+										<spring:message code="modal.advSearch.params.resolution" text="Resolution" />&nbsp;
+									</span>
+									<select id="ms-resolution-value" class="form-control advancedSearch" style="width: 420px;">
+										<option selected="selected" disabled="disabled"></option>
+										<option value="high" ><spring:message code="modal.advSearch.params.resolution.high" text="high" /></option> 
+										<option value="low" ><spring:message code="modal.advSearch.params.resolution.low" text="low" /></option> 
+									</select>
+								</div>
+								
+								<!-- MS ionization method -->
+								<div class="form-group input-group" style="width: 600px;">
+									<select id="ms-ionization_method-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="or"  selected>OR</option>
+										<option value="and" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">ionization method</span>
+									<select id="ms-ionization_method-value" class="form-control advancedSearch" style="width: 420px;">
+										<option value=""></option>
+									</select>
+								</div>
+								
+								<!-- MS ion analyzer type -->
+								<div class="form-group input-group" style="width: 600px;">
+									<select id="ms-analyzer-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="or"  selected>OR</option>
+										<option value="and" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">analyzer type</span>
+<!-- 									<input id="icms-analyzer-value" type="text" class="form-control advancedSearch" placeholder="e.g.: TOF / QTOF / QQQ / ..." style="width: 420px;"> -->
+									<select id="ms-analyzer-value" class="form-control advancedSearch" style="width: 420px;">
+										<option value=""></option>
+										<option value="TOF">TOF</option>
+										<option value="EB">EB</option>
+										<option value="ITFT">ITFT</option>
+										<option value="QTOF">QTOF</option>
+										<option value="QQQ">QQQ</option>
+									</select>
+								</div>
+								
+							</div><!-- #/searchAdvance-spectra-ms-panel -->
+							
+							<!-- ######################################################################### -->
 						</div>
 						<!-- /.row -->
 						<script type="text/javascript">
@@ -666,14 +899,18 @@ $( document ).ready(function() {
 						
 		$.getJSON("resources/json/list-ms-ionization-methods.json", function(data) {
 			// load data from json
-			$.each(data.methods,function(){
-				if (this.name !==undefined) {
-					if (this.value !==undefined) {
-						$("#lcms-ionMeth").append('<option value="'+this.value+'">'+this.name+'</option>');
-						$("#lcmsms-ionMeth").append('<option value="'+this.value+'">'+this.name+'</option>');
+			$.each(data.methods, function(){
+				if (this.name !== undefined) {
+					if (this.value !== undefined) {
+						$("#ms-ionization_method-value").append('<option value="'+this.value+'">' + this.name + '</option>');
+// 						$("#lcms-ionMeth").append('<option value="'+this.value+'">'+this.name+'</option>');
+// 						$("#lcmsms-ionMeth").append('<option value="'+this.value+'">'+this.name+'</option>');
+// 						$("#icms-ionization-method-value").append('<option value="'+this.value+'">'+this.name+'</option>');
+// 						$("#icmsms-ionization-method-value").append('<option value="'+this.value+'">'+this.name+'</option>');
 					} else {
-						$("#lcms-ionMeth").append('<option disabled>'+this.name+'</option>');
-						$("#lcmsms-ionMeth").append('<option disabled>'+this.name+'</option>');
+						$("#ms-ionization_method-value").append('<option disabled="disabled">' + this.name + '</option>');
+// 						$("#icms-ionization-method-value").append('<option disabled>'+this.name+'</option>');
+// 						$("#icmsms-ionization-method-value").append('<option disabled>'+this.name+'</option>');
 					}
 				}
 			});
@@ -698,266 +935,321 @@ $( document ).ready(function() {
 			});
 		});
 						
-							function loadRawQuery() {
-								var rawQuery = $("#search").val();
-								var rawQueryTab = rawQuery.split(" ");
-								var query = "";
-								$.each(rawQueryTab, function(k, v) {
-									if (v != "") {
-										var res = v.split(":");
-										if (res != null && res.length == 2) {
-											var filterType = res[0];
-											var filterVal = res[1];
-											switch (filterType) {
-											case "AVM":
-												$("#advancedSearch-compound-filter").val(2);
-												var massData = filterVal.split("d");
-												var mass = massData[0];
-												var tol = massData[1];
-												$("#advancedSearchMassMass").val(mass);
-												$("#advancedSearchMassTol").val(tol);
-												searchAdvanceEntities = "compounds";
-												//$("#avancedSearchMassPanel-link").show();
-												break;
-											case "MIM":
-												$("#advancedSearch-compound-filter").val(1);
-												var massData = filterVal
-														.split("d");
-												var mass = massData[0];
-												var tol = massData[1];
-												$("#advancedSearchMassMass").val(mass);
-												$("#advancedSearchMassTol").val(tol);
-												searchAdvanceEntities = "compounds";
-												$("#avancedSearchMassPanel-link").show();
-												break;
-											case "FOR":
-												$("#advancedSearch-compound-filter").val(3);
-												$("#advancedSearchFormulaFor").val(filterVal);
-												searchAdvanceEntities = "compounds";
-												$("#avancedSearchMassPanel-link").hide();
-												break;
-											case "mode":
-												$("#mode_" +filterVal).prop("checked", true);
-												$("#linkShowHideAvancedSearchMass").click();
-												break;
-											default: 
-												searchAdvanceEntities = "compounds";
-												break;
-											}//switch
-										} else {
-											query += v + " ";
-										}
-									}
-									//console.log(v);
-								});
-								$("#advancedSearchCompQuery").val(query);
-								//console.log(query);
-								if (switchAdvSearch == 'nmr-spectra')
-									searchAdvanceEntities = 'nmr-spectra';
-								if (switchAdvSearch == 'lcms-spectra')
-									searchAdvanceEntities = 'lcms-spectra';
-								if (switchAdvSearch == 'lcmsms-spectra')
-									searchAdvanceEntities = 'lcmsms-spectra';
-								switch (searchAdvanceEntities) {
-								case "lcms-spectra":
-									$('#link-searchAdvance-spectra-lcms').click();
-									break;
-								case "lcmsms-spectra":
-									$('#link-searchAdvance-spectra-lcmsms').click();
-									break;
-								case "nmr-spectra":
-									$('#link-searchAdvance-spectra-nmr').click();
-									setTimeout(function(){$("#nmr-peaklist").focus();},200);
-									break;
-								default:
-									setTimeout(function(){$("#advancedSearchCompQuery").focus();},200);
-									break;
-								}//switch
-								displayAdvancedSearch();
-							}
+		function loadRawQuery() {
+			var rawQuery = $("#search").val();
+			var rawQueryTab = rawQuery.split(" ");
+			var query = "";
+			$.each(rawQueryTab, function(k, v) {
+				if (v != "") {
+					var res = v.split(":");
+					if (res != null && res.length == 2) {
+						var filterType = res[0];
+						var filterVal = res[1];
+						switch (filterType) {
+						case "AVM":
+							$("#advancedSearch-compound-filter").val(2);
+							var massData = filterVal.split("d");
+							var mass = massData[0];
+							var tol = massData[1];
+							$("#advancedSearchMassMass").val(mass);
+							$("#advancedSearchMassTol").val(tol);
+							searchAdvanceEntities = "compounds";
+							//$("#avancedSearchMassPanel-link").show();
+							break;
+						case "MIM":
+							$("#advancedSearch-compound-filter").val(1);
+							var massData = filterVal
+									.split("d");
+							var mass = massData[0];
+							var tol = massData[1];
+							$("#advancedSearchMassMass").val(mass);
+							$("#advancedSearchMassTol").val(tol);
+							searchAdvanceEntities = "compounds";
+							$("#avancedSearchMassPanel-link").show();
+							break;
+						case "FOR":
+							$("#advancedSearch-compound-filter").val(3);
+							$("#advancedSearchFormulaFor").val(filterVal);
+							searchAdvanceEntities = "compounds";
+							$("#avancedSearchMassPanel-link").hide();
+							break;
+						case "LOGP":
+							$("#advancedSearch-compound-filter").val(4);
+							var logpData = filterVal.split("d");
+							var logp = logpData[0];
+							var tol = logpData[1];
+							$("#advancedSearchLogPLogP").val(logp);
+							$("#advancedSearchLogPTol").val(tol);
+							searchAdvanceEntities = "compounds";
+							$("#avancedSearchMassPanel-link").hide();
+							break;
+						case "mode":
+							$("#mode_" +filterVal).prop("checked", true);
+							$("#linkShowHideAvancedSearchMass").click();
+							break;
+						default: 
+							searchAdvanceEntities = "compounds";
+							break;
+						}//switch
+					} else {
+						query += v + " ";
+					}
+				}
+				//console.log(v);
+			});
+			$("#advancedSearchCompQuery").val(query);
+			//console.log(query);
+			switch (switchAdvSearch) {
+			case "nmr-spectra":
+				searchAdvanceEntities = 'nmr-spectra';
+				break;
+			case "lcms-spectra":
+			case "lcmsms-spectra":
+			case "icms-spectra":
+			case "icmsms-spectra":
+				searchAdvanceEntities = switchAdvSearch;
+				break;
+			case "gcms-spectra":
+				searchAdvanceEntities = switchAdvSearch;
+				break;
+			}
+			switch (searchAdvanceEntities) {
+			case "lcms-spectra":
+			case "lcmsms-spectra":
+			case "icms-spectra":
+			case "icmsms-spectra":
+				$('#link-searchAdvance-spectra-ms').click();
+				break;
+			case "gcms-spectra":
+				$('#link-searchAdvance-spectra-gcms').click();
+				break;
+// 			case "lcms-spectra":
+// 				$('#link-searchAdvance-spectra-lcms').click();
+// 				break;
+// 			case "lcmsms-spectra":
+// 				$('#link-searchAdvance-spectra-lcmsms').click();
+// 				break;
+			case "nmr-spectra":
+				$('#link-searchAdvance-spectra-nmr').click();
+				setTimeout(function(){$("#nmr-peaklist").focus();},200);
+				break;
+			default:
+				setTimeout(function(){$("#advancedSearchCompQuery").focus();},200);
+				break;
+			}//switch
+			displayAdvancedSearch();
+		}
 
-							loadRawQuery();
-							//acid AVM:123.456d0.0003
-							
-// 							console.log("b " + searchAdvanceEntities);
-							
-							submitAdvancedSearchForm = function() {
-								loadAdvancedSearch();
-								$("#searchForm").submit();
-							};
-							
-							$(".advancedSearch").change(function() {
-								loadAdvancedSearch(this);
-							});
+		loadRawQuery();
+		//acid AVM:123.456d0.0003
+		
+		
+		submitAdvancedSearchForm = function() {
+			loadAdvancedSearch();
+			$("#searchForm").submit();
+		};
+		
+		$(".advancedSearch").change(function() {
+			loadAdvancedSearch(this);
+		});
 
-							$(".advancedSearchMassCharge").click(function() {
-								var id = $(this).attr('id');
-								console.log("id=" + id);
-								switch (id) {
-								case "mode_negative":
-									$("#negative-adducts").show();
-									$("#neutral-adducts").hide();
-									$("#positive-adducts").hide();
-									break;
-								case "mode_neutral":
-									$("#negative-adducts").hide();
-									$("#neutral-adducts").show();
-									$("#positive-adducts").hide();
-									break;
-								case "mode_positive":
-									$("#negative-adducts").hide();
-									$("#neutral-adducts").hide();
-									$("#positive-adducts").show();
-									break;
-								}//switch
-							});
+		$(".advancedSearchMassCharge").click(function() {
+			var id = $(this).attr('id');
+			console.log("id=" + id);
+			switch (id) {
+			case "mode_negative":
+				$("#negative-adducts").show();
+				$("#neutral-adducts").hide();
+				$("#positive-adducts").hide();
+				break;
+			case "mode_neutral":
+				$("#negative-adducts").hide();
+				$("#neutral-adducts").show();
+				$("#positive-adducts").hide();
+				break;
+			case "mode_positive":
+				$("#negative-adducts").hide();
+				$("#neutral-adducts").hide();
+				$("#positive-adducts").show();
+				break;
+			}//switch
+		});
 
-							function displayAdvancedSearch() {
-								var hideMass = Number($("#advancedSearch-compound-filter").val());
-								$(".advancedSearchFormula").hide();
-								$(".advancedSearchMass").hide(); 
-								$("#avancedSearchMassPanel").hide();
-								$("#linkShowHideAvancedSearchMass").hide();
-								switch (hideMass) {
-								case 1:
-									$(".advancedSearchMass").show();
-									$("#linkShowHideAvancedSearchMass").show();
-									if (displayAvancedSearchMassPanel) {
-										$("#avancedSearchMassPanel").show();
-									}
-									break;
-								case 2:
-									$(".advancedSearchMass").show();
-									break;
-								case 3:
-									$(".advancedSearchFormula").show();
-									break;
-								default:
-									break;
-								}
-							}
+		function displayAdvancedSearch() {
+			var hideMass = Number($("#advancedSearch-compound-filter").val());
+			$(".advancedSearchFormula").hide();
+			$(".advancedSearchMass").hide(); 
+			$(".advancedSearchLogP").hide(); 
+			$("#avancedSearchMassPanel").hide();
+			$("#linkShowHideAvancedSearchMass").hide();
+			switch (hideMass) {
+			case 1:
+				$(".advancedSearchMass").show();
+				$("#linkShowHideAvancedSearchMass").show();
+				if (displayAvancedSearchMassPanel) {
+					$("#avancedSearchMassPanel").show();
+				}
+				break;
+			case 2:
+				$(".advancedSearchMass").show();
+				break;
+			case 3:
+				$(".advancedSearchFormula").show();
+				break;
+			case 4:
+				$(".advancedSearchLogP").show();
+				break;
+			default:
+				break;
+			}
+		}
 
-							var displayAvancedSearchMassPanel = false;
-							function showHideAvancedSearchMassPanel() {
-								displayAvancedSearchMassPanel = !displayAvancedSearchMassPanel;
-								if (displayAvancedSearchMassPanel) {
-									$("#avancedSearchMassPanel").show();
-									$("#linkShowHideAvancedSearchMass").html('<spring:message code="modal.advSearch.cpd.less" text="...less" />');
-								} else {
-									$("#avancedSearchMassPanel").hide();
-									$("#linkShowHideAvancedSearchMass").html('<spring:message code="modal.advSearch.cpd.more" text="more..." />');
-								}
-							}
-							
-							var displayAvancedSearchNmrPanel = false;
-							function showHideAvancedSearchNmrPanel() {
-								displayAvancedSearchNmrPanel = !displayAvancedSearchNmrPanel;
-								if (displayAvancedSearchNmrPanel) {
-									$("#avancedSearchNmrPanel").show();
-									$("#linkShowHideAvancedSearchNmr").html('<spring:message code="modal.advSearch.cpd.less" text="...less" />');
-									$("#searchAdvance-spectra-nmr-panel").css('height', (+110 + Number($("#searchAdvance-spectra-nmr-panel").css('height').replace("px",""))) + "px");
-								} else {
-									$("#avancedSearchNmrPanel").hide();
-									$("#linkShowHideAvancedSearchNmr").html('<spring:message code="modal.advSearch.cpd.more" text="more..." />');
-									$("#searchAdvance-spectra-nmr-panel").css('height', (-110 + Number($("#searchAdvance-spectra-nmr-panel").css('height').replace("px",""))) + "px");
-								}
-							}
+		var displayAvancedSearchMassPanel = false;
+		function showHideAvancedSearchMassPanel() {
+			displayAvancedSearchMassPanel = !displayAvancedSearchMassPanel;
+			if (displayAvancedSearchMassPanel) {
+				$("#avancedSearchMassPanel").show();
+				$("#linkShowHideAvancedSearchMass").html('<spring:message code="modal.advSearch.cpd.less" text="...less" />');
+			} else {
+				$("#avancedSearchMassPanel").hide();
+				$("#linkShowHideAvancedSearchMass").html('<spring:message code="modal.advSearch.cpd.more" text="more..." />');
+			}
+		}
+		
+		var displayAvancedSearchNmrPanel = false;
+		function showHideAvancedSearchNmrPanel() {
+			displayAvancedSearchNmrPanel = !displayAvancedSearchNmrPanel;
+			if (displayAvancedSearchNmrPanel) {
+				$("#avancedSearchNmrPanel").show();
+				$("#linkShowHideAvancedSearchNmr").html('<spring:message code="modal.advSearch.cpd.less" text="...less" />');
+				$("#searchAdvance-spectra-nmr-panel").css('height', (+110 + Number($("#searchAdvance-spectra-nmr-panel").css('height').replace("px",""))) + "px");
+			} else {
+				$("#avancedSearchNmrPanel").hide();
+				$("#linkShowHideAvancedSearchNmr").html('<spring:message code="modal.advSearch.cpd.more" text="more..." />');
+				$("#searchAdvance-spectra-nmr-panel").css('height', (-110 + Number($("#searchAdvance-spectra-nmr-panel").css('height').replace("px",""))) + "px");
+			}
+		}
 
-							function loadAdvancedSearch(elem) {
-								var e = $(elem);
-								var id = e.attr('id');
-								var val = e.val();
-								//console.log("id="+id);
-								//console.log("val="+val);
-								var mainSearchQuery = "";// $("#search").val();;
-								switch (searchAdvanceEntities) {
-								case "compounds":
-									$("#searchSpectraF").remove();
-									switch ($("#advancedSearch-compound-filter").val()) {
-									case "1":
-										mainSearchQuery += $("#advancedSearchCompQuery").val() + " ";
-										mainSearchQuery += "MIM:" + $("#advancedSearchMassMass").val() + "d" + $("#advancedSearchMassTol").val();
-										if ($("#avancedSearchMassPanel").is(":visible")) {
-											mainSearchQuery += " " + "mode:" + $("input[name='mode']:checked").val();
-										}
-										break;
-									case "2":
-										mainSearchQuery += $("#advancedSearchCompQuery").val() + " ";
-										mainSearchQuery += "AVM:" + $("#advancedSearchMassMass").val() + "d" + $("#advancedSearchMassTol").val();
-										break;
-									case "3":
-										mainSearchQuery += $("#advancedSearchCompQuery").val() + " ";
-										mainSearchQuery += "FOR:" + $("#advancedSearchFormulaFor").val();
-										break;
-									}
-									break;
-								case "lcms-spectra":
-									if (!($($("input#searchSpectraF")).length)) {
-										$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="lcms" />');
-									}
-									mainSearchQuery = 'LCMS ' + $("#lcms-cpd-name").val() 
-									mainSearchQuery += " " + $("input[name='lcms-polarity']:checked").val();
-									mainSearchQuery += " " + $("input[name='lcms-resolution']:checked").val();
-									mainSearchQuery += " " + $("#lcms-ionMeth").val();
-									mainSearchQuery += " " + $("#lcms-ionAnalyzer").val();
-									mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
-									break;
-								case "lcmsms-spectra":
-									if (!($($("input#searchSpectraF")).length)) {
-										$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="lcmsms" />');
-									}
-									mainSearchQuery = 'LCMSMS ' + $("#lcmsms-cpd-name").val() 
-									mainSearchQuery += " " + $("input[name='lcmsms-polarity']:checked").val();
-									mainSearchQuery += " " + $("input[name='lcmsms-resolution']:checked").val();
-									mainSearchQuery += " " + $("#lcmsms-ionMeth").val();
-									mainSearchQuery += " " + $("#lcmsms-ionAnalyzer").val();
-									mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
-									break;
-								case "nmr-spectra":
-									if (!($($("input#searchSpectraF")).length)) {
-										$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="nmr" />');
-									}
-									mainSearchQuery = 'NMR ' + $("#nmr-cpd-name").val() 
-									mainSearchQuery += " " + $("#nmr-ph").val();
-									mainSearchQuery += " " + $("#nmr-pulseseq").val();
-									mainSearchQuery += " " + $("#nmr-magneticFieldStrength").val();
-									if ($("#nmr-solvent").val() !== null)
-										mainSearchQuery += " " + $("#nmr-solvent").val();
-									if ($("#isotopic_labelling_Dy").is(":checked"))
-										mainSearchQuery += " D";
-									if ($("#isotopic_labelling_Cy").is(":checked"))
-										mainSearchQuery += " 13C";
-									if ($("#isotopic_labelling_Ny").is(":checked"))
-										mainSearchQuery += " 15N";
-									mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
-									break;
-								case "gcms-spectra":
-									if (!($($("input#searchSpectraF")).length)) {
-										$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="gcms" />');
-									}
-									mainSearchQuery = 'GCMS ' + $("#gcms-cpd-name").val() 
-									if ($("#gcms-derivation-value").val() !== null && $("#gcms-derivation-value").val() != "na") {
-										mainSearchQuery += " " + $("#gcms-derivation-linker").val() + "~derivation~" + $("#gcms-derivation-value").val();
-									}
-									if ($("#gcms-derivated_type-value").val() !== null && $("#gcms-derivated_type-value").val() != "na") {
-										mainSearchQuery += " " + $("#gcms-derivated_type-linker").val()
-											+ "~derivated_type~" + $("#gcms-derivated_type-value").val();
-									}
-									if ($("#gcms-ionization-value").val() !== null && $("#gcms-ionization-value").val() != "na") {
-										mainSearchQuery += " " + $("#gcms-ionization-linker").val() + "~ionization~" + $("#gcms-ionization-value").val();
-									}
-									if ($("#gcms-analyzer-value").val() !== "") {
-										mainSearchQuery += " " + $("#gcms-analyzer-linker").val() + "~analyzer~" + $("#gcms-analyzer-value").val();
-									}
-									mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
-									break;
-								}
-								
-								if (mainSearchQuery != "") {
-									$("#search").val(mainSearchQuery);
-								}
-								displayAdvancedSearch();
-							}
+		function loadAdvancedSearch(elem) {
+			var e = $(elem);
+			var id = e.attr('id');
+			var val = e.val();
+			//console.log("id="+id);
+			//console.log("val="+val);
+			var mainSearchQuery = "";// $("#search").val();;
+			switch (searchAdvanceEntities) {
+			case "compounds":
+				$("#searchSpectraF").remove();
+				switch ($("#advancedSearch-compound-filter").val()) {
+				case "1":
+					mainSearchQuery += $("#advancedSearchCompQuery").val() + " ";
+					mainSearchQuery += "MIM:" + $("#advancedSearchMassMass").val() + "d" + $("#advancedSearchMassTol").val();
+					if ($("#avancedSearchMassPanel").is(":visible")) {
+						mainSearchQuery += " " + "mode:" + $("input[name='mode']:checked").val();
+					}
+					break;
+				case "2":
+					mainSearchQuery += $("#advancedSearchCompQuery").val() + " ";
+					mainSearchQuery += "AVM:" + $("#advancedSearchMassMass").val() + "d" + $("#advancedSearchMassTol").val();
+					break;
+				case "3":
+					mainSearchQuery += $("#advancedSearchCompQuery").val() + " ";
+					mainSearchQuery += "FOR:" + $("#advancedSearchFormulaFor").val();
+					break;
+				case "4":
+					mainSearchQuery += $("#advancedSearchCompQuery").val() + " ";
+					mainSearchQuery += "LOGP:" + $("#advancedSearchLogPLogP").val() + "d" + $("#advancedSearchLogPTol").val();
+					break;
+				}
+				break;
+// 			case "lcms-spectra":
+// 				if (!($($("input#searchSpectraF")).length)) {
+// 					$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="lcms" />');
+// 				}
+// 				mainSearchQuery = 'LCMS ' + $("#lcms-cpd-name").val() 
+// 				mainSearchQuery += " " + $("input[name='lcms-polarity']:checked").val();
+// 				mainSearchQuery += " " + $("input[name='lcms-resolution']:checked").val();
+// 				mainSearchQuery += " " + $("#lcms-ionMeth").val();
+// 				mainSearchQuery += " " + $("#lcms-ionAnalyzer").val();
+// 				mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
+// 				break;
+// 			case "lcmsms-spectra":
+// 				if (!($($("input#searchSpectraF")).length)) {
+// 					$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="lcmsms" />');
+// 				}
+// 				mainSearchQuery = 'LCMSMS ' + $("#lcmsms-cpd-name").val() 
+// 				mainSearchQuery += " " + $("input[name='lcmsms-polarity']:checked").val();
+// 				mainSearchQuery += " " + $("input[name='lcmsms-resolution']:checked").val();
+// 				mainSearchQuery += " " + $("#lcmsms-ionMeth").val();
+// 				mainSearchQuery += " " + $("#lcmsms-ionAnalyzer").val();
+// 				mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
+// 				break;
+			case "nmr-spectra":
+				if (!($($("input#searchSpectraF")).length)) {
+					$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="nmr" />');
+				}
+				mainSearchQuery = 'NMR ' + $("#nmr-cpd-name").val() 
+				mainSearchQuery += " " + $("#nmr-ph").val();
+				mainSearchQuery += " " + $("#nmr-pulseseq").val();
+				mainSearchQuery += " " + $("#nmr-magneticFieldStrength").val();
+				if ($("#nmr-solvent").val() !== null)
+					mainSearchQuery += " " + $("#nmr-solvent").val();
+				if ($("#isotopic_labelling_Dy").is(":checked"))
+					mainSearchQuery += " D";
+				if ($("#isotopic_labelling_Cy").is(":checked"))
+					mainSearchQuery += " 13C";
+				if ($("#isotopic_labelling_Ny").is(":checked"))
+					mainSearchQuery += " 15N";
+				mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
+				break;
+			case "gcms-spectra":
+				if (!($($("input#searchSpectraF")).length)) {
+					$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="gcms" />');
+				}
+				mainSearchQuery = 'GCMS ' + $("#gcms-cpd-name").val() 
+				if ($("#gcms-derivation-value").val() !== null && $("#gcms-derivation-value").val() != "na") {
+					mainSearchQuery += " " + $("#gcms-derivation-linker").val() + "~derivation~" + $("#gcms-derivation-value").val();
+				}
+				if ($("#gcms-derivated_type-value").val() !== null && $("#gcms-derivated_type-value").val() != "na") {
+					mainSearchQuery += " " + $("#gcms-derivated_type-linker").val()
+						+ "~derivated_type~" + $("#gcms-derivated_type-value").val();
+				}
+				if ($("#gcms-ionization-value").val() !== null && $("#gcms-ionization-value").val() != "na") {
+					mainSearchQuery += " " + $("#gcms-ionization-linker").val() + "~ionization~" + $("#gcms-ionization-value").val();
+				}
+				if ($("#gcms-analyzer-value").val() !== "") {
+					mainSearchQuery += " " + $("#gcms-analyzer-linker").val() + "~analyzer~" + $("#gcms-analyzer-value").val();
+				}
+				mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
+				break;
+			// new 2.3
+			case "ms-spectra":
+// 				if (!($($("input#searchSpectraF")).length)) {
+// 					$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="lcms" />');
+// 				}
+				mainSearchQuery = $("#ms-search-type").val() ;
+				mainSearchQuery	+= " " + $("#ms-compound-name").val();  
+				if ($("#ms-polarity-value").val() !== null && $("#ms-polarity-value").val() != "") {
+					mainSearchQuery += " " + $("#ms-polarity-linker").val() + "~polarity~" + $("#ms-polarity-value").val();
+				}
+				if ($("#ms-resolution-value").val() !== null && $("#ms-resolution-value").val() != "") {
+					mainSearchQuery += " " + $("#ms-resolution-linker").val() + "~resolution~" + $("#ms-resolution-value").val();
+				}
+				if ($("#ms-ionization_method-value").val() !== null && $("#ms-ionization_method-value").val() != "") {
+					mainSearchQuery += " " + $("#ms-ionization_method-linker").val() + "~ionization_method~" + $("#ms-polarity-value").val();
+				}
+				if ($("#ms-analyzer-value").val() !== null && $("#ms-analyzer-value").val() != "") {
+					mainSearchQuery += " " + $("#ms-analyzer-linker").val() + "~analyzer~" + $("#ms-analyzer-value").val();
+				}
+				mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
+				break;
+			}
+			
+			if (mainSearchQuery != "") {
+				$("#search").val(mainSearchQuery);
+			}
+			displayAdvancedSearch();
+		}
 						</script>
 					</div>
 				</div>
