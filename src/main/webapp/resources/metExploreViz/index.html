@@ -1,0 +1,71 @@
+<!-- 
+ This file is part of MetExploreViz 
+
+ Copyright © 2016 INRA 
+ Contact: http://metexplore.toulouse.inra.fr/metexploreViz/doc/contact 
+ GNU General Public License Usage 
+ This file may be used under the terms of the GNU General Public License version 3.0 as 
+ published by the Free Software Foundation and appearing in the file LICENSE included in the 
+ packaging of this file. 
+ Please review the following information to ensure the GNU General Public License version 3.0 
+ requirements will be met: http://www.gnu.org/copyleft/gpl.html. 
+ If you are unsure which license is appropriate for your use, please contact us 
+ at http://metexplore.toulouse.inra.fr/metexploreViz/doc/contact
+ Version: 1.2.0.2 
+ Build Date: Mon Nov 21 14:42:33 CET 2016 
+ --> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <title>MetExplore Visualization</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+        <link href="resources/icons/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+
+        <script async type="text/javascript" src="resources/lib/tulip-javascript/demos/tulip.js"></script>
+        <script  id="microloader" data-app="${app.id}" src="bootstrap.js"></script> <!-- The line below must be kept intact for Sencha Cmd to build your application -->
+
+        <script type="text/javascript"> 
+            
+            function init(){
+                function whileMetExploreVizNotLoading(func){
+                    this.reloadMetexploreViz(func);
+                };
+
+                if(parent.document.getElementById('iFrameMetExploreViz')!=null){
+                    var dimensionIFrameMetExploreViz = parent.document.getElementById('iFrameMetExploreViz').getBoundingClientRect();
+                    
+                    document.getElementById("visualisation").style.width = dimensionIFrameMetExploreViz.width+"px";
+                    document.getElementById("visualisation").style.height = dimensionIFrameMetExploreViz.height+"px";
+                }
+                
+                // Launch metExploreViz after microloader loading 
+                Ext.Microloader.onCachedAssetsReady = function(){
+                    window.location.reload();
+                };  
+
+                Ext.Microloader.onAllUpdatedAssetsReady = function(){
+                    Ext.onReady(function() {
+                        var visu = new metExploreViz('visualisation', parent);
+                        // Create metExploreViz variable in parent DOM
+                        parent.metExploreViz = metExploreD3;
+                    });
+                };  
+                
+            }
+            document.addEventListener("DOMContentLoaded", init, false);
+            
+        </script>
+    </head>
+
+    <body>
+        <div id ="visualisation" style="height:600px; width:100%;">
+            <!-- Proposer un fichier json et un fichier mapping -->
+            <div style="position: absolute; z-index: -10; font-family: Helvetica Neue,Helvetica,Arial,sans-serif; font-weight: bold;">
+            	Loading...
+            	<br />Please wait, it could take a few seconds...
+            	<br /><img src="../img/ajax-loader-big.gif" />
+            </div>
+        </div>
+    </body>
+</html>

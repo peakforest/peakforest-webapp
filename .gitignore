@@ -8,4 +8,5 @@ src/main/webapp/META-INF
 .idea
 *.iml
 /*.springBeans
-src/main/webapp/WEB-INF/lib/*
+src/main/webapp/WEB-INF/lib/*.jar
+.externalToolBuilders

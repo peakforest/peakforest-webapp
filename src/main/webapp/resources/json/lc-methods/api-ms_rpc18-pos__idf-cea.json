@@ -1,0 +1,60 @@
+{
+	"dumper_type": "lc-ms",
+	"lc_chromatography" : {
+		"method": "IDF (API-MS procedures_RPC18pos_IDF)",
+		"column_constructor": "Thermo",
+		"column_constructor_other": null,
+		"column_name": "Hypersil Gold C18",
+		"column_length": 150,
+		"column_diameter": 2.1,
+		"particule_size": 1.9,
+		"column_temperature": 30,
+		"LC_mode": "Gradient",
+		"separation_flow_rate": 500,
+		"separation_solvent_a": "H2O + 0.1% Formic Acid",
+		"ph_solvent_a": null,
+		"separation_solvent_b": "Acetonitrile + 0.1% Formic Acid",
+		"ph_solvent_b": null,
+		"separation_flow_gradient":  [
+			{ "time": 0, "solvA": 100, "solvB": 0 },
+			{ "time": 2, "solvA": 100, "solvB": 0 },
+			{ "time": 13, "solvA": 0, "solvB": 100 },
+			{ "time": 15.4, "solvA": 0, "solvB": 100 },
+			{ "time": 15.5, "solvA": 100, "solvB": 0 },
+			{ "time": 19, "solvA": 100, "solvB": 0 }	
+		]
+	},
+	"ms_analyzer" : {
+		"instrument": "Orbitrap",
+		"model": "LTQ-Orbitrap Discovery",
+		"resolution_FWHM": "30000@400",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": null,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		},
+		"mode_neg": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": null,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		}
+	},
+	"other": {
+		"data_authors": "The MetabolomeIDF (Ile de France, Paris-Saclay) CEA",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": "The MetabolomeIDF (Ile de France, Paris-Saclay) CEA"
+	}
+}

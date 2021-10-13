@@ -1,0 +1,9 @@
+{ 
+	"lockSubstance": [ 
+		{ "name": "D2O", "value": "D2O", "classD": ""},
+		{ "name": "H2O/D2O", "value": "H2O/D2O", "classD": ""},
+		{ "name": "MeOD/D2O", "value": "MeOD/D2O", "classD": ""},
+		{ "name": "CDCl3", "value": "CDCl3", "classD": ""},
+		{ "name": "acetone-d6", "value": "acetone-d6", "classD": ""}
+	]
+}

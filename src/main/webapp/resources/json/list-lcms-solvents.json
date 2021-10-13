@@ -1,0 +1,11 @@
+{ 
+	"solvents": [ 
+		{ "name": "none", "value": "none", "classD": ""},
+		{ "name": "H2O", "value": "H2O", "classD": ""},
+		{ "name": "3/5 in H2O + 0.1% AF/ ACN + 0.1% AF (50/50, V/V)", "value": "3/5 in H2O + 0.1% AF/ ACN + 0.1% AF (50/50, V/V)", "classD": ""},
+		{ "name": "ACN/H2O (1/1, v/v)", "value": "ACN/H2O (1/1, V/V)", "classD": ""},		
+		{ "name": "CH3OH/H2O (1/1, v/v)", "value": "CH3OH/H2O (1/1, V/V)", "classD": ""},
+		{ "name": "H2O/ACN (40/60)", "value": "H2O/ACN (40/60)", "classD": ""},
+		{ "name": "H2O/ACN (95/5)", "value": "H2O/ACN (95/5)", "classD": ""}
+	]
+}

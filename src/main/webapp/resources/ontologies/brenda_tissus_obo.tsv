@@ -1,0 +1,5808 @@
+0000000	tissues, cell types and enzyme sources
+0000001	culture condition:-induced cell
+0000002	culture condition:1,4-dichlorobenzene-grown cell
+0000003	intestinal cell line
+0000004	culture condition:2,5-dihydroxybenzoate-grown cell
+0000005	culture condition:2-aminobenzenesulfonate-grown cell
+0000006	osteoblastoma cell
+0000007	HEK-293 cell
+0000008	culture condition:3-chlorobenzoate-grown cell
+0000009	culture condition:3-hydroxybenzoate-grown cell
+0000010	culture condition:3-methylcrotonoyl-CoA-grown cell
+0000011	3T3-L1 cell
+0000012	culture condition:4-(methoxymethyl)phenol-grown cell
+0000013	culture condition:4-chlorophenol-grown cell
+0000014	culture condition:4-hydroxybenzoate-grown cell
+0000015	culture condition:4-methylmuconolactone-grown cell
+0000016	A-172 cell
+0000017	A-431 cell
+0000018	A-549 cell
+0000019	A7r5 cell
+0000020	abdomen
+0000021	head muscle
+0000022	abdominal ganglion
+0000023	pectoral muscle
+0000024	abomasum
+0000025	amniotic cavity
+0000026	culture condition:galactose-grown cell
+0000027	achene
+0000028	pancreatic acinar cell
+0000029	adductor longus
+0000030	adductor
+0000031	fruit peduncle
+0000032	colonic adenocarcinoma cell
+0000033	SW-403 cell
+0000034	apical meristem
+0000035	colorectal adenocarcinoma cell
+0000036	gastric adenocarcinoma cell
+0000037	renal cell carcinoma cell
+0000038	SW-480 cell
+0000039	root cap
+0000040	adenohypophysis
+0000041	medulla oblongata
+0000042	animal
+0000043	cerebellar cortex
+0000044	tear gland
+0000045	adrenal cortex
+0000046	Y-1 cell
+0000047	adrenal gland
+0000048	zona glomerulosa
+0000049	adrenal medulla
+0000050	zona fasciculata
+0000051	tendon sheath
+0000052	stoma
+0000053	albedo
+0000054	albumen gland
+0000055	pars recta
+0000056	zona reticulata
+0000057	aleurone layer
+0000058	alimentary canal
+0000059	renal epithelium
+0000060	alveolus
+0000061	alveolar sac
+0000062	amastigote
+0000063	culture condition:ammonium malate-grown cell
+0000064	amniochorion
+0000065	amnion
+0000066	amniocyte
+0000067	kidney cell line
+0000068	amniotic fluid
+0000069	WISH cell
+0000070	fungal cell line
+0000071	amoebocyte
+0000072	carpel
+0000073	culture condition:aniline-grown cell
+0000074	antenna
+0000075	antennal gland
+0000076	anterior midgut
+0000077	posterior midgut
+0000078	microglia
+0000079	anther
+0000080	male reproductive gland
+0000081	reproductive system
+0000082	male reproductive system
+0000083	female reproductive system
+0000084	vermiform appendix
+0000085	appressorium
+0000086	culture condition:arabinose-grown cell
+0000087	arterial smooth muscle
+0000088	cardiovascular system
+0000089	blood
+0000090	ascidian
+0000091	ascites
+0000092	trypanosomoid form
+0000093	MCF-7 cell
+0000094	ascites tumor cell
+0000095	F-9 cell
+0000096	urinary bladder cell line
+0000097	ascospore
+0000098	astroblast
+0000099	astrocyte
+0000100	astrocytoma cell
+0000101	astrocytoma cell line
+0000102	blood clot
+0000103	Colon 26-L5 cell
+0000104	lymphoma cell line
+0000105	upper epidermis
+0000106	cranial ganglion
+0000107	B95-8 cell
+0000108	olfactory epithelium
+0000109	bacteroid
+0000110	amniotic cell line
+0000111	BALB/3T12-3 cell
+0000112	sieve cell
+0000113	cervical ganglion
+0000114	basidiocarp
+0000115	BC3H1 cell
+0000116	plant epidermis
+0000117	culture condition:benzoate-grown cell
+0000118	culture condition:benzoylformate-grown cell
+0000119	berry
+0000120	BHK-21 cell
+0000121	bile
+0000122	bile duct
+0000123	bladder
+0000124	microspore
+0000125	blast cell
+0000126	blastoderm
+0000127	blastospore
+0000128	blastula
+0000129	basophil
+0000130	neutrophil
+0000131	blood plasma
+0000132	blood platelet
+0000133	blood serum
+0000134	bloodstream form
+0000135	aorta
+0000136	bronchoalveolar system
+0000137	pulmonary artery endothelium
+0000138	midbrain
+0000139	body wall
+0000140	bone
+0000141	bone marrow
+0000142	brain
+0000143	substantia nigra
+0000144	meninx
+0000145	brain myelin
+0000146	brain stem
+0000147	microgametophyte
+0000148	branch
+0000149	breast
+0000150	breast cancer cell
+0000151	extensor
+0000152	infected cell
+0000153	Walker carcinoma 256 cell
+0000154	BRL-3A cell
+0000155	bronchoalveolar lavage
+0000156	brown adipose tissue
+0000157	aorta thoracica
+0000158	plant bud
+0000159	bulb
+0000160	bundle sheath
+0000161	lung fibroblast cell line
+0000162	culture condition:butyrate-grown cell
+0000163	corolla
+0000164	Burkitt lymphoma cell
+0000165	C2C12 cell
+0000166	cecum
+0000167	adenocarcinoma cell line
+0000168	carotid artery
+0000169	calyx
+0000170	cambium
+0000171	NCI-H226Br cell
+0000172	pileus
+0000173	fruit capsule
+0000174	embryonic structure
+0000175	epithalamus
+0000176	carcinoma cell
+0000177	BG-1 cell
+0000178	adenoma cell
+0000179	Colo-205 cell
+0000180	cervical carcinoma cell
+0000181	Lewis lung carcinoma cell line
+0000182	HT-29 cell
+0000183	pancreatic cell line
+0000184	medullary thyroid carcinoma cell
+0000185	medullary breast carcinoma cell
+0000186	lobular carcinoma cell
+0000187	myeloblast
+0000188	colonic cell line
+0000189	small cell lung cancer cell
+0000190	Ehrlich tumor carcinoma cell
+0000191	medullary carcinoma cell
+0000192	nasopharyngeal carcinoma cell
+0000193	rectal cancer cell
+0000194	endometrioid carcinoma cell
+0000195	CACO-2 cell
+0000196	thyroid cancer cell
+0000197	carcinosarcoma cell
+0000198	cardia
+0000199	cardiac muscle
+0000200	culture condition:2-chloropropionate-grown cell
+0000201	pheochromocytoma cell line
+0000202	sense organ
+0000203	respiratory system
+0000204	carotid body
+0000205	nerve plexus
+0000206	cartilage
+0000207	tibial cartilage
+0000208	caryopsis
+0000209	corpus epididymis
+0000210	cauda epididymis
+0000211	caudate nucleus
+0000212	caudate putamen
+0000213	cecum mucosa
+0000214	cell culture
+0000215	culture condition:galactonate-grown cell
+0000216	culture condition
+0000217	MH-7777A cell
+0000218	BALB/3T3 cell
+0000219	plastron
+0000220	MH1C1 cell
+0000221	cell suspension culture
+0000222	myoblast
+0000223	teratocarcinoma cell
+0000224	liver cell line
+0000225	CEM cell
+0000226	gitter cell
+0000227	central nervous system
+0000228	C-1300 cell
+0000229	centrum semiovale
+0000230	subarachnoid space
+0000231	cerebral hemisphere
+0000232	cerebellum
+0000233	cerebral cortex
+0000234	vein
+0000235	basal ganglion
+0000236	cerebral white matter
+0000237	cerebrospinal fluid
+0000238	cerebrovascular endothelial cell
+0000239	telencephalon
+0000240	inferior cervical ganglion
+0000241	cervical epithelium
+0000242	cervical mucus
+0000243	vagina
+0000244	culture condition:chlorobenzene-induced cell
+0000245	culture condition:chlorobenzoate-grown cell
+0000246	CHO cell
+0000247	shoot tip
+0000248	chondroclast
+0000249	chondrocyte
+0000250	chondrosarcoma cell
+0000251	chorioallantois
+0000252	chorion
+0000253	BEN cell
+0000254	female reproductive gland
+0000255	brain cell line
+0000256	myoblast cell line
+0000257	uterine cancer cell
+0000258	choroid plexus
+0000259	chromaffin cell
+0000260	ciliary body
+0000261	culture condition:mannitol-grown cell
+0000262	clove
+0000263	P-388D1(IL-1) cell
+0000264	bone marrow cell line
+0000265	coagulating gland
+0000266	cob
+0000267	cochlea
+0000268	coleoptile
+0000269	colon
+0000270	colon ascendens
+0000271	colonic mucosa
+0000272	colon transversum
+0000273	ink gland
+0000274	apical bud
+0000275	colonocyte
+0000276	colostrum
+0000277	columnella muscle
+0000278	commercial preparation
+0000279	testicular cancer cell
+0000280	cone
+0000281	conidiophore
+0000282	head
+0000283	conidium
+0000284	organism form
+0000285	corm
+0000286	cornea
+0000287	corneal epithelium
+0000288	corona
+0000289	cytotoxic T-lymphocyte
+0000290	coronary artery
+0000291	corpus allatum
+0000292	corpus luteum
+0000293	occipital lobe
+0000294	dermis
+0000295	WEHI-3 cell
+0000296	SW-1088 cell
+0000297	carcinoma cell line
+0000298	COS-7 cell
+0000299	cotton fibre
+0000300	cotyledon
+0000301	crop
+0000302	ring gland
+0000303	crown gall
+0000304	PANC-1 cell
+0000305	crypt
+0000306	teratocarcinoma cell line
+0000307	crystalline style
+0000308	cytotoxic T-lymphocyte cell line
+0000309	bundle sheath cell
+0000310	protophloem
+0000311	culture filtrate
+0000312	motoneuron
+0000313	hypodermis
+0000314	neuroepithelium
+0000315	ectoderm
+0000316	culture medium
+0000317	caulonema
+0000318	CV-1 cell
+0000319	culture condition:cyclohexanol-grown cell
+0000320	cyst
+0000321	plant cuticle
+0000322	cytotrophoblast
+0000323	culture condition:D-mandelate-grown cell
+0000324	culture condition:D-arabinose-induced cell
+0000325	culture condition:D-galactose-grown cell
+0000326	culture condition:D-lyxose-grown cell
+0000327	culture condition:D-mannose-grown cell
+0000328	culture condition:D-phenylglycine-grown cell
+0000329	culture condition:D-ribose-grown cell
+0000330	culture condition:D-ribose-induced cell
+0000331	L-929 cell
+0000332	culture condition:dark-grown cell
+0000333	renal corpuscle
+0000334	decidua parietalis
+0000335	deciduoma cell
+0000336	caput epididymis
+0000337	dental follicle
+0000338	dental plaque
+0000339	dental pulp
+0000340	culture condition:deoxyribonucleoside-induced cell
+0000341	diaphragm
+0000342	diencephalon
+0000343	renal tubule
+0000344	stratum corneum
+0000345	digestive gland
+0000346	digestive juice
+0000347	reticulum
+0000348	omasum
+0000349	gut cavity
+0000350	culture condition:dimethylamine-grown cell
+0000351	disc
+0000352	culture condition:DL-mandelate-grown cell
+0000353	lung cell line
+0000354	DON cell
+0000355	dormant eye
+0000356	breast cancer cell line
+0000357	nectary
+0000358	McA-RH7777 cell
+0000359	middle cervical ganglion
+0000360	posterior spinal root
+0000361	stratum granulosum
+0000362	urinary bladder cancer cell
+0000363	culture condition:dulcitol-grown cell
+0000364	stratum lucidum
+0000365	duodenum
+0000366	duodenal juice
+0000367	duodenal mucosa
+0000368	ear
+0000369	egg
+0000370	egg white
+0000371	egg yolk
+0000372	bone cancer cell
+0000373	Ehrlich ascites carcinoma cell
+0000374	bone cell line
+0000375	keratinocyte cell line
+0000376	electric organ
+0000377	elementary body
+0000378	elytron
+0000379	embryo
+0000380	embryonic axis
+0000381	embryonic blood
+0000382	Kc cell
+0000383	renal cell carcinoma cell line
+0000384	emulsin
+0000385	bone cancer cell line
+0000386	culture condition:(NH4)2SO4-grown cell
+0000387	endocardium
+0000388	endodermis
+0000389	mature ovarian follicle
+0000390	endosperm
+0000391	DLD-1 cell
+0000392	plasma cell
+0000393	endothelium
+0000394	aorta endothelium
+0000395	alveolar cell
+0000396	EAhy 926 cell
+0000397	tooth
+0000398	enterocyte
+0000399	eosinophil
+0000400	sarcoma cell line
+0000401	ependymal epithelium
+0000402	epicotyl
+0000403	mastocytoma cell line
+0000404	epidermis
+0000405	penis
+0000406	L-428 cell
+0000407	osteosarcoma cell line
+0000408	epididymis
+0000409	epimastigote
+0000410	immature ovarian follicle
+0000411	cervical mucosa
+0000412	epiphyseal growth plate
+0000413	epiphysis
+0000414	epithelial cell
+0000415	epithelioma cell
+0000416	epithelium
+0000417	bile duct epithelium
+0000418	neostriatum
+0000419	respiratory epithelium
+0000420	neck
+0000421	connective tissue
+0000422	vaginal epithelium
+0000423	epitrochlearis
+0000424	erythrocyte
+0000425	erythrocytic stage
+0000426	erythroleukemia cell
+0000427	pituitary gland cell line
+0000428	culture condition:ethanol-grown cell
+0000429	H69AR cell
+0000430	EUE cell
+0000431	excretory gland
+0000432	corpus cardiacum
+0000433	exocrine acinar cell
+0000434	exocrine pancreas
+0000435	stratum spinosum
+0000436	extensor digitorum longus
+0000437	culture condition:glycerol-grown cell
+0000438	stratum germinativum
+0000439	eye
+0000440	feces
+0000442	fat body
+0000443	adipocyte
+0000444	fat pad
+0000445	cerebral lobe
+0000446	FDCP-Mix cl.A4 cell
+0000447	feather
+0000448	fetal serum
+0000449	fetus
+0000450	fiber
+0000451	fibrillar flight muscle
+0000452	fibroblast
+0000453	fibroblast cell line
+0000454	3T6-Swiss albino cell
+0000455	JTC-15 cell
+0000456	plasmacytoma cell line
+0000457	CHO-K1 cell
+0000458	WI-38 cell
+0000459	fibrosarcoma cell
+0000460	fibrosarcoma cell line
+0000461	HSDM1C1 cell
+0000462	fiddlehead
+0000463	filament
+0000464	flagellate
+0000465	flavedo
+0000466	flexor digitorum longus
+0000467	flight muscle
+0000468	floret
+0000469	flower
+0000470	flower bud
+0000471	culture condition:fluorene-grown cell
+0000472	FM3A cell
+0000473	fetal membrane
+0000474	allantois
+0000475	ovarian follicle
+0000476	foot
+0000477	foot muscle
+0000478	forebrain
+0000479	forelimb muscle
+0000480	forestomach
+0000481	culture condition:formate-grown cell
+0000482	renal distal tubule
+0000483	frond
+0000484	frontal lobe
+0000485	culture condition:fructose-grown cell
+0000486	fruit
+0000487	fruit body
+0000488	lower epidermis
+0000489	intestinal cancer cell
+0000490	prostate gland ventral lobe
+0000491	excretion
+0000492	MST cell
+0000493	gall bladder
+0000494	germinal disc
+0000495	gametophyte
+0000496	anterior lobe
+0000497	ganglion
+0000498	gastric cancer cell
+0000499	gastric corpus mucosa
+0000500	gastric epithelium
+0000501	gastric juice
+0000502	gastric fundus
+0000503	gastric gland
+0000504	pancreatic juice
+0000505	gastric corpus
+0000506	gastrocnemius
+0000507	foregut
+0000508	thorax muscle
+0000509	gastrodermis
+0000510	hindgut
+0000511	gastrointestinal tract
+0000512	primary oocyte
+0000513	culture condition:geranoic acid-induced cell
+0000514	germ
+0000515	haustorium
+0000516	ghost
+0000517	culture condition:5-methylcytosine-grown cell
+0000518	gill
+0000519	gingiva
+0000520	gizzard
+0000521	gizzard smooth muscle
+0000522	gland
+0000523	gleba
+0000524	glia
+0000525	A-875 cell
+0000526	glioma cell
+0000527	glioblastoma cell
+0000528	JTC-27 cell
+0000529	C6 glioma cell
+0000530	renal glomerulus
+0000531	gluteal muscle
+0000532	culture condition:glycine-grown cell
+0000533	culture condition:dihydroxyacetone-grown cell
+0000534	gonad
+0000535	germ cell
+0000536	gracilis muscle
+0000537	nectar
+0000538	alveolar cell type II
+0000539	granulocyte
+0000540	pollen mother cell
+0000541	prostate gland dorsolateral lobe
+0000542	granulosa cell
+0000543	ground meristem
+0000544	guard cell
+0000545	gut
+0000546	gut mucosa
+0000547	gut wall
+0000548	prostate gland lobe
+0000549	culture condition:H2/CO2-grown cell
+0000550	anal plate
+0000551	lung cancer cell
+0000552	HaCaT cell
+0000553	peripheral blood
+0000554	hair follicle
+0000555	hair root
+0000556	germ layer
+0000557	harderian gland
+0000558	hatching gland
+0000559	hatching liquid
+0000560	haustorial mother cell
+0000561	posterior lobe
+0000562	heart
+0000563	culture condition:aerobically-grown cell
+0000564	heart valve
+0000565	HEL cell
+0000566	pancreatic islet cancer cell
+0000567	HeLa cell
+0000568	HeLa-S3 cell
+0000569	exoerythrocytic stage
+0000570	hematopoietic system
+0000571	hemocyte
+0000572	hemolymph
+0000573	artery
+0000574	hematopoietic cell
+0000575	hepatocyte
+0000576	B-16 cell
+0000577	Morris hepatoma 3924A cell
+0000578	hepatoma cell line
+0000579	eye cancer cell
+0000580	blood cancer cell
+0000581	MOPC-315 cell
+0000582	hepatoma ascites cell line
+0000583	bone marrow cancer cell
+0000584	pancreatic cancer cell
+0000585	intraocular melanoma cell
+0000586	colonic cancer cell
+0000587	C 108 cell
+0000588	LL/2 (LLC1) cell
+0000589	primary meristem
+0000590	Alzheimer disease specific cell type
+0000591	N1-S1 cell
+0000592	adrenal gland cancer cell
+0000593	Yoshida AH-130 cell
+0000594	liver cancer cell
+0000595	FDCP-1 cell
+0000596	P-19 cell
+0000597	hepatopancreas
+0000598	B5/589 cell
+0000599	Hep-G2 cell
+0000600	heterocyst
+0000601	hippocampus
+0000602	histiocyte
+0000603	pre-B acute lymphoblastic leukemia cell line
+0000604	adenocarcinoma cell
+0000605	honey
+0000606	LK-63 cell
+0000607	HTC cell
+0000608	hepatoma cell
+0000609	husk
+0000610	hybridoma cell
+0000611	culture condition:hydroxyproline-induced cell
+0000612	hypha
+0000613	hypocotyl
+0000614	hypothalamus
+0000615	corpus callosum
+0000616	I-cell
+0000617	ileal carcinoid cell
+0000618	ileal lavage fluid
+0000619	ileal mucosa
+0000620	ileum
+0000621	iliopsoas muscle
+0000622	culture condition:cyclopentanol-grown cell
+0000623	culture condition:2-butyne-1,4-diol-grown cell
+0000624	culture condition:cyclohexane-1,2-diol-induced cell
+0000625	culture condition:D-xylose-grown cell
+0000626	culture condition:DL-5-methyltryptophan-grown cell
+0000627	HIT-T15 cell
+0000628	inflorescence
+0000629	ink
+0000630	inner ear
+0000631	culture condition:inositol-deficient-grown cell
+0000632	insulinoma cell
+0000633	intestine-407 cell
+0000634	integument
+0000635	yellow bone marrow
+0000636	internode
+0000637	interphotoreceptor matrix
+0000638	interrenal cell
+0000639	intersegmental muscle
+0000640	intestinal gland
+0000641	colon descendens
+0000642	intestinal mucosa
+0000643	intestinal muscle
+0000644	intestinal juice
+0000645	colon sigmoideum
+0000646	left colon
+0000647	intestinal wall
+0000648	intestine
+0000649	right colon
+0000650	endocrine pancreas
+0000651	small intestine
+0000652	culture condition:mannuronate-grown cell
+0000653	iris
+0000654	ciliary muscle
+0000655	iris smooth muscle
+0000656	iris sphincter muscle
+0000657	jejunum
+0000658	uterine adenocarcinoma cell
+0000659	juice
+0000660	mycelial cord
+0000661	JURKAT cell
+0000662	nasopharynx
+0000663	juxtaglomerular tumor cell
+0000664	K-562 cell
+0000665	KB cell
+0000666	LoVo cell
+0000667	keratinocyte
+0000668	kernel
+0000669	embryonic cell line
+0000670	KG-1 cell
+0000671	kidney
+0000672	hindbrain
+0000673	metencephalon
+0000674	BHK 165-23 cell
+0000675	SW-620 cell
+0000676	fibroadenoma cell
+0000677	plant tumor tissue
+0000678	G-402 cell
+0000679	blood-lymph
+0000680	kidney cancer cell
+0000681	KM-3 cell
+0000682	Koji culture
+0000683	Krebs ascites cell
+0000684	Krebs II ascites cell
+0000685	Kupffer cell
+0000686	Kurloff cell
+0000687	culture condition:L-mandelate-grown cell
+0000688	culture condition:acetate-grown cell
+0000689	culture condition:L-allo-threonine-grown cell
+0000690	brain cancer cell line
+0000691	culture condition:L-fucose-induced cell
+0000692	culture condition:L-glucose-grown cell
+0000693	culture condition:L-lyxose-induced cell
+0000694	culture condition:L-phenylalanine-grown cell
+0000695	culture condition:L-phenylglycine-grown cell
+0000696	culture condition:L-rhamnose-grown cell
+0000697	culture condition:L-rhamnose-induced cell
+0000698	culture condition:L-ribose-grown cell
+0000699	culture condition:L-serine-grown cell
+0000700	culture condition:L-threonine-grown cell
+0000701	culture condition:L-tyrosine-grown cell
+0000702	L-1210 cell
+0000703	lacquer
+0000704	culture condition:D-lactate-grown cell
+0000705	Langerhans cell
+0000706	large intestine
+0000707	larva
+0000708	larval integument
+0000709	secondary spermatocyte
+0000710	latex
+0000711	glioma cell line
+0000712	laticifer
+0000713	leaf
+0000714	leaf axil
+0000715	leaf base
+0000716	pancreatic beta cell line
+0000717	pericardium
+0000718	leaf epidermis
+0000719	leaf lamina
+0000720	plant form
+0000721	leg
+0000722	leg muscle
+0000723	lens
+0000724	lens fiber
+0000725	hematopoietic stem cell
+0000726	RPMI-8226 cell
+0000727	multiple myeloma cell line
+0000728	Brown Pearce carcinoma cell
+0000729	carcinoid cell
+0000730	endocarp
+0000731	acute lymphoblastic leukemia cell
+0000732	KU-812 cell
+0000733	exocarp
+0000734	myelocyte
+0000735	sporophyte
+0000736	CCRF-CEM cell
+0000737	leukemia cell line
+0000738	HL-60 cell
+0000739	lymphoblastic leukemia cell line
+0000740	myeloid leukemia cell line
+0000741	lymphocytic leukemia cell line
+0000742	myotome
+0000743	pre-B-lymphocyte cell line
+0000744	lymphocytic leukemia cell
+0000745	Lewis lung carcinoma cell
+0000746	preadipocyte cell line
+0000747	sporangiospore
+0000748	P-388 cell
+0000749	sporozoan form
+0000750	plant ovary
+0000751	leukocyte
+0000752	lymph vessel
+0000753	lymphoid tissue
+0000754	lewy body
+0000755	Leydig cell
+0000756	pituitary gland tumor cell line
+0000757	plasmodium
+0000758	myelencephalon
+0000759	liver
+0000760	LLC-PK1 cell
+0000761	collecting duct
+0000762	lung cancer cell line
+0000763	lung
+0000764	lung fibroblast
+0000765	exocrine gland
+0000766	blood vessel endothelium
+0000767	mesenteric lymph node
+0000768	infundibulum
+0000769	submandibular lymph node
+0000770	oligodendroglia
+0000771	macroglia
+0000772	lymphoblast
+0000773	lymphoblastoid cell line
+0000774	lymphoblastoma cell
+0000775	lymphocyte
+0000776	B-lymphocyte
+0000777	adenoid
+0000778	pulmonary artery
+0000779	mesenteric artery
+0000780	alveolar cell type I
+0000781	intestinal epithelium
+0000782	T-lymphocyte
+0000783	pancreatic beta cell
+0000784	lymph node
+0000785	lymphoma cell
+0000786	tongue cancer cell line
+0000787	gastric cancer cell line
+0000788	70Z/3 cell
+0000789	CA-46 cell
+0000790	pharyngeal cancer cell line
+0000791	BW-5147 cell
+0000792	urinary bladder cancer cell line
+0000793	SH-SY5Y cell
+0000794	pancreatic cancer cell line
+0000795	L-5178-Y cell
+0000796	P-1798 cell
+0000797	colonic cancer cell line
+0000798	BeWo cell
+0000799	lymphosarcoma cell
+0000800	endoderm
+0000801	macrophage
+0000802	alveolar macrophage
+0000803	pancreatic delta cell
+0000804	J-774A.1 cell
+0000805	pancreatic PP cell
+0000806	IC-21 cell
+0000807	chorionic cell line
+0000808	interrenal gland
+0000809	germ cell cancer cell
+0000810	malpighian tubule
+0000811	ovary cancer cell line
+0000812	OVCAR-3 cell
+0000813	Pt-K1 cell
+0000814	CAOV-3 cell
+0000815	MDA-MB-231 cell
+0000816	breast cell line
+0000817	mammary gland
+0000818	spinal column
+0000819	pharyngeal cell line
+0000820	C127I cell
+0000821	nipple
+0000822	culture condition:mandelate-grown cell
+0000823	cerebral gray matter
+0000824	culture condition:mannose-grown cell
+0000825	mantle
+0000826	mantle cavity
+0000827	mantle muscle
+0000828	throat
+0000829	marrow
+0000830	mast cell
+0000831	liver reticuloendothelial system
+0000832	mastocytoma cell
+0000833	RBL-2H3 cell
+0000834	Detroit-562 cell
+0000835	culture condition:L-idonate-grown cell
+0000836	MDBK cell
+0000837	MDCK cell
+0000838	meconium
+0000839	mesoderm
+0000840	nose
+0000841	umbilical artery
+0000842	megagametophyte
+0000843	megakaryocyte
+0000844	megakaryotic cell line
+0000845	meiotic cell
+0000846	erythroleukemia cell line
+0000847	melanocyte
+0000848	melanoma cell
+0000849	melanoma cell line
+0000850	amelanotic melanoma cell
+0000851	adrenal cortex cell line
+0000852	meristem
+0000853	mesangial cell
+0000854	zygote
+0000855	lymph
+0000856	mesocarp
+0000857	umbilical artery endothelium
+0000858	mesophyll
+0000859	metacestode
+0000860	CHRB-30 cell
+0000861	culture condition:methanol-grown cell
+0000862	heart ventricle
+0000863	midgut
+0000864	tibialis
+0000865	anterior spinal root
+0000866	midgut secretion
+0000867	tibialis posterior
+0000868	milk
+0000869	milk fat
+0000870	spinal nerve
+0000871	RAG cell
+0000872	oligodendrocytic cell line
+0000873	MOLT-4 cell
+0000874	molting gland
+0000875	N20.1 cell
+0000876	monocyte
+0000877	culture condition:trehalose-grown cell
+0000878	mononuclear cell
+0000879	lateral ventricle
+0000880	culture condition:alkane-grown cell
+0000881	Morris hepatoma 7777 cell
+0000882	culture condition:p-hydroxyphenylacetic acid-grown cell
+0000883	spinal root
+0000884	molting fluid
+0000885	tongue cell line
+0000886	mucosa
+0000887	muscle
+0000888	muscle fibre
+0000889	Burkitt lymphoma cell line
+0000890	mycelial felt
+0000891	NTERA-2 cell
+0000892	mycobiont
+0000893	mycorrhiza
+0000894	myelin
+0000895	myelin membrane
+0000896	bag cell neuron
+0000897	amnion epithelium
+0000898	myeloma cell
+0000899	myeloma cell line
+0000900	myelin sheath
+0000901	myocardium
+0000902	plant vessel
+0000903	atrium
+0000904	culture condition:beta-aminoisobutyrate-grown cell
+0000905	culture condition:myoinositol-grown cell
+0000906	myeloid cell line
+0000907	myometrium
+0000908	myrosin cell
+0000909	myxospore
+0000910	culture condition:N-acetyl-D-glucosamine-grown cell
+0000911	culture condition:N-acetyl-D-mannosamine-grown cell
+0000912	nasal mucosa
+0000913	nasal polyp
+0000914	natural killer cell
+0000915	nauplius
+0000916	NC37 cell
+0000917	needle
+0000918	nematocyst
+0000919	8305C cell
+0000920	neocortex
+0000921	CAL-27 cell
+0000922	neostriatal neuron
+0000923	nephridium
+0000924	nephron
+0000925	nerve
+0000926	ophthalmic nerve
+0000927	nerve trunk
+0000928	limbic system
+0000929	neural retina
+0000930	neuroblast
+0000931	neuroblastoma cell
+0000932	neuroblastoma cell line
+0000933	N18TG2 cell
+0000934	IMR-32 cell
+0000935	LAN-5 cell
+0000936	neurofibrillary tangle
+0000937	neurohypophysis
+0000938	neuron
+0000939	basal cell
+0000940	juice vesicle
+0000941	CAL-33 cell
+0000942	NG-108-15 cell
+0000943	culture condition:nicotinic acid-grown cell
+0000944	NIH-3T3 cell
+0000945	CAL-51 cell
+0000946	NT2/D1 cell
+0000947	neuronal cell line
+0000948	SKOV-3 cell
+0000949	Novikoff ascites tumor cell
+0000950	Novikoff hepatoma cell
+0000951	NRK cell
+0000952	nuchal ligament
+0000953	nurse cell
+0000954	nymph
+0000955	laryngeal cell line
+0000956	gut epithelium
+0000957	nape
+0000958	spermatogonium
+0000959	esophagus
+0000960	UT-7 cell
+0000961	olfactory bulb
+0000962	oligodendrocyte
+0000963	oligodendroglioma cell
+0000964	oocyte
+0000965	optic lobe
+0000966	optic nerve
+0000967	osseous plate
+0000968	osteoclast
+0000969	osteoclastoma cell
+0000970	osteosarcoma cell
+0000971	SAOS-2 cell
+0000972	HEP-3B cell
+0000973	respiratory mucosa
+0000974	culture condition:sulfite-grown cell
+0000975	ovary
+0000976	HEp-2 cell
+0000977	ovary cell line
+0000978	CMK cell
+0000979	PANC-3 cell
+0000980	oviduct
+0000981	ovotestis
+0000982	culture condition:p-cresol-grown cell
+0000983	culture condition:p-toluate-grown cell
+0000984	P-388D1 cell
+0000985	P-815 cell
+0000986	pachytene cell
+0000987	palisade parenchyma
+0000988	pancreas
+0000989	taste bud
+0000990	pancreatic alpha cell
+0000991	pancreatic islet
+0000992	tongue epithelium
+0000993	paneth cell
+0000994	RBL-1 cell
+0000995	paramyeloblast
+0000996	gametocyte
+0000997	parathyroid gland
+0000998	paraveinal mesophyll
+0000999	plant parenchyma
+0001000	acute megakaryocytic leukemia cell line
+0001001	parietal lobe
+0001002	schizont
+0001003	parotid acinar cell
+0001004	parotid gland
+0001005	amnion epithelial cell
+0001006	pelvis
+0001007	AGS cell
+0001008	PBMC cell line
+0001009	PC-12 cell
+0001010	callus
+0001011	cerebellar Purkinje cell
+0001012	pedal ganglion
+0001013	pedal muscle
+0001014	Mo-T cell
+0001015	culture condition:pentanoate-grown cell
+0001016	pericardial fluid
+0001017	pericarp
+0001018	basophilic leukemia cell line
+0001019	prostate gland cell line
+0001020	periodontal ligament
+0001021	periodontium
+0001022	periosteum
+0001023	ovary cancer cell
+0001024	retinal rod
+0001025	peripheral blood mononuclear cell
+0001026	polymorphonuclear leukocyte
+0001027	peripheral nerve
+0001028	peripheral nervous system
+0001029	perisperm
+0001030	J774.2 cell
+0001031	peritoneal fluid
+0001032	cardiac Purkinje cell
+0001033	prostate cancer cell line
+0001034	peritoneal macrophage
+0001035	hematopoietic cell line
+0001036	retinal cone
+0001037	sensory cell
+0001038	peritrophic membrane
+0001039	peritubular cell
+0001040	petal
+0001041	petiole
+0001042	amygdala
+0001043	adult
+0001044	phagocyte
+0001045	T-lymphocyte cell line
+0001046	pharate pupa
+0001047	pharyngeal mucosa
+0001048	pharyngeal muscle
+0001049	pharynx
+0001050	culture condition:phenol-grown cell
+0001051	culture condition:phenylacetic acid-grown cell
+0001052	ND-1 cell
+0001053	culture condition:phenylglyoxylate-grown cell
+0001054	pheochromocytoma cell
+0001055	ovarian epithelial cell
+0001056	myeloid leukemia cell
+0001057	neural tube
+0001058	phloem
+0001059	culture condition:phosphonoacetate-grown cell
+0001060	photoreceptor
+0001061	PC-3 cell
+0001062	PPC-1 cell
+0001063	phrenic nerve
+0001064	phycobiont
+0001065	Tsu-Pr1 cell
+0001066	hippocampal pyramidal layer
+0001067	pineal gland
+0001068	pinealocyte
+0001069	pitcher
+0001070	pitcher secretion
+0001071	pith
+0001072	trigeminal nerve
+0001073	hypophysis
+0001074	trigeminal nucleus
+0001075	motor trigeminal nucleus
+0001076	pituitary gland tumor cell
+0001077	AtT-20 cell
+0001078	placenta
+0001079	trophoblast
+0001080	Morris hepatoma cell
+0001081	MOLT-3 cell
+0001082	MM46 cell
+0001083	MH134 cell
+0001084	plantlet
+0001085	vascular system
+0001086	embryonic stem cell
+0001087	plasmacytoma cell
+0001088	gastric cell line
+0001089	MPC-11 cell
+0001090	mouth
+0001091	axenic culture
+0001092	KATO-III cell
+0001093	WEHI-231 cell
+0001094	pre-B acute lymphoblastic leukemia cell
+0001095	pod
+0001096	lymphoid cell
+0001097	pollen
+0001098	sorocarp
+0001099	blastocyst
+0001100	B-cell acute lymphoblastic leukemia cell
+0001101	pons
+0001102	blood vessel
+0001103	skeletal muscle
+0001104	cranial nerve
+0001105	insular cortex
+0001106	T-cell acute lymphoblastic leukemia cell
+0001107	preadipocyte
+0001108	mitral cell layer
+0001109	HCT-116 cell
+0001110	prepupa
+0001111	preputial gland
+0001112	preputial gland tumor cell
+0001113	prepuce
+0001114	primary leaf
+0001115	primary spermatocyte
+0001116	floral primordium
+0001117	proboscis
+0001118	P3X63Ag8 cell
+0001119	procambium
+0001120	epithelial cell line
+0001121	cauline leaf
+0001122	procyclic form
+0001123	peripheral ganglion
+0001124	promastigote
+0001125	culture condition:propanediol-grown cell
+0001126	culture condition:propionate-grown cell
+0001127	primary culture
+0001128	prostasome
+0001129	prostate gland
+0001130	prostate gland cancer cell
+0001131	BHK cell
+0001132	shoot base
+0001133	pre-B-lymphocyte
+0001134	protonema
+0001135	protoxylem
+0001136	proventriculus
+0001137	right colon mucosa
+0001138	somatic embryo
+0001139	pseudoplasmodium
+0001140	psoas
+0001141	pulmonary artery endothelial cell
+0001142	pulp
+0001143	pupa
+0001144	chloronema
+0001145	pre-T-lymphocyte
+0001146	pyloric region
+0001147	culture condition:pyridoxine-grown cell
+0001148	BALL-1 cell
+0001149	quadriceps
+0001150	culture condition:quinaldine-grown cell
+0001151	MOLT-4F cell
+0001152	radicle
+0001153	radular muscle
+0001154	RAJI cell
+0001155	ray cell
+0001156	node
+0001157	rectal gland
+0001158	rectum
+0001159	aorta thoracica smooth muscle
+0001160	red bone marrow
+0001161	chorionic villus
+0001162	apocrine gland
+0001163	REH cell
+0001164	megakaryoblast
+0001165	renal artery
+0001166	renal cortex
+0001167	renal medulla
+0001168	rennet
+0001169	3T3-F442A cell
+0001170	resting cell
+0001171	spore
+0001172	reticulate body
+0001173	reticulocyte
+0001174	reticuloendothelial system
+0001175	retina
+0001176	endothelial cell
+0001177	retinal pigment epithelium
+0001178	retinoblastoma cell
+0001179	rhizophore
+0001180	idioblast
+0001181	rhizome
+0001182	primary root
+0001183	secondary root
+0001184	rind
+0001185	RINm5F cell
+0001186	receptacle
+0001187	roe
+0001188	root
+0001189	FAZA cell
+0001190	root nodule
+0001191	root tip
+0001192	rootlet
+0001193	C-127 cell
+0001194	rumen
+0001195	rumen epithelium
+0001196	SF-21 cell
+0001197	S-180 cell
+0001198	atrial gland
+0001199	EBTr (NBL-4) cell
+0001200	aorta thoracica smooth muscle cell line
+0001201	rosette
+0001202	saliva
+0001203	salivary gland
+0001204	salt gland
+0001205	RT4-D6P2T cell
+0001206	sarcocarp
+0001207	sarcoma cell
+0001208	larynx
+0001209	umbilical cord cell line
+0001210	SGS cell
+0001211	breast epithelial cell
+0001212	Rous sarcoma cell
+0001213	Yoshida ascites sarcoma cell
+0001214	Yoshida sarcoma cell
+0001215	sartorius
+0001216	Schwann cell line
+0001217	scape
+0001218	scapula
+0001219	MEB-4 cell
+0001220	Schwann cell
+0001221	sciatic nerve
+0001222	sclerenchyma
+0001223	scutellum
+0001224	second instar larva
+0001225	MKN-45 cell
+0001226	seed
+0001227	seed coat
+0001228	seedling
+0001229	IMR-90 cell
+0001230	semen
+0001231	trigeminal ganglion
+0001232	seminal plasma
+0001233	plant embryo
+0001234	seminal vesicle
+0001235	seminiferous tubule
+0001236	semitendinosus
+0001237	sensillum
+0001238	Sertoli cell
+0001239	serum
+0001240	SF-9 cell
+0001241	shell gland
+0001242	fetal cell line
+0001243	shoot
+0001244	urinary tract
+0001245	bronchoalveolar stem cell
+0001246	flexor digitorum profundus
+0001247	sieve tube
+0001248	T-47D cell
+0001249	silique
+0001250	silk gland
+0001251	liver sinusoidal endothelial cell
+0001252	tibia
+0001253	skin
+0001254	sweat
+0001255	skin fibroblast
+0001256	parasympathetic ganglion
+0001257	flexor
+0001258	small intestine epithelium
+0001259	small intestine mucosa
+0001260	smooth muscle
+0001261	abdominal muscle
+0001262	soft body part
+0001263	Friend erythroleukemia cell line
+0001264	spinal ganglion
+0001265	soleus
+0001266	invertebrate muscular system
+0001267	BmN cell
+0001268	somatic cell
+0001269	spadix
+0001270	spear
+0001271	leukemia cell
+0001272	sperm flagellum
+0001273	spermatheca
+0001274	spermatid
+0001275	spermatocyte
+0001276	pollen tube
+0001277	spermatozoon
+0001278	spike
+0001279	spinal cord
+0001280	BmN4-IR cell
+0001281	spleen
+0001282	HT-1080 cell
+0001283	mitral cell
+0001284	femur
+0001285	sporangiophore
+0001286	skin cancer cell
+0001287	sporangium
+0001288	adductor brevis
+0001289	squamous cell carcinoma cell
+0001290	sporocarp
+0001291	sporophore
+0001292	sporozoite
+0001293	sporulated oocyst
+0001294	sporulating cell
+0001295	cranium
+0001296	sprout
+0001297	sputum
+0001298	basal cell carcinoma cell
+0001299	stele
+0001300	stem
+0001301	bark
+0001302	sternum
+0001303	stigma
+0001304	stipe
+0001305	stipule
+0001306	stolon
+0001307	stomach
+0001308	gastric mucosa
+0001309	tuberous root
+0001310	storage tissue
+0001311	corpus striatum
+0001312	adductor magnus
+0001313	style
+0001314	subcutis
+0001315	sublingual gland
+0001316	submandibular gland
+0001317	glomerular layer
+0001318	submandibular ganglion
+0001319	external plexiform layer
+0001320	internal plexiform layer
+0001321	LNCaP cell
+0001322	culture condition:succinate-grown cell
+0001323	BPH-1 cell
+0001324	culture condition:sulfate-grown cell
+0001325	superior cervical ganglion
+0001326	cholangiocarcinoma cell
+0001327	granule cell layer
+0001328	calvarium
+0001329	gastrinoma cell
+0001330	hepatoma ascites cell
+0001331	sweat gland
+0001332	DU-145 cell
+0001333	sympathetic ganglion
+0001334	papilloma cell
+0001335	syncytiotrophoblast
+0001336	synovial fibroblast
+0001337	extensor digitorum brevis
+0001338	synovial tissue
+0001339	synovia
+0001340	bronchus
+0001341	S-49 cell
+0001342	A3 cell
+0001343	extensor digitorum communis
+0001344	adult T-cell lymphoma cell
+0001345	T-24 cell
+0001346	tachyzoite
+0001347	tadpole
+0001348	tail
+0001349	NRP-152 cell
+0001350	tapetum
+0001351	vomeronasal nerve
+0001352	NRP-154 cell
+0001353	telson
+0001354	telson muscle
+0001355	temporal lobe
+0001356	tendon
+0001357	tentacle
+0001358	culture condition:terephthalate-grown cell
+0001359	medulloblastoma cell line
+0001360	decidua
+0001361	CMT93/69 cell
+0001362	olfactory lobe
+0001363	testis
+0001364	testis sheath
+0001365	thalamus
+0001366	thallus
+0001367	thigh muscle
+0001368	thorax
+0001369	vertebrate muscular system
+0001370	THP-1 cell
+0001371	iris dilator muscle
+0001372	thymocyte
+0001373	amnion epithelial cell line
+0001374	thymus
+0001375	mandibular nerve
+0001376	thigh
+0001377	thymus lymphoma cell line
+0001378	maxillary nerve
+0001379	thyroid gland
+0001380	mesentery
+0001381	tibial chondrocyte
+0001382	tibialis anterior
+0001383	alveolar bone
+0001384	tissue culture
+0001385	tongue
+0001386	tongue muscle
+0001387	tonsil
+0001388	trachea
+0001389	tracheal epithelium
+0001390	tracheal mucosa
+0001391	tracheal smooth muscle
+0001392	culture condition:trans-aconitate-grown cell
+0001393	mesenchyme
+0001394	trapping leaf
+0001395	trichome
+0001396	trophosome tissue
+0001397	trophozoite
+0001398	trypomastigote
+0001399	Tay-Sachs disease specific cell type
+0001400	tuber
+0001401	tuber cortex
+0001402	urogenital ridge
+0001403	gastrula
+0001404	Yoshida ascites hepatoma cell line
+0001405	bronchial cancer cell
+0001406	HT-144 cell
+0001407	neuroendocrine tumor cell
+0001408	locus ceruleus
+0001409	ureter
+0001410	GH3 cell
+0001411	twig
+0001412	U-937 cell
+0001413	primary cell
+0001415	umbilical cord
+0001416	umbilical vein endothelium
+0001417	uredospore
+0001418	urinary bladder
+0001419	urine
+0001420	uropygial gland
+0001421	uterine cervix
+0001422	uterine endometrium
+0001423	uterine lavage
+0001424	uterus
+0001425	V-79 cell
+0001426	urethra
+0001427	vas deferens
+0001428	breast epithelium
+0001429	vascular bundle
+0001430	mammary epithelium
+0001431	vascular smooth muscle
+0001432	vascular tissue
+0001433	mononuclear phagocyte
+0001434	vegetative cell
+0001435	arm
+0001436	mycelium
+0001437	embryonic carcinoma cell line
+0001438	vena cava
+0001439	venom
+0001440	venom gland
+0001441	marrow cell
+0001442	brain ventricle
+0001443	culture condition:veratryl alcohol-grown cell
+0001444	Vero cell
+0001445	tail bud
+0001446	olfactory cortex
+0001447	forearm
+0001448	visceral hump
+0001449	gall bladder epithelium
+0001450	vitelline membrane
+0001451	vitreous humor
+0001452	nasal nerve
+0001453	detrusor
+0001454	thymoma cell
+0001455	thymic carcinoma cell
+0001456	white adipose tissue
+0001457	hip
+0001458	apocrine sweat gland
+0001459	white prepupa
+0001460	thymic cancer cell
+0001461	whole plant
+0001462	bladder wall
+0001463	wing
+0001464	wing disc
+0001465	pericycle
+0001466	BT-20 cell
+0001467	mesocotyl
+0001468	xylem
+0001469	culture condition:xylose-grown cell
+0001470	epidermal cell
+0001471	yolk sac
+0001472	peritoneum
+0001473	blastomere
+0001474	yolk sac erythroid cell
+0001475	zoospore
+0001476	mitotic cell
+0001477	photophore
+0001478	zygotene cell
+0001479	culture condition:-grown cell
+0001480	Meynert&apos;s basal nucleus
+0001481	plant
+0001482	CTLL-2 cell
+0001483	WiDr cell
+0001484	nervous system
+0001485	muscular system
+0001486	skeletal system
+0001487	adipose tissue
+0001488	endocrine gland
+0001489	whole body
+0001490	other source
+0001491	viscus
+0001492	limb
+0001493	trunk
+0001494	fungus
+0001495	plumule
+0001496	perivascular astrocyte
+0001497	IEC-6 cell
+0001498	renal proximal tubule
+0001499	tear
+0001500	tendril
+0001501	hair
+0001502	hip joint
+0001503	thoracic leg
+0001504	blastodisc
+0001505	loin
+0001506	radula
+0001507	pes anserinus
+0001508	morula
+0001509	umbilical vein
+0001510	rectal cell line
+0001511	tooth germ
+0001512	imago
+0001513	biliary epithelium
+0001514	biliary epithelial cell
+0001515	glomerular epithelium
+0001516	BA/F3 cell
+0001517	FAO cell
+0001518	B-lymphoma cell line
+0001519	endothelial cell line
+0001520	umbilical vein endothelial cell line
+0001521	pancreatic adenocarcinoma cell line
+0001522	B-lymphocyte cell line
+0001523	WIL-2 cell
+0001524	WIL2-NS cell
+0001525	WIL2-S cell
+0001526	renal medulla cell line
+0001527	PAP-HT25 cell
+0001528	B-lymphoblast
+0001529	BSC-40 cell
+0001530	glioblastoma cell line
+0001531	glial cell line
+0001532	rectal cancer cell line
+0001533	gastrointestinal cancer cell
+0001534	SW-948 cell
+0001535	SW-48 cell
+0001536	SW-1417 cell
+0001537	small intestine cell line
+0001538	COS-1 cell
+0001539	parenchyma
+0001540	goblet cell
+0001541	pronephros
+0001542	mesonephron
+0001543	metanephron
+0001544	chronic myeloid leukemia cell
+0001545	acute myeloid leukemia cell
+0001546	chronic lymphocytic leukemia cell
+0001547	sepal
+0001548	labial gland
+0001549	megakaryocyte cell line
+0001550	Dami cell
+0001551	free-living state
+0001552	Yoshida AH-66 cell
+0001553	LS-174T cell
+0001554	661W cell
+0001555	endometrial cancer cell line
+0001556	Rcho-1 cell
+0001557	SF-767 cell
+0001558	somite
+0001559	stamen
+0001560	testicular cancer cell line
+0001561	DAUDI cell
+0001562	aerial mycelium
+0001563	vastus lateralis
+0001564	rectus femoris
+0001565	HT-29-MTX cell
+0001566	HT-29 G cell
+0001567	MDA-MB-435 cell
+0001568	MDA-MB-436 cell
+0001569	MDA-MB-361 cell
+0001570	MDA-MB-468 cell
+0001571	erythroblast
+0001572	articular cartilage
+0001573	brain cancer cell
+0001574	chondrosarcoma cell line
+0001575	choriocarcinoma cell line
+0001576	choriocarcinoma cell
+0001577	esophageal cancer cell
+0001578	esophageal epithelium
+0001579	extraocular muscle
+0001580	ejaculatory duct
+0001581	embryonic stem cell line
+0001582	ES-D3 cell
+0001583	T-98G cell
+0001584	G-361 cell
+0001585	JAR cell
+0001586	lymphoid cell line
+0001587	MEL-HO cell
+0001588	MEL-JUSO cell
+0001589	KLN205 cell
+0001590	MRC-5 cell
+0001591	PA-1 cell
+0001592	meniscus
+0001593	osteoblast
+0001594	U-266 cell
+0001595	WM-266-4 cell
+0001596	MG-63 cell
+0001597	sapling
+0001598	splenocyte
+0001599	SW-1116 cell
+0001600	cuticle
+0001601	epicuticle
+0001602	exocuticle
+0001603	endocuticle
+0001604	eyestalk
+0001605	reticulum trabeculare
+0001606	sclera
+0001607	swim bladder
+0001608	feather calamus
+0001609	LS-180 cell
+0001610	thyroid cancer cell line
+0001611	SW-1736 cell
+0001612	colorectal adenoma cell
+0001613	colorectum
+0001614	colorectal cell line
+0001615	colorectal cancer cell
+0001616	colorectal cancer cell line
+0001617	DHL-9 cell
+0001618	F28-7 cell
+0001619	skin fibroblast cell line
+0001620	SK-N-SH cell
+0001621	intestinal cancer cell line
+0001622	fibroblastoma cell
+0001623	fibroma cell
+0001624	femoral artery
+0001625	laryngeal cancer cell
+0001626	laryngeal muscle
+0001627	glottis
+0001628	epiglottis
+0001629	left ventricle
+0001630	right ventricle
+0001631	leiomyosarcoma cell
+0001632	lens cortex
+0001633	lens nucleus
+0001634	leptomeninx
+0001635	pia mater
+0001636	arachnoid mater
+0001637	dura mater
+0001638	blastema
+0001639	bud
+0001640	limb bud
+0001641	bronchial bud
+0001642	liver bud
+0001643	lung bud
+0001644	vascular bud
+0001645	wing bud
+0001646	ureteric bud
+0001647	lip
+0001648	longissimus
+0001649	longissimus capitis
+0001650	longissimus cervicis
+0001651	longissimus thoracis
+0001652	sacrospinalis
+0001653	lung epithelium
+0001654	female cone
+0001655	male cone
+0001656	nerve cord
+0001657	abscission zone
+0001658	aerial part
+0001659	aerial root
+0001660	respiratory smooth muscle
+0001661	alkaline gland
+0001662	allantoic fluid
+0001663	ameloblast
+0001664	hepatoblastoma cell line
+0001665	HB611 cell
+0001666	hepatoblastoma cell
+0001667	HMB-2 cell
+0001668	mast cell line
+0001669	HMC-1 cell
+0001670	HuH-6 cell
+0001671	J-82 cell
+0001672	Mel Ei cell
+0001673	Mel Ju cell
+0001674	Mel Im cell
+0001675	Mel Wei cell
+0001676	PC-12D cell
+0001677	SCHNEIDER-2 cell
+0001678	Th1 cell
+0001679	Th2 cell
+0001680	anus
+0001681	anal sac
+0001682	byssus
+0001683	adenohypophysis tumor cell
+0001684	antler
+0001685	aortic smooth muscle
+0001686	joint
+0001687	asynchronous muscle
+0001688	cochlear ganglion
+0001689	axillary bud
+0001690	B-cell lymphoma cell
+0001691	spiral organ
+0001692	cochlear duct
+0001693	modiolus
+0001694	urinary bladder epithelium
+0001695	blastopore
+0001696	archenteron
+0001697	olfactory gland
+0001698	bulbourethral gland
+0001699	bursa of Fabricius
+0001700	cancellous bone
+0001701	carapace
+0001702	left atrium
+0001703	right atrium
+0001704	twitch muscle
+0001705	vallate papilla
+0001706	cnidoblast
+0001707	coelom
+0001708	coelomic fluid
+0001709	colonic epithelium
+0001710	corpora quadrigemina
+0001711	melanophore
+0001712	dorsal lip
+0001713	dorsum
+0001714	duodenal adenocarcinoma cell
+0001715	ectoplacental cone
+0001716	eggshell
+0001717	BmN4-DR cell
+0001718	embryoid body
+0001719	claw
+0001720	floor plate
+0001721	sternal cartilage
+0001722	enamel organ
+0001723	enamel epithelium
+0001724	ependymocyte
+0001725	floral meristem
+0001726	inflorescence meristem
+0001727	perianth
+0001728	tepal
+0001729	forelimb
+0001730	mesosperm
+0001731	glucagonoma cell
+0001732	gastric antrum
+0001733	gynoecium
+0001734	gut juice
+0001735	cardiac Purkinje fiber
+0001736	vascular cancer cell
+0001737	hemangioendothelioma cell
+0001738	histiocytic lymphoma cell
+0001739	pars tuberalis
+0001740	hypopharynx
+0001741	incisor
+0001742	jejunal mucosa
+0001743	jejunal epithelium
+0001744	jugular vein
+0001745	renal inner medulla
+0001746	renal outer medulla
+0001747	palpus
+0001748	mandible
+0001749	jaw
+0001750	mandibular condyle
+0001751	mandibular ramus
+0001752	invertebrate mandible
+0001753	mandibular organ
+0001754	cheek
+0001755	masseter
+0001756	meningioma cell
+0001757	medulloblastoma cell
+0001758	ocellus
+0001759	molaris
+0001760	myotube
+0001761	nasal vestibule
+0001762	neonate
+0001763	neural arch
+0001764	neural crest
+0001765	neural plate
+0001766	neurula
+0001767	neurosecretory cell
+0001768	notochord
+0001769	odontoblast
+0001770	ciliary epithelium
+0001771	AN3CA cell
+0001772	olfactory organ
+0001773	oocyst
+0001774	oral cancer cell
+0001775	oral epithelium
+0001776	plant ovule
+0001777	megasporangium
+0001778	microsporangium
+0001779	palate
+0001780	oxyntic cell
+0001781	parathyroid gland cancer cell
+0001782	peritoneal cavity
+0001783	pulvinus
+0001784	Peyer&apos;s gland
+0001785	branchial arch
+0001786	pheromone gland
+0001787	pars distalis
+0001788	pars intermedia
+0001789	neural lobe
+0001790	pleopod
+0001791	pleura
+0001792	portal vein
+0001793	tectum mesencephali
+0001794	posterior silk gland
+0001795	anterior silk gland
+0001796	preoptic area
+0001797	promyelocytic leukemia cell
+0001798	prothallium
+0001799	pulmonary vein
+0001800	retinal ganglion cell
+0001801	skeletal muscle cancer cell
+0001802	rhabdomyosarcoma cell
+0001803	retrocerebral complex
+0001804	root hair
+0001805	saccule
+0001806	visceral mass
+0001807	utricle
+0001808	saphenous vein
+0001809	scalp
+0001810	sclerotium
+0001811	seminiferous epithelium
+0001812	slow twitch muscle fiber
+0001813	fast twitch muscle fiber
+0001814	leaf tip
+0001815	stellate ganglion
+0001816	stem nodule
+0001817	stolon tip
+0001818	stomach smooth muscle
+0001819	stria vascularis
+0001820	subcommissural organ
+0001821	subesophageal ganglion
+0001822	suprachiasmatic nucleus
+0001823	synovium
+0001824	synovial sarcoma cell
+0001825	T-cell lymphoma cell
+0001826	T-lymphoblast
+0001827	tail fin
+0001828	tapetum lucidum
+0001829	choroid
+0001830	tassel
+0001831	thoracic ganglion
+0001832	sympathetic nervous system
+0001833	parasympathetic nervous system
+0001834	sympathetic chain
+0001835	vertebral ganglion
+0001836	thymic epithelium
+0001837	serous gland
+0001838	tooth bud
+0001839	dental papilla
+0001840	trophectoderm
+0001841	parietal ganglion
+0001842	pleural ganglion
+0001843	cerebral ganglion
+0001844	tooth enamel
+0001845	bronchial epithelium
+0001846	bronchial mucosa
+0001847	umbilical smooth muscle
+0001848	urophysis
+0001849	urinary bladder smooth muscle
+0001850	portio vaginalis cervicis
+0001851	portio supravaginalis cervicis
+0001852	cerebrovascular endothelium
+0001853	vascular endothelium
+0001854	vascular endothelial cell
+0001855	venom duct
+0001856	vestibular labyrinth
+0001857	visual cortex
+0001858	dermal papilla
+0001859	wart
+0001860	yolk sac cancer cell
+0001861	BxPC-3 cell
+0001862	nucleus accumbens
+0001863	body wall muscle
+0001864	AsPC-1 cell
+0001865	PK-15 cell
+0001866	bronchiolar epithelium
+0001867	NR-6 cell
+0001868	occipital pole
+0001869	olfactory tubercle
+0001870	OVCA-5 cell
+0001871	synganglion
+0001872	alphaTN4-1 cell
+0001873	lens epithelium
+0001874	lens epithelial cell line
+0001875	FRTL-5 cell
+0001876	thyroid cell line
+0001877	psoas major
+0001878	psoas minor
+0001879	H9c2 cell
+0001880	RPMI-8402 cell
+0001881	SW-626 cell
+0001882	ovary adenocarcinoma cell line
+0001883	acute myeloid leukemia cell line
+0001884	ML-1 cell
+0001885	ML-2 cell
+0001886	primordium
+0001887	heart primordium
+0001888	follicular thyroid cancer cell
+0001889	FTC-133 cell
+0001890	RKO cell
+0001891	RKO-E6 cell
+0001892	RKO-AS-45-1 cell
+0001893	ring stage
+0001894	IIC9 cell
+0001895	gastrointestinal endocrine cell
+0001896	IDH4 cell
+0001897	hemocyte cell line
+0001898	mbn-2 cell
+0001899	stationary phase culture
+0001900	growth phase culture
+0001901	death phase culture
+0001902	lag phase culture
+0001903	logarithmic phase culture
+0001904	SU.86.86 cell
+0001905	tail muscle
+0001906	cephalothorax
+0001907	NS-1 cell
+0001908	MDA-MB-453 cell
+0001909	N1E-115 cell
+0001910	NCI-H441 cell
+0001911	lung adenocarcinoma cell line
+0001912	breast adenocarcinoma cell line
+0001913	colonic adenocarcinoma cell line
+0001914	colorectal adenocarcinoma cell line
+0001915	M5076 cell
+0001916	LIM1215 cell
+0001917	LIM2412 cell
+0001918	LIM1863 cell
+0001919	tube foot
+0001920	Ehrlich Lettre ascites carcinoma cell
+0001921	compound eye
+0001922	ommatidium
+0001923	Aristotles lantern
+0001924	lantern muscle
+0001925	longissimus lumborum
+0001926	hybridoma cell line
+0001927	WEGLI18 cell
+0001928	AR4-2J cell
+0001929	ATDC-5 cell
+0001930	A20 cell
+0001931	BJAB cell
+0001932	BT-474 cell
+0001933	BRL cell
+0001934	BL-60 cell
+0001935	BW-5147.3 cell
+0001936	SKW6.4 cell
+0001937	RL-19 cell
+0001938	U2-OS cell
+0001939	MCF-10A cell
+0001940	cardiomyoblast
+0001941	Morris hepatoma 7316A cell
+0001942	mandibular incisor
+0001943	corneocyte
+0001944	H9 cell
+0001945	HUT-78 cell
+0001946	myofibroblast
+0001947	HRT-18 cell
+0001948	JURKAT E-6.1 cell
+0001949	HUVEC cell
+0001950	HuH-7 cell
+0001951	HOS-TE85 cell
+0001952	HPB-ALL cell
+0001953	tanycyte
+0001954	median eminence
+0001955	REF-52 cell
+0001956	XLT-15 cell
+0001957	MC3T3-E1 cell
+0001958	embryonic fibroblast cell line
+0001959	PEER cell
+0001960	HuMMEC cell
+0001961	MFM-223 cell
+0001962	T/G HA-VSMC cell
+0001963	aorta cell line
+0001964	aorta smooth muscle cell line
+0001965	carcass
+0001966	cervical cell line
+0001967	cervical cancer cell line
+0001968	C-33A cell
+0001969	697 cell
+0001970	NCI-H660 cell
+0001971	plant cell line
+0001972	TBY-2 cell
+0001973	vascular endothelial cell line
+0001974	HPEC cell
+0001975	placental cell line
+0001976	Neuro-2a cell
+0001977	Oc cell
+0001978	anal canal
+0001979	mucous gland
+0001980	sebaceous gland
+0001981	sebum
+0001982	chemostat culture
+0001983	peptic chief cell
+0001984	culture condition:beta-L-alanine-grown cell
+0001985	culture condition:cytosine-grown cell
+0001986	culture condition:cyclohexan-1,2-diol grown cell
+0001987	culture condition:dihydrothymine-grown cell
+0001988	culture condition:dihyrouracil-grown cell
+0001989	culture condition:long-chain fatty acid-grown cell
+0001990	culture condition:oleate-grown cell
+0001991	culture condition:phthalate-grown cell
+0001992	culture condition:selenium-grown cell
+0001993	culture condition:thymine-grown cell
+0001994	culture condition:uracil-grown cell
+0001995	myocytoma cell
+0001996	endometrial cell line
+0001997	arteriole
+0001998	HMCB cell
+0001999	culture condition:gene expression
+0002000	CCP-2 cell
+0002001	CCP-8 cell
+0002002	CCP-7 cell
+0002003	SW-1353 cell
+0002004	LN-229 cell
+0002005	LN-18 cell
+0002006	ALVA-41 cell
+0002007	aggregation stage
+0002008	culture condition:antigen-presenting cell
+0002009	artery wall
+0002010	tunica externa vasorum
+0002011	tunica media vasorum
+0002012	tunica intima vasorum
+0002013	AS-30D cell
+0002014	B16-F10 cell
+0002015	BM-1604 cell
+0002016	C81-61 cell
+0002017	plant reproductive system
+0002018	corpus cavernosum clitoridis
+0002019	corpus cavernosum penis
+0002020	clitoris
+0002021	prostate adenocarcinoma cell
+0002022	bronchial epithelial cell line
+0002023	HBE-1 cell
+0002024	squamous cell carcinoma cell line
+0002025	HSC-3 cell
+0002026	HSC-4 cell
+0002027	oral cancer cell line
+0002028	J-96 cell
+0002029	myoma cell
+0002030	natural killer cell line
+0002031	RNK-16 cell
+0002032	T-84 cell
+0002033	EFO-27 cell
+0002034	SK-UT-1 cell
+0002035	U-251 MG cell
+0002036	U-87MG cell
+0002037	M-1 myeloid leukemia cell
+0002038	osteocyte
+0002039	KMST-6 cell
+0002040	KMST-6/T cell
+0002041	KMS-6 cell
+0002042	dendritic cell
+0002043	ECV-304 cell
+0002044	frond tip
+0002045	capillary
+0002046	spermatozoid
+0002047	Colo-320 cell
+0002048	slug stage
+0002049	Chang cell
+0002050	osteogenic cell
+0002051	preosteoblast
+0002052	osteogenic cell line
+0002053	seminal vesicle fluid
+0002054	Dunn cell
+0002055	XD-6 cell
+0002056	siphon
+0002057	lung adenocarcinoma cell
+0002058	non-small cell lung cancer cell
+0002059	large cell carcinoma cell
+0002060	bronchioalveolar carcinoma cell
+0002061	bronchogenic carcinoma cell
+0002062	B-lymphoblastoid cell line
+0002063	Colo-720L cell
+0002064	stromal cell
+0002065	venom apparatus
+0002066	venom sac
+0002067	stinger
+0002068	scent gland
+0002069	wax gland
+0002070	KS-IMM cell
+0002071	Kaposi&apos;s sarcoma cell
+0002072	squamous epithelium
+0002073	pavement epithelium
+0002074	stratified epithelium
+0002075	mesenchymal epithelium
+0002076	osteomalacia cell
+0002077	oncogenic osteomalacia cell
+0002078	hepatic osteomalacia cell
+0002079	puerperal osteomalacia cell
+0002080	renal tubular osteomalacia cell
+0002081	senile osteomalacia cell
+0002082	subdural space
+0002083	perilymphatic space
+0002084	anterior chamber of the eye
+0002085	chamber of the eye
+0002086	posterior chamber of the eye
+0002087	vitreous chamber of the eye
+0002088	ependymoma cell
+0002089	CAL-72 cell
+0002090	endophytic retinoblastoma cell
+0002091	exophytic retinoblastoma cell
+0002092	ganglioglioma cell
+0002093	ganglioneuroma cell
+0002094	ganglioneurofibroma cell
+0002095	nasal glioma cell
+0002096	nasal cavity
+0002097	pharyngeal cavity
+0002098	tympanum
+0002099	middle ear
+0002100	outer ear
+0002101	multiple myeloma cell
+0002102	MOPC-104E cell
+0002103	MOPC-173 cell
+0002104	BE(2)-M17 cell
+0002105	perisympathetic organ
+0002106	neurohemal organ
+0002107	submucosa
+0002108	tela submucosa bronchiorum
+0002109	tela submucosa esophagi
+0002110	tela submucosa gastris
+0002111	tela submucosa intestini crassi
+0002112	tela submucosa intestini tenuis
+0002113	tela submucosa pharyngis
+0002114	tela submucosa recti
+0002115	tela submucosa tracheae
+0002116	tela submucosa tubae uterinae
+0002117	tela submucosa vesicae urinariae
+0002118	culture condition:collagen-grown cell
+0002119	spikelet
+0002120	pyloric cecum
+0002121	pyloric stomach
+0002122	cardiac stomach
+0002123	primitive endoderm
+0002124	ampulla
+0002125	water vascular system
+0002126	U-373MG cell
+0002127	U-138MG cell
+0002128	TX3868 cell
+0002129	SK-MEL-1 cell
+0002130	SK-MEL cell
+0002131	SK-MEL-28 cell
+0002132	SK-MEL-3 cell
+0002133	SK-MEL-30 cell
+0002134	SK-MEL-5 cell
+0002135	INS-1 cell
+0002136	NB-4 cell
+0002137	MiaPaCa-2 cell
+0002138	MiaPaCa cell
+0002139	HS-683 cell
+0002140	RPMI-7931 cell
+0002141	BCS-TC2 cell
+0002142	BRIN-BD11 cell
+0002143	CEM-VCR R cell
+0002144	acute lymphoblastic leukemia cell line
+0002145	midgut cell line
+0002146	CAL-62 cell
+0002147	type II intestinal metaplasia disease specific cell type
+0002148	gas bladder
+0002149	gill raker
+0002150	gill filament
+0002151	gill raker sieve
+0002152	gill arch
+0002153	pharyngobranchial
+0002154	epibranchial
+0002155	ceratobranchial
+0002156	hypobranchial
+0002157	endochondral bone
+0002158	huelle cell
+0002159	cleistothecium
+0002160	apothecium
+0002161	ascocarp
+0002162	ascus
+0002163	gymnothecium
+0002164	perithecium
+0002165	basidium
+0002166	basidiospore
+0002167	mushroom
+0002168	juvenile
+0002169	anterior commissure
+0002170	LOX cell
+0002171	amelanotic melanoma cell line
+0002172	ABFTL-6 cell
+0002173	tubercle
+0002174	parenchymal cell
+0002175	LLC-RK1 cell
+0002176	Pro-5 cell
+0002177	PR cell
+0002178	HMEpC cell
+0002179	184A1N4 cell
+0002180	184B5 cell
+0002181	HEK-293T cell
+0002182	95D cell
+0002183	95C cell
+0002184	culture condition:2,4-dichlorophenoxyacetate-grown cell
+0002185	culture condition:2-aminobenzoate-grown cell
+0002186	culture condition:2-chloroacrylate-grown cell
+0002187	culture condition:3-nitrophenol grown-cell
+0002188	culture condition:alpha-pinene-grown cell
+0002189	culture condition:pullulan-grown cell
+0002190	culture condition:xylan-grown cell
+0002191	fibre tract
+0002192	SCC12b cell
+0002193	SCC-13 cell
+0002194	NHK cell
+0002195	vascular smooth muscle cell line
+0002196	A10 cell
+0002197	M22 cell
+0002198	OC/CDE22 cell
+0002199	Colo-206F cell
+0002200	Colo-678 cell
+0002201	HCT-15 cell
+0002202	lung squamous cell carcinoma cell line
+0002203	SK-MES-1 cell
+0002204	palatine uvula
+0002205	large cell lung cancer cell line
+0002206	small cell lung cancer cell line
+0002207	NCI-H460 cell
+0002208	K6H6/B5 cell
+0002209	NCI-H596 cell
+0002210	SiHa cell
+0002211	oral squamous cell carcinoma cell line
+0002212	cervical squamous cell carcinoma cell line
+0002213	A-1207 cell
+0002214	A-1235 cell
+0002215	LN-319 cell
+0002216	LN-428 cell
+0002217	culture supernatant
+0002218	chalazal cell
+0002219	adrenocortical carcinoma cell
+0002220	15PC3 cell
+0002221	HLE-B3 cell
+0002222	bract
+0002223	BW/T200- cell
+0002224	cheek pouch
+0002225	digestive gland cell line
+0002226	abalone digestive gland cell line
+0002227	culture condition:citrate-grown cell
+0002228	culture condition:light-grown cell
+0002229	culture condition:heme-grown cell
+0002230	culture condition:naphthalene-grown cell
+0002231	culture condition:porcine gastric mucin-grown cell
+0002232	culture condition:taurine-grown cell
+0002233	culture fluid
+0002234	culture-condition:L-arginine-grown cell
+0002235	Calu-6 cell
+0002236	ovarian cumulus cell
+0002237	ectomycorrhiza
+0002238	endomycorrhiza
+0002239	endectomycorrhiza
+0002240	exodermis
+0002241	eyelid
+0002242	oral epithelial cell
+0002243	hypanthium
+0002244	flower stalk
+0002245	foreskin fibroblast cell line
+0002246	globus pallidus
+0002247	globus pallidus lateralis
+0002248	globus pallidus medialis
+0002249	cervical canal
+0002250	nucleus lentiformis
+0002251	lamina medullaris medialis corporis striati
+0002252	subthalamic nucleus
+0002253	GOTO cell
+0002254	vas efferens
+0002255	HCT-8 cell
+0002256	heterotroph
+0002257	heterotrophic cell
+0002258	autotroph
+0002259	autotrophic cell
+0002260	HS-68 cell
+0002261	fungus form
+0002262	plant pedicel
+0002263	ventriculus
+0002264	dried cell
+0002265	microplasmodium
+0002266	honey sac
+0002267	rhabdomyosarcoma cell line
+0002268	MLE-12 cell
+0002269	JEG-3 cell
+0002270	MCF-7/2a cell
+0002271	MCS-2 cell
+0002272	merozoite
+0002273	ileocecum
+0002274	BHT-101 cell
+0002275	lateral hypodermal chord
+0002276	immobilized cell
+0002277	melanotroph
+0002278	macrophage cell line
+0002279	J-774 cell
+0002280	lignifying cell
+0002281	YZI-1S cell
+0002282	Pt-K2 cell
+0002283	NCI-H157 cell
+0002284	MIN-6 cell
+0002285	granulosa cell line
+0002286	POGS-5 cell
+0002287	POGRS-1 cell
+0002288	GLHR-15 cell
+0002289	GFSHR-17 cell
+0002290	primary cell line
+0002291	SP2/0-AG14 cell
+0002292	flagellum
+0002293	SAKRTLS 12.1 cell
+0002294	solid substrate culture
+0002295	podocyte
+0002296	capsular epithelium
+0002297	renal glomerular capsule
+0002298	inferior olivary complex
+0002299	oliva
+0002300	hilum nuclei olivaris inferioris
+0002301	mucinous cystadenoma cell
+0002302	inferior mesenteric artery
+0002303	superior mesenteric artery
+0002304	protoscolex
+0002305	scolex
+0002306	ARO cell
+0002307	yeast form
+0002308	myoepithelium
+0002309	myoepithelial cell
+0002310	mammary myoepithelium
+0002311	mammary myoepithelial cell
+0002312	mature cell
+0002313	immature cell
+0002314	satellite cell
+0002315	supporting cell
+0002316	stellate cell
+0002317	slow muscle
+0002318	fast muscle
+0002319	skeletal muscle fiber
+0002320	cardiac muscle fiber
+0002321	intermediate muscle fiber
+0002322	cell property
+0002323	eccrine sweat gland
+0002324	merocrine gland
+0002325	holocrine gland
+0002326	breast apocrine carcinoma cell
+0002327	stem cortex
+0002328	ventral nerve cord
+0002329	dorsal nerve cord
+0002330	lamina propria
+0002331	PLHC-1 cell
+0002332	monocytic leukemia cell line
+0002333	Mono-Mac-6 cell
+0002334	retinal pigment epithelium cell line
+0002335	ARPE-19 cell
+0002336	culture condition:arabitol-grown cell
+0002337	culture condition:cellobiose-grown cell
+0002338	culture condition:cellulose-grown cell
+0002339	culture condition:fluoride-grown cell
+0002340	plant collar
+0002341	leaf collar
+0002342	bradyzoite
+0002343	tarsal bone
+0002344	electrocyte
+0002345	hindlimb
+0002346	fibula
+0002347	metatarsal bone
+0002348	toe
+0002349	hallux
+0002350	digitus secundus pedis
+0002351	digitus tertius pedis
+0002352	digitus quartis pedis
+0002353	digitum minimus pedis
+0002354	talus
+0002355	calcaneal bone
+0002356	navicular bone
+0002357	cuboid bone
+0002358	lateral cuneiform bone
+0002359	intermediate cuneiform bone
+0002360	medial cuneiform bone
+0002361	osteochondroma cell
+0002362	pancreatic duct
+0002363	pancreatic ductal carcinoma cell
+0002364	gastric pit
+0002365	chondroblastoma cell
+0002366	extravillous trophoblast
+0002367	cytotrophoblastic cell
+0002368	3Y1-B clone 1 cell
+0002369	HR-3Y1 cell
+0002370	colleterial gland
+0002371	macroplasmodium
+0002372	neuroepithelioma cell
+0002373	glioblastoma multiforme cell
+0002374	anaplastic astrocytoma cell
+0002375	bronchiole
+0002376	duodenal gland
+0002377	SR-3Y1 cell
+0002378	pilocytic astrocytoma cell
+0002379	juvenile pilocytic astrocytoma cell
+0002380	gastric adenocarcinoma cell line
+0002381	MKN-28 cell
+0002382	MKN-7 cell
+0002383	MKN-74 cell
+0002384	MKN-1 cell
+0002385	GLC-4 cell
+0002386	GLC-4/ADR cell
+0002387	GLC-4/MITO cell
+0002388	GLC-4/CDDP cell
+0002389	U-1285 cell
+0002390	U-1568 cell
+0002391	U-1285dox cell
+0002392	SGC-7901 cell
+0002393	N-27 cell
+0002394	DC-3F cell
+0002395	DC-3F/ADX cell
+0002396	NIH-3T3-G185 cell
+0002397	prostate gland epithelium
+0002398	prostate epithelium cell line
+0002399	PNT-2 cell
+0002400	OLN-93 cell
+0002401	feather rachis
+0002402	oviduct epithelium
+0002403	OS-RC-2 cell
+0002404	YMB-1 cell
+0002405	EoL-1 cell
+0002406	eosinophilic leukemia cell line
+0002407	spermary
+0002408	NRK-52E cell
+0002409	NRK-49F cell
+0002410	giant cell carcinoma cell
+0002411	giant cell carcinoma cell line
+0002412	PG cell
+0002413	PG-BE1 cell
+0002414	PG-CL3 cell
+0002415	PG-LH7 cell
+0002416	NCI-H929 cell
+0002417	helper T-lymphocyte
+0002418	NCI-H292 cell
+0002419	SK-BR-3 cell
+0002420	monocytic leukemia cell
+0002421	eosinophilic leukemia cell
+0002422	mesothelium
+0002423	mesothelioma cell
+0002424	mesothelioma cell line
+0002425	MSTO-211H cell
+0002426	CHOP cell
+0002427	KYSE-150 cell
+0002428	esophageal squamous cell carcinoma cell line
+0002429	HA22T/VGH cell
+0002430	Lec15.1 CHO cell
+0002431	HuO-3N1 cell
+0002432	prespore
+0002433	genital primordium
+0002434	dorsal raphe nucleus
+0002435	colorectal mucosa
+0002436	myenteric plexus
+0002437	enteric plexus
+0002438	Dogiel&apos;s corpuscle
+0002439	genital mucosa
+0002440	CX-1 cell
+0002441	pericyte
+0002442	tetrad of microspores
+0002443	tetrad of pollen
+0002444	basal forebrain
+0002445	diagonal band
+0002446	medial septum
+0002447	substantia innominata
+0002448	basal telencephalon
+0002449	hypothalamic nucleus
+0002450	anterior hypothalamic nucleus
+0002451	dorsal hypothalamic nucleus
+0002452	thalamic nucleus
+0002453	medial dorsal nucleus of thalamus
+0002454	median nucleus of thalamus
+0002455	anterior paraventricular nucleus
+0002456	posterior paraventricular nucleus
+0002457	nucleus parataenialis
+0002458	rhomboid nucleus
+0002459	nucleus reuniens
+0002460	paraventricular nucleus
+0002461	posterior hypothalamic nucleus
+0002462	posterior nuclear complex of thalamus
+0002463	ventral lateral complex of thalamus
+0002464	ventrobasal complex of thalamus
+0002465	nucleus ventralis posterolateralis thalamus
+0002466	nucleus ventralis posteromedialis thalamus
+0002467	ventral nucleus of thalamus
+0002468	ventral anterior nucleus of thalamus
+0002469	ventral intermediate nucleus of thalamus
+0002470	ventral medial complex of thalamus
+0002471	culture condition:anaerobically-grown cell
+0002472	ventromedial hypothalamic nucleus
+0002473	infundibular nucleus
+0002474	dorsomedial nucleus of intermediate hypothalamus
+0002475	endopeduncular nucleus
+0002476	paraventricular nucleus of hypothalamus
+0002477	cecal epithelium
+0002478	cervical epithelial cell
+0002479	posterior periventricular nucleus
+0002480	plume
+0002481	lateral tuberal nucleus
+0002482	gonadotrophic cell
+0002483	interventricular septum
+0002484	columnar cell
+0002485	atrial appendage
+0002486	lupulin gland
+0002487	metacyclic form
+0002488	uterine leiomyosarcoma cell line
+0002489	promyelocytic leukemia cell line
+0002490	culture condition:acetylacetone-grown cell
+0002491	culture condition:4-hydroxyphenylacetate-grown cell
+0002492	vestimentum
+0002493	CH12.LX cell
+0002494	mesangium
+0002495	cerebral gyrus
+0002496	dentate gyrus
+0002497	fasciolar gyrus
+0002498	arachnoid barrier layer
+0002499	companion cell
+0002500	arachnoid trabecula
+0002501	trabecula
+0002502	kinetoplastid
+0002503	protozoan form
+0002504	T-lymphoblastic leukemia cell line
+0002505	anaplastic large cell lymphoma cell
+0002506	enteric nervous system
+0002507	autonomic nervous system
+0002508	myenteron
+0002509	corticotropic cell
+0002510	myelomonocytic leukemia cell
+0002511	pinnule
+0002512	leaflet
+0002513	Ewing&apos;s sarcoma cell
+0002514	CN1.4 cell
+0002515	brain cortex cell line
+0002516	odontoclast
+0002517	follicular lymphoma cell line
+0002518	FL-18 cell
+0002519	FL-218 cell
+0002520	FL-318 cell
+0002521	diffuse large B-cell lymphoma cell
+0002522	HBL-1 cell
+0002523	HBL-2 cell
+0002524	HEK-293A cell
+0002525	cementum
+0002526	HBL-4 cell
+0002527	HBL-5 cell
+0002528	HBL-7 cell
+0002529	HBL-8 cell
+0002530	HBL-9 cell
+0002531	HBL-10 cell
+0002532	Kobayashi cell
+0002533	HBL-11 cell
+0002534	HBL-3 cell
+0002535	Morris hepatoma 7800C1 cell
+0002536	feather vane
+0002537	BNL CL.2 cell
+0002538	LLC-PK-1-GR101 cell
+0002539	culture condition:styrene-grown cell
+0002540	culture condition:styrene oxide-grown cell
+0002541	culture condition:(R)-cysteate-grown cell
+0002542	femoral muscle
+0002543	alveolar wall
+0002544	MCF-12A cell
+0002545	MCF-12F cell
+0002546	KBM-5 cell
+0002547	KE-37 cell
+0002548	BT-549 cell
+0002549	A-2780 cell
+0002550	CH-1 cell
+0002551	ACH-2 cell
+0002552	NCI-H1299 cell
+0002553	non-small cell lung cancer cell line
+0002554	K-562adr cell
+0002555	HOSE cell
+0002556	HOSE-A cell
+0002557	HOSE-B cell
+0002558	INER-37 cell
+0002559	INER-51 cell
+0002560	OVCA-2 cell
+0002561	OVCA-4 cell
+0002562	A-1847 cell
+0002563	OVCA-420 cell
+0002564	OVCA-429 cell
+0002565	OVCA-432 cell
+0002566	OVCA-433 cell
+0002567	INER-51/PSC-1 cell
+0002568	Colo-201 cell
+0002569	Co-403 cell
+0002570	coronary artery smooth muscle cell line
+0002571	Caco-2/TC7 cell
+0002572	MEF cell
+0002573	TERA-2 cell
+0002574	NT2-N cell
+0002575	IGROV-1 cell
+0002576	UMR-106 cell
+0002577	UMR-108 cell
+0002578	feather barbs
+0002579	IEC-CF7 cell
+0002580	chronic myeloid leukemia cell line
+0002581	MEG-01 cell
+0002582	HFL-1 cell
+0002583	YMB-1-E cell
+0002584	WRL-68 cell
+0002585	WE-480 cell
+0002586	G-401 cell
+0002587	NCI-H295 cell
+0002588	NCI-H295R cell
+0002589	H-7721 cell
+0002590	HEY cell
+0002591	HL-60/Vinc cell
+0002592	DC-3F/S16 cell
+0002593	DC-3F/9-OH-E cell
+0002594	DDT1-MF-2 cell
+0002595	leiomyosarcoma cell line
+0002596	NUGC-2 cell
+0002597	NUGC-3 cell
+0002598	RBA cell
+0002599	RBA-2 cell
+0002600	astrocyte cell line
+0002601	RAW/LR5 cell
+0002602	RTH-149 cell
+0002603	11-9-1-4 cell
+0002604	TC-71 cell
+0002605	TE-671 cell
+0002606	glial cell
+0002607	SK-LMS-1 cell
+0002608	vomeronasal organ
+0002609	astroglial cell
+0002610	pseudopodium
+0002611	axopodium
+0002612	filopodium
+0002613	lobopodium
+0002614	reticulopodium
+0002615	fascia dentata
+0002616	turion
+0002617	thyroid nodule
+0002618	ejaculatory duct epithelium
+0002619	posterior adductor muscle
+0002620	anterior adductor muscle
+0002621	spinal muscle
+0002622	spinal muscle of head
+0002623	spinal muscle of neck
+0002624	spinal muscle of thorax
+0002625	mesenchymal cell
+0002626	venule
+0002627	T-lymphoblastoma cell
+0002628	B-lymphoblastoma cell
+0002629	T-lymphoblastoid cell line
+0002630	UCI-101 cell
+0002631	glume
+0002632	larval cell line
+0002633	4a-2s4 cell
+0002634	L3-5-3 cell
+0002635	Sua1.1 cell
+0002636	1HAEo cell
+0002637	respiratory epithelium cell line
+0002638	Hs 925.T cell
+0002639	NS20Y cell
+0002640	CHO-EM9 cell
+0002641	CHO-AA8 cell
+0002642	A2780-DX3 cell
+0002643	cortical collecting duct
+0002644	CCD-13Lu cell
+0002645	CCD-8Lu cell
+0002646	CCD-25Lu cell
+0002647	CCD-27Sk cell
+0002648	ROS-17/2.8 cell
+0002649	B35 cell
+0002650	entorhinal area
+0002651	piriform area
+0002652	hemangioendothelioma cell line
+0002653	N2aEGFP cell
+0002654	hippocampal mossy fiber
+0002655	postlarva
+0002656	sickle cell
+0002657	mpkCCDc14 cell
+0002658	collecting duct cell line
+0002659	embryonic brain cortex cell line
+0002660	inflorescence stalk
+0002661	auditory vesicle
+0002662	skeletal muscle cell line
+0002663	N2aSW cell
+0002664	HTAU cell
+0002665	B-50 cell
+0002666	adult stem cell
+0002667	cord blood stem cell
+0002668	bone marrow stromal stem cell
+0002669	peripheral blood stem cell
+0002670	medial geniculate nucleus
+0002671	ventral principal nucleus of medial geniculate body
+0002672	medial nucleus of medial geniculate body
+0002673	dorsal nucleus of medial geniculate body
+0002674	medial geniculate body
+0002675	mushroom body
+0002676	vertical lobe of mushroom body
+0002677	medial lobe of mushroom body
+0002678	testicular vein
+0002679	right testicular vein
+0002680	left testicular vein
+0002681	renal vein
+0002682	inferior vena cava
+0002683	superior vena cava
+0002684	lymphoid follicle
+0002685	EOMA cell
+0002686	central amygdaloid nucleus
+0002687	Leydig cell tumor cell
+0002688	vascular cell
+0002689	oviductal fluid
+0002690	biofilm
+0002691	neuroendocrine cell
+0002692	enterochromaffin-like cell
+0002693	culture condition:toluene-grown cell
+0002694	leiomyoma cell
+0002695	uterine leiomyoma cell
+0002696	SK-N-BE(2) cell
+0002697	supraoptic nucleus
+0002698	bed nucleus of stria terminalis
+0002699	lateral habenular nucleus
+0002700	habenular trigone
+0002701	midbrain central gray
+0002702	medial amygdaloid nucleus
+0002703	cortical amygdaloid nucleus
+0002704	lateral amygdaloid nucleus
+0002705	septal area
+0002706	ventral septal area
+0002707	culture condition:ornithine-grown cell
+0002708	GT1-7 cell
+0002709	head and neck squamous cell carcinoma cell line
+0002710	UM-SCC-14B cell
+0002711	UM-SCC-17B cell
+0002712	UM-SCC-22B cell
+0002713	UM-SCC-21A cell
+0002714	UM-SCC-22A cell
+0002715	UM-SCC-38 cell
+0002716	MDA-1186 cell
+0002717	MDA-886 cell
+0002718	TR-146 cell
+0002719	primary effusion lymphoma cell line
+0002720	BC-1 cell
+0002721	BC-2 cell
+0002722	BC-3 cell
+0002723	HBL-6 cell
+0002724	CRO-AP/2 cell
+0002725	CRO-AP/3 cell
+0002726	CRO-AP/5 cell
+0002727	BCBL-1 cell
+0002728	BCP-1 cell
+0002729	ovarian serous carcinoma cell
+0002730	uterine serous carcinoma cell
+0002731	erythroid cell
+0002732	HEK-293CymR cell
+0002733	embryonic kidney cell line
+0002734	16-HBE14o cell
+0002735	MKT-BR cell
+0002736	OCM-1 cell
+0002737	SP-6.5 cell
+0002738	cement gland
+0002739	VACO cell
+0002740	INR1G9 cell
+0002741	hepatic stellate cell
+0002742	gynecophoral canal
+0002743	schistosomulum
+0002744	CAPAN-1 cell
+0002745	CAPAN-2 cell
+0002746	PC-1.0 cell
+0002747	PC-1 cell
+0002748	BL-2 cell
+0002749	HS-74 cell
+0002750	Calu-3 cell
+0002751	PC6-3 cell
+0002752	PC-6 cell
+0002753	PC6-1 cell
+0002754	PC6-2 cell
+0002755	PC6-16 cell
+0002756	PC6-4 cell
+0002757	PC6-5 cell
+0002758	PC6-6 cell
+0002759	PC6-7 cell
+0002760	PC6-8 cell
+0002761	PC6-9 cell
+0002762	PC6-10 cell
+0002763	PC6-11 cell
+0002764	PC6-13 cell
+0002765	PC6-14 cell
+0002766	PC6-15 cell
+0002767	GH4-C1 cell
+0002768	mammary epithelial cell line
+0002769	HME cell
+0002770	decidual cell
+0002771	olfactory ensheathing cell
+0002772	chela
+0002773	salivary gland cancer cell
+0002774	amyloid plaque
+0002775	ANA-1 cell
+0002776	inflorescence apex
+0002777	anterolateral sulcus of medulla oblongata
+0002778	rostral ventrolateral medulla
+0002779	endospore
+0002780	visceral muscle
+0002781	mesenteric vein
+0002782	inferior mesenteric vein
+0002783	superior mesenteric vein
+0002784	corpus albicans
+0002785	rhinencephalon
+0002786	cystadenoma cell
+0002787	clear cell adenocarcinoma cell
+0002788	mucinous adenocarcinoma cell
+0002789	ovarian low malignant potential tumor cell
+0002790	phloem parenchyma cell
+0002791	culture condition:arginine-grown cell
+0002792	culture condition:citrulline-grown cell
+0002793	culture condition:glucose/ammonium-grown cell
+0002794	culture condition:glucose/arginine-grown cell
+0002795	culture condition:glucose-grown cell
+0002796	culture condition:glutamate-grown cell
+0002797	culture condition:N-3-oxododecanoyl-L-homoserine lactone/ammonium chloride-grown cell
+0002798	culture condition:N-decanoyl-L-homoserine lactone-grown cell
+0002799	culture condition:raffinose-grown cell
+0002800	culture condition:succinate/ammonium-grown cell
+0002801	culture condition:tributyrin-grown cell
+0002802	1F6 cell
+0002803	BLM cell
+0002804	Mel57 cell
+0002805	M14 melanoma cell
+0002806	A-375 cell
+0002807	prefrontal cortex
+0002808	B16-BL6 cell
+0002809	L-6 myoblast cell
+0002810	L8 cell
+0002811	flag leaf
+0002812	final leaf
+0002813	gubernaculum testis
+0002814	chorda gubernaculum
+0002815	transitional cell carcinoma cell
+0002816	bladder transitional cell carcinoma cell
+0002817	esophageal cancer cell line
+0002818	HCE-7 cell
+0002819	decidua basalis
+0002820	oligodendroglioma cell line
+0002821	HOG cell
+0002822	NCI-HUT 125 cell
+0002823	SK-PC-1 cell
+0002824	SF-188 cell
+0002825	SW-742 cell
+0002826	SVEC4-10 cell
+0002827	SK-N-AS cell
+0002828	HMEC-1 cell
+0002829	KARPAS-299 cell
+0002830	DB-1 cell
+0002831	PC-346C cell
+0002832	PEA-13 cell
+0002833	NB-1643 cell
+0002834	NB-1691 cell
+0002835	NCI-H358 cell
+0002836	NCI-H460M cell
+0002837	PY-41 cell
+0002838	HT-29/219 cell
+0002839	P12-ICHIKAWA cell
+0002840	bile ductule
+0002841	bile canaliculus
+0002842	cholangioma cell
+0002843	breast fibroadenoma cell
+0002844	breast invasive ductal carcinoma cell
+0002845	mammary duct
+0002846	non-Hodgkin lymphoma cell
+0002847	thecoma cell
+0002848	granulosa-theca cell tumor cell
+0002849	luteoma cell
+0002850	theca cell
+0002851	theca interna
+0002852	theca externa
+0002853	theca folliculi
+0002854	corn silk
+0002855	hepatic cecum
+0002856	coelomocyte
+0002857	eleocyte
+0002858	cerebral subcortex
+0002859	esophageal mucosa
+0002860	oral mucosa
+0002861	esophageal squamous cell carcinoma cell
+0002862	HBEpC cell
+0002863	MSS-31 cell
+0002864	T3M4 cell
+0002865	GER cell
+0002866	TE-2 cell
+0002867	TE-6 cell
+0002868	bladder transitional cell carcinoma cell line
+0002869	transitional cell carcinoma cell line
+0002870	RT-4 cell
+0002871	embryonic brain cell line
+0002872	embryonic hippocampal cell line
+0002873	HN9.10e cell
+0002874	Rat-2 cell
+0002875	CL1-0 cell
+0002876	CL1-5 cell
+0002877	PC-14 cell
+0002878	B-lymphoblastoid cell
+0002879	chorionic plate
+0002880	ingluvial ganglion
+0002881	neural stem cell
+0002882	32D cell
+0002883	32D clone3 cell
+0002884	416B cell
+0002885	745-A cell
+0002886	renal epithelium cell line
+0002887	A-9 cell
+0002888	Th-1 cell line
+0002889	alveolar macrophage cell line
+0002890	CA-77 cell
+0002891	neural stem cell line
+0002892	GEO cell
+0002893	HB1.F3 cell
+0002894	Hepa-1c1c7 cell
+0002895	HEPA 1-6 cell
+0002896	HM-1 ES cell
+0002897	IM-9 cell
+0002898	J558L cell
+0002899	K-1034 RPE cell
+0002900	monocyte-derived dendritic cell
+0002901	neural crest cell line
+0002902	NC14.9.1 cell
+0002903	NC14.4.6E cell
+0002904	non-Hodgkin lymphoma cell line
+0002905	NHL-B cell
+0002906	NPLC/PRF/5 cell
+0002907	NR-8383 cell
+0002908	PLB-985 cell
+0002909	RK-13 cell
+0002910	S194/5.XXO-1 cell
+0002911	S194/5.XXO.BU.1 cell
+0002912	neuroepithelioma cell line
+0002913	epithelioma cell line
+0002914	SK-N-MC cell
+0002915	rhabdomyocyte
+0002916	striated muscle cell
+0002917	rhabdomyocyte cell line
+0002918	HMV-II cell
+0002919	retinoblastoma cell line
+0002920	Y-79 cell
+0002921	LS174T-HM7 cell
+0002922	bronchial epithelial cell
+0002923	BEAS-2B cell
+0002924	NHBE cell
+0002925	tracheobronchial epithelium
+0002926	tracheobronchial epithelial cell line
+0002927	tracheobronchial epithelial cell
+0002928	adult stem cell line
+0002929	adult liver stem cell line
+0002930	fascia
+0002931	liver epithelial cell line
+0002932	cholangiocarcinoma cell line
+0002933	CCLP1 cell
+0002934	thymic cortex
+0002935	SG231 cell
+0002936	vaginal cell line
+0002937	S-16 cell
+0002938	33B cell
+0002939	serous adenocarcinoma cell
+0002940	Calu-1 cell
+0002941	Colo-38 cell
+0002942	HO-1 cell
+0002943	FO-1 cell
+0002944	DU-2 cell
+0002945	MRN-1 cell
+0002946	MNT-1 cell
+0002947	1102 cell
+0002948	1383 cell
+0002949	938 cell
+0002950	Mel888 cell
+0002951	624 cell
+0002952	Mel249 cell
+0002953	Mel499 cell
+0002954	Mel505 cell
+0002955	Mel592 cell
+0002956	Mel501 cell
+0002957	DM6 cell
+0002958	DM93 cell
+0002959	TP17 cell
+0002960	HEC-1-A cell
+0002961	STP-1 cell
+0002962	1290-2 cell
+0002963	1704 cell
+0002964	1182 cell
+0002965	M10 melanoma cell
+0002966	SK-MEL-21 cell
+0002967	SK-MEL-37 cell
+0002968	SK-MEL-93 cell
+0002969	IR-8 cell
+0002970	H494 cell
+0002971	KJ29 cell
+0002972	164T2 cell
+0002973	267T2 cell
+0002974	HEK-293-EBNA cell
+0002975	A-2058 cell
+0002976	abdominal aorta
+0002977	exocrine glandular secretion
+0002978	internal secretion
+0002979	secretion
+0002980	pancreatic alpha cell line
+0002981	alpha-TC1.9 cell
+0002982	alpha-TC1.6 cell
+0002983	anaplastic oligodendroglioma cell
+0002984	antropyloric mucosa
+0002985	coronary artery smooth muscle
+0002986	culture condition:molybdate-grown cell
+0002987	culture condition:tungstate-grown cell
+0002988	CHO-7 cell
+0002989	CHP-134 cell
+0002990	gastric ulcer
+0002991	glandular epithelium
+0002992	ARH-77 cell
+0002993	beta-TC3 cell
+0002994	lacteal cyst
+0002995	CCL-39 cell
+0002996	cavernous artery
+0002997	LAPC4 cell
+0002998	LNCaP-C4-2B4 cell
+0002999	22Rv-1 cell
+0003000	EB-1 cell
+0003001	EBC-1 cell
+0003002	endocervix
+0003003	epididymal fluid
+0003004	NCI-H1435 cell
+0003005	NCI-H324 cell
+0003006	NCI-H2122 cell
+0003007	NCI-H322 cell
+0003008	NCI-H226 cell
+0003009	NCI-H1703 cell
+0003010	NCI-H125 cell
+0003011	NCI-H1334 cell
+0003012	NCI-H1264 cell
+0003013	NCI-H661 cell
+0003014	NCI-H520 cell
+0003015	macula lutea
+0003016	SW-1573 cell
+0003017	COLO-699 cell
+0003018	NE-18 cell
+0003019	NCI-H345 cell
+0003020	NCI-H209 cell
+0003021	NCI-H187 cell
+0003022	NCI-H69 cell
+0003023	NCI-H510 cell
+0003024	NCI-H146 cell
+0003025	NCI-H128 cell
+0003026	NCI-H82 cell
+0003027	NCI-H196 cell
+0003028	NCI-N417 cell
+0003029	SKLU-1 cell
+0003030	MT-4 cell
+0003031	HCA-7 cell
+0003032	HEK-293F cell
+0003033	HEK-293H cell
+0003034	HELF cell
+0003035	HS-Sultan cell
+0003036	hippocampal cell line
+0003037	HT-22 cell
+0003038	HEC-1-B cell
+0003039	hypodermal seam cell
+0003040	uterine adenocarcinoma cell line
+0003041	Ishikawa cell
+0003042	J-774.1 cell
+0003043	JJ012-TS4 cell
+0003044	JY cell
+0003045	neuroma cell
+0003046	neurofibroma cell
+0003047	neurilemoma cell
+0003048	neurolemma
+0003049	kerathoacanthoma cell
+0003050	MA-10 cell
+0003051	MBA-15 cell
+0003052	MDA-686Ln cell
+0003053	NCI-N87 cell
+0003054	OVCA-8 cell
+0003055	NW-16 cell
+0003056	NB-2 cell
+0003057	NB2-Sp cell
+0003058	NB2a/d1 cell
+0003059	oviduct epithelial cell line
+0003060	PC12-AC cell
+0003061	retinal cell line
+0003062	MIO-M1 cell
+0003063	Mueller cell line
+0003064	Mueller cell
+0003065	VA13-TS4 cell
+0003066	WI38-VA13 subline 2RA cell
+0003067	OE-E6/E7 cell
+0003068	PNT-1A cell
+0003069	OK cell
+0003070	S2 cell
+0003071	HLEC-SRA 01/04 cell
+0003072	human lens epithelial cell line
+0003073	medullary thyroid carcinoma cell line
+0003074	TT cell
+0003075	WM-115 cell
+0003076	RAMOS cell
+0003077	RAMOS-AW cell
+0003078	RAMOS-EHRB cell
+0003079	RAMOS (RA.1) cell
+0003080	pleural fluid
+0003081	pancreatic ductal adenocarcinoma cell
+0003082	uterine epithelium
+0003083	uterine wall
+0003084	vaginal fluid
+0003085	uterine anchor cell
+0003086	rosette leaf
+0003087	subiculum
+0003088	subiculum promontorii
+0003089	promontorium tympani
+0003090	subventricular zone
+0003091	urogenital system
+0003092	urinary system
+0003093	cardiofibroblast
+0003094	secondary oocyte
+0003095	normoblast
+0003096	internal male genital organ
+0003097	external male genital organ
+0003098	scrotum
+0003099	internal female genital organ
+0003100	external female genital organ
+0003101	female pudendum
+0003102	pyramidal neuron
+0003103	pro-B-lymphocyte cell line
+0003104	pro-B-lymphocyte
+0003105	SW-1222 cell
+0003106	HOM-2 cell
+0003107	foreign-body giant cell
+0003108	ChaGo-K-1 cell
+0003109	CaSki cell
+0003110	CALO cell
+0003111	VIPA cell
+0003112	INBL cell
+0003113	ROVA cell
+0003114	wound fluid
+0003115	major vestibular gland
+0003116	minor vestibular gland
+0003117	glans clitoridis
+0003118	glans penis
+0003119	clitoral gland
+0003120	atherosclerotic plaque
+0003121	villus
+0003122	microvascular endothelium
+0003123	microvascular endothelial cell
+0003124	microvascular endothelial cell line
+0003125	HBMEC cell
+0003126	bone marrow endothelial cell line
+0003127	human bone marrow endothelial cell line
+0003128	brain microvascular endothelial cell line
+0003129	human brain microvascular endothelial cell
+0003130	FL cell
+0003131	CaR-1 cell
+0003132	microsporidian
+0003133	culture condition:acetylene-grown cell
+0003134	culture condition:quinate-grown cell
+0003135	zona pellucida
+0003136	ZR-75-1 cell
+0003137	5637 cell
+0003138	UM-SCC-1 cell
+0003139	UM-SCC-12 cell
+0003140	UM-SCC-14A cell
+0003141	true leaf
+0003142	KU-812F cell
+0003143	coculture
+0003144	neuron-oligodendrocyte coculture
+0003145	vestibulum vaginae
+0003146	zona incerta
+0003147	juvenile leaf
+0003148	culture condition:milk-grown cell
+0003149	interalveolar septum
+0003150	pulmonary artery endothelial cell line
+0003151	HPAEC cell
+0003152	papillary thyroid cancer cell
+0003153	perineurium
+0003154	epineurium
+0003155	pleural mesothelium
+0003156	peritoneal mesothelium
+0003157	pericardial mesothelium
+0003158	prostate gland anterior lobe
+0003159	prostate gland smooth muscle
+0003160	PrEC cell
+0003161	PrSMC cell
+0003162	PrSC cell
+0003163	prostatic urethra
+0003164	cholangiocyte
+0003165	cervical adenocarcinoma cell
+0003166	10T1/2 cell
+0003167	143B cell
+0003168	cysticercus
+0003169	SNU-368 cell
+0003170	SNU-398 cell
+0003171	CCD-841-CoN cell
+0003172	KM-12 cell
+0003173	endostyle
+0003174	outer plexiform layer
+0003175	inner plexiform layer
+0003176	inner nuclear layer
+0003177	semimembranosus
+0003178	biceps
+0003179	hamstring muscle
+0003180	HeLa-80 cell
+0003181	WEHI-7.2 cell
+0003182	NHEK cell
+0003183	melanocyte cell line
+0003184	NHEM cell
+0003185	NHDF cell
+0003186	NHM cell
+0003187	SNU-423 cell
+0003188	SNU-449 cell
+0003189	SNU-475 cell
+0003190	SNU-354 cell
+0003191	SNU-387 cell
+0003192	renal cancer cell line
+0003193	SK-RC-1 cell
+0003194	SK-RC-6 cell
+0003195	SK-RC-7 cell
+0003196	SK-RC-17 cell
+0003197	SK-RC-29 cell
+0003198	SK-RC-35 cell
+0003199	SK-RC-39 cell
+0003200	SK-RC-44 cell
+0003201	SK-RC-45 cell
+0003202	SK-RC-99 cell
+0003203	Moroff cell
+0003204	Caki-1 cell
+0003205	salivary gland cell line
+0003206	A-253 cell
+0003207	A2780/100 cell
+0003208	anaplastic thyroid cancer cell
+0003209	anaplastic thyroid cancer cell line
+0003210	papillary thyroid cancer cell line
+0003211	S49.A2 cell
+0003212	T-lymphoma cell line
+0003213	lung epithelium cell line
+0003214	HPL1D cell
+0003215	VCaP cell
+0003216	melan-a cell
+0003217	melanoblast
+0003218	U-343 MG-A cell
+0003219	TMK-1 cell
+0003220	SK32 cell
+0003221	corneal cell line
+0003222	respiratory bronchiole
+0003223	terminal bronchiole
+0003224	TRK-43 cell
+0003225	neurilemoma cell line
+0003226	STS-26T cell
+0003227	SMMC-7721 cell
+0003228	SK-LC-8 cell
+0003229	SK-LC-16 cell
+0003230	RL cell
+0003231	SHG-44 cell
+0003232	BT-325 cell
+0003233	FaDu cell
+0003234	FTO-2B cell
+0003235	gall bladder cell line
+0003236	gall bladder cancer cell line
+0003237	gall bladder cancer cell
+0003238	NCI-H23 cell
+0003239	NCI-H838 cell
+0003240	NCI-H2126 cell
+0003241	NCI-H2087 cell
+0003242	NCI-H2009 cell
+0003243	NCI-H1684 cell
+0003244	NCI-H1437 cell
+0003245	aortic endothelial cell
+0003246	aortic endothelial cell line
+0003247	BAEC cell
+0003248	brain endothelium
+0003249	brain endothelium cell line
+0003250	colonic epithelium cell line
+0003251	CCD-841 cell
+0003252	uterine leiomyoma cell line
+0003253	ELT-3 cell
+0003254	DPK-SKDF-H cell
+0003255	AX-4 cell
+0003256	corpus amylaceum
+0003257	granulation tissue
+0003258	Col-1 cell
+0003259	Col-24 cell
+0003260	Col-6 cell
+0003261	HCN-1A cell
+0003262	HCN-2 cell
+0003263	HEK-AD293 cell
+0003264	HL-1 cell
+0003265	cardiac muscle cell line
+0003266	HPAF-2 cell
+0003267	HS-766T cell
+0003268	HS578 cell
+0003269	feather barbicels
+0003270	Me665/2 cell
+0003271	great saphenous vein
+0003272	small saphenous vein
+0003273	saphenous vein endothelium
+0003274	saphenous vein endothelial cell line
+0003275	HSVEC cell
+0003276	EHEB cell
+0003277	H2.35 cell
+0003278	V79MZh11B1 cell
+0003279	V79MZh11B2 cell
+0003280	sessile cell
+0003281	planktonic cell
+0003282	Tet-iNOS-293 cell
+0003283	SC-M1 cell
+0003284	TMC-1 cell
+0003285	PCI-43 cell
+0003286	PCI-35 cell
+0003287	NK-92 cell
+0003288	NALM-6 cell
+0003289	NAMALWA cell
+0003290	PanIN cell
+0003291	P493-6 cell
+0003292	RAW-264.7 cell
+0003293	Rat-1 cell
+0003294	Rat1-R12 cell
+0003295	OP-9 cell
+0003296	bone marrow stromal cell line
+0003297	NCTC-2544 cell
+0003298	mesenchymal stem cell
+0003299	MM5MT cell
+0003300	MM5MTC cell
+0003301	MEWO cell
+0003302	MDA-Panc-3 cell
+0003303	MDA-Panc-28 cell
+0003304	MDA-1483 cell
+0003305	epipodite
+0003306	Mat-Ly-Lu cell
+0003307	L6E9 cell
+0003308	L-363 cell
+0003309	KMBC cell
+0003310	KMCH cell
+0003311	Mz-ChA-1 cell
+0003312	KM-12C cell
+0003313	WT-8 cell
+0003314	J.CaM1.6 cell
+0003315	UM-SCC-2 cell
+0003316	JB6 Cl41 cell
+0003317	INS-1E cell
+0003318	INS-1 823/13 cell
+0003319	Hepa-1 cell
+0003320	HEL-92.1.7 cell
+0003321	HCE cell
+0003322	HCC-2998 cell
+0003323	HCC-1937 cell
+0003324	cardiomyocyte cell line
+0003325	GE-11 cell
+0003326	FLK cell
+0003327	FL83B cell
+0003328	FL5.12 cell
+0003329	EMT-6 cell
+0003330	culture condition:n-hexadecane-grown cell
+0003331	culture condition:methane-grown cell
+0003332	culture condition:glycolate-grown cell
+0003333	culture condition:1,2-propanediol-grown cell
+0003334	culture condition:lactate/sulfate-grown cell
+0003335	EBV-LCL cell
+0003336	pulmonary artery smooth muscle cell
+0003337	pulmonary artery smooth muscle cell line
+0003338	CS-54 cell
+0003339	HCMEC/D3 cell
+0003340	CL-3 cell
+0003341	CL1-1 cell
+0003342	CL1-2 cell
+0003343	CL1-3 cell
+0003344	CL1-4 cell
+0003345	CL1 lung adenocarcinoma cell
+0003346	corneal fibroblast cell line
+0003347	HEK-293 Tet-On 3G cell
+0003348	C20D cell
+0003349	microglial cell line
+0003350	BV-2 cell
+0003351	BN17 cell
+0003352	brain capillary endothelial cell line
+0003353	bEnd3 cell
+0003354	B-cell chronic lymphocytic leukemia cell
+0003355	BEAS-2B/BBM cell
+0003356	BBm cell
+0003357	ARPE cell
+0003358	groin
+0003359	neointima
+0003360	extraembryonic tissue
+0003361	anterior visceral endoderm
+0003362	anterior visceral ectoderm
+0003363	hyphal tip
+0003364	gingival fluid
+0003365	germinated grain
+0003366	robust nucleus of arcopallium
+0003367	daphnid
+0003368	frontal gland
+0003369	face
+0003370	craniofacial region
+0003371	endometrial spiral artery
+0003372	gametophore
+0003373	gametangium
+0003374	antheridium
+0003375	archegonium
+0003376	RCH-ACV cell
+0003377	periderm
+0003378	phellem
+0003379	phellogen
+0003380	phelloderm
+0003381	vestibular system
+0003382	inner ear vestibulum
+0003383	semicircular canal
+0003384	small intestine adenoma cell
+0003385	etiolated plant tissue
+0003386	hypoglossal nerve
+0003387	raphe nucleus
+0003388	tegmentum
+0003389	nidopallium
+0003390	high vocal center
+0003391	hepatic primordium
+0003392	medial nidopallium
+0003393	granule cell
+0003394	Brockmann body
+0003395	Spemanns organizer
+0003396	pontine nucleus
+0003397	feather barbules
+0003398	ganglion cell layer
+0003399	avian pallium
+0003400	hyperpallium
+0003401	subpallium
+0003402	hyperpallium apicale
+0003403	hyperpallium intercalare
+0003404	hyperpallium densocellulare
+0003405	mesopallium
+0003406	mesopallium dorsale
+0003407	mesopallium ventrale
+0003408	arcopallium
+0003409	posterior amygdala
+0003410	nucleus taeniae
+0003411	nucleus isthmo-opticus
+0003412	rostral migratory stream
+0003413	encysting cell
+0003414	XF-498 cell
+0003415	conjunctiva
+0003416	culture condition:bovine serum albumin-grown cell
+0003417	culture condition:rhodamine B-grown cell
+0003418	biceps femoris
+0003419	biceps brachii
+0003420	trophoblast cell line
+0003421	ACH-3P cell
+0003422	AF5 cell
+0003423	lacrimal gland acinar cell
+0003424	B16F10-Nex2 cell
+0003425	area postrema
+0003426	fourth ventricle
+0003427	Barrett&apos;s esophagus
+0003428	beta-TC6 cell
+0003429	BIC-1 cell
+0003430	SEG-1 cell
+0003431	dermatofibroma cell
+0003432	EL-4 cell
+0003433	endometrial gland
+0003434	choanomastigote
+0003435	memory T-lymphocyte
+0003436	synovial cell line
+0003437	MH7A cell
+0003438	WM-9 cell
+0003439	NB-7 cell
+0003440	COLO-357 cell
+0003441	L3.6pl cell
+0003442	CCD-43Sk cell
+0003443	UACC-893 cell
+0003444	HCC-1395 cell
+0003445	carotid atherosclerotic plaque
+0003446	cholesteatoma tissue
+0003447	cavum septum pellucidum
+0003448	septum pellucidum
+0003449	AML-12 cell
+0003450	CHO-6 cell
+0003451	C8PA cell
+0003452	adipocyte cell line
+0003453	dentin
+0003454	eosinophilic myelocyte
+0003455	neutrophilic myelocyte
+0003456	basophilic myelocyte
+0003457	endometrioma cell
+0003458	chromophobe renal cell carcinoma cell
+0003459	GC-7 cell
+0003460	HT-115 cell
+0003461	HT-1376 cell
+0003462	outer dental epithelium
+0003463	inner dental epithelium
+0003464	CA-HPV-10 cell
+0003465	293-IL-1RI cell
+0003466	293-CD40 cell
+0003467	HS-294T cell
+0003468	HEK-293B2 cell
+0003469	HKE-3 cell
+0003470	BT-483 cell
+0003471	MDA-MB-175-VII cell
+0003472	vagus nerve
+0003473	polymorphonuclear neutrophil
+0003474	WM-239 cell
+0003475	WM-35 cell
+0003476	SK-MEL-2 cell
+0003477	SK-HEP-1 cell
+0003478	SNU-638 cell
+0003479	SNU-484 cell
+0003480	SNK-57 cell
+0003481	NKB-1 cell
+0003482	WI-26 cell
+0003483	sebaceous gland cell line
+0003484	SZ-95 cell
+0003485	RPAEC cell
+0003486	RPMEC cell
+0003487	visceral endoderm
+0003488	vibrissa
+0003489	vibrissal follicle
+0003490	vestibulocochlear nerve
+0003491	SW-1990 cell
+0003492	PLC-PRF-5 cell
+0003493	SUIT-2 cell
+0003494	peripheral blood cell
+0003495	PDNEC cell
+0003496	MDNEC cell
+0003497	papillary renal cell carcinoma cell
+0003498	OVISE cell
+0003499	OVTOKO cell
+0003500	OVMANA cell
+0003501	OVSAYO cell
+0003502	OVSAHO cell
+0003503	OVKATE cell
+0003504	OV-202 cell
+0003505	T-cell chronic lymphocytic leukemia cell
+0003506	SAF-1 cell
+0003507	tail fin cell line
+0003508	RPMI-7951 cell
+0003509	headfoot
+0003510	RLE-6TN cell
+0003511	alveolar epithelium
+0003512	alveolar epithelial cell line
+0003513	hepatic stellate cell line
+0003514	HSC-180 cell
+0003515	LX-1 cell
+0003516	LX-2 cell
+0003517	hTERT-HSC cell
+0003518	GREF-X cell
+0003519	LI90 cell
+0003520	HSC-T6 cell
+0003521	NFSC cell
+0003522	CFSC cell
+0003523	PAV-1 cell
+0003524	HSC-PQ cell
+0003525	BSC cell
+0003526	MFBY2 cell
+0003527	T-HSC/Cl-6 cell
+0003528	GRX cell
+0003529	SV68 c-IS cell
+0003530	A640-IS cell
+0003531	M1-4HSC cell
+0003532	A7 cell
+0003533	NOR-P1 cell
+0003534	NMB-7 cell
+0003535	IMR-6 cell
+0003536	NCI-H522 cell
+0003537	MIN6-m9 cell
+0003538	MIN6-m14 cell
+0003539	PNT2-C2 cell
+0003540	P4E6 cell
+0003541	OE-33 cell
+0003542	LAN-1 cell
+0003543	L-02 cell
+0003544	KU-7 cell
+0003545	KU-1 cell
+0003546	KP-N-YN cell
+0003547	KP-N-SI cell
+0003548	SMS-KCN cell
+0003549	KP-1N cell
+0003550	KP-2 cell
+0003551	KP-3 cell
+0003552	KK-47 cell
+0003553	MGH-UI cell
+0003554	YTS-1 cell
+0003555	MBT-2 cell
+0003556	SN-56 cell
+0003557	SN-56/OBR cell
+0003558	REC-1 cell
+0003559	rMC-1 cell
+0003560	CCE cell
+0003561	MG1.19 cell
+0003562	MB-49 cell
+0003563	umbilical artery endothelial cell line
+0003564	HUAEC cell
+0003565	HL1C cell
+0003566	alphaT3-1 cell
+0003567	C-3842 cell
+0003568	mammary gland cell line
+0003569	C57MG cell
+0003570	feather bud
+0003571	HL-60/MX-2 cell
+0003572	HL60/ADR cell
+0003573	HL60/DNR cell
+0003574	HTC-4 cell
+0003575	HK-2 cell
+0003576	proximale tubular epithelium
+0003577	proximale tubular epithelium cell line
+0003578	gingival cell line
+0003579	HGF cell
+0003580	HGEC cell
+0003581	renal glomerular cell line
+0003582	SUP-T1 cell
+0003583	neuroendocrine tumor cell line
+0003584	STC-1 cell
+0003585	SR cell
+0003586	Hep-G2/C3A cell
+0003587	HeLa-MAGI-CCR5 cell
+0003588	HeLa-MAGI cell
+0003589	GM08505 cell
+0003590	GM01492 cell
+0003591	GM00637 cell
+0003592	GM00037 cell
+0003593	schizozoite
+0003594	hypnozoite
+0003595	knee
+0003596	uterine sarcoma cell
+0003597	uterine leiomyosarcoma cell
+0003598	uterine endometrial stromal sarcoma cell
+0003599	HLMVEC cell
+0003600	M cell
+0003601	plant hilum
+0003602	HeLa GFP-histone H2B cell
+0003603	respiratory mucus
+0003604	renal parenchyma
+0003605	1321-N1 cell
+0003606	airway fluid
+0003607	chondroblast
+0003608	culture condition:4-amino-3-hydroxybenzoate-grown cell
+0003609	culture condition:dicyclopropylketone-grown cell
+0003610	culture condition:L-galactonate-grown cell
+0003611	culture condition:L-tryptophan-grown cell
+0003612	culture condition:n-octane-grown cell
+0003613	lung squamous cell carcinoma cell
+0003614	oral squamous cell carcinoma cell
+0003615	HEK-293 PEAKrapid cell
+0003616	peritoneal dialysis fluid
+0003617	peritoneal exudate
+0003618	HAP-1 cell
+0003619	Hi-5 cell
+0003620	BMMC cell
+0003621	serosal mast cell
+0003622	mucosal mast cell
+0003623	uterine fluid
+0003624	oronasal squamous cell carcinoma cell
+0003625	intervertebral disc
+0003626	nucleus pulposus
+0003627	annulus fibrosus
+0003628	annulus fibrosus cordis
+0003629	annulus fibrosus disci intervertebralis
+0003630	CT-26 cell
+0003631	Colon C26-G cell
+0003632	cervicovaginal fluid
+0003633	colonic adenoma cell
+0003634	esophageal gland
+0003635	esophageal squamous epithelium
+0003636	brain microvascular endothelial cell
+0003637	DG-75 cell
+0003638	DOV-13 cell
+0003639	EJ-1 cell
+0003640	esophageal cell line
+0003641	FLO-1 cell
+0003642	Hca-F cell
+0003643	HD-11 cell
+0003644	metanephric adenoma cell
+0003645	salivary gland tumor cell line
+0003646	pleomorphic adenoma cell
+0003647	olfactory tract
+0003648	olfactory nerve
+0003649	anterior olfactory nucleus
+0003650	optic ganglion
+0003651	spindle cell
+0003652	synovial cell
+0003653	olfactory glomerulus
+0003654	ventricular zone
+0003655	thyroid cartilage
+0003656	adams apple
+0003657	tergal gland
+0003658	tergal gland secretion
+0003659	secretory cell
+0003660	laryngeal cartilage
+0003661	ovary epithelium
+0003662	nucleus recessus lateralis
+0003663	nucleus recessus posterioris
+0003664	nucleus preopticus
+0003665	nucleus recessus preopticus
+0003666	outer hair cell
+0003667	inner hair cell
+0003668	leaf bud
+0003669	keloid
+0003670	microfilarial stage
+0003671	germinal center
+0003672	interdigitating reticulum cell
+0003673	nephrotome
+0003674	temporomandibular joint
+0003675	temporomandibular articular disk
+0003676	lymphoblastic leukemia cell
+0003677	chorion frondosum
+0003678	placental disc
+0003679	MRK-nu-1 cell
+0003680	Mo-B cell
+0003681	hairy cell leukemia cell line
+0003682	hairy cell leukemia cell
+0003683	I 9.2 cell
+0003684	habenula
+0003685	habenular nucleus
+0003686	medial habenular nucleus
+0003687	serous cell
+0003688	serous acinar cell
+0003689	mucous cell
+0003690	mucous acinar cell
+0003691	malignant mixed Muellerian tumor cell
+0003692	prostatic intraepithelial neoplasia cell
+0003693	natural killer large granular lymphocytic leukemia cell
+0003694	CNS cell line
+0003695	CAD cell
+0003696	ATRkd cell
+0003697	endometrial stromal cell
+0003698	coronary atherosclerotic plaque
+0003699	C1R cell
+0003700	C1R-B27 cell
+0003701	spinal trigeminal tract
+0003702	rheumatoid arthritis disease specific synovial tissue
+0003703	rheumatoid arthritis disease specific fibroblast-like synoviocyte
+0003704	H4 neuroglioma cell
+0003705	cornu ammonis
+0003706	WTK-1 cell
+0003707	TK-6 cell
+0003708	WPMY-1 cell
+0003709	RWPE-1 cell
+0003710	WM-451Lu cell
+0003711	WM-75 cell
+0003712	WM98-1 cell
+0003713	WM-793 cell
+0003714	VMRC-RCW cell
+0003715	VMRC-RCZ cell
+0003716	ScN2a cell
+0003717	vesicular gland
+0003718	vasculature
+0003719	V-79-4 cell
+0003720	UT-SCC-9 cell
+0003721	UT-SCC-2 cell
+0003722	UT-SCC-24A cell
+0003723	UM-UC-3 cell
+0003724	RT-112 cell
+0003725	SK-UT-1B cell
+0003726	SHP-77 cell
+0003727	U-1810 cell
+0003728	TXM-13 cell
+0003729	TUHR-4TKB cell
+0003730	TUHR-14TKB cell
+0003731	RCC-10RGB cell
+0003732	TUHR-10TKB cell
+0003733	TUHR-16TKB cell
+0003734	598-RCC cell
+0003735	TUHR-25TKB cell
+0003736	thyroid epithelial cell
+0003737	tailbud stage
+0003738	tenia tecta
+0003739	TALL-1 cell
+0003740	TALL-104 cell
+0003741	T-47 cell
+0003742	synoviocyte
+0003743	SW-872 cell
+0003744	liposarcoma cell line
+0003745	liposarcoma cell
+0003746	SW-1398 cell
+0003747	superficial temporal artery
+0003748	superficial temporal vein
+0003749	pars compacta
+0003750	pars reticulata
+0003751	submucosal gland
+0003752	lamina epithelialis mucosa
+0003753	central medial thalamic nucleus
+0003754	BRE-169 cell
+0003755	STF1-169 cell
+0003756	STAV-FCS cell
+0003757	Vester cell
+0003758	STAV-AB cell
+0003759	SNUOT-Rb1 cell
+0003760	SNU-182 cell
+0003761	SNB-19 cell
+0003762	PZ-HPV-7 cell
+0003763	SHAC cell
+0003764	NCI cell
+0003765	dermatofibroma cell line
+0003766	giant cell tumor cell line
+0003767	A-204 cell
+0003768	A-673 cell
+0003769	A-498 cell
+0003770	A-427 cell
+0003771	T2 cell
+0003772	SF-268 cell
+0003773	oropharyngeal squamous cell carcinoma cell
+0003774	SCC-25 cell
+0003775	SCC-4 cell
+0003776	urinary bladder squamous cell carcinoma cell line
+0003777	SCaBER cell
+0003778	SAOS-alpha2beta1 cell
+0003779	RN-46A cell
+0003780	RM-1 cell
+0003781	RCC 786-O cell
+0003782	rectal adenocarcinoma cell
+0003783	rectal adenocarcinoma cell line
+0003784	RCCD-2 cell
+0003785	ray floret
+0003786	transverse occipital sulcus
+0003787	intraparietal sulcus
+0003788	splenial gyrus
+0003789	PR-Mel cell
+0003790	MR-Mel cell
+0003791	glandular stomach
+0003792	OV-2008 cell
+0003793	pituicyte
+0003794	chlorenchyma
+0003795	periventricular nucleus of hypothalamus
+0003796	periglomerular cell
+0003797	unicellular trichome
+0003798	multicellular trichome
+0003799	secretory trichome
+0003800	PCCL-3 cell
+0003801	ovum
+0003802	macrogamete
+0003803	serous adenocarcinoma cell line
+0003804	ovarian serous adenocarcinoma cell line
+0003805	alpha-motoneuron
+0003806	gamma-motoneuron
+0003807	BJ cell
+0003808	FHC cell
+0003809	soil
+0003810	enrichment culture
+0003811	interneuron
+0003812	culture condition:tetrahydrofurfuryl alcohol-grown cell
+0003813	culture condition:(4R)-limonene-grown cell
+0003814	culture condition:1-butanol-grown cell
+0003815	culture condition:2-butanol-grown cell
+0003816	culture condition:benzylamine-grown cell
+0003817	culture condition:butane-grown cell
+0003818	culture condition:DL-lactate-grown cell
+0003819	culture condition:ethene-grown cell
+0003820	culture condition:glucose/acetate-grown cell
+0003821	culture condition:glycerol/acetate-grown cell
+0003822	culture condition:maltose-grown cell
+0003823	culture condition:monoterpene-grown cell
+0003824	culture condition:n-butanol-grown cell
+0003825	culture condition:n-hexadecane grown-cell
+0003826	culture condition:phenylethylamine-grown cell
+0003827	culture condition:pimelate-grown cell
+0003828	culture condition:polyurethane foam-grown cell
+0003829	culture condition:pyruvate-grown cell
+0003830	culture condition:rutin-grown cell
+0003831	culture condition:vinyl chloride-grown cell
+0003832	culture-condition:naphthalene-grown cell
+0003833	buccal mucosa
+0003834	conceptus
+0003835	cerebellar nucleus
+0003836	nucleus dentatus
+0003837	nucleus emboliformis
+0003838	nucleus globosus
+0003839	nucleus fastigii
+0003840	cerebrovascular system
+0003841	plant organ culture
+0003842	GM02037 cell
+0003843	FU-01 cell
+0003844	inferior olivary nucleus
+0003845	A2780/CP70 cell
+0003846	ACHN cell
+0003847	CRBM-1990 cell
+0003848	adenoid cystic carcinoma cell
+0003849	adenosquamous carcinoma cell
+0003850	ALVA-31 cell
+0003851	AOK-B50 cell
+0003852	astroglia
+0003853	B16-F1 cell
+0003854	BL-41 cell
+0003855	BL-70 cell
+0003856	BON-1 cell
+0003857	bone marrow-derived dendritic cell
+0003858	chondrocyte cell line
+0003859	C-28/I2 cell
+0003860	T/C-28a2 cell
+0003861	inflammatory cell
+0003862	CCD-19LU cell
+0003863	CCF-STTG1 cell
+0003864	CMT-93 cell
+0003865	enteroendocrine cell
+0003866	APUD cell
+0003867	deutocerebrum
+0003868	protocerebrum
+0003869	tritocerebrum
+0003870	insect tracheal system
+0003871	uterine endometrial cancer cell
+0003872	foam cell
+0003873	follicular adenoma cell
+0003874	follicular thyroid cancer cell line
+0003875	FTC-236 cell
+0003876	plant funiculus
+0003877	G-292 cell
+0003878	BGC-823 cell
+0003879	GBM-8401 cell
+0003880	G9T/VGH cell
+0003881	HSC-2 cell
+0003882	blastocyte
+0003883	pancreatic ductal adenocarcinoma cell line
+0003884	HMT-3522 cell
+0003885	Hs-578T cell
+0003886	Hs-578Bst cell
+0003887	JHU-022 cell
+0003888	JHU-029 cell
+0003889	JHU-019 cell
+0003890	JHU-013 cell
+0003891	JHU-011 cell
+0003892	HC-11 cell
+0003893	HB4a cell
+0003894	skin carcinoma cell line
+0003895	HaCa-4 cell
+0003896	CarB cell
+0003897	hepatobiliary carcinoma cell
+0003898	GT1 cell
+0003899	GT1-1 cell
+0003900	MCF-10F cell
+0003901	MEL-745A cell
+0003902	MEL-745A cl. DS19 cell
+0003903	HIG-82 cell
+0003904	HOS cell
+0003905	HPENC cell
+0003906	uroepithelium
+0003907	uroepithelial cell line
+0003908	HUC-1 cell
+0003909	bile duct cell line
+0003910	stellate reticulum
+0003911	HuCCT-1 cell
+0003912	IMCD cell
+0003913	mIMCD-3 cell
+0003914	interstitial cell of Cajal
+0003915	hairy root culture
+0003916	plant culture
+0003917	KB-V1 cell
+0003918	KB-3-1 cell
+0003919	KB-CH[R]-8-5 cell
+0003920	Kc-167 cell
+0003921	KHOS cell
+0003922	KHOS/NP (R-970-5) cell
+0003923	KHOS-240S cell
+0003924	KHOS-321H cell
+0003925	renal papilla
+0003926	renal pyramid
+0003927	metacercaria
+0003928	Mono-Mac-1 cell
+0003929	MM1-R cell
+0003930	ARK-B cell
+0003931	ARP-1 cell
+0003932	KMS-11 cell
+0003933	MM1-S cell
+0003934	KKU-100 cell
+0003935	L57-3-11 cell
+0003936	laryngeal squamous cell carcinoma cell
+0003937	lateral septal area
+0003938	leaf disc
+0003939	luteal cell
+0003940	macula densa
+0003941	MDA-MB-435S cell
+0003942	MDAH-2774 cell
+0003943	SKOV cell
+0003944	Mel-Ab cell
+0003945	MN-9D cell
+0003946	MMDD1 cell
+0003947	MPCT-G cell
+0003948	distal tubular epithelium
+0003949	distal tubular epithelium cell line
+0003950	DKC-8 cell
+0003951	medial longitudinal fasciculus
+0003952	mesenchymal stromal cell
+0003953	endomesoderm
+0003954	dopaminergic system
+0003955	N-11 cell
+0003956	N-38 cell
+0003957	N-9 cell
+0003958	Neuro2A-Luc cell
+0003959	NHOK cell
+0003960	nasopharyngeal carcinoma cell line
+0003961	NPC-TW02 cell
+0003962	NPC-TW04 cell
+0003963	nucleus solitarius
+0003964	OECM-1 cell
+0003965	anterior olfactory lobule
+0003966	posterior olfactory lobule
+0003967	OSRGA cell
+0003968	OUS-11 cell
+0003969	hair follicle outer root sheath
+0003970	outer root sheath companion layer
+0003971	hair follicle inner root sheath
+0003972	prostate gland stromal cell
+0003974	pulmonary sclerosing hemangioma cell
+0003975	cingulate cortex
+0003976	cingulate gyrus
+0003977	retrosplenial region
+0003978	Brodmann area 29
+0003979	Brodmann area 26
+0003980	SGHPL-4 cell
+0003981	SAS cell
+0003982	retinal stem cell
+0003983	TXM-18 cell
+0003984	A-375P cell
+0003985	A-375SM cell
+0003986	SB-2 cell
+0003987	root culture
+0003988	DX-3 cell
+0003989	OV2008/C13 cell
+0003990	CH12F3-2 cell
+0003991	pleural mesothelioma cell line
+0003992	ZL-34 cell
+0003993	ZP-121 cell
+0003994	hoof
+0003995	horny lamina
+0003996	sensitive lamina
+0003997	hoof lamina
+0003998	41-M cell
+0003999	M-14-K cell
+0004000	M-28-K cell
+0004001	M-9-K cell
+0004002	HEMn cell
+0004003	NA cell
+0004004	3-LL cell
+0004005	BALB/3T3-T cell
+0004006	OC-3 cell
+0004007	porcine aortic endothelial cell
+0004008	medial mammillary nucleus
+0004009	lateral mammillary nucleus
+0004010	HT-2 cell
+0004011	PNET-2 cell
+0004012	ROS cell
+0004013	Colon-26 cell
+0004014	embryonic cerebral cortex
+0004015	HC11-C24 cell
+0004016	laterodorsal tegmental nucleus
+0004017	HCFMK-1 cell
+0004018	HCTK-1 cell
+0004019	larynx squamous cell carcinoma cell line
+0004020	HLaC-78 cell
+0004021	HLaC-79 cell
+0004022	UM-SCC-17A cell
+0004023	UM-SCC-5 cell
+0004024	neural cord
+0004025	claw muscle
+0004026	4TO7 cell
+0004027	94-H48 cell
+0004028	95-H1 cell
+0004029	94-H4 cell
+0004030	95-H3 cell
+0004031	95-H12 cell
+0004032	dopaminergic neuron
+0004033	catecholaminergic neuron
+0004034	A-224 cell
+0004035	222 cell
+0004036	UCI-107 cell
+0004037	AD-10 cell
+0004038	colonic neoplasm cell
+0004039	ML-3B cell
+0004040	ML-5 cell
+0004041	abdominal adipose tissue
+0004042	subcutaneous adipose tissue
+0004043	intramuscular adipose tissue
+0004044	amacrine cell
+0004045	air pouch
+0004046	alveolar mucosa
+0004047	apical hook
+0004048	aril
+0004049	adult T-cell lymphoma cell line
+0004050	BEL-7402 cell
+0004051	bipolar cell
+0004052	bone marrow stem cell
+0004053	umbilical cord blood
+0004054	umbilical cord blood cell
+0004055	COS cell
+0004056	culture condition:lupanine-grown cell
+0004057	fruit juice
+0004058	C3H10T1/2 cell
+0004059	CCD-18Co cell
+0004060	fibroblast-like synoviocyte
+0004061	CHL-1 cell
+0004062	RPMI-7932 cell
+0004063	chloragogen cell
+0004064	chloragocyte
+0004065	CHO-MG cell
+0004066	CHO-XRS6 cell
+0004067	C26-10 cell
+0004068	C26-A cell
+0004069	C26-G cell
+0004070	compost
+0004071	middle ear squamous cell carcinoma cell
+0004072	middle ear squamous cell carcinoma cell line
+0004073	CSM14.1 cell
+0004074	cystocyte
+0004075	D1-HEK-293 cell
+0004076	DHL-4 cell
+0004077	EKVX cell
+0004078	non-small cell lung adenocarcinoma cell line
+0004079	H-650 cell
+0004080	HOP-62 cell
+0004081	HCC-4006 cell
+0004082	HCC-827 cell
+0004083	HCC-2935 cell
+0004084	epitrochlearis muscle
+0004085	HOP-92 cell
+0004086	mammary gland tumor cell line
+0004087	mammary gland tumor cell
+0004088	female urethra
+0004089	male urethra
+0004090	pancreatic invasive ductal adenocarcinoma cell
+0004091	embryonic neural stem cell
+0004092	endogenous progenitor cell
+0004093	endothelial progenitor cell
+0004094	epithelial ovarian cancer cell
+0004095	EONT cell
+0004096	coronary artery endothelial cell
+0004097	epididymal clear cell
+0004098	renal clear cell
+0004099	parathyroid gland clear cell
+0004100	sweat gland clear cell
+0004101	fascicle
+0004102	cerebral cortical neuron
+0004103	leaf primordium
+0004104	insect labium
+0004105	FPMI-CF-203 cell
+0004106	IPRI-MD-66 cell
+0004107	antral mucosa
+0004108	G cell
+0004109	fundic mucosa
+0004110	pyloric mucosa
+0004111	gastrointestinal stromal tumor cell
+0004112	GBC-SD cell
+0004113	GLC-82 cell
+0004114	adrenocortical carcinoma cell line
+0004115	HAC cell
+0004116	HEP-3B2 cell
+0004117	HFK cell
+0004118	HITC6 cell
+0004119	HL-60 (TB) cell
+0004120	horizontal cell
+0004121	HPAC cell
+0004122	bone marrow stromal cell
+0004123	HS-5 cell
+0004124	HT-1197 cell
+0004125	HTR-8/SVneo cell
+0004126	Huh-7.5 cell
+0004127	Huma-7 cell
+0004128	lung endothelium
+0004129	ovary epithelium cell line
+0004130	IOSE cell
+0004131	IOSE-397 cell
+0004132	IOSE-29 cell
+0004133	IOSE-4p2 cell
+0004134	IOSE-2Ap2 cell
+0004135	IOSE-398 cell
+0004136	Kasumi-1 cell
+0004137	KCL-22 cell
+0004138	gingival fibroblast
+0004139	LAD-2 cell
+0004140	ethmoid bone
+0004141	cribriform plate
+0004142	LH-86 cell
+0004143	Lovo-175X2 cell
+0004144	Lovo-273X17 cell
+0004145	Lovo-li cell
+0004146	Lovo-92 cell
+0004147	lumbar spine
+0004148	cervical spine
+0004149	ischial spine
+0004150	thoracic spine
+0004151	LOX-IMVI cell
+0004152	UACC-62 cell
+0004153	KT-2 cell
+0004154	KT-4 cell
+0004155	Ma-25 cell
+0004156	Ma-31 cell
+0004157	Ma-34 cell
+0004158	Ma-45 cell
+0004159	Ma-53 cell
+0004160	Ma-1 cell
+0004161	MALME-3 cell
+0004162	MALME-3M cell
+0004163	MC-38 cell
+0004164	MDA-MB-435HGF cell
+0004165	meibomian gland
+0004166	myofibroblast cell line
+0004167	lymphatic endothelial cell
+0004168	MHCC-97 cell
+0004169	MHCC97-H cell
+0004170	MHCC97-L cell
+0004171	MOLT-13 cell
+0004172	MOLT-14 cell
+0004173	MOLT-16 cell
+0004174	MOLT-17 cell
+0004175	MOLM-13 cell
+0004176	MOLM-16 cell
+0004177	MOLM-6 cell
+0004178	leukemic stem cell
+0004179	MX-1 cell
+0004180	NCCIT cell
+0004181	NCI/ADR-RES cell
+0004182	NCI-H322M cell
+0004183	NMuMg cell
+0004184	OKM-2T cell
+0004185	olfactory receptor neuron
+0004186	DuPro cell
+0004187	NRK-E52 cell
+0004188	ECRF cell
+0004189	OVCAR-8/ADR cell
+0004190	pacemaker cell
+0004191	PC-J cell
+0004192	perineuronal net
+0004193	pharyngeal pad
+0004194	pharyngeal process
+0004195	pharyngeal organ
+0004196	placental membrane
+0004197	insect labellum
+0004198	prostomium
+0004199	substantia nigra cell line
+0004200	RCSN-3 cell
+0004201	Ewing&apos;s sarcoma cell line
+0004202	RD-ES cell
+0004203	RIE-1 cell
+0004204	nasal squamous cell carcinoma cell line
+0004205	RPMI-2650 cell
+0004206	RPMI-8866 cell
+0004207	RXF-393 cell
+0004208	SB-247 cell
+0004209	seed vessel
+0004210	seminoma cell
+0004211	sensillum trichodeum
+0004212	seta
+0004213	SF-295 cell
+0004214	SF-539 cell
+0004215	SF-763 cell
+0004216	SJSA-1 cell
+0004217	SK-N-DZ cell
+0004218	SK-N-FI cell
+0004219	submandibular gland cell line
+0004220	SMG-C6 cell
+0004221	SN-12C cell
+0004222	SNB-75 cell
+0004223	cervical squamous cell carcinoma cell
+0004224	stomodeum
+0004225	striatal neuron
+0004226	TAMH cell
+0004227	TC-32 cell
+0004228	thymus lymphoma cell
+0004229	testicular cell line
+0004230	TM-4 cell
+0004231	TCMK-1 cell
+0004232	tsA-201 cell
+0004233	UACC-257 cell
+0004234	UO-31 cell
+0004235	uterine horn
+0004236	Y1-BS1 cell
+0004237	myometrial cell line
+0004238	interstitial cell
+0004239	ovarian theca-interstitial cell
+0004240	germarium
+0004241	ovariole
+0004242	vitellarium
+0004243	trypanosomoid cell line
+0004244	449 cell
+0004245	NIH-3T3-A14 cell
+0004246	A-364 cell
+0004247	A-547 cell
+0004248	Xenopus A6 cell
+0004249	anterior cingulate cortex
+0004250	posterior cingulate cortex
+0004251	Hepa-1c1c7-c12 cell
+0004252	Hepa-1c1c7-c4 cell
+0004253	plant candle
+0004254	cancer stem cell
+0004255	Ewing&apos;s family tumor cell
+0004256	long bone
+0004257	extraosseus Ewing&apos;s sarcoma cell
+0004258	primitive neuroectodermal tumor cell
+0004259	primitive neuroectodermal tumor cell line
+0004260	Askin&apos;s tumor cell
+0004261	peripheral primitive neuroectodermal tumor cell
+0004262	cerebral giant cell
+0004263	COM-3 cell
+0004264	INC-2 cell
+0004265	EJ cell
+0004266	H-10 cell
+0004267	follicular dendritic cell
+0004268	follicular dendritic cell line
+0004269	liver cancer stem cell
+0004270	adult liver stem cell
+0004271	hyalocyte
+0004272	hyalocyte cell line
+0004273	PH-5 cell
+0004274	PLC-8024 cell
+0004275	SM-5 cell
+0004276	SM-7 cell
+0004277	scleral lamina cribrosa
+0004278	cerebellar granule cell
+0004279	cerebral granule cell
+0004280	peptonephridium
+0004281	C-81 cell
+0004282	TSA cell
+0004283	TK-10 cell
+0004284	TK-164 cell
+0004285	oviductal ampulla
+0004286	basophilic leukemia cell
+0004287	culture condition:peptone-grown cell
+0004288	culture condition:starch-grown cell
+0004289	culture condition:Warrens medium-grown cell
+0004290	umbilical artery smooth muscle
+0004291	umbilical vein smooth muscle
+0004292	claustrum
+0004293	heart endothelium
+0004294	heart endothelial cell
+0004295	umbilical artery endothelial cell
+0004296	umbilical vein endothelial cell
+0004297	colonic epithelial cell
+0004298	corneal epithelial cell
+0004299	lung epithelial cell
+0004300	mammary epithelial cell
+0004301	neuroepithelial cell
+0004302	plant epithelium
+0004303	lymphatic endothelium
+0004304	cell lysate
+0004305	hairy root
+0004306	NCM-460 cell
+0004307	hepatic artery
+0004308	CGR-8 cell
+0004309	Cl-66 cell
+0004310	Cl-66M2 cell
+0004311	4T1 cell
+0004312	JIMT-1 cell
+0004313	GM16096 cell
+0004314	GM16088 cell
+0004315	HTD-114 cell
+0004316	NBT-II cell
+0004317	immune stem cell
+0004318	WB-F344 cell
+0004319	WB-311 cell
+0004320	1682-A cell
+0004321	2BN cell
+0004322	2BNneo cell
+0004323	2BNhTERT cell
+0004324	osteoblast cell line
+0004325	2T3 cell
+0004326	ADF cell
+0004327	CESS cell
+0004328	DAOY cell
+0004329	Madsen cell
+0004330	UW228-1 cell
+0004331	UW228-2 cell
+0004332	UW228-3 cell
+0004333	Do11.10 cell
+0004334	EBV-PBL cell
+0004335	GP6 cell
+0004336	THC-252 cell
+0004337	THC-H5D cell
+0004338	GN5 cell
+0004339	ScGT1 cell
+0004340	culture condition:high copper medium-grown cell
+0004341	granular insular cortex
+0004342	agranular insular cortex
+0004343	auditory cortex
+0004344	infralimbic cortex
+0004345	entorhinal cortex
+0004346	medial entorhinal cortex
+0004347	lateral entorhinal cortex
+0004348	motor cortex
+0004349	laterodorsal thalamic nucleus
+0004350	lateral dorsal nucleus
+0004351	lateral posterior nucleus
+0004352	pulvinar
+0004353	somatosensory cortex
+0004354	postcentral gyrus
+0004355	perirhinal cortex
+0004356	Brodmann area 35
+0004357	Brodmann area 36
+0004358	sinus node
+0004359	paw
+0004360	angiomyolipoma cell
+0004361	callus culture
+0004362	colon muscle
+0004363	gastroesophageal adenocarcinoma cell
+0004364	gastroesophageal junction
+0004365	gastroesophageal cancer cell
+0004366	lateral geniculate nucleus
+0004367	lateral geniculate body
+0004368	vestibular nucleus
+0004369	inferior vestibular nucleus
+0004370	lateral vestibular nucleus
+0004371	medial vestibular nucleus
+0004372	superior vestibular nucleus
+0004373	ventral posterior nucleus
+0004374	ventral posterior inferior nucleus
+0004375	ventral globus pallidus
+0004376	dorsal globus pallidus
+0004377	pup
+0004378	blood vessel wall
+0004379	parahippocampal region
+0004380	parahippocampal gyrus
+0004381	prelimbic cortex
+0004382	skin epithelium
+0004383	follicular fluid
+0004384	osteoclast stem cell
+0004385	cardinal vein
+0004386	posterior cardinal vein
+0004387	anterior cardinal vein
+0004388	common cardinal vein
+0004389	angiomyolipoma cell line
+0004390	SV7tert cell
+0004391	SPAML/SV7 cell
+0004392	skeletal muscle cell
+0004393	alabastrum
+0004394	16-HBEo cell
+0004395	microvessel
+0004396	femorotibial joint
+0004397	B-103 cell
+0004398	meningioma cell line
+0004399	BEN-MEN-1 cell
+0004400	BPAEC cell
+0004401	bronchial smooth muscle
+0004402	bronchial smooth muscle cell
+0004403	tracheal smooth muscle cell
+0004404	BL-3 cell
+0004405	3D5 cell
+0004406	CABA I cell
+0004407	CB33 cell
+0004408	culture condition:CD34+ cell
+0004409	culture condition:CD68+ cell
+0004410	culture condition:CD8+ cell
+0004411	culture condition:CD8- cell
+0004412	oral lichen planus disease specific cell type
+0004413	CJ7 cell
+0004414	KH2 cell
+0004415	DM-4 cell
+0004416	Daltons lymphoma cell
+0004417	Daltons lymphoma ascites cell
+0004418	Daltons lymphoma ascites
+0004419	dermal fibroblast
+0004420	digestive cell
+0004421	salivary gland epithelium
+0004422	pleural cavity
+0004423	empyema fluid
+0004424	ES-2 cell
+0004425	stratum granulosum cerebelli
+0004426	NCI-H1915 cell
+0004427	NCI-H211 cell
+0004428	H4-II-E-C3 cell
+0004429	H-59 cell
+0004430	HBL-52 cell
+0004431	coronary artery endothelial cell line
+0004432	HCAEC cell
+0004433	HET-1A cell
+0004434	HMEC-1330 cell
+0004435	HOSE 11-12 cell
+0004436	HOSE 6-3 cell
+0004437	HOSE 17-1 cell
+0004438	HSCC cell
+0004439	hypopharyngeal carcinoma cell line
+0004440	UT-SCC-14 cell
+0004441	UT-SCC-15 cell
+0004442	UT-SCC-5 cell
+0004443	XF354 cell
+0004444	HUVE-12 cell
+0004445	IB3-1 cell
+0004446	S9 cell
+0004447	C38 cell
+0004448	LN-235 cell
+0004449	LN-443 cell
+0004450	LN-444 cell
+0004451	LN-464 cell
+0004452	LN-702 cell
+0004453	LN-751 cell
+0004454	LN-774 cell
+0004455	LN-784 cell
+0004456	LN-215 cell
+0004457	LN-308 cell
+0004458	LN-340 cell
+0004459	LN-382 cell
+0004460	FD-1 cell
+0004461	KYSE-30 cell
+0004462	K-562R cell
+0004463	ileostomal fluid
+0004464	IOMM-Lee cell
+0004465	LAMA-84 cell
+0004466	LAMA-87 cell
+0004467	LbetaT2 cell
+0004468	lip epithelium
+0004469	LM3 cell
+0004470	LM6 cell
+0004471	Mahlavu cell
+0004472	mantle cell lymphoma cell
+0004473	MC3T3-E1(C4) cell
+0004474	MDA-MB-231-BAG cell
+0004475	MEL cell
+0004476	MES-23.5 cell
+0004477	medial temporal lobe
+0004478	mucosal melanoma cell
+0004479	MV4-11 cell
+0004480	nasopharynx epithelium
+0004481	neural crest-derived stem cell
+0004482	ovarian surface epithelial cell line
+0004483	ovarian surface epithelium
+0004484	ovarian surface epithelial cell
+0004485	OV-MZ-10 cell
+0004486	OV-MZ-15 cell
+0004487	OV-MZ-6 cell
+0004488	NSC-34 cell
+0004489	OE-21 cell
+0004490	RFL-6 cell
+0004491	RL95-2 cell
+0004492	gastric epithelial cell
+0004493	gastric epithelium cell line
+0004494	RGM-1 cell
+0004495	SIRC cell
+0004496	preosteoclast
+0004497	WT-51 cell
+0004498	THCE cell
+0004499	prostate gland intraepithelial neoplasia cell line
+0004500	R1 cell
+0004501	plant vascular cell
+0004502	vascular cambium
+0004503	submerged culture
+0004504	root vascular cell
+0004505	RS4-11 cell
+0004506	RT-2 cell
+0004507	sEnd-1 cell
+0004508	endothelioma cell
+0004509	endothelioma cell line
+0004510	cystadenocarcinoma cell
+0004511	serous cystadenocarcinoma cell
+0004512	pseudomucinous cystadenocarcinoma cell
+0004513	Sertoli cell line
+0004514	Ser-W3 cell
+0004515	SF-3061 cell
+0004516	SF-4068 cell
+0004517	SF-4433 cell
+0004518	uterine gland
+0004519	myometrial cell
+0004520	regulatory T-lymphocyte
+0004521	TIG-3-20 cell
+0004522	Leydig cell line
+0004523	TM-3 cell
+0004524	germinal epithelium
+0004525	subcutaneous tissue
+0004526	ulcerative colitis disease specific cell type
+0004527	uterine luminal fluid
+0004528	high endothelial venule
+0004529	PA-23 cell
+0004530	F5 meningioma cell
+0004531	bolting stage
+0004532	C-10 cell
+0004533	respiratory epithelium cell
+0004534	cystic fibrosis disease specific cell type
+0004535	medullary collecting duct cell
+0004536	medullary collecting duct
+0004537	cortical collecting duct cell
+0004538	initial collecting tubule
+0004539	connecting tubule
+0004540	papillary duct
+0004541	connecting tubule cell
+0004542	principal cell
+0004543	inner medullary collecting duct cell
+0004544	inner medullary collecting duct
+0004545	M-1 collecting duct cell
+0004546	hypopharyngeal squamous cell carcinoma cell line
+0004547	hypopharyngeal squamous cell carcinoma cell
+0004548	deep inguinal lymph node
+0004549	superficial inguinal lymph node
+0004550	proximal deep inguinal lymph node
+0004551	WT-100 cell
+0004552	Barrett&apos;s epithelial cell line
+0004553	E-18 rat primary hippocampal neuron
+0004554	parotid gland duct
+0004555	parotid gland duct epithelium
+0004556	submandibular gland duct
+0004557	submandibular gland duct epithelium
+0004558	sublingual gland duct
+0004559	sublingual gland duct epithelium
+0004560	thymic medulla
+0004561	thymic stromal cell
+0004562	thymic cortical epithelial cell
+0004563	thymic medullary epithelial cell
+0004564	thymic dendritic cell
+0004565	thymic medullary epithelium
+0004566	Rb-1 cell
+0004567	sessile serrated adenoma cell
+0004568	supportive connective tissue
+0004569	ovarian fluid
+0004570	ulcer tissue
+0004571	L3.3 cell
+0004572	HEP-G2/2.2.1 cell
+0004573	BOSC-23 cell
+0004574	dermal microvascular endothelial cell
+0004575	nephroblastoma cell
+0004576	smooth muscle cell
+0004577	aortic smooth muscle cell
+0004578	vascular smooth muscle cell
+0004579	parenchyma of thyroid gland
+0004580	862L cell
+0004581	10/9CRC1 cell
+0004582	A31N-ts20 cell
+0004583	A-704 cell
+0004584	acute nonlymphoblastic leukemia cell
+0004585	acute promyelocytic leukemia cell
+0004586	alevin
+0004587	AT6.1 cell
+0004588	BHY cell
+0004589	HN cell
+0004590	nasal epithelium cell line
+0004591	NHEC cell
+0004592	bone matrix
+0004593	epiblast
+0004594	CWR-22 cell
+0004595	D-407 cell
+0004596	garland cell
+0004597	nephrocyte
+0004598	TE-15 cell
+0004599	TE-13 cell
+0004600	TE-8 cell
+0004601	TE-1 cell
+0004602	human aortic endothelial cell
+0004603	HBE cell
+0004604	IEC-18 cell
+0004605	U-118MG cell
+0004606	MDCK-1 cell
+0004607	MDCK-2 cell
+0004608	Henles loop
+0004609	TALH cell
+0004610	Henles loop cell line
+0004611	SW-900 cell
+0004612	WM-793B cell
+0004613	sebocyte
+0004614	NOSE1 cell
+0004615	regulatory dendritic cell
+0004616	stria terminalis
+0004617	mucilage
+0004618	T-289 cell
+0004619	OCI-AML2 cell
+0004620	OCI-AML3 cell
+0004621	OCI-AML5 cell
+0004622	OCI-M1 cell
+0004623	OCI-M2 cell
+0004624	YN-1 cell
+0004625	plasmacytoid dendritic cell
+0004626	carotid artery endothelium
+0004627	carotid artery endothelial cell
+0004628	aortic valve
+0004629	metaphloem
+0004630	middle midgut
+0004631	glomerular endothelium
+0004632	glomerular endothelial cell
+0004633	invasive breast apocrine carcinoma cell
+0004634	thoracico-abdominal ganglion
+0004635	29-13 cell
+0004636	urinary bladder endothelium
+0004637	urinary bladder endothelial cell
+0004638	peribronchial gland
+0004639	TT2 ES cell
+0004640	FD-2 cell
+0004641	tracheal cell line
+0004642	abductor
+0004643	culture condition:1-naphthoic acid-grown cell
+0004644	culture condition:acenaphthylene-grown cell
+0004645	culture condition:cocaine-grown cell
+0004646	culture condition:phenanthrene-grown cell
+0004647	culture condition:phosphonopyruvate-grown cell
+0004648	culture condition:sucrose-grown cell
+0004649	fin
+0004650	dorsal fin
+0004651	pelvic fin
+0004652	anal fin
+0004653	pectoral fin
+0004654	Tet21N cell
+0004655	SK-ChA-1 cell
+0004656	follicular lymphoma cell
+0004657	premonocyte
+0004658	imaginal disc
+0004659	exoskeleton
+0004660	human amniotic epithelial cell
+0004661	iliac artery endothelium
+0004662	iliac artery endothelial cell
+0004663	iliac artery endothelial cell line
+0004664	human iliac artery endothelial cell
+0004665	iliac artery
+0004666	external iliac artery
+0004667	internal iliac artery
+0004668	hand
+0004669	finger
+0004670	interdigit
+0004671	hair medulla
+0004672	hair shaft
+0004673	dorsal aorta
+0004674	ventral aorta
+0004675	regio occipitalis capitis
+0004676	cerebral peduncle
+0004677	basis pedunculi cerebri
+0004678	regio frontalis capitis
+0004679	capillary pericyte
+0004680	stratum basale
+0004681	bursa copulatrix
+0004682	gential atrium
+0004683	genital chamber
+0004684	genital pore
+0004685	bony labyrinth
+0004686	cochlear labyrinth
+0004687	orbit
+0004688	regio orbitalis
+0004689	external gill
+0004690	arterial system
+0004691	hippocampus minor
+0004692	venous system
+0004693	regio parietalis capitis
+0004694	rectal sac
+0004695	aortic root
+0004696	external carotid artery
+0004697	internal carotid artery
+0004698	regio oralis
+0004699	posterior pharynx
+0004700	anterior pharynx
+0004701	dorsal striatum
+0004702	ventral striatum
+0004703	striate cortex
+0004704	extrastriate cortex
+0004705	connecting stalk
+0004706	ankle joint
+0004707	hinge joint
+0004708	thyroid follicle
+0004709	thyroid primordium
+0004710	tunica interna bulbi
+0004711	head capsule
+0004712	parathyroid hormone secreting cell
+0004713	larval ventral ganglion
+0004714	palatine tonsil
+0004715	nasopharyngeal tonsil
+0004716	null cell
+0004717	large granular lymphocyte
+0004718	breast lobe
+0004719	excretory canal
+0004720	mural cell
+0004721	myeloid dendritic cell
+0004722	plasmacytoid T-lymphocyte
+0004723	lymphoid dendritic cell
+0004724	animal cap
+0004725	embryonic fibroblast
+0004726	embryonic brain
+0004727	larval brain
+0004728	rheumatoid arthritis disease specific synovial fluid
+0004729	peripheral blood lymphocyte
+0004730	myeloid progenitor cell
+0004731	lymphoid progenitor cell
+0004732	bone marrow-derived macrophage
+0004733	gravid adult
+0004734	HBL-100 cell
+0004735	brainstem glioma cell
+0004736	B-CPAP cell
+0004737	AU-565 cell
+0004738	CFPAC-1 cell
+0004739	CGTH-W3 cell
+0004740	CGTH-W1 cell
+0004741	CGTH-W2 cell
+0004742	HCT-115 cell
+0004743	HCT-166 cell
+0004744	hair cell
+0004745	INA-6 cell
+0004746	cecum cancer cell line
+0004747	NCI-H716 cell
+0004748	metula
+0004749	phialide
+0004750	129S6 cell
+0004751	1C9 cell
+0004752	adipose-derived stromal cell
+0004753	XP-V XP30RO cell
+0004754	VERO-76 cell
+0004755	VERO C1008 cell
+0004756	venous endothelium
+0004757	arterial endothelium
+0004758	arterial endothelial cell
+0004759	venous endothelial cell
+0004760	TF-1 cell
+0004761	TF-1 BCR-ABL cell
+0004762	TSM1 cell
+0004763	V866 cell
+0004764	V400 cell
+0004765	UKE-1 cell
+0004766	SET-2 cell
+0004767	MB-02 cell
+0004768	MUTZ-8 cell
+0004769	teratocyte
+0004770	TAD-2 cell
+0004771	NPA cell
+0004772	WRO cell
+0004773	trophoblast stem cell line
+0004774	trophoblast stem cell
+0004775	SUP-M2 cell
+0004776	striatonigral neuron
+0004777	RSC96 cell
+0004778	medium spiny neuron
+0004779	soft tissue sarcoma cell
+0004780	soft tissue sarcoma cell line
+0004781	SK-RC-26B cell
+0004782	SK-N-BE(2)C cell
+0004783	SeAx cell
+0004784	HFF-1 cell
+0004785	Ewing&apos;s sarcoma family tumor cell line
+0004786	SCMC-ES1 cell
+0004787	SK-N-LO cell
+0004788	KP-EW-MS cell
+0004789	ruminal fluid
+0004790	hTERT-RPE1 cell
+0004791	root primordium
+0004792	RHEK-1 cell
+0004793	TC1 cell
+0004794	TC2 cell
+0004795	JHU-1 cell
+0004796	253J cell
+0004797	accessory olfactory bulb
+0004798	accessory sex gland
+0004799	AILNCaP cell
+0004800	amnioserosa
+0004801	BG3A-C2 cell
+0004802	OCL-1 cell
+0004803	buccal epithelium
+0004804	buccal epithelial cell
+0004805	C666-1 cell
+0004806	CHO-91-47-67 cell
+0004807	CHO-91-22-47-67 cell
+0004808	CHO-91-22 cell
+0004809	CHO-91 cell
+0004810	CHO-22 cell
+0004811	Clara cell
+0004812	dermal dendritic cell
+0004813	DMS-114 cell
+0004814	DT-40 cell
+0004815	ER-1 cell
+0004816	ERpP cell
+0004817	extraradical hypha
+0004818	FOM71 cell
+0004819	FOM78 cell
+0004820	NHEM693 cell
+0004821	NHEM2493 cell
+0004822	germ tube
+0004823	NCI-H1355 cell
+0004824	NCI-H1975 cell
+0004825	NCI-H524 cell
+0004826	HFF2/T cell
+0004827	hFOB cell
+0004828	HGC-27 cell
+0004829	HOB-c cell
+0004830	epidermal cell line
+0004831	JB6 cell
+0004832	L56Br-C1 cell
+0004833	large cell neuroendocrine carcinoma cell
+0004834	middle frontal gyrus
+0004835	inferior frontal gyrus
+0004836	superior frontal gyrus
+0004837	MRC5-SV cell
+0004838	muscular coat
+0004839	muscularis mucosa
+0004840	OCL-3 cell
+0004841	UCP-3 cell
+0004842	MyLa 2039 cell
+0004843	MyLa 2059 cell
+0004844	NG2 cell
+0004845	NHOst cell
+0004846	OCUT-1 cell
+0004847	ONCO-DG1 cell
+0004848	PaCa-44 cell
+0004849	pharyngeal gland
+0004850	bone marrow cell
+0004851	mammary ductal carcinoma cell
+0004852	OV-90 cell
+0004853	PC-3H cell
+0004854	PK-1 cell
+0004855	PK-8 cell
+0004856	pancreaticobiliary cancer cell
+0004857	ookinete
+0004858	ACT-1 cell
+0004859	Nthy-ori 3-1 cell
+0004860	GaMG cell
+0004861	spiral organ cell line
+0004862	HEI-OC1 cell
+0004863	HLCC cell
+0004864	HMC cell
+0004865	Human-7 cell
+0004866	LiM-6 cell
+0004867	Sup-M2-TS cell
+0004868	anaplastic large cell lymphoma cell line
+0004869	Mac-1 cell
+0004870	MOLT cell
+0004871	NB-39 cell
+0004872	NCR-EW2 cell
+0004873	UT-SCC-118 cell
+0004874	non-root-hair cell
+0004875	labellum
+0004876	distal tip
+0004877	distal tip cell
+0004878	enteric muscle
+0004879	Tu-132 cell
+0004880	Tu-113 cell
+0004881	parotid gland tumor cell
+0004882	ventral midbrain
+0004883	cystadenocarcinoma cell line
+0004884	QZG cell
+0004885	OSA-344 cell
+0004886	PC-10 cell
+0004887	ACC-LC-319 cell
+0004888	TC-1 cell
+0004889	BM-314 cell
+0004890	CHCY-1 cell
+0004891	CH-27 cell
+0004892	SLT4 cell
+0004893	253J laval cell
+0004894	253J-BV cell
+0004895	NPC-TW01 cell
+0004896	IMEC cell
+0004897	CHO-LY-B cell
+0004898	HML-Gb3 cell
+0004899	HK-1 cell
+0004900	pulmonary venous myocardium
+0004901	non-neuronal cell
+0004902	cholinergic neuron
+0004903	plant crown
+0004904	hair follicle bulge
+0004905	hair follicle bulge stem cell
+0004906	molecular layer
+0004907	Bergmanns glia
+0004908	Bergmann fiber
+0004909	Purkinje layer
+0004910	retinal pigment epithelium cell
+0004911	erythroid progenitor cell
+0004912	culture condition:peptone-yeast extract-grown cell
+0004913	vastus medialis
+0004914	rheumatoid arthritis disease specific synovial fibroblast
+0004915	ZR-75-30 cell
+0004916	ZR-78 cell
+0004917	ZR-78.1 cell
+0004918	ZR-82 cell
+0004919	ZR-75 cell
+0004920	WSS-1 cell
+0004921	swine testicular cell line
+0004922	TAOV cell
+0004923	NOS-2 cell
+0004924	NOS-4 cell
+0004925	HRA cell
+0004926	THP-6 cell
+0004927	THP-8 cell
+0004928	SUM-159PT cell
+0004929	RMG-II cell
+0004930	RMG-I cell
+0004931	NPD-1 cell
+0004932	RCC-10 cell
+0004933	NALM-17 cell
+0004934	NALM-20 cell
+0004935	NALM-24 cell
+0004936	NALM-26 cell
+0004937	KOCL-33 cell
+0004938	KOCL-44 cell
+0004939	KOCL-45 cell
+0004940	KOCL-58 cell
+0004941	KOCL-69 cell
+0004942	HAL-01 cell
+0004943	KOPN-41 cell
+0004944	KOPN-1 cell
+0004945	LC4-1 cell
+0004946	UTP-L5 cell
+0004947	UTP-L10 cell
+0004948	UTP-2 cell
+0004949	SCMC-L10 cell
+0004950	BV173 cell
+0004951	NALL-1 cell
+0004952	MV-522 cell
+0004953	MGC-803 cell
+0004954	capillary endothelium
+0004955	MDA-B02 cell
+0004956	capillary endothelial cell
+0004957	hydathode
+0004958	F9-12 cell
+0004959	LNCAP-C4-2B cell
+0004960	CMK-86 cell
+0004961	acute megakaryoblastic leukemia cell line
+0004962	acute megakaryocytic leukemia cell
+0004963	acute megakaryoblastic leukemia cell
+0004964	KOPT-K1 cell
+0004965	TTA-1 cell
+0004966	Rat-1/BB16 cell
+0004967	Rat-1/tsLA29 cell
+0004968	NS-0 cell
+0004969	KOC-5C cell
+0004970	KOC-7C cell
+0004971	1BR3.G cell
+0004972	KM-H2 cell
+0004973	Hodgkin lymphoma cell line
+0004974	Hodgkin lymphoma cell
+0004975	embryogenic cell line
+0004976	tongue cancer cell
+0004977	nasal lavage fluid
+0004978	carotid sinus nerve
+0004979	glossopharyngeal nerve
+0004980	uveal melanoma cell
+0004981	KARPAS-422 cell
+0004982	gonocyte
+0004983	MA-104 cell
+0004984	alate adult
+0004985	angioblast
+0004986	SNU-5 cell
+0004987	SNU-16 cell
+0004988	SNU-216 cell
+0004989	monospore
+0004990	UM-UC-9 cell
+0004991	UM-UC-14 cell
+0004992	UM-UC-10 cell
+0004993	UM-UC-5 cell
+0004994	SK-MEL-110 cell
+0004995	osphradium
+0004996	myelinating Schwann cell
+0004997	non-myelinating Schwann cell
+0004998	gingival epithelium
+0004999	vaginal smooth muscle
+0005000	clitoral smooth muscle
+0005001	retinal microvascular endothelial cell
+0005002	pulmonary microvascular endothelial cell
+0005003	villous trophoblast
+0005004	UROtsa cell
+0005005	FEPD cell
+0005006	253J-P cell
+0005007	psammomatous meningioma cell
+0005008	psammoma body
+0005009	stratum intermedium
+0005010	meningothelial meningioma cell
+0005011	1205-Lu cell
+0005012	46BR.1G1 cell
+0005013	46BRLigI cell
+0005014	B-cell leukemia cell
+0005015	ASTC-a-1 cell
+0005016	breast hyperplasia cell
+0005017	usual ductal hyperplasia cell
+0005018	atypical ductal hyperplasia cell
+0005019	AX-2 cell
+0005020	cytotrophoblast cell line
+0005021	B6Tert-1 cell
+0005022	CAMA-1 cell
+0005023	cEND cell
+0005024	gastrointestinal smooth muscle
+0005025	HEK-293-TrkB cell
+0005026	HTOXAR-3 cell
+0005027	GM-3299 cell
+0005028	GM-4408 cell
+0005029	HEK-293FT cell
+0005030	HeLa-229 cell
+0005031	KR-4 cell
+0005032	CW-2 cell
+0005033	MV3 cell
+0005034	DT-40 3KO cell
+0005035	Fanconi anemia disease specific cell type
+0005036	Fanconi anemia lymphoid cell line
+0005037	HEI-193 cell
+0005038	HeLa-LTRHIV-1-Luc cell
+0005039	HN-30 cell
+0005040	HN-12 cell
+0005041	HT-168 cell
+0005042	WM-983/B cell
+0005043	M1 melanoma cell
+0005044	LNCaP-17 cell
+0005045	LNCaP-34 cell
+0005046	LHCN-M2 cell
+0005047	MGSO-3 cell
+0005048	MACL-1 cell
+0005049	prostate adenocarcinoma cell line
+0005050	MDA-PCa-2b cell
+0005051	L87/4 cell
+0005052	L88/5 cell
+0005053	midgut epithelium
+0005054	macrophage foam cell
+0005055	scale
+0005056	J7 hepatoma cell
+0005057	J5 hepatoma cell
+0005058	SU-DHL-1 cell
+0005059	TZM-bl cell
+0005060	UACC-903 cell
+0005061	PC-12K cell
+0005062	M93-047 cell
+0005063	UACC-647 cell
+0005064	UACC-1273EV cell
+0005065	Swiss-3T3 cell
+0005066	MRC-5V1 cell
+0005067	PAM212 cell
+0005068	SK-CO15 cell
+0005069	Me665/2/21 cell
+0005070	Me665/2/60 cell
+0005071	PC3-MM2 cell
+0005072	NB5 cell
+0005073	NB14 cell
+0005074	M9A cell
+0005075	NT2-Rho0 cell
+0005076	KG-1A cell
+0005077	LL24 cell
+0005078	foot sole
+0005079	KLE cell
+0005080	LLC-WRC 256 cell
+0005081	periurethral tissue
+0005082	skin mucus
+0005083	plant mucous cell
+0005084	vocal fold
+0005085	common penile artery
+0005086	arteria profunda penis
+0005087	arteria bulbi penis
+0005088	arteria dorsalis penis
+0005089	perichondrium
+0005090	inner chondrogenic layer of perichondrium
+0005091	outer fibrous layer of perichondrium
+0005092	chondrogenic cell
+0005093	intercalated cell
+0005094	leaf sheath
+0005095	H4-C99 cell
+0005096	epithelial stem cell
+0005097	skin stem cell
+0005098	epidermal stem cell
+0005099	follicular stem cell
+0005100	implantation fossa
+0005101	coronary artery smooth muscle cell
+0005102	SCC-15 cell
+0005103	NB-1 cell
+0005104	culture condition:2-sulfoacetate-grown cell
+0005105	culture condition:ammonium-grown cell
+0005106	culture condition:ethylbenzene-grown cell
+0005107	culture condition:gellan-grown cell
+0005108	culture condition:pyrrole-2-carboxylate-grown cell
+0005109	saphenous vein endothelial cell
+0005110	ameloblastoma cell
+0005111	HaCaT II-4 cell
+0005112	TRAMP-C1 cell
+0005113	TRAMP-C3 cell
+0005114	TRAMP-C2 cell
+0005115	salivary duct
+0005116	salivary duct cancer cell
+0005117	retinal ganglion cell line
+0005118	RGC-5 cell
+0005119	pleural mesothelioma cell
+0005120	neuroectodermal tumor cell
+0005121	PC3-B1 cell
+0005122	ovarian cyst
+0005123	ovarian cyst fluid
+0005124	platysma muscle
+0005125	sternocleidomastoid muscle
+0005126	Myc-CaP cell
+0005127	MCF-10A neoT cell
+0005128	M12 prostate cancer cell
+0005129	A2780/S cell
+0005130	A2780/R cell
+0005131	conjunctival epithelium
+0005132	arrector pili muscle
+0005133	CCD-986Sk cell
+0005134	adenomatoid odontogenic tumor cell
+0005135	D-283MED cell
+0005136	ES-E14 cell
+0005137	RST-307 cell
+0005138	MTC-1 cell
+0005139	HEp-3 cell
+0005140	H273 cell
+0005141	rheumatoid arthritis disease specific giant cell
+0005142	ameloblastic layer
+0005143	OCUT-2 cell
+0005144	KTC-1 cell
+0005145	chorionic epithelium
+0005146	HTh-7 cell
+0005147	HTh-74 cell
+0005148	HTh-83 cell
+0005149	C-643 cell
+0005150	anococcygeus muscle
+0005151	anterior horn
+0005152	A2780/CDDP cell
+0005153	CEM-VBL10 cell
+0005154	CEM-VBL16 cell
+0005155	CEM-VBL100 cell
+0005156	Caco-2/BBe cell
+0005157	juxtaglomerular apparatus
+0005158	juxtaglomerular cell
+0005159	extraglomerular mesangial cell
+0005160	oil gland
+0005161	KAT-18 cell
+0005162	FB-1 cell
+0005163	COLO-16 cell
+0005164	HKESC-1 cell
+0005165	HKESC-2 cell
+0005166	HKESC-3 cell
+0005167	HSC-1 cell
+0005168	JJ012 cell
+0005169	HCMEC cell
+0005170	keratocyte
+0005171	SNU-620 cell
+0005172	MDA-MB-231-Luc2 cell
+0005173	UMR-106-01 cell
+0005174	Mel120 cell
+0005175	Panc-02 cell
+0005176	L-540 cell
+0005177	BCWM.1 cell
+0005178	PWR-1E cell
+0005179	PSN-1 cell
+0005180	pterygium
+0005181	RzM6-LC cell
+0005182	TOV-112D cell
+0005183	TOV-21G cell
+0005184	SVGp12 cell
+0005185	chondroma cell
+0005186	H4-APP751 cell
+0005187	TTE-1 cell
+0005188	trunk kidney
+0005189	head kidney
+0005190	sarcomatoid carcinoma cell
+0005191	Patu-8988 cell
+0005192	MCF-7/adr cell
+0005193	H4TG cell
+0005194	fine root
+0005195	K-562/R7 cell
+0005196	KBv200 cell
+0005197	peltate gland
+0005198	adipose-derived stem cell
+0005199	CEM-ADR5000 cell
+0005200	brain microvessel endothelial cell
+0005201	brain endothelial cell
+0005202	bulbil
+0005203	gingival cancer cell line
+0005204	Ca9-22 cell
+0005205	cerebral artery
+0005206	middle cerebral artery
+0005207	left middle cerebral artery
+0005208	right middle cerebral artery
+0005209	culture condition:isophthalate-grown cell
+0005210	syntrophic cell culture
+0005211	choriodecidua
+0005213	circular smooth muscle
+0005214	longitudinal smooth muscle
+0005215	KB-C2 cell
+0005216	keratocyst
+0005217	LNGK-9 PCa cell
+0005218	MC57 cell
+0005219	osteophyte
+0005220	PC-3M cell
+0005221	PC-3M-LN4 cell
+0005222	PC-3M-Pro4 cell
+0005223	Drosophila D17 cell
+0005224	hFOB 1.19 cell
+0005225	CHO-CUR3 cell
+0005226	medial pterygoid muscle
+0005227	XC cell
+0005228	YT cell
+0005229	XC-v cell
+0005230	stem juice
+0005231	culture condition:D-glucose-grown cell
+0005232	culture condition:n-decane-grown cell
+0005233	culture condition:dextrose-grown cell
+0005234	culture condition:D-glucose-L-asparagine-grown cell
+0005235	culture condition:L-asparagine-grown cell
+0005236	culture condition:salicylate-grown cell
+0005237	culture condition:sulfolactate-grown cell
+0005238	T-REx 293 cell
+0005239	renal tubule epithelium
+0005240	pharyngeal epithelium
+0005241	MSK-Leuk1 cell
+0005242	MLE-15 cell
+0005243	NCI-H1650 cell
+0005244	culture condition:CD19+ cell
+0005245	culture condition:CD31+ cell
+0005246	culture condition:CD31- cell
+0005247	culture condition:CD103+ cell
+0005248	M-07E cell
+0005249	M-07 cell
+0005250	CNE-2 cell
+0005251	ink sac
+0005252	36B-10 cell
+0005253	CHP-100 cell
+0005254	CHP-126 cell
+0005255	RPMI-1788 cell
+0005256	W001C cell
+0005257	oropharynx
+0005258	oropharyngeal cancer cell
+0005259	oropharyngeal carcinoma cell line
+0005260	MGL-8 cell
+0005261	B-lymphoblast cell line
+0005262	NEF cell
+0005263	HER 14 cell
+0005264	mucoepidermoid carcinoma cell
+0005265	nonparenchymal liver cell
+0005266	cirrhosis disease specific cell type
+0005267	293-F FreeStyle cell
+0005268	neuropil
+0005269	antennal lobe
+0005270	HAoAF cell
+0005271	anterior hypodermis
+0005272	radical leaf
+0005273	adventitious root
+0005274	adventitious root culture
+0005275	HPK1A-ras cell
+0005276	HPK1A cell
+0005277	CAG cell
+0005278	cestode
+0005279	Caco-2/15 cell
+0005280	culture condition:oxalate-grown cell
+0005281	intercostal muscle
+0005282	WEHI-3B cell
+0005283	TS-20 cell
+0005284	UML-49 cell
+0005285	NPD-2 cell
+0005286	13-90 cell
+0005287	2102Ep cell
+0005288	CL-48 cell
+0005289	Col-2 cell
+0005290	TE 353.Sk cell
+0005291	culture condition:yeast extract-grown cell
+0005292	NCI-H1155 cell
+0005293	NCI-H2347 cell
+0005294	NCI-H647 cell
+0005295	HCC-38 cell
+0005296	KBH5.0 cell
+0005297	MEG-01S cell
+0005298	MUM-2B cell
+0005299	MUM-2C cell
+0005300	muscle stem cell
+0005301	NPrEC cell
+0005302	GI-102 cell
+0005303	AS-8 cell
+0005304	culture condition:rice straw-grown cell
+0005305	corn ear
+0005306	culture condition:wine-grown cell
+0005307	UAMS-32 cell
+0005308	A-716 cell
+0005309	mTOP2beta-4 cell
+0005310	mTOP2beta-5 cell
+0005311	SF-xL cell
+0005312	amoeba
+0005313	nerve sheath
+0005314	nerve sheath cancer cell
+0005315	peripheral nerve sheath cancer cell
+0005316	malignant peripheral nerve sheath cancer cell
+0005317	CBRH-7919 cell
+0005318	cerebrovascular cell
+0005319	embryonic germ cell
+0005320	MIN6-N8 cell
+0005321	B6SUtA1 cell
+0005322	chronic myelogenous leukemia progenitor cell
+0005323	culture condition:1-hydroxy-2-naphthoic acid-grown cell
+0005324	culture condition:chrysene-grown cell
+0005325	culture condition:methanesulfonylmethane-grown cell
+0005326	culture condition:lactose-grown cell
+0005327	culture condition:malate-grown cell
+0005328	culture condition:methylamine-grown cell
+0005329	culture condition:nitrate-grown cell
+0005330	culture condition:salicylic acid-grown cell
+0005331	culture condition:sulfur-grown cell
+0005332	RWLeu-4 cell
+0005333	SK-MEL-23 cell
+0005334	UKRV-Mel-4 cell
+0005335	UKRV-Mel-2 cell
+0005336	Ma-Mel-01 cell
+0005337	Ma-Mel-04 cell
+0005338	Ma-Mel-05 cell
+0005339	Ma-Mel-11 cell
+0005340	Ma-Mel-12 cell
+0005341	Ma-Mel-17 cell
+0005342	Ma-Mel-19 cell
+0005343	Ma-Mel-37b cell
+0005344	Ma-Mel-42b cell
+0005345	Ma-Mel-47 cell
+0005346	Ma-Mel-52 cell
+0005347	UKRV-Mel-06a cell
+0005348	UKRV-Mel-21a cell
+0005349	UKRV-Mel-27 cell
+0005350	UKRV-Mel-31 cell
+0005351	optic cup
+0005352	1-LN cell
+0005353	Abrams cell
+0005354	D17 cell
+0005355	Grey cell
+0005356	Hughes cell
+0005357	Ingles cell
+0005358	Jarques cell
+0005359	Marisco cell
+0005360	ALL-SIL cell
+0005361	amphidial gland
+0005362	trophoblast giant cell
+0005363	COS-31 cell
+0005364	D-54MG cell
+0005365	ECC-1 cell
+0005366	NCI-H526 cell
+0005367	H-69AR cell
+0005368	HCC-1954 cell
+0005369	HMPOS cell
+0005370	CCRF-HSB-2 cell
+0005371	hymenium
+0005372	SK-N-MC-IXC cell
+0005373	oil secretion
+0005374	OKF-6 cell
+0005375	oral cell line
+0005376	P-93AF cell
+0005377	RD cell
+0005378	Rh-1 cell
+0005379	Rh-30 cell
+0005380	Rh-18 cell
+0005381	Rh-4 cell
+0005382	Rh-5 cell
+0005383	Rh-3 cell
+0005384	Rh-28 cell
+0005385	root quiescent center
+0005386	U-1752 cell
+0005387	SUM-102 cell
+0005388	SUM-149 cell
+0005389	SUM-44 cell
+0005390	SUM-52 cell
+0005391	SUM-225 cell
+0005392	SUM-229 cell
+0005393	SUM-190 cell
+0005394	SUM-185 cell
+0005395	58CrPM cell
+0005396	SKMG cell
+0005397	SH-EP cell
+0005398	PaTuO-2 cell
+0005399	POS cell
+0005400	BPH cell
+0005401	junctional zone
+0005402	spongiotrophoblast
+0005403	glycogen cell
+0005404	labyrinthine zone
+0005405	velum
+0005406	terminal ampoule
+0005407	culture condition:4-methylsalicylate-grown cell
+0005408	culture condition:5-methylsalicylate-grown cell
+0005409	culture condition:5-chlorosalicylate-grown cell
+0005410	culture condition:monomethylamine-grown cell
+0005411	culture condition:tetramethylammonium-grown cell
+0005412	culture condition:trimethylamine-grown cell
+0005413	culture condition:urea-grown cell
+0005414	fibrocarcinoma cell
+0005415	gastroduodenal mucosa
+0005416	MNNG/HOS cell
+0005417	parietal trophoblast giant cell
+0005418	plant oil gland
+0005419	sinusoidal trophoblast giant cell
+0005420	canal trophoblast giant cell
+0005421	spiral-associated trophoblast giant cell
+0005422	culture condition:(+)-camphor-grown cell
+0005423	MDCK-MDR1 cell
+0005424	melan-a Hm cell
+0005425	NCI-H2170 cell
+0005426	NB-69 cell
+0005427	NW-1539 cell
+0005428	NW-624 cell
+0005429	PLHC-1/dox cell
+0005430	STKM-1 cell
+0005431	Vgamma9Vdelta2 T-lymphocyte
+0005432	Bm3-c2 cell
+0005433	culture condition:4-nitrophenol-grown cell
+0005434	culture condition:L-alanine-grown cell
+0005435	culture condition:succinate-glucose-grown cell
+0005436	panicle
+0005437	mammary luminal epithelial cell
+0005438	HO-8910 cell
+0005439	Lu-134-B cell
+0005440	PC-7 cell
+0005441	lateral root
+0005442	SBC-1 cell
+0005443	STKM-2 cell
+0005444	root nodule primordium
+0005445	rectal epithelium
+0005446	plant septum
+0005447	VMM39 cell
+0005448	ARL-15C1 cell
+0005449	ARL-16T2 cell
+0005450	B-12 cell
+0005451	C32-TG cell
+0005452	C6/36 cell
+0005453	culture condition:CD4+ cell
+0005454	corpus cavernosum
+0005455	cotyledonary node
+0005456	FM-516-SV cell
+0005457	foreskin melanocyte cell line
+0005458	NCE-G55T2 cell
+0005459	GP-202 cell
+0005460	HaEpi cell
+0005461	HBE135-E6E7 cell
+0005462	hemolymph vessel
+0005463	Huh-7.5.1 cell
+0005464	IME cell
+0005465	intercalary meristem
+0005466	IPA-220 cell
+0005467	KKU-M139 cell
+0005468	labial palp
+0005469	RPK-9 cell
+0005470	RPK-1 cell
+0005471	RPK-59 cell
+0005472	RTG-2 cell
+0005473	RTG-P1 cell
+0005474	SOB-15 cell
+0005475	SUM-149PT cell
+0005476	SUM-185PE cell
+0005477	SUM-190PT cell
+0005478	SUM-225CWN cell
+0005479	SUM-229PE cell
+0005480	WM-278 cell
+0005481	foreskin keratinocyte cell line
+0005482	38E6E7HFK cell
+0005483	molluscan catch muscle
+0005484	DLD-1/alpha-cat cell
+0005485	MC-3T3 cell
+0005486	PK-9 cell
+0005487	PK-59 cell
+0005488	osteocyte cell line
+0005489	MLO-Y4 cell
+0005490	MM-1 cell
+0005491	MO-91 cell
+0005492	MT-2 cell
+0005493	Mv1Lu cell
+0005494	N-1511 cell
+0005495	NC-37 cell
+0005496	NHEM-neo cell
+0005497	nucleus pulposus cell line
+0005498	HNPC cell
+0005499	NYH cell
+0005500	QGP-1 cell
+0005501	SW-2 cell
+0005502	Panc1-bC2GnT-M cell
+0005503	corpus cavernosum smooth muscle
+0005504	fungal sporangium
+0005505	fungal sporangiophore
+0005506	culture condition:H2-grown cell
+0005507	culture condition:H2/sulfate-grown cell
+0005508	culture condition:ferric citrate-grown cell
+0005509	culture condition:2-aminophenol-grown cell
+0005510	culture condition:2-phenylethanol-grown cell
+0005511	embryonic carcinoma cell
+0005512	basal node
+0005513	cercaria
+0005514	gonadal sheath cell
+0005515	leaf vein
+0005516	wood
+0005517	lyophilized cell
+0005518	PC-9 cell
+0005519	spermathecal-uterine valve
+0005520	uterine seam cell
+0005521	GM0536 cell
+0005522	plant epidermal cell
+0005523	culture condition:anaerobic and sulfate-thiosulfate-lactate-grown cell
+0005524	plant lip
+0005525	plant primordium
+0005526	axillary bud primordium
+0005527	lateral root primordium
+0005528	plant secretory cell
+0005529	plant hair
+0005530	plant glandular hair
+0005531	plant scale
+0005532	plant zygote
+0005533	fungal primordium
+0005534	arcuate nucleus
+0005535	culture condition:CD56+ cell
+0005536	culture condition:copper-containing medium-grown cell
+0005537	culture condition:beta-phenylethylamine-grown cell
+0005538	culture condition:copper-depleted medium-grown cell
+0005539	culture condition:cysteate-grown cell
+0005540	culture condition:dimethylsulfone-grown cell
+0005541	culture condition:methylsulfone-grown cell
+0005542	inflorescence primordium
+0005543	uterine epithelial cell
+0005544	gastrointestinal adenocarcinoma cell
+0005545	renal epithelial cell
+0005546	tuber meristem
+0005547	para-high vocal center
+0005548	HEK-293ET cell
+0005549	NIH-3T3-ras cell
+0005550	8505C cell
+0005551	abdominal aorta aneurysm disease specific cell type
+0005552	vertebral endplate
+0005553	aortic intima
+0005554	B7E3 cell
+0005555	basal prostate epithelium cell
+0005556	luminal prostate epithelium cell
+0005557	BP-ALL cell
+0005558	T/C-28a4 cell
+0005559	Caki-dTub cell
+0005560	C8-MEF cell
+0005561	C9-MEF cell
+0005562	cardiac microvascular endothelial cell
+0005563	dental lamina
+0005564	EBV-B cell
+0005565	embryonic tracheal system
+0005566	epithelial lining fluid
+0005567	esophageal adenocarcinoma cell
+0005568	gastrointestinal mucosa
+0005569	hair follicle dermal papilla cell
+0005570	HFDPC cell
+0005571	HAE cell
+0005572	HCE-4 cell
+0005573	HCE-6 cell
+0005574	ileum smooth muscle
+0005575	ileum smooth muscle cell
+0005576	inguinal canal
+0005577	lung disease specific cell type
+0005578	lymphangioleiomyomatosis disease specific cell type
+0005579	acute undifferentiated leukemia cell
+0005580	WDNET cell
+0005581	vestibular sensory epithelium
+0005582	Ra-2 cell
+0005583	promonocytic leukemia cell line
+0005584	promonocytic leukemia cell
+0005585	prepolar cell
+0005586	polar cell
+0005587	stalk cell
+0005588	peg cell
+0005589	oviduct ciliated cell
+0005590	cervical adenocarcinoma cell line
+0005591	mesolimbic dopaminergic system
+0005592	mesocortical dopaminergic system
+0005593	mesocorticolimbic dopaminergic system
+0005594	metastatic renal cell carcinoma cell
+0005595	microplantlet suspension culture
+0005596	epitheloid cell
+0005597	Langhans giant cell
+0005598	peritubular contractile cell
+0005599	periodontal ligament cell
+0005600	outer nuclear layer
+0005601	paracentral lobule
+0005602	anterior paracentral gyrus
+0005603	posterior paracentral gyrus
+0005604	pharate pupal cuticle
+0005605	pulmonary neuroendocrine tumor cell
+0005606	precerebellar system
+0005607	gamma delta T-lymphocyte
+0005608	pupal wing
+0005609	pupal wing cuticle
+0005610	ventricular aneurysm disease specific cell type
+0005611	BL-6T cell
+0005612	BL-6 cell
+0005613	BMC-2 cell
+0005614	BMA cell
+0005615	KM-20C cell
+0005616	Asp-86 cell
+0005617	Sly-1 cell
+0005618	subpharyngeal region
+0005619	cladode
+0005620	CCE-24 cell
+0005621	Hep-G2/2.15 cell
+0005622	K3OHD cell
+0005623	neuroepithelial cell line
+0005624	NE-4C cell
+0005625	NE-GFP-4C cell
+0005626	osteoarticular cell
+0005627	parametrium
+0005628	parametrial fat pad
+0005629	satellite glial cell
+0005630	sensory ganglion
+0005631	G3/F11 cell
+0005632	sympodium
+0005633	monopodium
+0005634	TIG-7 cell
+0005635	culture condition:avicel-grown cell
+0005636	culture condition:wheat bran-grown cell
+0005637	Idiopathic pulmonary fibrosis disease specific cell type
+0005638	LF1 cell
+0005639	LF2 cell
+0005640	aortic adventitial fibroblast
+0005641	awn
+0005642	culture condition:3-hydroxyphenylacetate-grown cell
+0005643	culture condition:acetate/raffinose-grown cell
+0005644	culture condition:D-galacturonate-grown cell
+0005645	culture condition:D-glucosaminate-grown cell
+0005646	culture condition:D-mannitol-grown cell
+0005647	culture condition:glycine betaine-grown cell
+0005648	culture condition:isoprimeverose-grown cell
+0005649	culture condition:isopropanol-grown cell
+0005650	culture condition:N-acetyltaurine-grown cell
+0005651	culture condition:scyllo-inositol-grown cell
+0005652	culture condition:tetradecyltrimethylammonium bromide-grown cell
+0005653	culture condition:tetrathionate-grown cell
+0005654	nerve ring
+0005655	Th17 cell
+0005656	Z-12 cell
+0005657	adrenal cortex steroidogenic cell
+0005658	testis steroidogenic cell
+0005659	ovarian steroidogenic cell
+0005660	corolla tube
+0005661	buccal mass
+0005662	buccal muscle
+0005663	culture condition:autotrophically-grown cell
+0005664	COGA-1A cell
+0005665	COGA-13 cell
+0005666	Caco-2/AQ cell
+0005667	NCI-H889 cell
+0005668	DMS-53 cell
+0005669	NCI-H295A cell
+0005670	C-20/A4 cell
+0005671	KGN cell
+0005672	LNCaP-C4-2 cell
+0005673	LNCaP-CL1 cell
+0005674	SW-60 cell
+0005675	BNL-HCC cell
+0005676	vaginal mucosa
+0005677	BmN4-SID1 cell
+0005678	cervicovaginal cell
+0005679	small luteal cell
+0005680	large luteal cell
+0005681	storage root
+0005682	2B4-T cell
+0005683	VK-2/E6E7 cell
+0005684	MYP-30 cell
+0005685	culture condition:4-hydroxybutyrate-grown cell
+0005686	culture condition:heterotrophically-grown cell
+0005687	culture condition:D-tagatose-grown cell
+0005688	shoot meristem
+0005689	atrioventricular node
+0005690	BmN4 cell
+0005691	RCC-4 cell
+0005692	column
+0005693	lateral nerve cord
+0005694	stem leaf
+0005695	sensorimotor area
+0005696	amoeboid microglia
+0005697	atrichoblast cell
+0005698	trichoblast cell
+0005699	root epidermal cell
+0005700	culture condition:6-deoxy-6-sulfoglucose-grown cell
+0005701	culture condition:carbon disulfide-grown cell
+0005702	culture condition:ferulate-grown cell
+0005703	culture condition:vanillate-grown cell
+0005704	milk gland
+0005705	headfoot muscle
+0005706	HEY-1B cell
+0005707	HMEEC cell
+0005708	middle ear cell line
+0005709	IGR-3 cell
+0005710	M5 melanoma cell
+0005711	Mel007 cell
+0005712	Mel-AT cell
+0005713	Mel-CV cell
+0005714	Mel-FH cell
+0005715	Mel-RM cell
+0005716	Me4405 cell
+0005717	MM200 cell
+0005718	Mel-JD cell
+0005719	Mel-RMU cell
+0005720	MOLM-14 cell
+0005721	QGY-7703 cell
+0005722	retrocerebral organ
+0005723	cerebral organ
+0005724	CG-4 cell
+0005725	HuH-7-Lunet cell
+0005726	Lunet-Con1 cell
+0005727	UOK-262 cell
+0005728	gynophore
+0005729	chemoreceptor cell
+0005730	culture condition:chitin-grown cell
+0005731	culture condition:dichloromethane-grown cell
+0005732	culture condition:gentisate-grown cell
+0005733	culture condition:methyl ferulate-grown cell
+0005734	culture condition:methyl vanillate-grown cell
+0005735	culture condition:rye flour-grown cell
+0005736	Hepa-RG cell
+0005737	HMVEC cell
+0005738	lung microvascular endothelial cell
+0005739	transfer cell
+0005740	plant stem cell
+0005741	lateral meristem
+0005742	transfer cell precursor
+0005743	mature stage
+0005744	vegetative stage
+0005745	SHI-1 cell
+0005746	gynostemium
+0005747	IGR-37 cell
+0005748	AC2M2 cell
+0005749	16-HBE cell
+0005750	dentate granule cell
+0005751	C8161.9 cell
+0005752	CHO-13-5-1 cell
+0005753	CHO-A7
+0005754	choroid plexus cancer cell
+0005755	choroid plexus papilloma cell
+0005756	decidual stromal cell
+0005757	EC-9706 cell
+0005758	Eca-109 cell
+0005759	epitheliocyte
+0005760	alveolar epithelial cell
+0005761	adrenal glomerulosa cell
+0005762	colonic mucosa cell
+0005763	culture condition:2,4-dinitroanisole-grown cell
+0005764	culture condition:chitosan-grown cell
+0005765	2fTGH cell
+0005766	A2780/CP cell
+0005767	buccal gland
+0005768	epididymal epithelium
+0005769	buccal mucosa cancer cell
+0005770	buccal mucosa cancer cell line
+0005771	HO-1-N-1 cell
+0005772	HO-8910PM
+0005773	HuH-1 cell
+0005774	ICP-298 cell
+0005775	KBM-7 cell
+0005776	LN-71 cell
+0005777	midgut diverticulum
+0005778	myeloblastoma cell
+0005779	NCI-H1838 cell
+0005780	WM-902B cell
+0005781	uroepithelial cell
+0005782	THLE-5b cell
+0005783	tenocyte
+0005784	syncytium
+0005785	embryonic syncytium
+0005786	SNU-1 cell
+0005787	skeletal muscle satellite cell
+0005788	SH-EP1 cell
+0005789	root band
+0005790	promyelocyte
+0005791	enamel knot
+0005792	primary enamel knot
+0005793	secondary enamel knot
+0005794	ophthalmic lavage fluid
+0005795	osteoma cell
+0005796	PEO-1 cell
+0005797	PEO-4 cell
+0005798	PEO-6 cell
+0005799	corticotroph adenoma cell
+0005800	Neu-7 cell
+0005801	K-562/CP cell
+0005802	dentate gyrus HICAP cell
+0005803	dentate gyrus HIPP cell
+0005804	dentate gyrus IS-I cell
+0005805	dentate gyrus IS-II cell
+0005806	flexor tendon
+0005807	GI-LA-N cell
+0005808	GI-ME-N cell
+0005809	HMVEC-dLy cell
+0005810	immune system
+0005811	cigar leaf

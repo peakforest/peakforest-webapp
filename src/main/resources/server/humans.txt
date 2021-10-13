@@ -1,0 +1,26 @@
+# @date: 2014/11/27
+# @see: humanstxt.org/
+
+# @Team - Bordeaux Metabolome Platform (BMP)
+
+    Daniel Jacob
+    Marie Lefebvre
+
+# @Team - The platform "Exploration du Métabolisme" (PFEM, Clermont-Ferrand)
+
+    Christophe Duperier
+    Franck Giacomoni
+    Nils Paulhe
+
+# @Team - The MetabolomeIDF (Ile de France, Paris-Saclay) 
+
+    Etienne Thevenot
+    Pierrick Roger
+    
+# @Team - The MetaToul platform (Toulouse) 
+
+    Jean-François Martin
+
+# @Thanks
+
+    MetaboHUB project

@@ -1,0 +1,51 @@
+{ 
+	"magnetic_field_strength": [ 
+		{ "name": "400", "value": "400", "classD": ""},
+		{ "name": "500", "value": "500", "classD": ""},
+		{ "name": "600", "value": "600", "classD": ""},
+		{ "name": "700", "value": "700", "classD": ""},
+		{ "name": "750", "value": "750", "classD": ""},
+		{ "name": "800", "value": "800", "classD": ""},
+		{ "name": "850", "value": "850", "classD": ""},
+		{ "name": "900", "value": "900", "classD": ""},
+		{ "name": "950", "value": "950", "classD": ""},
+		{ "name": "1000", "value": "1000", "classD": ""},
+		{ "name": "1100", "value": "1100", "classD": ""},
+		{ "name": "1200", "value": "1200", "classD": ""}
+	],
+	"model": [ 
+		{ "name": "Avance I", "value": "Avance I", "classD": ""},
+		{ "name": "Avance II", "value": "Avance II", "classD": ""},
+		{ "name": "Avance III", "value": "Avance III", "classD": ""}
+	],
+	"software": [ 
+		{ "name": "TopSpin 2.1", "value": "TopSpin 2.1", "classD": ""},
+		{ "name": "TopSpin 3.0", "value": "TopSpin 3.0", "classD": ""},
+		{ "name": "TopSpin 3.1", "value": "TopSpin 3.1", "classD": ""},
+		{ "name": "TopSpin 3.2", "value": "TopSpin 3.2", "classD": ""},
+		{ "name": "TopSpin 3.5", "value": "TopSpin 3.5", "classD": ""}
+	],
+	"probe": [ 
+		{ "name": "BBFO", "value": "BBFO", "classD": ""},
+		{ "name": "BBI", "value": "BBI", "classD": ""},
+		{ "name": "BBO", "value": "BBO", "classD": ""},
+		{ "name": "CPTCI", "value": "CPTCI", "classD": ""},
+		{ "name": "CQPCI", "value": "CQPCI", "classD": ""},
+		{ "name": "Cryo-DUAL", "value": "Cryo-DUAL", "classD": ""},
+		{ "name": "Cryo-TXI", "value": "Cryo-TXI", "classD": ""},
+		{ "name": "DUAL", "value": "DUAL", "classD": ""},
+		{ "name": "HRMAS", "value": "HRMAS", "classD": ""},
+		{ "name": "PH FISEI", "value": "PH FISEI", "classD": ""},
+		{ "name": "LC-RMN", "value": "LC-RMN", "classD": ""},
+		{ "name": "TXI", "value": "TXI", "classD": ""},
+		{ "name": "TXO", "value": "TXO", "classD": ""}
+	],
+	"tubes": [ 
+		{ "name": "1.7", "value": "2.1", "classD": ""},
+		{ "name": "3.0", "value": "3.0", "classD": ""},
+		{ "name": "5.0", "value": "5.0", "classD": ""}
+	],
+	"pulseSeq": [],
+	"SI-1D": [],
+	"SI-2D": []
+}

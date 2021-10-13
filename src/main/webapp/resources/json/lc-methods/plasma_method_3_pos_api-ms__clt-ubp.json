@@ -1,0 +1,60 @@
+{
+	"dumper_type": "lc-ms",
+	"lc_chromatography" : {
+		"method": "CF_PLASMA METHOD 3_POS (API-MS PROCEDURE_CLERMONT FERRAND)",
+		"column_constructor": "Waters",
+		"column_constructor_other": null,
+		"column_name": "UPLC HSS T3",
+		"column_length": 50,
+		"column_diameter": 2.1,
+		"particule_size": 1.8,
+		"column_temperature": 30,
+		"LC_mode": "Gradient",
+		"separation_flow_rate": 400,
+		"separation_solvent_a": "H2O + 0.1% Formic Acid",
+		"ph_solvent_a": null,
+		"separation_solvent_b": "Acetonitrile + 0.1% Formic Acid",
+		"ph_solvent_b": null,
+		"separation_flow_gradient" : [
+			{ "time": 0, "solvA": 100, "solvB": 0 },
+			{ "time": 2, "solvA": 100, "solvB": 0 },
+			{ "time": 15, "solvA": 0, "solvB": 100 },
+			{ "time": 22, "solvA": 0, "solvB": 100 },
+			{ "time": 23, "solvA": 100, "solvB": 0 },
+			{ "time": 26, "solvA": 100, "solvB": 0 }
+		]
+	},
+	"ms_analyzer" : {
+		"instrument": "TOF",
+		"model": "ToF (Bruker)",
+		"resolution_FWHM": null,
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": 2,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": 200,
+			"source_gaz_flow": 8,
+			"tube_temperature": null,
+			"voltage": null
+		},
+		"mode_neg": {
+			"ionisation_method": null,
+			"spray_gaz_flow": null,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		}
+	},
+	"other": {
+		"data_authors": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - UBP)",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - UBP)"
+	}
+}

@@ -8,8 +8,19 @@
 
 	<!-- Maps '/' requests to the 'home' view -->
 	<mvc:view-controller path="/" view-name="home" />
+	<!-- other maps -->
+	<mvc:view-controller path="/home" view-name="home" />
+	<mvc:view-controller path="add-compounds"
+		view-name="add-compounds" />
+	<mvc:view-controller path="/backoffice" view-name="backoffice" />
+	<!-- <mvc:view-controller path="/login" view-name="login" /> -->
+	<!-- <mvc:view-controller path="/loginfailed" view-name="login" /> -->
 
-	<context:component-scan base-package="fr.metabohub.spectralDatabase.mvc" />
-	<context:component-scan base-package="fr.metabohub.spectralDatabase.controllers" />
+	<!-- <context:component-scan base-package="fr.metabohub.peakforest.mvc" 
+		/> -->
+	<context:component-scan base-package="fr.metabohub.peakforest.controllers" />
+	<context:component-scan base-package="fr.metabohub.peakforest.security.controllers" />
+	<!-- for email manager -->
+	<context:component-scan base-package="fr.metabohub.peakforest.utils" />
 
 </beans>

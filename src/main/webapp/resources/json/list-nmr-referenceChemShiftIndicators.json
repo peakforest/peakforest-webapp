@@ -1,0 +1,8 @@
+{ 
+	"referenceChemShiftIndicator": [ 
+		{ "name": "TSP", "value": "TSP", "classD": "" },
+		{ "name": "TMS", "value": "TMS", "classD": ""},
+		{ "name": "glucose", "value": "glucose", "classD": ""},
+		{ "name": "other", "value": "other", "classD": "displayOtherOpt"}
+	]
+}

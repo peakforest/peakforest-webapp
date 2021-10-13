@@ -1,0 +1,7 @@
+{ 
+	"methods": [ 
+		{ "name": "NA", "value": "NA"},
+		{ "name": "Test - MSMS", "separator": "========================================================="},
+		{ "name": "LC-MSMS test", "value": "lc-msms__test"}
+	]
+}

@@ -1,0 +1,18 @@
+{ 
+	"solvents": [ 
+		{ "name": "5% ACN + 0.1% FA in H2O", "value": "5% ACN + 0.1% FA in H2O"},
+		{ "name": "10% ACN + 0.1% FA in H2O", "value": "10% ACN + 0.1% FA in H2O"},
+		{ "name": "10mM (NH4)2CO3 / ACN (20/80) (v/v)", "value": "10mM (NH4)2CO3 / ACN (20/80) (v/v)"},
+		{ "name": "Acetonitrile", "value": "Acetonitrile"},
+		{ "name": "Acetonitrile + 0.1% Formic Acid", "value": "Acetonitrile + 0.1% Formic Acid"},
+		{ "name": "H2O + 0.1% Formic Acid", "value": "H2O + 0.1% Formic Acid"},
+		{ "name": "H2O, ammonium carbonate 10 mM, pH10.5", "value": "H2O, ammonium carbonate 10 mM, pH10.5"},
+		{ "name": "H2O, ammonium acetate 2.5 mM", "value": "H2O, ammonium acetate 2.5 mM"},
+		{ "name": "H2O / CH3OH / CH3CO2H (95/5/0.1)", "value": "H2O / CH3OH / CH3CO2H (95/5/0.1)"},
+		{ "name": "Methanol", "value": "Methanol"},
+		{ "name": "Methanol / H2O (1/1)", "value": "Methanol / H2O (1/1)"},
+		{ "name": "Methanol / H2O (1/1), 0.1% FA", "value": "Methanol / H2O (1/1), 0.1% FA"},
+		{ "name": "Methanol / CH3CO2H (100/0.1)", "value": "Methanol / CH3CO2H (100/0.1)"},
+		{ "name": "Methanol / ACN (60/40) ammonium acetate 2.5 mM", "value": "Methanol / ACN (60/40) ammonium acetate 2.5 mM"}
+	]
+}

@@ -1,0 +1,45 @@
+{
+	"dumper_type": "lc-ms",
+	"lc_chromatography" : {
+		"method": "IDF_Plasma-FIA-OrbitrapPos (API-MS procedures - IDF-upmc)",
+		"column_constructor": null,
+		"column_constructor_other": null,
+		"column_name": null,
+		"column_length": null,
+		"column_diameter": null,
+		"particule_size": null,
+		"column_temperature": null,
+		"LC_mode": null,
+		"separation_flow_rate": 100,
+		"separation_solvent_a": "Methanol / H2O (1/1), 0.1% FA",
+		"ph_solvent_a": null,
+		"separation_solvent_b": null,
+		"ph_solvent_b": null,
+		"separation_flow_gradient" : null
+	},
+	"ms_analyzer" : {
+		"instrument": "Orbitrap",
+		"model": "LTQ-Orbitrap XL",
+		"resolution_FWHM": "60000@400",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": 50,
+			"vaporizer_gaz_flow": 5,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		},
+		"mode_neg": null
+	},
+	"other": {
+		"data_authors": "The MetabolomeIDF (Ile de France, Paris-Saclay) UPMC",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": "The MetabolomeIDF (Ile de France, Paris-Saclay) UPMC"
+	}
+}

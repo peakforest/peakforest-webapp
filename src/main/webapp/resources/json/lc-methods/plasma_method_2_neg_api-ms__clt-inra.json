@@ -1,0 +1,52 @@
+{
+	"dumper_type": "lc-ms",
+	"lc_chromatography" : {
+		"method": "CF_PLASMA METHOD 2_NEG (API-MS PROCEDURE_CLERMONT FERRAND)",
+		"column_constructor": "Waters",
+		"column_constructor_other": null,
+		"column_name": "UPLC HSS T3",
+		"column_length": 150,
+		"column_diameter": 2.1,
+		"particule_size": 1.8,
+		"column_temperature": 25,
+		"LC_mode": "Gradient",
+		"separation_flow_rate": 400,
+		"separation_solvent_a": "H2O + 0.1% Formic Acid",
+		"ph_solvent_a": null,
+		"separation_solvent_b": "Acetonitrile + 0.1% Formic Acid",
+		"ph_solvent_b": null,
+		"separation_flow_gradient" : [
+			{ "time": 0, "solvA": 100, "solvB": 0 },
+			{ "time": 1, "solvA": 100, "solvB": 0 },
+			{ "time": 20, "solvA": 0, "solvB": 100 },
+			{ "time": 35, "solvA": 0, "solvB": 100 },
+			{ "time": 35.1, "solvA": 100, "solvB": 0 },
+			{ "time": 40, "solvA": 100, "solvB": 0 }
+		]
+	},
+	"ms_analyzer" : {
+		"instrument": "Q-TOF",
+		"model": "QToF micro (Micromass Waters)",
+		"resolution_FWHM": "6500@1000",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": null,
+		"mode_neg": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": 650,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": 330,
+			"source_gaz_flow": 40,
+			"tube_temperature": null,
+			"voltage": null
+		}
+	},
+	"other": {
+		"data_authors": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - INRA Theix)",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - INRA Theix)"
+	}
+}

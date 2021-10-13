@@ -1,0 +1,19 @@
+{ 
+	"columns": [ 
+		{ "name": "Agilent", "value": "Agilent"},
+		{ "name": "Alltech", "value": "alltech"},
+		{ "name": "Cil cluzeau", "value": "CIL cluzeau"},
+		{ "name": "Daicel", "value": "Daicel"},
+		{ "name": "Hypersil", "value": "Hypersil"},
+		{ "name": "Interchim", "value": "Interchim"},
+		{ "name": "Macherey nagel", "value": "Macherey nagel"},
+		{ "name": "Merck", "value": "Merck"},
+		{ "name": "Phenomenex", "value": "Phenomenex"},
+		{ "name": "Shiseido", "value": "Shiseido"},
+		{ "name": "Supelco (sigma-aldrich)", "value": "Supelco (sigma-aldrich)"},
+		{ "name": "Thermo", "value": "Thermo"},
+		{ "name": "Vydac", "value": "Vydac"},
+		{ "name": "Waters", "value": "Waters"},
+		{ "name": "YMC", "value": "YMC"}	
+	]
+}

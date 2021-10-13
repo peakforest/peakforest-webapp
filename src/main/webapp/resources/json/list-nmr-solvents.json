@@ -1,0 +1,9 @@
+{ 
+	"solvents": [ 
+		{ "name": "H2O", "value": "H2O", "classD": "displayPHOpt"},
+		{ "name": "H2O/D2O", "value": "H2O/D2O", "classD": "displayPHOpt"},
+		{ "name": "CDCl3", "value": "CDCl3", "classD": ""},
+		{ "name": "D2O", "value": "D2O", "classD": "displayPHOpt"},
+		{ "name": "CD3OD", "value": "CD3OD", "classD": "displayPHOpt"}
+	]
+}

@@ -1,0 +1,10 @@
+{ 
+	"methods": [ 
+		{ "name": "ACPI", "value": "ACPI"},
+		{ "name": "APPI", "value": "APPI"},
+		{ "name": "EI", "value": "EI"},
+		{ "name": "ESI", "value": "ESI"},
+		{ "name": "FAB", "value": "FAB"},
+		{ "name": "MALDI", "value": "MALDI"}
+	]
+}

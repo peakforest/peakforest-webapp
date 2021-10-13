@@ -1,0 +1,61 @@
+{
+	"dumper_type": "lc-ms",
+	"lc_chromatography" : {
+		"method": "IDF (API-MS procedures_HILICpos_IDF)",
+		"column_constructor": "Merck",
+		"column_constructor_other": null,
+		"column_name": "Sequant ZICpHILIC",
+		"column_length": 150,
+		"column_diameter": 2.1,
+		"particule_size": 5,
+		"column_temperature": 15,
+		"LC_mode": "Gradient",
+		"separation_flow_rate": 200,
+		"separation_solvent_a": "H2O, ammonium carbonate 10 mM, pH10.5",
+		"ph_solvent_a": null,
+		"separation_solvent_b": "Acetonitrile",
+		"ph_solvent_b": null,
+		"separation_flow_gradient":  [
+			{ "time": 0, "solvA": 20, "solvB": 80 },
+			{ "time": 2, "solvA": 20, "solvB": 80 },
+			{ "time": 12, "solvA": 40, "solvB": 60 },
+			{ "time": 12.1, "solvA": 100, "solvB": 0 },
+			{ "time": 17, "solvA": 100, "solvB": 0 },
+			{ "time": 17.1, "solvA": 20, "solvB": 80 },
+			{ "time": 32, "solvA": 20, "solvB": 80 }			
+		]
+	},
+	"ms_analyzer" : {
+		"instrument": "Quadrupole-Orbitrap",
+		"model": "Exactive",
+		"resolution_FWHM": "50000@200",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": null,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		},
+		"mode_neg": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": null,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		}
+	},
+	"other": {
+		"data_authors": "The MetabolomeIDF (Ile de France, Paris-Saclay) CEA",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": "The MetabolomeIDF (Ile de France, Paris-Saclay) CEA"
+	}
+}

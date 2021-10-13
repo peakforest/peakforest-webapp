@@ -1,0 +1,15 @@
+User-Agent: *
+Disallow: /resources/
+Disallow: /print-compound-modal/
+Disallow: /show-compound-modal/
+Disallow: /show-compound-spectra-modal/
+Disallow: /login-modal
+Disallow: /peakmatching-lcms-query-modal
+Disallow: /peakmatching-nmr-query-modal
+Disallow: /search-advanced-modal
+Disallow: /show-spectra-modal/
+Allow: /home
+Allow: /home?page=tools
+Allow: /home?page=peakmatching
+
+Sitemap: https://peakforest.org/sitemap.xml

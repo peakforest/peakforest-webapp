@@ -1,0 +1,697 @@
+<%@page import="org.apache.commons.lang.time.DateUtils"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@ page import="fr.metabohub.peakforest.model.CurationMessage"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="java.text.DateFormat"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="org.apache.commons.lang.time.DateUtils"%>
+<%
+boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metexplore.ws.use"));
+%>
+
+<div class="col-lg-12">
+	
+	<div id="backOfficeToolsAltert" style="max-width: 500px;"></div>
+
+	<div class="table-responsive">
+		<table class="table table-hover ">
+			<thead>
+				<tr>
+					<th colspan="3">Update statistics</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<a class="btn btn-info" href="#" onclick="updatePeakforestStats(this);"> <i class="fa fa-refresh"></i> Update PeakForest stats </a>
+					</td>
+					<td>
+<% if (useMEwebservice) { %>
+						<a class="btn btn-info" href="#" onclick="updateMetExloreStats(this);"> <i class="fa fa-refresh"></i> Update MetExplore stats. </a>
+<% } %>
+					</td>
+					<td>
+						<a class="btn btn-info" href="#" onclick="updateMassVsLogP(this);"> <i class="fa fa-refresh"></i> Update Mass Vs LogP </a>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<a class="btn btn-info" href="#" onclick="updateSplash(this, false);"> <i class="fa fa-refresh"></i> Compute missing Splash </a>
+					</td>
+					<td>
+						<a class="btn btn-info" href="#" onclick="updateSplash(this, true);"> <i class="fa fa-refresh"></i> (re)compute all Splash </a>
+					</td>
+					<td>
+						<a class="btn btn-info" href="#" onclick="updateBioSM(this);"> <i class="fa fa-refresh"></i> Process BioSM </a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<% if (useMEwebservice) { %>
+			<small><i class="fa fa-question-circle"></i> About MetExplore: you must request a <a href="http://metexplore.toulouse.inra.fr/metexploreTokenProvider/" target="_blank">token</a>!</small>
+		<% } %>
+	</div> 
+	<br>
+	<div class="table-responsive">
+		<table class="table table-hover ">
+			<thead>
+				<tr>
+					<th colspan="2">Download PeakForest data</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<a class="btn btn-info" href="#" onclick="dumpChemicalLirary(this);"> <i class="fa fa-file-excel-o"></i> Chemical library </a>
+						<a id="downloadChemLibLink" target="_blank" style="display: none;" href=""><i class="fa fa-file-excel-o"></i> download Chemical library</a>
+					</td>
+					<td>
+						<a class="btn btn-info" href="#" onclick="dumpSpectralLirary(this);"> <i class="fa fa-file-archive-o"></i> Spectral library <span id="exportSpectraXLSM"></span></a>
+						<a id="downloadSpectraLibLink" target="_blank" style="display: none;" href=""><i class="fa fa-file-archive-o"></i> download Spectral library 
+							(files success: <span id="spectraFileExportSuccess"></span> files fail: <span id="spectraFileExportFail"></span>)
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div> 
+	<br>
+	<div class="table-responsive">
+		<table class="table table-hover tablesorter table-search">
+			<thead>
+				<tr>
+					<th>Data <i class="fa fa-sort"></i></th>
+					<th>Nb entry <i class="fa fa-sort"></i></th>
+					<th>Mean score <i class="fa fa-sort"></i></th>
+					<th>Mean entry / entity <i class="fa fa-sort"></i></th>
+					<th>Clean soft <br> <small>(if nb entry / entity &gt; 10 &amp; score &lt; 1)</small>
+					</th>
+					<th>Clean <br> <small>(if nb entry / entity &gt; 5 &amp; score &lt; 2)</small>
+					</th>
+					<th>Clean hard <br> <small>(if nb entry / entity &gt; 3 &amp; score &lt; 3)</small>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Compound Names</td>
+					<td id="cpdNamesCount"></td>
+					<td id="cpdNamesAvgScore"></td>
+					<td id="cpdNamesPerRefCC"></td>
+					<td>
+						<a class="btn btn-success" href="#" onclick="cleanEntity('cptName', 10, 1.0, 'soft', this);"> <i class="fa fa-eraser"></i> Clean</a>
+					</td>
+					<td>
+						<a class="btn btn-warning" href="#" onclick="cleanEntity('cptName', 5, 2.0, '', this);"> <i class="fa fa-eraser"></i> Clean</a>
+					</td>
+					<td>
+						<a class="btn btn-danger" href="#" onclick="cleanEntity('cptName', 3, 3.0, 'hard', this);"> <i class="fa fa-eraser"></i> Clean</a>
+					</td>
+				</tr>
+<!-- 				<tr> -->
+<!-- 					<td>Putative Compounds / Ref. Compound</td> -->
+<!-- 					<td>123</td> -->
+<!-- 					<td>3.3</td> -->
+<!-- 					<td>3.3</td> -->
+<!-- 					<td><a class="btn btn-success" href="#"> <i -->
+<!-- 							class="fa fa-eraser"></i> Clean -->
+<!-- 					</a></td> -->
+<!-- 					<td><a class="btn btn-warning" href="#"> <i -->
+<!-- 							class="fa fa-eraser"></i> Clean -->
+<!-- 					</a></td> -->
+<!-- 					<td><a class="btn btn-danger" href="#"> <i -->
+<!-- 							class="fa fa-eraser"></i> Clean -->
+<!-- 					</a></td> -->
+<!-- 				</tr> -->
+			</tbody>
+		</table>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-hover tablesorter table-search">
+			<thead>
+				<tr>
+					<th>Data <i class="fa fa-sort"></i></th>
+					<th>nb entries <i class="fa fa-sort"></i></th>
+					<th>nb entries w/o relation <i class="fa fa-sort"></i></th>
+					<th>entries w/o relation (&#37; entity tot)<i class="fa fa-sort"></i></th>
+					<th>Clean </th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Metadata</td>
+					<td id="metadataTotalCount"></td>
+					<td id="metadataAloneCount"></td>
+					<td id=metadataAlonePerCent></td>
+					<td>
+						<a class="btn btn-success" href="#" onclick="cleanEntity('metadata', null, null, null, this);"> <i class="fa fa-eraser"></i> Clean</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-hover tablesorter table-search">
+			<thead>
+				<tr>
+					<th>Data <i class="fa fa-sort"></i></th>
+					<th>clean mode 1</th>
+					<th>clean mode 2</th>
+					<th>clean mode 3</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Curation Messages <small>(tot: <span id="cmCount0"></span>)</small></td>
+					<td id="">
+						<a class="btn btn-success" href="#" onclick="cleanEntityCM(<%=CurationMessage.STATUS_ACCEPTED %> , this);"> <i class="fa fa-eraser"></i> Clean CM accepted <br /> <small>(nb tot. status accepted: <span id="cmCount1"></span>)</small></a>
+					</td>
+					<td id="">
+						<a class="btn btn-warning" href="#" onclick="cleanEntityCM(<%=CurationMessage.STATUS_REJECTED %> , this);"> <i class="fa fa-eraser"></i> Clean CM rejected <br /> <small>(nb tot. status rejected: <span id="cmCount2"></span>)</small></a>
+					</td>
+					<td id=>
+						<a class="btn btn-danger" href="#" onclick="cleanEntityCM(<%=CurationMessage.STATUS_WAITING %> , this);"> <i class="fa fa-eraser"></i> Clean CM waiting <br /> <small>(nb tot. status waiting: <span id="cmCount3"></span>)</small></a>
+					</td>
+				</tr>
+			</tbody>
+				<tr>
+					<td colspan="4">
+						<div class="form-group input-group ">
+							<span class="input-group-addon">clean only if older than</span> 
+							<%
+							DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+							Date date = DateUtils.addDays(new Date(),-90);
+							%>
+							<input id="older-than-date" data-date-format="yyyy-mm-dd" type="text" class="form-control datepicker " value="<%=dateFormat.format(date) %>" placeholder="<%=dateFormat.format(date) %>">
+						</div>
+					</td>
+				</tr>
+			<tfoot>
+			</tfoot>
+		</table>
+	</div>
+	
+</div>
+<script type="text/javascript">
+
+loadCMstats = function() {
+	var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+	alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+	alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not get entity "curation message" stats.';
+	alert += ' </div>';
+	$.ajax({ 
+ 		type: "get",
+ 		url: "maintenance/get-entity-curation-message-stats",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(ret) {
+ 			if (ret.success) {
+ 				$("#cmCount0").html(ret.count);
+ 				$("#cmCount1").html(ret.countAccepted);
+ 				$("#cmCount2").html(ret.countRejected);
+ 				$("#cmCount3").html(ret.countWaiting);
+ 			} else {
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+loadCMstats();
+
+cleanEntityCM = function (status, btn) {
+	$(btn).attr("disabled", true);
+	$(btn).children("i").removeClass("fa-eraser").addClass("fa-refresh").addClass("fa-spin");
+	var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+	alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+	alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not clean entity "curation message".';
+	alert += ' </div>';
+	$.ajax({ 
+ 		type: "post",
+ 		url: "maintenance/clean-entities-curation-message",
+ 		async: true,
+		data: "status=" + status + "&date=" + $("#older-than-date").val(),
+ 		success: function(ret) {
+ 			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret.success) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 				$("#cmCount0").html(ret.count);
+ 				$("#cmCount1").html(ret.countAccepted);
+ 				$("#cmCount2").html(ret.countRejected);
+ 				$("#cmCount3").html(ret.countWaiting);
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+ 			$(btn).children("i").removeClass("fa-spin");
+ 			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+getEntityCompoundNamesStats = function() {
+ 	$.ajax({ 
+ 		type: "get",
+ 		url: "maintenance/get-entity-comoundnames-stats",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(ret) {
+ 			if (ret.success) {
+ 				$("#cpdNamesCount").html(ret.count);
+ 				$("#cpdNamesAvgScore").html(roundNumber(ret.avgScore,3));
+ 				$("#cpdNamesPerRefCC").html(roundNumber(ret.meanEntryPerEntity,3));
+ 			} else {
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not get entity "compound name" stats.';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not get entity "compound name" stats.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+ 	///////////////////
+ 	$.ajax({ 
+ 		type: "get",
+ 		url: "maintenance/get-entity-metadata-stats",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(ret) {
+ 			if (ret.success) {
+ 				$("#metadataTotalCount").html(ret.countTotal);
+ 				$("#metadataAloneCount").html(ret.countAlone);
+ 				$("#metadataAlonePerCent").html(roundNumber(ret.countAlonePercent,3));
+ 			} else {
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not get entity "metadata" stats.';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not get entity "metadata" stats.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+getEntityCompoundNamesStats();
+
+cleanEntity = function (entity, listSizeThreshold, scoreThreshold, idSuffix, btn ) {
+	$(btn).attr("disabled", true);
+	$(btn).children("i").removeClass("fa-eraser").addClass("fa-refresh").addClass("fa-spin");
+	if (entity == 'cptName')
+	 	$.ajax({ 
+	 		type: "post",
+	 		url: "maintenance/clean-entity-comoundnames",
+	 		async: true,
+			data: "listSizeThreshold=" + listSizeThreshold + "&scoreThreshold=" + scoreThreshold,
+	 		success: function(ret) {
+	 			$(btn).children("i").removeClass("fa-spin");
+	 			if (ret.success) {
+	 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+	 				$("#cpdNamesCount").html(ret.count);
+	 				$("#cpdNamesAvgScore").html(roundNumber(ret.avgScore,3));
+	 				$("#cpdNamesPerRefCC").html(roundNumber(ret.meanEntryPerEntity,3));
+	 			} else {
+	 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+	 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+	 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+	 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not clean entity "compound name".';
+	 				alert += ' </div>';
+	 				$("#backOfficeToolsAltert").html(alert);
+	 			}
+	
+	 		},
+	 		error : function(xhr) {
+	 			$(btn).children("i").removeClass("fa-spin");
+	 			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+	 			// TODO alert error xhr.responseText
+	 			console.log(xhr);
+	 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+	 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+	 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not clean entity "compound name".';
+	 			alert += ' </div>';
+	 			$("#backOfficeToolsAltert").html(alert);
+	 		}
+	 	});
+	else if (entity == 'metadata') 
+		$.ajax({ 
+	 		type: "post",
+	 		url: "maintenance/clean-entities-metadata",
+	 		async: true,
+	 		success: function(ret) {
+	 			$(btn).children("i").removeClass("fa-spin");
+	 			if (ret.success) {
+	 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+	 				$("#metadataTotalCount").html(ret.countTotal);
+	 				$("#metadataAloneCount").html(ret.countAlone);
+	 				$("#metadataAlonePerCent").html(roundNumber(ret.countAlonePercent,3));
+	 			} else {
+	 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+	 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+	 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+	 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not clean entities "metadata".';
+	 				alert += ' </div>';
+	 				$("#backOfficeToolsAltert").html(alert);
+	 			}
+	
+	 		},
+	 		error : function(xhr) {
+	 			$(btn).children("i").removeClass("fa-spin");
+	 			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+	 			// TODO alert error xhr.responseText
+	 			console.log(xhr);
+	 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+	 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+	 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not clean entities "metadata".';
+	 			alert += ' </div>';
+	 			$("#backOfficeToolsAltert").html(alert);
+	 		}
+	 	});
+}
+
+dumpChemicalLirary = function(btn) {
+	$(btn).attr("disabled", true);
+	$(btn).children("i").removeClass("fa-file-excel-o").addClass("fa-refresh").addClass("fa-spin");
+	$.ajax({
+		type: 'post',
+		url: 'maintenance/chemical-libary-xls-download'
+// 		data: 'fileSource='+$("#fileSource").val()+'&listRowFailed='+$("#listFailed").val()
+	}).done(function(data){
+		// console.log(data);
+		// var a = $("#downloadListFailedXlsFile");
+		$(btn).hide();
+		$("#downloadChemLibLink").show();
+		$("#downloadChemLibLink").attr({ href : data });
+		$("#downloadChemLibLink").trigger('click');
+		// window.open(data, '_blank');
+// 		$("#downloadListFailedXlsFile").click();
+		// $(a).click();
+	}).fail(function(data){
+		$(btn).children("i").removeClass("fa-spin");
+		$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+		// TODO alert error xhr.responseText
+		console.log(xhr);
+		var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+		alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+		alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not dump spectra from database.';
+		alert += ' </div>';
+		$("#backOfficeToolsAltert").html(alert);
+	}).always(function(data){
+	});
+}
+
+// function makeid(){
+//     var text = "";
+//     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//     for( var i=0; i < 5; i++ )
+//         text += possible.charAt(Math.floor(Math.random() * possible.length));
+//     return text;
+// }
+
+// var clientID = makeid();
+
+dumpSpectralLirary = function(btn) {
+	$(btn).attr("disabled", true);
+	$(btn).children("i").removeClass("fa-file-archive-o").addClass("fa-refresh").addClass("fa-spin");
+	setTimeout(function() {
+		checkSpectralExportXLSMProcessProgress();
+	}, 500);
+	$.ajax({
+		type: 'post',
+		url: 'maintenance/spectral-libary-xlsm-download'
+//  		data: 'id='+clientID
+	}).done(function(data){
+		// console.log(data);
+		// var a = $("#downloadListFailedXlsFile");
+		$(btn).hide();
+		if (data.success) {
+			$("#downloadSpectraLibLink").show();
+			$("#downloadSpectraLibLink").attr({ href : data.href });
+			$("#downloadSpectraLibLink").trigger('click');
+			$("#spectraFileExportSuccess").html(data.files_success_number);
+			$("#spectraFileExportFail").html(data.files_error_number);
+// 			files_error_number: 5
+// 			files_success_number: 10
+		} else {
+			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not dump compound from database.';
+			alert += ' </div>';
+			$("#backOfficeToolsAltert").html(alert);
+		}
+
+		// window.open(data, '_blank');
+// 		$("#downloadListFailedXlsFile").click();
+		// $(a).click();
+	}).fail(function(data){
+		$(btn).children("i").removeClass("fa-spin");
+		$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+		// TODO alert error xhr.responseText
+		console.log(xhr);
+		var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+		alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+		alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not dump compound from database.';
+		alert += ' </div>';
+		$("#backOfficeToolsAltert").html(alert);
+	}).always(function(data){
+	});
+}
+
+checkSpectralExportXLSMProcessProgress = function() {
+	$.ajax({
+		type: 'post',
+		url: 'maintenance/processProgressionSpectralExportXLSM'
+	}).done(function(data){
+		if (data!="") { console.log(data);
+			$("#exportSpectraXLSM").html("(" + data +'%)');
+			setTimeout(function() {
+				checkSpectralExportXLSMProcessProgress();
+			}, 500);
+		}
+		return;
+	}).fail(function(data){
+	}).always(function(data){
+	});
+};
+
+updateMetExloreStats = function(btn) {
+// 	$(btn).addClass("btn-disabled");
+	$(btn).attr("disabled", true);
+	$(btn).children("i").addClass("fa-spin");
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/update-metexplore-data",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(ret) {
+			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update MetExplore stats.';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+			$(btn).children("i").removeClass("fa-spin");
+			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update MetExplore stats.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+updateMassVsLogP = function(btn) {
+// 	$(btn).addClass("btn-disabled");
+	$(btn).attr("disabled", true);
+	$(btn).children("i").addClass("fa-spin");
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/update-mass-vs-logp-data",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(ret) {
+			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update Mass-Vs-LogP stats.';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+			$(btn).children("i").removeClass("fa-spin");
+			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update Mass-Vs-LogP stats.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+updateBioSM = function(btn) {
+// 	$(btn).addClass("btn-disabled");
+	$(btn).attr("disabled", true);
+	$(btn).children("i").addClass("fa-spin");
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/process-biosm",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(ret) {
+			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not process BioSM.';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+			$(btn).children("i").removeClass("fa-spin");
+			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not process BioSM.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+updateSplash = function(btn, force) {
+	$(btn).attr("disabled", true);
+	$(btn).children("i").addClass("fa-spin");
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/update-splash",
+ 		async: true,
+		data: "force=" + force,
+ 		success: function(ret) {
+			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update Splash';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+			$(btn).children("i").removeClass("fa-spin");
+			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update Splash';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+updatePeakforestStats = function(btn) {
+// 	$(btn).addClass("btn-disabled");
+	$(btn).attr("disabled", true);
+	$(btn).children("i").addClass("fa-spin");
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/update-peakforest-stats-data",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(ret) {
+			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update PeakForest stats.';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+			$(btn).children("i").removeClass("fa-spin");
+			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update PeakForest stats.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+$(document).ready(function(){
+	$('.datepicker').datepicker();
+});
+
+</script>

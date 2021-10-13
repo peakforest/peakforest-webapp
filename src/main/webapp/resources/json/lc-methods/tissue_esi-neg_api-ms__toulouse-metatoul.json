@@ -1,0 +1,51 @@
+{
+	"dumper_type": "lc-ms",
+	"lc_chromatography" : {
+		"method": "MetaToul Tissue ESI- (API-MS procedures_Toulouse-MetaToul)",
+		"column_constructor": "Thermo",
+		"column_constructor_other": null,
+		"column_name": "Hypersil Gold C18",
+		"column_length": 100,
+		"column_diameter": 2.1,
+		"particule_size": 1.9,
+		"column_temperature": 40,
+		"LC_mode": "Gradient",
+		"separation_flow_rate": 300,
+		"separation_solvent_a": "H2O / CH3OH / CH3CO2H (95/5/0.1)",
+		"ph_solvent_a": null,
+		"separation_solvent_b": "METHANOL / CH3CO2H (100/0.1)",
+		"ph_solvent_b": null,
+		"separation_flow_gradient" : [
+			{ "time": 0, "solvA": 100, "solvB": 0 },
+			{ "time": 30, "solvA": 0, "solvB": 100 },
+			{ "time": 35, "solvA": 0, "solvB": 100 },
+			{ "time": 36, "solvA": 100, "solvB": 0 },
+			{ "time": 46, "solvA": 100, "solvB": 0 }
+		]
+	},
+	"ms_analyzer" : {
+		"instrument": "Orbitrap",
+		"model": "LTQ-Orbitrap XL",
+		"resolution_FWHM": "30000@400",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": null,
+		"mode_neg": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": 40,
+			"vaporizer_gaz_flow": 5,
+			"vaporizer_temperature": 275,
+			"source_gaz_flow": 0,
+			"tube_temperature": null,
+			"voltage": null
+		}
+	},
+	"other": {
+		"data_authors": "MetaToul platform (Toulouse)",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": "MetaToul platform (Toulouse)"
+	}
+}

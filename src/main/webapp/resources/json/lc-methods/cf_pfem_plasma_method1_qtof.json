@@ -1,0 +1,61 @@
+{
+	"dumper_type": "lc-ms",
+	"lc_chromatography" : {
+		"method": "CF_PFEM_plasma_method1_QTOF",
+		"column_constructor": "Waters",
+		"column_constructor_other": null,
+		"column_name": "UPLC HSS T3",
+		"column_length": 150,
+		"column_diameter": 2.1,
+		"particule_size": 1.8,
+		"column_temperature": 30,
+		"LC_mode": "Gradient",
+		"separation_flow_rate": 400,
+		"separation_solvent_a": "H2O + 0.1% Formic Acid",
+		"ph_solvent_a": null,
+		"separation_solvent_b": "Acetonitrile + 0.1% Formic Acid",
+		"ph_solvent_b": null,
+		"separation_flow_gradient" : [
+			{ "time": 0, "solvA": 100, "solvB": 0 },
+			{ "time": 2, "solvA": 100, "solvB": 0 },
+			{ "time": 15, "solvA": 0, "solvB": 100 },
+			{ "time": 22, "solvA": 0, "solvB": 100 },
+			{ "time": 22.1, "solvA": 100, "solvB": 0 },
+			{ "time": 26, "solvA": 100, "solvB": 0 }
+		]
+	},
+	"ms_analyzer" : {
+		"instrument": "QTOF Bruker",
+		"model": "Impact II",
+		"resolution_FWHM": "15000",
+		"ion_analyzer_type": "QTOF",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": 40,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": 200,
+			"source_gaz_flow": 9,
+			"tube_temperature": null,
+			"voltage": 2.5
+		},
+		"mode_neg": {
+			"ionisation_method": "ESI",
+			"spray_gaz_flow": 20,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": 200,
+			"source_gaz_flow": 5,
+			"tube_temperature": null,
+			"voltage": 2.5
+		}
+	},
+	"other": {
+		"data_authors": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - INRA Theix)",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": "\"Exploration du Métabolisme\" Platform (PFEM, Clermont-Ferrand - INRA Theix)"
+	}
+}

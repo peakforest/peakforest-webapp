@@ -1,0 +1,55 @@
+{
+	"dumper_type": "lc-ms",
+	"lc_chromatography" : {
+		"method": "",
+		"column_constructor": "",
+		"column_constructor_other": "",
+		"column_name": "",
+		"column_length": null,
+		"column_diameter": null,
+		"particule_size": null,
+		"column_temperature": null,
+		"LC_mode": "",
+		"separation_flow_rate": null,
+		"separation_solvent_a": "",
+		"ph_solvent_a": null,
+		"separation_solvent_b": "",
+		"ph_solvent_b": null,
+		"separation_flow_gradient" : [
+			{ "time": 0, "solvA": 0, "solvB": 0 }
+		]
+	},
+	"ms_analyzer" : {
+		"instrument": "",
+		"model": "",
+		"resolution_FWHM": "resolution@mass",
+		"detector": "",
+		"detection_protocol": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": {
+			"ionisation_method": null,
+			"spray_gaz_flow": null,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		},
+		"mode_neg": {
+			"ionisation_method": null,
+			"spray_gaz_flow": null,
+			"vaporizer_gaz_flow": null,
+			"vaporizer_temperature": null,
+			"source_gaz_flow": null,
+			"tube_temperature": null,
+			"voltage": null
+		}
+	},
+	"other": {
+		"data_authors": "",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": ""
+	}
+}

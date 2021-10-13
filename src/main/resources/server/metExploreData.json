@@ -1,0 +1,11 @@
+[
+	{ "orgaName": "Arabidopsis thaliana", "strategy": "max", "defaultDisplay": true },
+	{ "orgaName": "Escherichia coli", "strategy": "max", "defaultDisplay": true },
+	{ "orgaName": "Homo sapiens", "strategy": "source", "source": "Recon2", "defaultDisplay": true },
+	{ "orgaName": "Homo sapiens", "strategy": "source", "source": "Kegg", "defaultDisplay": false },
+	{ "orgaName": "Homo sapiens", "strategy": "source", "source": "BioCyc", "defaultDisplay": false },
+	{ "orgaName": "Mus musculus", "strategy": "max", "defaultDisplay": true },
+	{ "orgaName": "PlantCyc", "strategy": "max", "defaultDisplay": false },
+	{ "orgaName": "Rattus Norvegicus", "strategy": "max", "defaultDisplay": false },
+	{ "orgaName": "Saccharomyces cerevisiae", "strategy": "max", "defaultDisplay": false }
+]

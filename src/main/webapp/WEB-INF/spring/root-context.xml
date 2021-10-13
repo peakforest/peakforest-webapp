@@ -8,15 +8,17 @@
 	<!-- CSRF protection. Here we only include the CsrfFilter instead of all 
 		of Spring Security. See http://docs.spring.io/spring-security/site/docs/3.2.x/reference/htmlsingle/#csrf 
 		for more information on Spring Security's CSRF protection -->
-	<bean id="csrfFilter" class="org.springframework.security.web.csrf.CsrfFilter">
-		<constructor-arg>
-			<bean
-				class="org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository" />
-		</constructor-arg>
-	</bean>
+	<!-- <bean id="csrfFilter" class="org.springframework.security.web.csrf.CsrfFilter"> -->
+	<!-- <constructor-arg> -->
+	<!-- <bean -->
+	<!-- class="org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository" 
+		/> -->
+	<!-- </constructor-arg> -->
+	<!-- </bean> -->
 	<!-- Provides automatic CSRF token inclusion when using Spring MVC Form 
 		tags or Thymeleaf. See http://localhost:8080/#forms and form.jsp for examples -->
-	<bean id="requestDataValueProcessor"
-		class="org.springframework.security.web.servlet.support.csrf.CsrfRequestDataValueProcessor" />
+	<!-- <bean id="requestDataValueProcessor" -->
+	<!-- class="org.springframework.security.web.servlet.support.csrf.CsrfRequestDataValueProcessor" 
+		/> -->
 
 </beans>

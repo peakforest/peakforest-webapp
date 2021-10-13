@@ -1,0 +1,10 @@
+{ 
+	"bufferSolution": [ 
+		{ "name": "potassium phosphate", "value": "potassium phosphate", "classD": ""},
+		{ "name": "deuterated potassium phosphate", "value": "deuterated potassium phosphate", "classD": ""},
+		{ "name": "sodium phosphate", "value": "sodium phosphate", "classD": ""},
+		{ "name": "potassium and sodium phosphate", "value": "potassium and sodium phosphate", "classD": ""},
+		{ "name": "oxalate", "value": "oxalate", "classD": ""},
+		{ "name": "NaOD, DCl", "value": "NaOD, DCl", "classD": ""}
+	]
+}
