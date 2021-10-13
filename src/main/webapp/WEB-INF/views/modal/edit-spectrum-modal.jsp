@@ -33,28 +33,28 @@
 			<div class="modal-body ">
 				<div class="te">
 					<c:if test="${curator}">
-					<div>
-					<c:forEach var="curationMessage" items="${curationMessages}">
-						<div id="curationmessage-${curationMessage.id}" class="alert alert-warning alert-dismissible curator-curationMessageDiv" role="alert">
-							<button type="button" class="close" data-dismiss="alert" onclick="deleteCurationMessageActionCurator(${curationMessage.id})">
-								<span aria-hidden="true">&times;</span>
-								<span class="sr-only"><spring:message code="alert.close" text="Close" /></span>
-							</button>
-						${fn:escapeXml(curationMessage.message)} 
-						<span class="pull-right" style="margin-right: 25px;">
-							<button type="button" class="btn btn-success btn-xs" onclick="validateCurationMessageActionCurator(${curationMessage.id});">
-								<span aria-hidden="true"><i class="fa fa-check-circle"></i></span>
-								<span class="sr-only"><spring:message code="modal.edit.curationMessage.validate" text="Validate" /></span>
-							</button>
-							<button type="button" class="btn btn-danger btn-xs" onclick="rejectCurationMessageActionCurator(${curationMessage.id});">
-								<span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
-								<span class="sr-only"><spring:message code="modal.edit.curationMessage.reject" text="Reject" /></span>
-							</button>
-							<input type="hidden" value="${curationMessage.status}">
-						</span>	
+						<div>
+							<c:forEach var="curationMessage" items="${curationMessages}">
+								<div id="curationmessage-${curationMessage.id}" class="alert alert-warning alert-dismissible curator-curationMessageDiv" role="alert">
+									<button type="button" class="close" data-dismiss="alert" onclick="deleteCurationMessageActionCurator(Number('${curationMessage.id}'))">
+										<span aria-hidden="true">&times;</span>
+										<span class="sr-only"><spring:message code="alert.close" text="Close" /></span>
+									</button>
+								${fn:escapeXml(curationMessage.message)} 
+								<span class="pull-right" style="margin-right: 25px;">
+									<button type="button" class="btn btn-success btn-xs" onclick="validateCurationMessageActionCurator(${curationMessage.id});">
+										<span aria-hidden="true"><i class="fa fa-check-circle"></i></span>
+										<span class="sr-only"><spring:message code="modal.edit.curationMessage.validate" text="Validate" /></span>
+									</button>
+									<button type="button" class="btn btn-danger btn-xs" onclick="rejectCurationMessageActionCurator(${curationMessage.id});">
+										<span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
+										<span class="sr-only"><spring:message code="modal.edit.curationMessage.reject" text="Reject" /></span>
+									</button>
+									<input type="hidden" value="${curationMessage.status}">
+								</span>	
+								</div>
+							</c:forEach>
 						</div>
-					</c:forEach>
-					</div>
 						<script type="text/javascript">
 						var cpdMixOriData = [];	
 						var updatedCpdMixData = {};
@@ -410,8 +410,7 @@
 						<span id="select_spectrum_nmr_tube_prep_iso_D_labelling">${spectrum_nmr_tube_prep.isDeuteriumIsotopicLabelling()}</span>
 						<div id="selectEdit_spectrum_nmr_tube_prep_iso_D_labelling" class="form-group  select-group" style="max-width: 400px; display: none;">
 							<select id="selectElem_spectrum_nmr_tube_prep_iso_D_labelling" class="form-control col-xs-3" style="max-width: 340px;">
-								<option <c:if test="${spectrum_nmr_tube_prep.isDeuteriumIsotopicLabelling()}">selected</c:if>>yes</option>
-								<option <c:if test="${not spectrum_nmr_tube_prep.isDeuteriumIsotopicLabelling()}">selected</c:if>>no</option>
+								<option ${spectrum_nmr_tube_prep.isDeuteriumIsotopicLabelling() ? "selected " : " "}>no</option>
 							</select>
 							<span class="input-group-btn" style="max-width: 50px;">
 								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_tube_prep_iso_D_labelling');"><i class="fa fa-check-square-o"></i></button>
@@ -424,8 +423,8 @@
 						<span id="select_spectrum_nmr_tube_prep_iso_C_labelling">${spectrum_nmr_tube_prep.isCarbon13IsotopicLabelling()}</span>
 						<div id="selectEdit_spectrum_nmr_tube_prep_iso_C_labelling" class="form-group  select-group" style="max-width: 400px; display: none;">
 							<select id="selectElem_spectrum_nmr_tube_prep_iso_C_labelling" class="form-control col-xs-3" style="max-width: 340px;">
-								<option <c:if test="${spectrum_nmr_tube_prep.isCarbon13IsotopicLabelling()}">selected</c:if>>yes</option>
-								<option <c:if test="${not spectrum_nmr_tube_prep.isCarbon13IsotopicLabelling()}">selected</c:if>>no</option>
+								<option ${spectrum_nmr_tube_prep.isCarbon13IsotopicLabelling() ? "selected " : " "}>yes</option>
+								<option ${spectrum_nmr_tube_prep.isCarbon13IsotopicLabelling() ? " " : "selected "}>no</option>
 							</select>
 							<span class="input-group-btn" style="max-width: 50px;">
 								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_tube_prep_iso_C_labelling');"><i class="fa fa-check-square-o"></i></button>
@@ -438,8 +437,8 @@
 						<span id="select_spectrum_nmr_tube_prep_iso_N_labelling">${spectrum_nmr_tube_prep.isNitrogenIsotopicLabelling()}</span>
 						<div id="selectEdit_spectrum_nmr_tube_prep_iso_N_labelling" class="form-group  select-group" style="max-width: 400px; display: none;">
 							<select id="selectElem_spectrum_nmr_tube_prep_iso_N_labelling" class="form-control col-xs-3" style="max-width: 340px;">
-								<option <c:if test="${spectrum_nmr_tube_prep.isNitrogenIsotopicLabelling()}">selected</c:if>>yes</option>
-								<option <c:if test="${not spectrum_nmr_tube_prep.isNitrogenIsotopicLabelling()}">selected</c:if>>no</option>
+								<option ${spectrum_nmr_tube_prep.isNitrogenIsotopicLabelling() ? " selected" : " "}>yes</option>
+								<option ${spectrum_nmr_tube_prep.isNitrogenIsotopicLabelling() ? " " : " selected"}>no</option>
 							</select>
 							<span class="input-group-btn" style="max-width: 50px;">
 								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_tube_prep_iso_N_labelling');"><i class="fa fa-check-square-o"></i></button>
@@ -762,12 +761,50 @@
 				</ul>
 			</div>
 		</div>
+		
+		<!-- start MSMS only -->
+		<c:if test="${spectrum_type == 'lc-fragmentation'}">
+			<div class="panel panel-default">
+				<!-- // if ION STORAGE -->
+				<c:if test="${not empty spectrum_msms_iontrap}">
+					<div class="panel-heading">
+						<h3 class="panel-title"><spring:message code="page.spectrum.metadata.msms.labelIonStorage" text="Ion storage" /></h3>
+					</div>
+					<div class="panel-body">
+						<ul class="list-group" style="max-width: 600px;">
+							<li class="list-group-item">Gas: ${(spectrum_msms_iontrap.getIonGasAsHTML())}</li>
+							<li class="list-group-item">Gas pressure: ${spectrum_msms_iontrap.getIonGazPressure()} </li>
+							<li class="list-group-item">Gas pressure unit: ${fn:escapeXml(spectrum_msms_iontrap.getIonGazPressureUnitAsString())} </li>
+							<li class="list-group-item">Frequency shift: ${fn:escapeXml(spectrum_msms_iontrap.getIonFrequencyShift())} KHz</li>
+							<li class="list-group-item">Ion number (AGC or ICC): ${fn:escapeXml(spectrum_msms_iontrap.getIonNumberAGC())} </li>
+						</ul>
+					</div>
+				</c:if>
+				<!-- // if ION BEAM -->
+				<c:if test="${not empty spectrum_msms_ionbeam }">
+					<div class="panel-heading">
+						<h3 class="panel-title"><spring:message code="page.spectrum.metadata.msms.labelIonBeam" text="Ion beam" /></h3>
+					</div>
+					<div class="panel-body">
+						<ul class="list-group" style="max-width: 600px;">
+							<li class="list-group-item">Gas: ${(spectrum_msms_ionbeam.getIonGasAsHTML())}</li>
+							<li class="list-group-item">Gas pressure: ${spectrum_msms_ionbeam.getIonGazPressure()} </li>
+							<li class="list-group-item">Gas pressure unit: ${fn:escapeXml(spectrum_msms_ionbeam.getIonGazPressureUnitAsString())} </li>
+						</ul>
+					</div>
+				</c:if>
+			</div>
+		</c:if>
+		<!-- developper note: add option to switch from ionbean to iontrap and vice-versa? -->
+		<!-- end MSMS only -->
+		
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelAnalyzer" text="Analyzer" /></h3>
 			</div>
 			<div class="panel-body">
 				<ul class="list-group" style="max-width: 600px;">
+					<!-- 
 					<li class="list-group-item">
 						Instrument: 
 						<span id="input_spectrum_ms_analyzer_instrument_name">${fn:escapeXml(spectrum_ms_analyzer.instrumentName)}</span>
@@ -779,6 +816,7 @@
 						</div>
 						<a id="btn-edit_spectrum_ms_analyzer_instrument_name" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_analyzer_instrument_name');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 					</li>
+					 -->
 					<li class="list-group-item">
 						Analyzer type: 
 						<span id="input_spectrum_ms_analyzer_ion_analyzer_type">${fn:escapeXml(spectrum_ms_analyzer.getIonAnalyzerType())}</span>
@@ -831,6 +869,32 @@
 			</div>
 			<div class="panel-body">
 				<table style="width:100%">
+					<c:if test="${spectrum_type == 'lc-fragmentation'}">
+						<tr> 
+							<td width="50%">
+								<!-- only if msms -->
+								<ul class="list-group" >
+									<c:if test="${spectrum_msms_isMSMS}">
+										<li class="list-group-item">Parent ion M/Z: ${spectrum_msms_parentIonMZ} </li>
+										<li class="list-group-item">
+											Parent spectrum: 
+											<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum_msms_parentSpectrum.getPeakForestID()}">${ spectrum_msms_parentSpectrum.getPeakForestID()}</a> <small>${fn:escapeXml(spectrum_msms_parentSpectrum.getMassBankName())}</small>
+											<!-- developpers note: should we list available spectra and allow edit? --> 
+										</li>
+									</c:if>
+									<c:if test="${spectrum_msms_hasChild}">
+										<li class="list-group-item">Children: 
+											<c:forEach var="tSpectrum" items="${spectrum_msms_children}">
+												<br /> <a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${tSpectrum.getPeakForestID()}">${tSpectrum.getPeakForestID()}</a> <small> ${fn:escapeXml(tSpectrum.getMassBankName())} </small>
+											</c:forEach>
+										</li>
+										<!-- developpers note: do not allow edition of adding / removing a child; do it from the parent (if allowed) -->
+									</c:if>
+								</ul>
+							</td>
+							<td width="50%"></td>
+						</tr>
+					</c:if>
 					<tr> 
 						<td width="50%">
 							<ul class="list-group" style="max-width: 300px;">
@@ -893,6 +957,24 @@
 										</span>
 									</div>
 									<a id="btn-edit_spectrum_ms_rt_meoh" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput2('spectrum_ms_rt_meoh');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+								</li>
+								<li class="list-group-item">
+									Curation: 
+									<span id="select_spectrum_ms_curation_lvl">${spectrum_ms_peaks_curation_lvl} </span>
+									<div id="selectEdit_spectrum_ms_curation_lvl" class="form-group  select-group" style="max-width: 400px; display: none;">
+										<select id="selectElem_spectrum_ms_curation_lvl" class="form-control col-xs-3" style="max-width: 200px;">
+											<option value="no_curation" selected="selected">no curation</option>
+											<option value="peaks_RI_sup_1percent">Peaks RI > 1%</option>
+											<option value="top_50_peaks">Top 50 peaks</option>
+											<option value="top_20_peaks">Top 20 peaks</option>
+											<option value="top_10_peaks">Top 10 peaks</option>
+											<option value="similar_chromatographic_profile">Similar chromatographic profile</option>
+										</select>
+										<span class="input-group-btn" style="max-width: 50px;">
+											<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_ms_curation_lvl');"><i class="fa fa-check-square-o"></i></button>
+										</span>
+									</div>
+									<a id="btn-edit_spectrum_ms_curation_lvl" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_ms_curation_lvl');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 								</li>
 							</ul>
 						</td>
@@ -1391,7 +1473,6 @@
 				</li>
 				<li class="list-group-item">
 					Decoupling type: 
-					${fn:escapeXml(spectrum_nmr_analyzer_data.decouplingType)}
 					<span id="input_spectrum_nmr_analyzer_decouplingType">${fn:escapeXml(spectrum_nmr_analyzer_data.decouplingType)}</span>
 					<div id="inputEdit_spectrum_nmr_analyzer_decouplingType" class="form-group input-group" style="max-width: 400px; display: none;">
 						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.decouplingType)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.decouplingType)}">
@@ -1404,15 +1485,278 @@
 			</ul>
 	</c:when>
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'JRES-2D'}">
-		TODO_nils special 2D - JRES
+			<ul class="list-group" style="max-width: 600px;">
+				<li class="list-group-item">
+					Pulse sequence: 
+					<span id="input_spectrum_nmr_analyzer_pulse_seq">${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_pulse_seq" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_pulse_seq','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_pulse_seq" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_pulse_seq');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Size of FID (F1): 
+					<span id="input_spectrum_nmr_analyzer_size_of_fid_f1">${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_size_of_fid_f1" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_size_of_fid_f1','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_size_of_fid_f1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_size_of_fid_f1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Size if FID (F2): 
+					<span id="input_spectrum_nmr_analyzer_size_of_fid_f2">${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_size_of_fid_f2" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_size_of_fid_f2','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_size_of_fid_f2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_size_of_fid_f2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Number of Scans (F2): 
+					<span id="input_spectrum_nmr_analyzer_number_of_scans">${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_number_of_scans" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_number_of_scans','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_number_of_scans" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_number_of_scans');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>	
+				</li>
+				<li class="list-group-item">
+					Acquisition Mode for 2D (F1): 
+					<span id="input_spectrum_nmr_analyzer_acquisition_mode_for_2d">${fn:escapeXml(spectrum_nmr_analyzer_data.acquisitionModeFor2DF1)}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_acquisition_mode_for_2d" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.acquisitionModeFor2DF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.acquisitionModeFor2DF1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_acquisition_mode_for_2d','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_acquisition_mode_for_2d" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_acquisition_mode_for_2d');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Temperature: 
+					<span id="input_spectrum_nmr_analyzer_temperature">${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)} (K)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_temperature" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_temperature',' (K)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_temperature" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_temperature');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Relaxation delay D1: 
+					<span id="input_spectrum_nmr_analyzer_relaxationDelayD1">${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)} (s)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_relaxationDelayD1" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_relaxationDelayD1',' (s)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_relaxationDelayD1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_relaxationDelayD1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>	
+				</li>
+				<li class="list-group-item">
+					SW (F1): 
+					<span id="input_spectrum_nmr_analyzer_swF1">${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)} (ppm)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_swF1" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_swF1',' (ppm)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_swF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_swF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					SW (F2): 
+					<span id="input_spectrum_nmr_analyzer_swF2">${fn:escapeXml(spectrum_nmr_analyzer_data.swF2)} (ppm)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_swF2" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.swF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_swF2',' (ppm)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_swF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_swF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+			</ul>
 	</c:when>
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'COSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'TOCSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-2D' || spectrum_nmr_analyzer_data_acquisition == 'HMBC-2D' || spectrum_nmr_analyzer_data_acquisition == 'HSQC-2D'}">
-		TODO_nils ordinary 2D - ALL (except JRES)
+			<ul class="list-group" style="max-width: 600px;">
+				<li class="list-group-item">
+					Pulse sequence: 
+					<span id="input_spectrum_nmr_analyzer_pulse_seq">${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_pulse_seq" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_pulse_seq','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_pulse_seq" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_pulse_seq');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Pulse angle: 
+					<span id="input_spectrum_nmr_analyzer_pulse_angle">${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_pulse_angle" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_pulse_angle',' (&deg;)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_pulse_angle" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_pulse_angle');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Size of FID (F1): 
+					<span id="input_spectrum_nmr_analyzer_size_of_fid_f1">${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_size_of_fid_f1" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_size_of_fid_f1','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_size_of_fid_f1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_size_of_fid_f1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Size if FID (F2): 
+					<span id="input_spectrum_nmr_analyzer_size_of_fid_f2">${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_size_of_fid_f2" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_size_of_fid_f2','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_size_of_fid_f2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_size_of_fid_f2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Number of Scans (F2): 
+					<span id="input_spectrum_nmr_analyzer_number_of_scans">${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_number_of_scans" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_number_of_scans','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_number_of_scans" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_number_of_scans');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>	
+				</li>
+				<li class="list-group-item">
+					Acquisition Mode for 2D (F1): 
+					<span id="input_spectrum_nmr_analyzer_acquisition_mode_for_2d">${fn:escapeXml(spectrum_nmr_analyzer_data.acquisitionModeFor2DF1)}</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_acquisition_mode_for_2d" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.acquisitionModeFor2DF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.acquisitionModeFor2DF1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_acquisition_mode_for_2d','');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_acquisition_mode_for_2d" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_acquisition_mode_for_2d');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Temperature: 
+					<span id="input_spectrum_nmr_analyzer_temperature">${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)} (K)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_temperature" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_temperature',' (K)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_temperature" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_temperature');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					Relaxation delay D1: 
+					<span id="input_spectrum_nmr_analyzer_relaxationDelayD1">${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)} (s)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_relaxationDelayD1" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_relaxationDelayD1',' (s)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_relaxationDelayD1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_relaxationDelayD1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">Mixing time <small>(only if TOCSY-2D or NOESY-2D (D8) )</small>: 
+					<span id="input_spectrum_nmr_analyzer_mixingTime">${fn:escapeXml(spectrum_nmr_analyzer_data.mixingTime)} (s)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_mixingTime" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.mixingTime)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.mixingTime)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_mixingTime',' (s)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_mixingTime" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_mixingTime');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					SW (1H, if TOCSY, NOESY, HMBC, HSQC): 
+					<span id="input_spectrum_nmr_analyzer_swF1">${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)} (ppm)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_swF1" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_swF1',' (ppm)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_swF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_swF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					SW (13C, if HMBC, HSQC): 
+					<span id="input_spectrum_nmr_analyzer_swF2">${fn:escapeXml(spectrum_nmr_analyzer_data.swF2)} (ppm)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_swF2" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.swF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_swF2',' (ppm)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_swF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_swF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					JXH <small>(if HMBC, HSQC)</small>: 
+					<span id="input_spectrum_nmr_analyzer_jxh">${fn:escapeXml(spectrum_nmr_analyzer_data.jxh)} (Hz)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_jxh" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.jxh)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.jxh)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_jxh',' (Hz)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_jxh" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_jxh');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					NUS: 
+					<span id="select_spectrum_nmr_analyzer_nus">${spectrum_nmr_analyzer_data.getNusAsTrueFalse()}</span>
+					<div id="selectEdit_spectrum_nmr_analyzer_nus" class="form-group  select-group" style="max-width: 150px; display: none;">
+						<select id="selectElem_spectrum_nmr_analyzer_nus" class="form-control col-xs-3" style="max-width: 100px;"></select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_nus', '');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_nus" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_nus');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					NusAmount: 
+					<span id="input_spectrum_nmr_analyzer_nus_amount">${fn:escapeXml(spectrum_nmr_analyzer_data.nusAmount)} (%)</span>
+					<div id="inputEdit_spectrum_nmr_analyzer_nus_amount" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.nusAmount)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.nusAmount)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_nus_amount',' (%)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_nus_amount" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_nus_amount');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<li class="list-group-item">
+					NusPoints: 
+					<span id="input_spectrum_nmr_analyzer_nus_points">${fn:escapeXml(spectrum_nmr_analyzer_data.nusPoints)} </span>
+					<div id="inputEdit_spectrum_nmr_analyzer_nus_points" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.nusPoints)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.nusPoints)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_nus_points',' (%)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_nmr_analyzer_nus_points" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_nus_points');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+			</ul>
 	</c:when>
 </c:choose>
 		</td>
-		
-		TODO wrap this section only for 1D NMR spectra!!!
 		<c:choose>
 			<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'Proton-1D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-1D' || spectrum_nmr_analyzer_data_acquisition == 'CPMG-1D' || spectrum_nmr_analyzer_data_acquisition == 'Carbon13-1D' }">
 				<td width="50%">
@@ -1459,8 +1803,420 @@
 					</ul>
 				</td>
 			</c:when>
-			<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'COSY-2D'}">
-				// TODO_nils all 2D processing + JRES processing
+			<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'COSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'TOCSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-2D' || spectrum_nmr_analyzer_data_acquisition == 'HMBC-2D' || spectrum_nmr_analyzer_data_acquisition == 'HSQC-2D'}">
+				<td width="50%">
+					<ul class="list-group" style="max-width: 600px;">
+						<li class="list-group-item">
+							Fourier transform: 
+							<span id="select_spectrum_nmr_analyzer_data_fourier_transform">${spectrum_nmr_analyzer_data.getFourierTransform()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_fourier_transform" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_fourier_transform" class="form-control col-xs-3" style="max-width: 100px;"></select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_fourier_transform', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_fourier_transform" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_fourier_transform');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							SI (F1): 
+							<span id="select_spectrum_nmr_analyzer_data_siF1">${spectrum_nmr_analyzer_data.getSiF1AsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_siF1" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_siF1" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="64">64</option>
+									<option value="128">128</option>
+									<option value="256">256</option>
+									<option value="512">512</option>
+									<option value="1024">1024</option>
+									<option value="2048">2048</option>
+									<option value="4096">4096</option>
+									<option value="8192">8192</option>
+									<option value="16000">16k</option>
+									<option value="32000">32k</option>
+									<option value="64000">64k</option>
+									<option value="128000">128k</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_siF1', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_siF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_siF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							SI (F2): 
+							<span id="select_spectrum_nmr_analyzer_data_siF2">${spectrum_nmr_analyzer_data.getSiF2AsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_siF2" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_siF2" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="64">64</option>
+									<option value="128">128</option>
+									<option value="256">256</option>
+									<option value="512">512</option>
+									<option value="1024">1024</option>
+									<option value="2048">2048</option>
+									<option value="4096">4096</option>
+									<option value="8192">8192</option>
+									<option value="16000">16k</option>
+									<option value="32000">32k</option>
+									<option value="64000">64k</option>
+									<option value="128000">128k</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_siF2', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_siF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_siF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Window function (F1): 
+							<span id="select_spectrum_nmr_analyzer_data_windowFunctionF1">${spectrum_nmr_analyzer_data.getWindowFunctionF1AsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_windowFunctionF1" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_windowFunctionF1" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="NO">NO</option>
+									<option value="EM">EM</option>
+									<option value="QSINE">QSINE</option>
+									<option value="SINE">SINE</option>
+									<option value="GM">GM</option>
+									<option value="OTHER">OTHER</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_windowFunctionF1', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_windowFunctionF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_windowFunctionF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Window function (F2): 
+							<span id="select_spectrum_nmr_analyzer_data_windowFunctionF2">${spectrum_nmr_analyzer_data.getWindowFunctionF2AsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_windowFunctionF2" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_windowFunctionF2" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="NO">NO</option>
+									<option value="EM">EM</option>
+									<option value="QSINE">QSINE</option>
+									<option value="SINE">SINE</option>
+									<option value="GM">GM</option>
+									<option value="OTHER">OTHER</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_windowFunctionF2', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_windowFunctionF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_windowFunctionF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							LB (F1): 
+							<span id="input_spectrum_nmr_analyzer_lbF1">${fn:escapeXml(spectrum_nmr_analyzer_data.lbF1)} Hz</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_lbF1" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.lbF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.lbF1)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_lbF1',' Hz');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_lbF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_lbF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							LB (F2): 
+							<span id="input_spectrum_nmr_analyzer_lbF2">${fn:escapeXml(spectrum_nmr_analyzer_data.lbF2)} Hz</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_lbF2" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.lbF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.lbF2)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_lbF2',' Hz');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_lbF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_lbF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							SSB (F1): 
+							<span id="input_spectrum_nmr_analyzer_ssbF1">${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF1)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_ssbF1" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF1)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_ssbF1','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_ssbF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_ssbF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							SSB (F2): 
+							<span id="input_spectrum_nmr_analyzer_ssbF2">${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF2)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_ssbF2" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF2)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_ssbF2','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_ssbF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_ssbF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							GB (F1): 
+							<span id="input_spectrum_nmr_analyzer_gbF1">${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_gbF1" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_gbF1','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_gbF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_gbF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							GB (F2): 
+							<span id="input_spectrum_nmr_analyzer_gbF2">${fn:escapeXml(spectrum_nmr_analyzer_data.gbF2)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_gbF2" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.gbF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.gbF2)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_gbF2','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_gbF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_gbF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Peak Peaking: 
+							<span id="select_spectrum_nmr_analyzer_data_peak_peaking">${spectrum_nmr_analyzer_data.getPeakPickingAsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_peak_peaking" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_peak_peaking" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="manual">manual</option>
+									<option value="automatic">automatic</option>
+									<option value="automatic">none</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_peak_peaking', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_peak_peaking" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_peak_peaking');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							NUS processing parameter: 
+							<span id="input_spectrum_nmr_analyzer_nusProcessingParameter">${fn:escapeXml(spectrum_nmr_analyzer_data.nusProcessingParameter)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_nusProcessingParameter" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.nusProcessingParameter)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.nusProcessingParameter)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_nusProcessingParameter','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_nusProcessingParameter" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_nusProcessingParameter');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+					</ul>
+				</td>
+			</c:when>
+			<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'JRES-2D'}">
+				<td width="50%">
+					<ul class="list-group" style="max-width: 600px;">
+						<li class="list-group-item">
+							Fourier transform: 
+							<span id="select_spectrum_nmr_analyzer_data_fourier_transform">${spectrum_nmr_analyzer_data.getFourierTransform()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_fourier_transform" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_fourier_transform" class="form-control col-xs-3" style="max-width: 100px;"></select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_fourier_transform', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_fourier_transform" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_fourier_transform');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Tilt: 
+							<span id="select_spectrum_nmr_analyzer_data_tilt">${spectrum_nmr_analyzer_data.getTiltAsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_tilt" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_tilt" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="yes">yes</option>
+									<option value="no">no</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_tilt', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_tilt" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_tilt');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							SI (F1): 
+							<span id="select_spectrum_nmr_analyzer_data_siF1">${spectrum_nmr_analyzer_data.getSiF1AsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_siF1" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_siF1" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="64">64</option>
+									<option value="128">128</option>
+									<option value="256">256</option>
+									<option value="512">512</option>
+									<option value="1024">1024</option>
+									<option value="2048">2048</option>
+									<option value="4096">4096</option>
+									<option value="8192">8192</option>
+									<option value="16000">16k</option>
+									<option value="32000">32k</option>
+									<option value="64000">64k</option>
+									<option value="128000">128k</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_siF1', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_siF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_siF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							SI (F2): 
+							<span id="select_spectrum_nmr_analyzer_data_siF2">${spectrum_nmr_analyzer_data.getSiF2AsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_siF2" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_siF2" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="64">64</option>
+									<option value="128">128</option>
+									<option value="256">256</option>
+									<option value="512">512</option>
+									<option value="1024">1024</option>
+									<option value="2048">2048</option>
+									<option value="4096">4096</option>
+									<option value="8192">8192</option>
+									<option value="16000">16k</option>
+									<option value="32000">32k</option>
+									<option value="64000">64k</option>
+									<option value="128000">128k</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_siF2', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_siF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_siF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Window function (F1): 
+							<span id="select_spectrum_nmr_analyzer_data_windowFunctionF1">${spectrum_nmr_analyzer_data.getWindowFunctionF1AsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_windowFunctionF1" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_windowFunctionF1" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="NO">NO</option>
+									<option value="EM">EM</option>
+									<option value="QSINE">QSINE</option>
+									<option value="SINE">SINE</option>
+									<option value="GM">GM</option>
+									<option value="OTHER">OTHER</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_windowFunctionF1', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_windowFunctionF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_windowFunctionF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Window function (F2): 
+							<span id="select_spectrum_nmr_analyzer_data_windowFunctionF2">${spectrum_nmr_analyzer_data.getWindowFunctionF2AsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_windowFunctionF2" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_windowFunctionF2" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="NO">NO</option>
+									<option value="EM">EM</option>
+									<option value="QSINE">QSINE</option>
+									<option value="SINE">SINE</option>
+									<option value="GM">GM</option>
+									<option value="OTHER">OTHER</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_windowFunctionF2', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_windowFunctionF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_windowFunctionF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							LB (F1): 
+							<span id="input_spectrum_nmr_analyzer_lbF1">${fn:escapeXml(spectrum_nmr_analyzer_data.lbF1)} Hz</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_lbF1" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.lbF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.lbF1)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_lbF1',' Hz');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_lbF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_lbF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							LB (F2): 
+							<span id="input_spectrum_nmr_analyzer_lbF2">${fn:escapeXml(spectrum_nmr_analyzer_data.lbF2)} Hz</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_lbF2" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.lbF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.lbF2)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_lbF2',' Hz');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_lbF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_lbF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							SSB (F1): 
+							<span id="input_spectrum_nmr_analyzer_ssbF1">${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF1)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_ssbF1" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF1)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_ssbF1','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_ssbF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_ssbF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							SSB (F2): 
+							<span id="input_spectrum_nmr_analyzer_ssbF2">${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF2)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_ssbF2" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF2)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_ssbF2','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_ssbF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_ssbF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							GB (F1): 
+							<span id="input_spectrum_nmr_analyzer_gbF1">${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_gbF1" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_gbF1','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_gbF1" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_gbF1');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							GB (F2): 
+							<span id="input_spectrum_nmr_analyzer_gbF2">${fn:escapeXml(spectrum_nmr_analyzer_data.gbF2)}</span>
+							<div id="inputEdit_spectrum_nmr_analyzer_gbF2" class="form-group input-group" style="max-width: 400px; display: none;">
+								<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_nmr_analyzer_data.gbF2)}" placeholder="${fn:escapeXml(spectrum_nmr_analyzer_data.gbF2)}">
+								<span class="input-group-btn">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_nmr_analyzer_gbF2','');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_gbF2" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_nmr_analyzer_gbF2');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Peak Peaking: 
+							<span id="select_spectrum_nmr_analyzer_data_peak_peaking">${spectrum_nmr_analyzer_data.getPeakPickingAsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_peak_peaking" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_peak_peaking" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="manual">manual</option>
+									<option value="automatic">automatic</option>
+									<option value="automatic">none</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_peak_peaking', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_peak_peaking" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_peak_peaking');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Symmetrize: ${fn:escapeXml(spectrum_nmr_analyzer_data.getSymmetrizeAsString())}
+							<span id="select_spectrum_nmr_analyzer_data_symmetrize">${spectrum_nmr_analyzer_data.getSymmetrizeAsString()}</span>
+							<div id="selectEdit_spectrum_nmr_analyzer_data_symmetrize" class="form-group  select-group" style="max-width: 150px; display: none;">
+								<select id="selectElem_spectrum_nmr_analyzer_data_symmetrize" class="form-control col-xs-3" style="max-width: 100px;">
+									<option value="" selected="selected" disabled="disabled">choose in list...</option>
+									<option value="yes">yes</option>
+									<option value="no">no</option>
+								</select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_symmetrize', '');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_nmr_analyzer_data_symmetrize" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_nmr_analyzer_data_symmetrize');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+					</ul>
+				</td>
 			</c:when>
 		</c:choose>
 	</tr>
@@ -1476,7 +2232,7 @@
 			</div>
 			<div class="panel-body">
 			<c:choose>
-				<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'proton-1D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-1D' || spectrum_nmr_analyzer_data_acquisition == 'CPMG-1D'}">
+				<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'Proton-1D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-1D' || spectrum_nmr_analyzer_data_acquisition == 'CPMG-1D'}">
 							<table id="tab_spectrum_nmr_peaks" class="table" style="max-width: 700px;">
 								<thead>
 									<tr>
@@ -1555,10 +2311,94 @@
 							<br />
 				</c:when>
 				<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'JRES-2D'}">
-					TODO_nils special 2D - JRES
+							<table id="tab_spectrum_nmr_jres_peaks" class="table" style="max-width: 700px;">
+								<thead>
+									<tr>
+										<!-- peak index	&nu; (F2) [ppm]	&nu; (F1) [ppm]	intensity [rel]	multiplicity	J (coupling constant)	annotation   -->
+										<th>peak index</th>
+										<th>&nu; (F2) [ppm]</th>
+										<th>&nu; (F1) [ppm]</th>
+										<th class="tabStrippedBg">intensity [rel]</th>
+										<th>multiplicity</th>
+										<th>J</th>
+										<th>annotation</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% int i = 1; %>
+									<c:forEach var="peak" items="${spectrum_nmr_analyzer_data.peaks}">
+									<tr>
+										<td><%=i %></td>
+										<td>${peak.chemicalShiftF2}</td>
+										<td>${peak.chemicalShiftF1}</td>
+										<td class="tabStrippedBg">${peak.intensity}</td>
+										<td>${peak.getMultiplicityTypeAsString()}</td>
+										<td>${peak.getCouplingConstantAsString()}</td> 
+										<td>
+											${fn:escapeXml(peak.annotation)}
+											<script type="text/javascript">
+											var currentNMRpeak = { 
+													"index": Number("<%=i++ %>"),
+													"chemicalShiftF2": Number("${peak.chemicalShiftF2}"),
+													"chemicalShiftF1": Number("${peak.chemicalShiftF1}"),
+													"intensity": Number("${peak.intensity}"),
+													"multiplicity": ("${fn:escapeXml(peak.getMultiplicityTypeAsString())}"),
+													"j": ("${fn:escapeXml(peak.getCouplingConstantAsString())}"),
+													"annotation": ("${fn:escapeXml(peak.annotation)}")
+											}; 
+											nmrPeaksOriData.push(currentNMRpeak);
+											</script>
+										</td>
+									</tr>
+									</c:forEach>
+								</tbody>
+							</table>
+							<a id="btn-edit_spectrum_nmr_jres_peaks" class="btn btn-info btn-xs pull-right " onclick="editSpectrumLiveDataTab('spectrum_nmr_jres_peaks');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+							<div id="tabEdit_spectrum_nmr_jres_peaks" class="handsontable" style="display:none"></div>
+							<a id="btn-validate_spectrum_nmr_jres_peaks" class="btn btn-success btn-xs pull-right " style="display:none;" onclick="updateSpectrumLiveDataTab('spectrum_nmr_jres_peaks');" href="#"> <i class="fa fa-check fa-lg"></i></a>
+							<br />
 				</c:when>
 				<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'COSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'TOCSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-2D' || spectrum_nmr_analyzer_data_acquisition == 'HMBC-2D' || spectrum_nmr_analyzer_data_acquisition == 'HSQC-2D'}">
-					TODO_nils ordinary 2D - ALL (except JRES)
+							<table id="tab_spectrum_nmr_2dpeaks" class="table" style="max-width: 700px;">
+								<thead>
+									<tr>
+										<!-- peak index	&nu; (F2) [ppm]	&nu; (F1) [ppm]	intensity [rel]	annotation   -->
+										<th>peak index</th>
+										<th>&nu; (F2) [ppm]</th>
+										<th>&nu; (F1) [ppm]</th>
+										<th>intensity [abs]</th>
+										<th>annotation</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% int i = 1; %>
+									<c:forEach var="peak" items="${spectrum_nmr_analyzer_data.peaks}">
+									<tr>
+										<td><%=i %></td>
+										<td>${peak.chemicalShiftF2}</td>
+										<td>${peak.chemicalShiftF1}</td>
+										<td>${peak.intensity}</td>
+										<td>
+											${fn:escapeXml(peak.annotation)}
+											<script type="text/javascript">
+											var currentNMRpeak = { 
+													"index": Number("<%=i++ %>"),
+													"chemicalShiftF2": Number("${peak.chemicalShiftF2}"),
+													"chemicalShiftF1": Number("${peak.chemicalShiftF1}"),
+													"intensity": Number("${peak.intensity}"),
+													"annotation": ("${fn:escapeXml(peak.annotation)}")
+											}; 
+											nmrPeaksOriData.push(currentNMRpeak);
+											</script>
+										</td>
+									</tr>
+									</c:forEach>
+								</tbody>
+							</table>
+							<a id="btn-edit_spectrum_nmr_2dpeaks" class="btn btn-info btn-xs pull-right " onclick="editSpectrumLiveDataTab('spectrum_nmr_2dpeaks');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+							<div id="tabEdit_spectrum_nmr_2dpeaks" class="handsontable" style="display:none"></div>
+							<a id="btn-validate_spectrum_nmr_2dpeaks" class="btn btn-success btn-xs pull-right " style="display:none;" onclick="updateSpectrumLiveDataTab('spectrum_nmr_2dpeaks');" href="#"> <i class="fa fa-check fa-lg"></i></a>
+							<br />
 				</c:when>
 			</c:choose>
 			</div>
@@ -1566,7 +2406,6 @@
 		
 		<c:choose>
 			<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'Proton-1D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-1D' || spectrum_nmr_analyzer_data_acquisition == 'CPMG-1D' || spectrum_nmr_analyzer_data_acquisition == 'Carbon13-1D' }">
-		
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelPeakPatternListnmr" text="Peak Pattern List" /></h3>
@@ -1698,17 +2537,6 @@
 						</div>
 						<a id="btn-edit_spectrum_othermetadata_raw_file_size" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_othermetadata_raw_file_size');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 					</li>
-<!-- 					<li> -->
-<!-- 						Label:  -->
-<!-- 						<span id="input_xxxxx">YYYYY</span> -->
-<!-- 						<div id="inputEdit_xxxxx" class="form-group input-group" style="max-width: 400px; display: none;"> -->
-<!-- 							<input type="text" class="form-control input-active-enter-key" style="" value="YYYYY" placeholder="YYYYY"> -->
-<!-- 							<span class="input-group-btn"> -->
-<!-- 								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('xxxxx');"><i class="fa fa-check-square-o"></i></button> -->
-<!-- 							</span> -->
-<!-- 						</div> -->
-<!-- 						<a id="btn-edit_xxxxx" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('xxxxx');" href="#"> <i class="fa fa-pencil fa-lg"></i></a> -->
-<!-- 					</li> -->
 				</ul>
 			</div>
 		</div>
@@ -1727,9 +2555,7 @@
 				<script type="text/javascript">
 				modeEditSpectrum = true;
 				var jsonRCC_ADDED = [];
-				
 				updateCurrentSpectrumCurator = function( id) {
-					
 					$.ajax({
 						type: "POST",
 						url: "edit-spectrum/" + id,
@@ -1741,11 +2567,8 @@
 						success: function(data) {
 							if(data) { 
 								$("#modalEditSpectrum").modal('hide');
-								if (document.location.href.indexOf("?PFs=")!=-1)
-									location.reload()
-								else
-									try { initLoadCurationMessage(); initLoadCitation(); } catch (e) {}
-								
+								if (document.location.href.indexOf("?PFs=")!=-1) {location.reload();}
+								else { try { initLoadCurationMessage(); initLoadCitation(); } catch (e) {} }
 								// if on spectrum sheet: reload
 							} else {
 								alert('<spring:message code="page.spectrum.alert.failUpdateSpectrum" text="Failed to update spectrum!" />'); 
@@ -2072,6 +2895,98 @@
 						hot_NMR_peaks.selectCell(0,0);
 						$("#tabEdit_spectrum_nmr_peaks table.htCore").css("width","100%");
 						break;
+					case "spectrum_nmr_2dpeaks":
+						$("#tabEdit_spectrum_nmr_2dpeaks").html("");
+						var data_NMR_peaks = [];
+						$.each(nmrPeaksOriData, function (k,v) {
+							var tmpDataArray = [];
+							tmpDataArray ["index"] = v.index;
+							tmpDataArray ["chemicalShiftF1"] = v.chemicalShiftF1;
+							tmpDataArray ["chemicalShiftF2"] = v.chemicalShiftF2;
+							tmpDataArray ["intensity"] = v.intensity;
+// 							tmpDataArray ["attribution"] = v.attribution;
+							tmpDataArray ["annotation"] = v.annotation;
+							data_NMR_peaks.push(tmpDataArray);
+						});		
+						var colHeaderData = [
+			     			{data: "index", type: 'numeric'},
+			     			{data: "chemicalShiftF2", type: 'numeric', format: '0.0000'},
+			     			{data: "chemicalShiftF1", type: 'numeric', format: '0.0000'},
+			     			{data: "intensity", type: 'numeric', format: '0.0000'},
+			     			{data: "annotation", type: 'text'}
+			    		];
+						container_NMR_peaks = document.getElementById('tabEdit_spectrum_nmr_2dpeaks');
+						hot_NMR_peaks = new Handsontable(container_NMR_peaks, {
+							data : data_NMR_peaks,
+							minSpareRows : 1,
+							colHeaders : true,
+							colHeaders: ["index", "&nu; (F2) [ppm]", "&nu; (F1) [ppm]", "intensity [abs]",  "annotation"],
+							contextMenu : false,
+							columns: colHeaderData
+						});
+						function bindDumpButton_NMR_peaks() {
+							Handsontable.Dom.addEvent(document.body, 'click', function(e) {
+								var element = e.target || e.srcElement;
+								if (element.nodeName == "BUTTON"&& element.name == 'dump') {
+									var name = element.getAttribute('data-dump');
+									var instance = element.getAttribute('data-instance');
+									var hot_NMR_peaks = window[instance];
+									console.log('data of ' + name, hot_NMR_peaks.getData());
+								}
+							});
+						}
+						bindDumpButton_NMR_peaks();
+						hot_NMR_peaks.selectCell(0,0);
+						$("#tabEdit_spectrum_nmr_2dpeaks table.htCore").css("width","100%");
+						break;
+					case "spectrum_nmr_jres_peaks":
+						$("#tabEdit_spectrum_nmr_jres_peaks").html("");
+						var data_NMR_peaks = [];
+						$.each(nmrPeaksOriData, function (k,v) {
+							var tmpDataArray = [];
+							tmpDataArray ["index"] = v.index;
+							tmpDataArray ["chemicalShiftF1"] = v.chemicalShiftF1;
+							tmpDataArray ["chemicalShiftF2"] = v.chemicalShiftF2;
+							tmpDataArray ["intensity"] = v.intensity;
+							tmpDataArray ["multiplicity"] = v.multiplicity;
+							tmpDataArray ["j"] = v.j;
+// 							tmpDataArray ["attribution"] = v.attribution;
+							tmpDataArray ["annotation"] = v.annotation;
+							data_NMR_peaks.push(tmpDataArray);
+						});		
+						var colHeaderData = [
+			     			{data: "index", type: 'numeric'},
+			     			{data: "chemicalShiftF2", type: 'numeric', format: '0.0000'},
+			     			{data: "chemicalShiftF1", type: 'numeric', format: '0.0000'},
+			     			{data: "intensity", type: 'numeric', format: '0.0000'},
+			     			{data: "multiplicity", type: 'text'},
+			     			{data: "j", type: 'text'},
+			     			{data: "annotation", type: 'text'}
+			    		];
+						container_NMR_peaks = document.getElementById('tabEdit_spectrum_nmr_jres_peaks');
+						hot_NMR_peaks = new Handsontable(container_NMR_peaks, {
+							data : data_NMR_peaks,
+							minSpareRows : 1,
+							colHeaders : true,
+							colHeaders: ["index", "&nu; (F2) [ppm]", "&nu; (F1) [ppm]", "intensity", "multiplicity", "J",  "annotation"],
+							contextMenu : false,
+							columns: colHeaderData
+						});
+						function bindDumpButton_NMR_peaks() {
+							Handsontable.Dom.addEvent(document.body, 'click', function(e) {
+								var element = e.target || e.srcElement;
+								if (element.nodeName == "BUTTON"&& element.name == 'dump') {
+									var name = element.getAttribute('data-dump');
+									var instance = element.getAttribute('data-instance');
+									var hot_NMR_peaks = window[instance];
+									console.log('data of ' + name, hot_NMR_peaks.getData());
+								}
+							});
+						}
+						bindDumpButton_NMR_peaks();
+						hot_NMR_peaks.selectCell(0,0);
+						$("#tabEdit_spectrum_nmr_jres_peaks table.htCore").css("width","100%");
+						break;
 					case "spectrum_nmr_peak_patterns":
 						$("#tabEdit_spectrum_nmr_peak_patterns").html("");
 						var data_NMR_peak_patterns = [];
@@ -2232,6 +3147,64 @@
 						// update data in html
 						$("#tab_spectrum_nmr_peaks tbody").empty();
 						$("#templateNMRpeaks").tmpl(nmrPeaksOriData).appendTo("#tab_spectrum_nmr_peaks tbody");
+						break;
+					case 'spectrum_nmr_2dpeaks':
+						jsonNMRpeaks = [];
+						var i = 1;
+						$.each(hot_NMR_peaks.getData(), function(){
+							var formatData = {};
+							try {
+								var dataT = {};
+								dataT['index'] = i;
+								dataT['chemicalShiftF1'] = Number(this["chemicalShiftF1"]);
+								dataT['chemicalShiftF2'] = Number(this["chemicalShiftF2"]);
+								dataT['intensity'] = Number(this["intensity"]);
+								dataT['annotation'] = (this["annotation"]);
+								jsonNMRpeaks.push(dataT);
+								i++;
+							} catch(e){}
+						});
+						// update data edit table
+						nmrPeaksOriData = [];
+						$.each(jsonNMRpeaks,function(k,v){
+							if (v.chemicalShiftF1==Number(v.chemicalShiftF1+""))
+								nmrPeaksOriData.push(v);
+						});
+						// update data to update in controller
+						jsonDataUpdate[key]=nmrPeaksOriData;
+						// update data in html
+						$("#tab_spectrum_nmr_2dpeaks tbody").empty();
+						$("#templateNMR2Dpeaks").tmpl(nmrPeaksOriData).appendTo("#tab_spectrum_nmr_2dpeaks tbody");
+						break;
+					case 'spectrum_nmr_jres_peaks':
+						jsonNMRpeaks = [];
+						var i = 1;
+						$.each(hot_NMR_peaks.getData(), function(){
+							var formatData = {};
+							try {
+								var dataT = {};
+								dataT['index'] = i;
+								dataT['chemicalShiftF1'] = Number(this["chemicalShiftF1"]);
+								dataT['chemicalShiftF2'] = Number(this["chemicalShiftF2"]);
+								dataT['multiplicity'] = (this["multiplicity"]);
+								dataT['j'] = (this["j"]);
+								dataT['intensity'] = Number(this["intensity"]);
+								dataT['annotation'] = (this["annotation"]);
+								jsonNMRpeaks.push(dataT);
+								i++;
+							} catch(e){}
+						});
+						// update data edit table
+						nmrPeaksOriData = [];
+						$.each(jsonNMRpeaks,function(k,v){
+							if (v.chemicalShiftF1==Number(v.chemicalShiftF1+""))
+								nmrPeaksOriData.push(v);
+						});
+						// update data to update in controller
+						jsonDataUpdate[key]=nmrPeaksOriData;
+						// update data in html
+						$("#tab_spectrum_nmr_jres_peaks tbody").empty();
+						$("#templateNMRJRESpeaks").tmpl(nmrPeaksOriData).appendTo("#tab_spectrum_nmr_jres_peaks tbody");
 						break;
 					case 'spectrum_nmr_peak_patterns':
 						jsonNMRpeakPatterns = [];
@@ -2474,6 +3447,13 @@ $(document).ready(function() {
 	$("#selectElem_spectrum_nmr_analyzer_data_fourier_transform").append('<option value="true">True</option>');
 	$("#selectElem_spectrum_nmr_analyzer_data_fourier_transform").val(("${spectrum_nmr_analyzer_data.getFourierTransform()}").toLowerCase());
 	
+	// NMR boolean fields
+	$("#selectElem_spectrum_nmr_analyzer_nus").empty();
+	$("#selectElem_spectrum_nmr_analyzer_nus").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
+	$("#selectElem_spectrum_nmr_analyzer_nus").append('<option value="false">No</option>');
+	$("#selectElem_spectrum_nmr_analyzer_nus").append('<option value="true">Yes</option>');
+	$("#selectElem_spectrum_nmr_analyzer_nus").val(("${spectrum_nmr_analyzer_data.nus}").toLowerCase());
+	
 });
 				
 				
@@ -2523,6 +3503,26 @@ $(document).ready(function() {
 	<td>{%= relativeIntensity%}</td>
 	<td>{%= halfWidth%}</td>
 	<td>{%= halfWidthHz%}</td>
+	<td>{%= annotation%}</td>
+</tr>
+</script>
+<script  type="text/x-jquery-tmpl" id="templateNMR2Dpeaks">
+<tr>
+	<td>{%= index%}</td>
+	<td>{%= chemicalShiftF2%}</td>
+	<td>{%= chemicalShiftF1%}</td>
+	<td>{%= intensity%}</td>
+	<td>{%= annotation%}</td>
+</tr>
+</script>
+<script  type="text/x-jquery-tmpl" id="templateNMRJRESpeaks">
+<tr>
+	<td>{%= index%}</td>
+	<td>{%= chemicalShiftF2%}</td>
+	<td>{%= chemicalShiftF1%}</td>
+	<td class="tabStrippedBg">{%= intensity%}</td>
+	<td>{%= multiplicity%}</td>
+	<td>{%= j%}</td>
 	<td>{%= annotation%}</td>
 </tr>
 </script>

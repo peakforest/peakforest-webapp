@@ -208,7 +208,7 @@
 <div class="row">
 	<div class="col-lg-12">
 		<h1>
-			<img alt="Peak Forest" style="margin-top: -35px;" src="<c:url value="/resources/img/logo_pfx200.png" />"> <small> <spring:message code="page.search.subtitle" text="the MetaboHUB's Spectral Database" /></small>
+			<img alt="PeakForest" style="margin-top: -35px;" src="<c:url value="/resources/img/logo_pfx200.png" />"> <small> <spring:message code="page.search.subtitle" text="the MetaboHUB's Spectral Database" /></small>
 		</h1>
 		<form method="get" action="home" id="searchForm" autocomplete="off">
 			<div class="form-group input-group"
@@ -237,8 +237,10 @@ var switchAdvSearch = "compounds";
 if (request.getParameter("spectra") != null)
 	if (request.getParameter("spectra").equalsIgnoreCase("nmr")) {
 		out.println("switchAdvSearch = 'nmr-spectra';");
-	} else if (request.getParameter("spectra").equalsIgnoreCase("lcms")) {
+	} else if (request.getParameter("spectra").equalsIgnoreCase("lcms") || request.getParameter("spectra").equalsIgnoreCase("lc-ms")) {
 		out.println("switchAdvSearch = 'lcms-spectra';");
+	} else if (request.getParameter("spectra").equalsIgnoreCase("lcmsms") || request.getParameter("spectra").equalsIgnoreCase("lc-msms")) {
+		out.println("switchAdvSearch = 'lcmsms-spectra';");
 	}
 %>
 var _txt_btn_showMode = '<spring:message code="page.search.btn.showMore" text="Show more" />';

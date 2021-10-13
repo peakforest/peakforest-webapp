@@ -6,12 +6,12 @@
 	<session-factory>
 		<!-- MYSQL -->
 		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-		<property name="hibernate.connection.url">jdbc:mysql://localhost/metaboHubTest</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost/peakforestTest</property>
 		<!-- POSTGRES -->
 		<!-- <property name="hibernate.connection.driver_class">org.postgresql.Driver</property> -->
-		<!-- <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/metaboHubTest</property> -->
+		<!-- <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/peakforestTest</property> -->
 
-		<property name="hibernate.connection.username">metaboHub</property>
+		<property name="hibernate.connection.username">peakforest</property>
 		<property name="hibernate.connection.password">9nnbbjanzq4rVKb3</property>
 		<property name="hibernate.connection.pool_size">1</property>
 
@@ -52,6 +52,7 @@
 		<mapping class="fr.metabohub.peakforest.model.compound.TemporaryCompound" />
 		<!-- label / name compounds -->
 		<mapping class="fr.metabohub.peakforest.model.compound.CompoundName" />
+		<mapping class="fr.metabohub.peakforest.model.compound.CAS" />
 		<mapping class="fr.metabohub.peakforest.model.compound.Putative2Reference" />
 		<!-- peaks -->
 		<mapping class="fr.metabohub.peakforest.model.spectrum.NMR1DPeak" />
@@ -76,10 +77,8 @@
 		<!-- <mapping class="fr.metabohub.peakforest.model.spectrum.NMRSpectrumPool" 
 			/> -->
 		<!-- metadata -->
-		<mapping
-			class="fr.metabohub.peakforest.model.metadata.AnalyticalMatrixSource" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.AnalyticalMatrixType" />
 		<mapping class="fr.metabohub.peakforest.model.metadata.AnalyticalMatrix" />
+		<mapping class="fr.metabohub.peakforest.model.metadata.StandardizedMatrix" />
 		<mapping class="fr.metabohub.peakforest.model.metadata.OtherMetadata" />
 		<mapping class="fr.metabohub.peakforest.model.metadata.SampleMix" />
 		<mapping class="fr.metabohub.peakforest.model.metadata.SampleExtraData" />

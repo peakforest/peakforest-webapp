@@ -96,51 +96,40 @@ function tryLoadLCMSdata() {
 		v = v.trim();
 		if (v != "") {
 			switch (v.toUpperCase()) {
+			case "LC-MS":
 			case "LCMS":
+			case "LC-MSMS":
+			case "LCMSMS":
 				break;
 			case "POSITIVE":
 				$("#lcms-polarity-pos").prop('checked', true);
+				$("#lcmsms-polarity-pos").prop('checked', true);
 				break;
 			case "NEGATIVE":
 				$("#lcms-polarity-neg").prop('checked', true);
+				$("#lcmsms-polarity-neg").prop('checked', true);
 				break;
 			case "HIGH":
 				$("#lcms-resolution-high").prop('checked', true);
+				$("#lcmsms-resolution-high").prop('checked', true);
 				break;
 			case "LOW":
 				$("#lcms-resolution-low").prop('checked', true);
+				$("#lcmsms-resolution-low").prop('checked', true);
 				break;
 				//
 			case "ACPI":
-				$("#lcms-ionMeth").val('ACPI');
-				break;
 			case "APPI":
-				$("#lcms-ionMeth").val('APPI');
-				break;
 			case "EI":
-				$("#lcms-ionMeth").val('EI');
-				break;
 			case "ESI":
-				$("#lcms-ionMeth").val('ESI');
-				break;
 			case "FAB":
-				$("#lcms-ionMeth").val('FAB');
-				break;
 			case "MALDI":
-				$("#lcms-ionMeth").val('MALDI');
-				break;
-				//
 			case "TOF":
-				$("#lcms-ionAnalyzer").val("TOF");
-				break;
 			case "ITFT":
-				$("#lcms-ionAnalyzer").val("ITFT");
-				break;
 			case "QTOF":
-				$("#lcms-ionAnalyzer").val("QTOF");
-				break;
 			case "QQQ":
-				$("#lcms-ionAnalyzer").val("QQQ");
+				$("#lcms-ionAnalyzer").val(v.toUpperCase());
+				$("#lcmsms-ionAnalyzer").val(v.toUpperCase());
 				break;
 // 			case "EB":
 // 				$("#lcms-ionAnalyzer").val("EB");
@@ -153,6 +142,7 @@ function tryLoadLCMSdata() {
 		}
 	});
 	$("#lcms-cpd-name").val(query);
+	$("#lcmsms-cpd-name").val(query);
 }
 
 $('input[type=text]').focus(function(){
@@ -168,6 +158,10 @@ searchAdvanceSwitchPanel = function (entities) {
 		break;
 	case 'lcms-spectra':
 		setTimeout(function(){$("#lcms-cpd-name").focus();},200);
+		tryLoadLCMSdata();
+		break;
+	case 'lcmsms-spectra':
+		setTimeout(function(){$("#lcmsms-cpd-name").focus();},200);
 		tryLoadLCMSdata();
 		break;
 	case 'nmr-spectra':
@@ -201,7 +195,12 @@ searchAdvanceSwitchPanel = function (entities) {
 							</li>
 							<li>
 								<a id="link-searchAdvance-spectra-lcms" href="#searchAdvance-spectra-lcms-panel"  onclick="searchAdvanceSwitchPanel('lcms-spectra');" data-toggle="tab">
-									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsLCMS" text="LCMS Spectra" />
+									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsLCMS" text="LC-MS Spectra" />
+								</a>
+							</li>
+							<li>
+								<a id="link-searchAdvance-spectra-lcmsms" href="#searchAdvance-spectra-lcmsms-panel"  onclick="searchAdvanceSwitchPanel('lcmsms-spectra');" data-toggle="tab">
+									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsLCMSMS" text="LC-MSMS Spectra" />
 								</a>
 							</li>
 							<li>
@@ -359,6 +358,61 @@ searchAdvanceSwitchPanel = function (entities) {
 									</select>
 								</div>
 							</div>
+							<!--
+							////////////////////////////////////////////////////// 
+							 -->
+							<div class="tab-pane fade" id="searchAdvance-spectra-lcmsms-panel">
+								<div class="form-group input-group" style="width: 350px;">
+									<span class="input-group-addon" style="width: 150px;"><spring:message code="modal.advSearch.params.compoundLike" text="Compound like" /></span>
+									<input id="lcmsms-cpd-name" style="width: 200px;" type="text" class="form-control advancedSearch" placeholder="<spring:message code="modal.advSearch.params.compoundLike.eg" text="e.g.: Gluc" />" value="" >
+								</div>
+								<div class="form-group input-group" style="">
+									<label><spring:message code="modal.advSearch.params.polarity" text="Polarity" />&nbsp;</label>
+									<label class="radio-inline">
+										<input type="radio" name="lcmsms-polarity" class="advancedSearch" id="lcmsms-polarity-all" value="" checked="checked"> <spring:message code="modal.advSearch.params.polarity.all" text="all" />
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="lcmsms-polarity" class="advancedSearch" id="lcmsms-polarity-pos" value="positive"> <spring:message code="modal.advSearch.params.polarity.positive" text="positive" />
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="lcmsms-polarity" class="advancedSearch" id="lcmsms-polarity-neg" value="negative"> <spring:message code="modal.advSearch.params.polarity.negative" text="negative" />
+									</label>
+								</div>
+								<div class="form-group input-group" style="">
+									<label><spring:message code="modal.advSearch.params.resolution" text="Resolution" />&nbsp;</label>
+									<label class="radio-inline">
+										<input type="radio" name="lcmsms-resolution" class="advancedSearch" id="lcmsms-resolution-all" value="" checked="checked"> <spring:message code="modal.advSearch.params.resolution.all" text="all" />
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="lcmsms-resolution" class="advancedSearch" id="lcmsms-resolution-high" value="high"> <spring:message code="modal.advSearch.params.resolution.high" text="high" />
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="lcmsms-resolution" class="advancedSearch" id="lcmsms-resolution-low" value="low"> <spring:message code="modal.advSearch.params.resolution.low" text="low" />
+									</label>
+								</div>
+								<div class="form-group input-group" style="width: 300px;">
+									<span class="input-group-addon" style="width: 150px;"><spring:message code="modal.advSearch.params.ionMethod" text="Ionization Method" /></span>
+									<select id="lcmsms-ionMeth" class="advancedSearch form-control" style="width: 150px;">
+										<option value=""></option>
+<!-- 										<option value="XXX">XXX</option> -->
+									</select>
+								</div>
+								<div class="form-group input-group" style="width: 300px;">
+									<span class="input-group-addon" style="width: 150px;"><spring:message code="modal.advSearch.params.ionAnalyzerType" text="Ion analyzer type" /></span>
+									<select id="lcmsms-ionAnalyzer" class="advancedSearch form-control" style="width: 150px;">
+										<option value=""></option>
+										<option value="TOF">TOF</option>
+										<option value="EB">EB</option>
+										<option value="ITFT">ITFT</option>
+										<option value="QTOF">QTOF</option>
+										<option value="QQQ">QQQ</option>
+<!-- 										<option value="XXX">XXX</option> -->
+									</select>
+								</div>
+							</div>
+							<!--
+							////////////////////////////////////////////////////// 
+							 -->
 							<div class="tab-pane fade" id="searchAdvance-spectra-nmr-panel">
 								<div class="form-group input-group" style="width: 350px;">
 									<span class="input-group-addon" style="width: 150px;"><spring:message code="modal.advSearch.params.compoundLike" text="Compound like" /></span>
@@ -449,8 +503,10 @@ searchAdvanceSwitchPanel = function (entities) {
 				if (this.name !==undefined) {
 					if (this.value !==undefined) {
 						$("#lcms-ionMeth").append('<option value="'+this.value+'">'+this.name+'</option>');
+						$("#lcmsms-ionMeth").append('<option value="'+this.value+'">'+this.name+'</option>');
 					} else {
 						$("#lcms-ionMeth").append('<option disabled>'+this.name+'</option>');
+						$("#lcmsms-ionMeth").append('<option disabled>'+this.name+'</option>');
 					}
 				}
 			});
@@ -533,10 +589,14 @@ searchAdvanceSwitchPanel = function (entities) {
 									searchAdvanceEntities = 'nmr-spectra';
 								if (switchAdvSearch == 'lcms-spectra')
 									searchAdvanceEntities = 'lcms-spectra';
+								if (switchAdvSearch == 'lcmsms-spectra')
+									searchAdvanceEntities = 'lcmsms-spectra';
 								switch (searchAdvanceEntities) {
 								case "lcms-spectra":
 									$('#link-searchAdvance-spectra-lcms').click();
-									// DO FOCUS
+									break;
+								case "lcmsms-spectra":
+									$('#link-searchAdvance-spectra-lcmsms').click();
 									break;
 								case "nmr-spectra":
 									$('#link-searchAdvance-spectra-nmr').click();
@@ -675,6 +735,17 @@ searchAdvanceSwitchPanel = function (entities) {
 									mainSearchQuery += " " + $("#lcms-ionAnalyzer").val();
 									mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
 									break;
+								case "lcmsms-spectra":
+									if (!($($("input#searchSpectraF")).length)) {
+										$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="lcmsms" />');
+									}
+									mainSearchQuery = 'LCMSMS ' + $("#lcmsms-cpd-name").val() 
+									mainSearchQuery += " " + $("input[name='lcmsms-polarity']:checked").val();
+									mainSearchQuery += " " + $("input[name='lcmsms-resolution']:checked").val();
+									mainSearchQuery += " " + $("#lcmsms-ionMeth").val();
+									mainSearchQuery += " " + $("#lcmsms-ionAnalyzer").val();
+									mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
+									break;
 								case "nmr-spectra":
 									if (!($($("input#searchSpectraF")).length)) {
 										$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="nmr" />');
@@ -699,9 +770,6 @@ searchAdvanceSwitchPanel = function (entities) {
 								}
 								displayAdvancedSearch();
 							}
-							
-
-							
 						</script>
 					</div>
 				</div>

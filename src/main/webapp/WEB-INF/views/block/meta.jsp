@@ -8,6 +8,6 @@
 </c:if>
 <c:if test="${ranking_data}">
 <title>${page_title}</title>
-<meta name="keywords" content="${page_keyworks}">
+<meta name="keywords" content="${page_keywords}">
 <meta name="description" content="${page_description}">
 </c:if>

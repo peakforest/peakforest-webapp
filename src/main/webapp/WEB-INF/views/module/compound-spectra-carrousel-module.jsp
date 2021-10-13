@@ -206,18 +206,8 @@ var tabRawSpectrumName<%=randomID %> = [];
 								</div>
 							</c:if>
 							<c:if test="${spectrum.hasRawData()}">
-								<c:if test="${spectrum.getAcquisitionAsString() == 'Proton-1D' || spectrum.getAcquisitionAsString() == 'NOESY-1D' || spectrum.getAcquisitionAsString() == 'CPMG-1D'}">
-									<!--stgraph-->
-									<div id="stgraph<%=randomID %><%=cptSpectrumDisplayed %>" style="min-width: 650px; min-height: 300px;" class="hiddenSpectra stgraph-light-plus">
-										loading NMR spectra... <br />
-										<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
-											title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
-									</div>
-								</c:if>
-								<c:if test="${spectrum.getAcquisitionAsString() == 'Carbon13-1D' || spectrum.getAcquisitionAsString() == 'COSY-2D' || spectrum.getAcquisitionAsString() == 'TOCSY-2D' || spectrum.getAcquisitionAsString() == 'NOESY-2D' || spectrum.getAcquisitionAsString() == 'HMBC-2D' || spectrum.getAcquisitionAsString() == 'HSQC-2D'}">
 									<!-- static image -->
 									<img class="spectraLightImgMol" alt="${spectrum.getMassBankLikeName()}" title="${spectrum.getMassBankLikeName()}" src="spectra_img/${fn:escapeXml(spectrum.getRawDataFolder())}.png">
-								</c:if>
 							</c:if>
 						</td>
 						<td width="20px"></td>
@@ -406,7 +396,7 @@ var tabRawSpectrumName<%=randomID %> = [];
 			if (typeSpectrum == 'lc-fullscan')
 				spectrumFullScanLCToLoad.push(tabIdSpectrum<%=randomID %>[cpt]);
 			else if ( typeSpectrum == 'lc-fragmentation')
-				spectrumFullScanLCToLoad.push(tabIdSpectrum<%=randomID %>[cpt]);
+				spectrumFragLCToLoad.push(tabIdSpectrum<%=randomID %>[cpt]);
 			// seek title
 			var titleSpectrum = encodeURIComponent(tabMassBankNameSpectrum<%=randomID %>[cpt]); 
 			// load ajax
@@ -433,8 +423,7 @@ var tabRawSpectrumName<%=randomID %> = [];
 			});
 		} else if (typeSpectrum == 'nmr-1d' ) {
 			if (tabHasRawSpectrum<%=randomID %>[cpt]) {
-				// display ML & DJ viewer 
-				nmrSingle(tabRawSpectrumName<%=randomID %>[cpt], <%=randomID %>, cpt, tabMassBankNameSpectrum<%=randomID %>[cpt] );
+				// old
 			} else {
 				// set element to load
 				var spectrumNMRToLoad = [];
@@ -466,8 +455,6 @@ var tabRawSpectrumName<%=randomID %> = [];
 			}
 		} else if (typeSpectrum == 'nmr-2d' ) {
 			if (tabHasRawSpectrum<%=randomID %>[cpt]) {
-				// display ML & DJ viewer 
-				nmrSingle(tabRawSpectrumName<%=randomID %>[cpt], <%=randomID %>, cpt, tabMassBankNameSpectrum<%=randomID %>[cpt] );
 			} else {}
 		}
 	}

@@ -20,6 +20,7 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbRCC" text="Number of Reference Chemical Compound:" /> <span id="nbRCC"><i class="fa fa-refresh fa-spin"></i></span></li>
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbNMRspectra" text="Number of NMR spectrum:" /> <span id="nbNMRspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbLCMSspectra" text="Number of LC-MS spectrum:" /> <span id="nbLCMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
+		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbLCMSMSspectra" text="Number of LC-MSMS spectrum:" /> <span id="nbLCMSMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.perCentRccOneSpectra" text="Percentage of Ref. Chemical Compound with at least one spectrum:" /> <span id="perCentRccOneSpectra"><i class="fa fa-refresh fa-spin"></i></span>%</li>
 		</ul>
 <% if (useMEwebservice) { %>
@@ -56,6 +57,7 @@ $( document ).ready(function() {
 		$("#nbRCC").html(nbRCC);
 		$("#nbNMRspectra").html(jsonData.number_nmr_spectra);
 		$("#nbLCMSspectra").html(jsonData.number_lcms_spectra);
+		$("#nbLCMSMSspectra").html(jsonData.number_lcmsms_spectra);
 		var percent = roundNumber((jsonData.number_of_compound_with_one_or_more_spectrum/nbRCC) *100,2);
 		$("#perCentRccOneSpectra").html(percent);
 		// date

@@ -2,16 +2,54 @@
 // STD MATRIX TAB
 ///////////////////////////////////////////////////////////////////////////////
 $(document).ready( function() {
-	$("#add1spectrum-sample-stdMatrix").change(function() {
-		var e = $("#add1spectrum-sample-stdMatrix").parent().children("span").children("a");
-		if (this.value == "NIST plasma") {
-			$(e).attr("href", "http://srm1950.nist.gov/");
-			$(e).show();
+	
+	// load std matrix from db
+ 	$.ajax({ 
+ 		type: "get",
+ 		url: "list-std-matrix",
+ 		async: true,
+ 		success: function(data) {
+ 			$.each(data, function(k, v) {
+ 				$("#add1spectrum-sample-stdMatrix").append('<option id="'+v.id+'" html="'+ (v.html).replace(/"/g, "'")+'">' + v.text + "</option>");
+ 			});
+ 		},
+ 		error : function(xhr) { console.log (xhr) }
+ 	});
+	
+ 	// load analytical matrix from db
+ 	$.ajax({ 
+ 		type: "get",
+ 		url: "list-ontologies",
+ 		async: true,
+ 		success: function(data) {
+ 			$.each(data, function(k, v) {
+ 				$("#add1spectrum-sample-bioMatrix").append('<option id="'+v.id+'" html="'+ (v.html).replace(/"/g, "'")+'">' + v.text + "</option>");
+ 			});
+ 		},
+ 		error : function(xhr) { console.log (xhr) }
+ 	});
+	
+	// on std matrix select, display help
+	$("#add1spectrum-sample-stdMatrix").change(function(data) {
+		if (data.value != "") {
+			$("#add1spectrum-sample-type-matrix-ref-help small").html('<i class="fa fa-question-circle"></i> ' + $("#add1spectrum-sample-stdMatrix option:selected").attr("html"));
+			$("#add1spectrum-sample-type-matrix-ref-help").show();
 		} else {
-			$(e).hide();
+			$("#add1spectrum-sample-type-matrix-ref-help").hide();
 		}
 	});
+	
+	//  on analytical matrix select, display help
+	$("#add1spectrum-sample-bioMatrix").change(function(data) {
+		if (data.value != "") {
+			$($("#add1spectrum-sample-type-matrix-bio-help small")[0]).html('<i class="fa fa-question-circle"></i> ' + $("#add1spectrum-sample-bioMatrix option:selected").attr("html"));
+		} else {
+			$($("#add1spectrum-sample-type-matrix-bio-help small")[0]).html("");
+		}
+	});
+	
 });
+
 ///////////////////////////////////////////////////////////////////////////////
 // FILE UPLOAD (NMR RAW SPECTRA)
 ///////////////////////////////////////////////////////////////////////////////
@@ -1046,6 +1084,7 @@ function fulfillLCdata(jsonFileName) {
 var isLC = false;
 var isGC = false;
 var isMS = false;
+var isMSMS = false;
 var isNMR = false;
 
 /**
@@ -1146,7 +1185,7 @@ function resetFromColors() {
 		if ($("#step2-gc-sign").hasClass("fa-question-circle"))
 			$("#step2-gc-sign").removeClass("fa-question-circle").addClass("fa-check-circle");
 		// check panel to show
-		if (isMS) {
+		if (isMS || isMSMS) {
 			$("#add1spectrum-analyserData-MS").show();
 			$("#linkActivateStep3-ms").trigger('click');
 			// debug display
@@ -1164,6 +1203,12 @@ function resetFromColors() {
 			$("#add1spectrum-analyzserMS-highVoltageOrCoronaVoltage-neg").height($("#add1spectrum-analyzserMS-highVoltageOrCoronaVoltage-neg").parent().children("span").height());
 			if ($("#step3-ms-sign").hasClass("fa-check-circle"))
 				$("#step3-ms-sign").removeClass("fa-check-circle").addClass("fa-question-circle");
+			// MSMS only
+			if (isMSMS) {
+				$(".enable-if-msms").attr("disabled", false);
+			} else {
+				$(".enable-if-msms").attr("disabled", true);
+			}
 		} else if (isNMR) { // case LC-NMR
 			resetNMRprogramms();
 			$("#add1spectrum-analyserData-NMR").show();
@@ -1186,7 +1231,7 @@ function resetFromColors() {
 		if ($("#step3-nmr-sign").hasClass("fa-question-circle"))
 			$("#step3-nmr-sign").removeClass("fa-question-circle").addClass("fa-check-circle");
 		// check panel to show
-		if (isMS) {
+		if (isMS || isMSMS) {
 			$("#add1spectrum-peaksData-MS").show();
 			$("#linkActivateStep4-ms").trigger('click');
 			if ($("#step4-ms-sign").hasClass("fa-check-circle"))
@@ -1204,8 +1249,9 @@ function resetFromColors() {
 				$("#step4-nmr-sign").removeClass("fa-check-circle").addClass("fa-question-circle");
 		}
 		// show ms tab
-		if (isMS)
+		if (isMS || isMSMS)
 			setTimeout(function(){ $("#container_MS_Peaks").trigger('click'); }, 250);
+		$("#add1spectrum-peaksMS-msLevel").change();
 		break;
 	case 5:
 		// hide after step 5 / alt step 5
@@ -1216,7 +1262,7 @@ function resetFromColors() {
 		if ($("#step4-nmr-sign").hasClass("fa-question-circle"))
 			$("#step4-nmr-sign").removeClass("fa-question-circle").addClass("fa-check-circle");
 		// check btn to set
-		if (isMS) {} else if (isNMR) {} // case LC-NMR
+		if (isMS || isMSMS) {} else if (isNMR) {} // case LC-NMR
 		if ($("#step5sign").hasClass("fa-check-circle"))
 			$("#step5sign").removeClass("fa-check-circle").addClass("fa-question-circle");
 		$("#add1spectrum-otherData").show();
@@ -1306,21 +1352,20 @@ function addOneSpectrum(type) {
 	isLC = false;
 	isGC = false;
 	isMS = false;
+	isMSMS = false;
 	isNMR = false;
 	$("#alertBoxSubmitSpectrum").html("");
-	// reset std matrix link
-	var stdMatrixLink = $("#add1spectrum-sample-stdMatrix").parent().children("span").children("a");
-	$(stdMatrixLink).attr("href", "");
-	$(stdMatrixLink).hide();
 	// hide in all steps
 	$(".opt-nmr").hide();
 	$(".opt-ms").hide();
+	$(".opt-msms").hide();
 	// hide step 2
 	$("#add1spectrum-chromatographyData-LC").hide();
 	$("#add1spectrum-chromatographyData-GC").hide();
 	// hide step 3
 	$("#add1spectrum-analyserData-NMR").hide();
 	$("#add1spectrum-analyserData-MS").hide();
+	$(".add1spectrum-ionTrap").hide();
 	// hide step 4
 	$("#add1spectrum-peaksData-MS").hide();
 	$("#add1spectrum-peaksData-NMR").hide();
@@ -1372,6 +1417,13 @@ function addOneSpectrum(type) {
 		isLC = true;
 		isNMR = true;
 		break;
+	case 5:
+		// LC-MSMS stuff
+		isLC = true;
+		isMSMS = true;
+		$(".opt-ms").show();
+		$(".opt-msms").show();
+		break;
 	}
 	// 
 	resetFromColors();
@@ -1397,6 +1449,9 @@ function addOneSpectrum(type) {
 	
 	// spec MS
 	jsonMolIonization = null;
+	
+	// spec MSMS
+	jsonMolIonBeam = null;
 	
 	// try load cpd
 	if (inchikey !== null) {
@@ -1562,6 +1617,21 @@ $(document).ready( function() {
 			$("#add1spectrum-analyzer-nmr-processing-gbF2").parent().hide();
 		}
 	});
+	$("#add1spectrum-ionTrapBeam-type").on("change", function() {
+		var v = $("#add1spectrum-ionTrapBeam-type").val();
+		$(".add1spectrum-ionTrap").hide();
+		if (v == "beam") {
+		} else if (v == "trap") {
+			$(".add1spectrum-ionTrap").show();
+		}
+	});
+	$("#add1spectrum-peaksMS-msLevel").on("change", function() {
+		$(".disabled-if-ms-in-msms").attr("disabled", true);
+		var v = $("#add1spectrum-peaksMS-msLevel").val();
+		if (v == "ms2" || v == "ms3") {
+			$(".disabled-if-ms-in-msms").attr("disabled", false);
+		}
+	});
 });
 
 	
@@ -1654,32 +1724,23 @@ handsontableMSpeaks = function (data) {
 // 		         ]
 // 	};
 	var data_MS_Peaks = [
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
-		[ "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
+		[ "", "", "", "", "", "", "", "" ],
 	];
 	
 	if (data != null)
@@ -1690,7 +1751,7 @@ handsontableMSpeaks = function (data) {
   		data : data_MS_Peaks,
   		minSpareRows : 1,
   		colHeaders : true,
-  		colHeaders: ["m/z", "absolute intensity", "relative intensity (%)", "theo. mass", "delta (ppm)", "composition", "attribution"],
+  		colHeaders: ["m/z", "absolute intensity", "relative intensity (%)", "theo. mass", "delta (ppm)","RDB Equiv.", "composition", "attribution"],
   		contextMenu : false,
   		columns: [
             {type: 'numeric', format: '0.0000'},
@@ -1698,6 +1759,7 @@ handsontableMSpeaks = function (data) {
             {type: 'numeric', format: '0.00'},
             {type: 'numeric', format: '0.0000'},
             {type: 'numeric', format: '0.0000'},
+            {type: 'numeric', format: '0.0'},
 			{type: 'text'},
 			{type: 'text'},
   		]
@@ -2328,6 +2390,9 @@ var isJsonOtherMetadataComplete = false;
 // other spec ms
 var jsonMolIonization = null;
 
+// spec MSMS
+var jsonMolIonBeam = null;
+
 var cptPeakListTab = 0;
 var jsonAnalyzerAcquisition = [];
 
@@ -2521,13 +2586,18 @@ postOneSpectrumFrom = function() {
 						//resetNMRpeaks();
 						if (data["spectra-nmr-success"].length===1)
 							listOfViewableSpectra.push(data["spectra-nmr-success"][0]);
-					} else if (isMS) {
+					} else if (isMS || isMSMS) {
 						$("#btnSwitch-returntoStep3").attr("onclick", "switchToStep(4)");
 						// clear grid
 						//handsontableMSpeaks(null);
 						isMSpeaksInit = false;
 						if (data["spectra-lcms-success"].length===1)
 							listOfViewableSpectra.push(data["spectra-lcms-success"][0]);
+						if (data["spectra-lc-msms-success"].length===1) {
+							listOfViewableSpectra.push(data["spectra-lc-msms-success"][0]);
+							var newSpectraParent = (data["spectra-lc-msms-parents-names"][0]);
+							$("#add1spectrum-peaksMS-msPrecursor").append('<option value="'+(data["spectra-lc-msms-success"][0])+'">'+newSpectraParent+'</option>');
+						}
 					}
 					var idsV = '';
 					$.each(listOfViewableSpectra, function(k,v) {
@@ -2581,6 +2651,8 @@ loadFomDataIntoJsonObjects = function () {
 		jsonSpectrumType = "gc-ms";
 	else if (isLC && isMS)
 		jsonSpectrumType = "lc-ms";
+	else if (isLC && isMSMS)
+		jsonSpectrumType = "lc-msms";
 	else if (isNMR)
 		jsonSpectrumType = "nmr";
 	if (jsonSpectrumType != null && jsonSpectrumType != "")
@@ -2642,8 +2714,8 @@ loadFomDataIntoJsonObjects = function () {
 		// II.C - std matrix
 	case "matrix-ref":
 		jsonSample["sample_type"] = "standardized-matrix";
-		// matrix type
-		jsonSample["matrix_type"] = $("#add1spectrum-sample-stdMatrix").val();
+		jsonSample["std-matrix-id"] = $("#add1spectrum-sample-stdMatrix").val();
+		jsonSample["std-matrix-txt"] = $("#add1spectrum-sample-stdMatrix option:selected").text()
 		// cpd added
 		jsonSample.rcc_added = getRCCADDED();
 // 		if (jsonSample.rcc_added.length==0) {
@@ -2655,7 +2727,9 @@ loadFomDataIntoJsonObjects = function () {
 		// II.D - bio matrix
 	case "matrix-bio":
 		jsonSample["sample_type"] = "analytical-matrix";
-		// TODO get source and type
+		jsonSample["analytical-matrix-id"] = $("#add1spectrum-sample-bioMatrix").val();
+		jsonSample["analytical-matrix-txt"] = $("#add1spectrum-sample-bioMatrix option:selected").text();
+		jsonSample["analytical-matrix-filter"] = 'allPF';
 		break;
 	default:
 		return false;
@@ -2722,7 +2796,7 @@ loadFomDataIntoJsonObjects = function () {
 	isJsonAnalyzerComplete = true;
 	isJsonAnalyzer = {};
 	// IV.A - MS
-	if (isMS) {
+	if (isMS || isMSMS) {
 		isJsonAnalyzerComplete = true;
 		jsonAnalyzer = {};
 		// check error
@@ -2740,6 +2814,26 @@ loadFomDataIntoJsonObjects = function () {
 		jsonAnalyzer["ion_analyzer_type"] = $("#add1spectrum-analyzer-ms-ionAnalyzerType").val();
 // 		jsonAnalyzer["detector"] = $("#add1spectrum-analyzer-ms-detector").val();
 // 		jsonAnalyzer["detection_protocol"] = $("#add1spectrum-analyzer-ms-detectionProtocol").val();
+		
+		if (isMSMS) {
+			// MSMS ion BEAM or TRAP
+			jsonMolIonBeam = {}
+			var jsonIonTrapBeam = {}
+			if ($("#add1spectrum-ionTrapBeam-type").val() == "trap") {
+				jsonIonTrapBeam["ion_gas"] = $("#add1spectrum-ionTrapBeam-ionGas").val();
+				jsonIonTrapBeam["ion_pressure_value"] = $("#add1spectrum-ionTrapBeam-ionGasPressureValue").val();
+				jsonIonTrapBeam["ion_pressure_unit"] = $("#add1spectrum-ionTrapBeam-ionGasPressureUnit").val();
+				// sp
+				jsonIonTrapBeam["ion_freq_shift"] = $("#add1spectrum-ionTrapBeam-ionFrequencyShift").val();
+				jsonIonTrapBeam["ion_number"] = $("#add1spectrum-ionTrapBeam-ionNumber").val();
+				jsonMolIonBeam["ion_trap"] = jsonIonTrapBeam;
+			} else if ($("#add1spectrum-ionTrapBeam-type").val() == "beam") {
+				jsonIonTrapBeam["ion_gas"] = $("#add1spectrum-ionTrapBeam-ionGas").val();
+				jsonIonTrapBeam["ion_pressure_value"] = $("#add1spectrum-ionTrapBeam-ionGasPressureValue").val();
+				jsonIonTrapBeam["ion_pressure_unit"] = $("#add1spectrum-ionTrapBeam-ionGasPressureUnit").val();
+				jsonMolIonBeam["ion_beam"] = jsonIonTrapBeam;
+			}
+		}
 		
 		jsonMolIonization = {};
 		var jsonModePos = {};
@@ -2893,7 +2987,7 @@ loadFomDataIntoJsonObjects = function () {
 	isJsonPeaksListComplete = false;
 	// V.A - MS
 	// V.A.1 - MS fullscan
-	if (isMS) {
+	if (isMS || isMSMS) {
 		// init
 		var peaklist = [];
 		var peakdata = {};
@@ -2907,8 +3001,9 @@ loadFomDataIntoJsonObjects = function () {
 					formatData["RI"] = Number(this[2]);
 					formatData["theoMass"] = Number(this[3]);
 					formatData["deltaPPM"] = Number(this[4]);
-					formatData["composition"] = (this[5]);
-					formatData["attribution"] = (this[6]);
+					formatData["rdbEquiv"] = Number(this[5]);//new 2.0
+					formatData["composition"] = (this[6]);
+					formatData["attribution"] = (this[7]);
 					peaklist.push(formatData);
 					isJsonPeaksListComplete = true;
 				}
@@ -2918,6 +3013,7 @@ loadFomDataIntoJsonObjects = function () {
 		peakdata["ms_lvl"] = $("#add1spectrum-peaksMS-msLevel").val();
 		peakdata["polarity"] = $("#add1spectrum-peaksMS-polarity").val();
 		peakdata["resolution"] = $("#add1spectrum-peaksMS-resolution").val();
+		peakdata["curation"] = $("#add1spectrum-peaksMS-curation").val();
 		peakdata["mz_range_from"] = $("#add1spectrum-peaksMS-rangeFrom").val();
 		peakdata["mz_range_to"] = $("#add1spectrum-peaksMS-rangeTo").val();
 		peakdata["rt_abs_from"] = $("#add1spectrum-peaksMS-rtMinFrom").val();
@@ -2925,6 +3021,18 @@ loadFomDataIntoJsonObjects = function () {
 		peakdata["rt_solv_from"] = $("#add1spectrum-peaksMS-rtSolvFrom").val();
 		peakdata["rt_solv_to"] = $("#add1spectrum-peaksMS-rtSolvTo").val();
 		peakdata["resolution_FWHM"] = $("#add1spectrum-analyzer-ms-resolutionFWHM").val();
+		if (isMSMS) {
+			// gather specific MSMS data
+			peakdata["msms_ms_precursor"] = $("#add1spectrum-peaksMS-msPrecursor").val();
+			peakdata["msms_ms_precursor_ion"] = $("#add1spectrum-peaksMS-msPrecursorIon").val();
+			peakdata["msms_ms_isolation_mode"] = $("#add1spectrum-peaksMS-isolationMode").val();
+			peakdata["msms_ms_isolation_window"] = $("#add1spectrum-peaksMS-isolationWindow").val();
+			peakdata["msms_ms_qz_isolation"] = $("#add1spectrum-peaksMS-qzIsolation").val();
+			peakdata["msms_ms_activation_time"] = $("#add1spectrum-peaksMS-activationTime").val();
+			peakdata["msms_ms_mode"] = $("#add1spectrum-peaksMS-mode").val();
+			peakdata["msms_ms_frag_nrj"] = $("#add1spectrum-peaksMS-frag-nrj").val();
+			//$("#")
+		}
 		// gather
 		spectrumData["peakdata"] = peakdata;
 		spectrumData["peaklist"] = peaklist;
@@ -3288,6 +3396,11 @@ function gatherJsonObjects() {
 	if (isMS) {
 		jsonData["ms_analyzer"] = jsonAnalyzer;
 		jsonData["molecule_ionization"] = jsonMolIonization;
+		jsonData["ms_peaklist"] = jsonPeaksList;
+	} else if (isMSMS) {
+		jsonData["ms_analyzer"] = jsonAnalyzer;
+		jsonData["molecule_ionization"] = jsonMolIonization;
+		jsonData["molecule_beamOrTrap"] = jsonMolIonBeam;
 		jsonData["ms_peaklist"] = jsonPeaksList;
 	} else if (isNMR) {
 		jsonData["nmr_analyzer"] = jsonAnalyzer;

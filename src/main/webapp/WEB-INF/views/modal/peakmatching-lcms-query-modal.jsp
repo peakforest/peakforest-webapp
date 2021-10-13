@@ -170,6 +170,12 @@
 										<small class="lcms-cea-only ">
 											<spring:message code="modal.peakmatching.params.lcmsmatching.poweredBy" text="powered by <a href='https://github.com/pierrickrogermele/lcmsmatching' target='_blank'>LCMS Matching</a> - &copy; CEA - MetaboHUB / W4M" />
 										</small>
+										<small class="lcms-cea-only lcms-bih-only">
+											<hr />
+										 	How scores are computed? 
+										 	We get the count of similar peaks between the query and matched spectrum, then remove the sum of all deltas between earch query and matched peaks.
+										 	Finally we divide this result by the number of matched spectra.
+										</small>
 									</div>
 								</div><!-- ./searchAdvance-spectra-lcms-panel-bih -->
 							</div>

@@ -1,5 +1,7 @@
 <%@page import="java.util.Random"%>
 <%@page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@page import="org.springframework.security.core.context.SecurityContextHolder"%>
+<%@page import="fr.metabohub.peakforest.security.model.User"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
@@ -27,6 +29,9 @@ int randomID = randomGenerator.nextInt(1000000);
 											<span class="pull-right">
 												<c:if test="${spectrum_type == 'lc-fullscan'}">
 													<a href="spectrum-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
+												</c:if>
+												<c:if test="${spectrum_type == 'lc-fragmentation'}">
+													<a href="spectrum-msms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
 												</c:if>
 												<a id="linkDumpSpectrum" href="#" ><i class="fa fa-file-excel-o"></i></a>
 											</span>
@@ -65,26 +70,14 @@ int randomID = randomGenerator.nextInt(1000000);
 											</c:choose>
 										</c:if>
 										<c:if test="${display_real_spectrum}">
-											<c:choose>
-												<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'Proton-1D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-1D' || spectrum_nmr_analyzer_data_acquisition == 'CPMG-1D'}">
-													<!--stgraph-->
-													<div id="stgraph<%=randomID %>" class="stgraph">
-														loading NMR spectra... <br />
-														<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
-															title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
-													</div>
-												</c:when>
-												<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'Carbon13-1D' || spectrum_nmr_analyzer_data_acquisition == 'JRES-2D' || spectrum_nmr_analyzer_data_acquisition == 'COSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'TOCSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-2D' || spectrum_nmr_analyzer_data_acquisition == 'HMBC-2D' || spectrum_nmr_analyzer_data_acquisition == 'HSQC-2D'}">
-													<!--nmrpro-->
-													<div class="div_container_nmrpro_wrapper">
-													  <div id="container_nmrpro<%=randomID %>" class="div_container_nmrpro">
-													  	loading NMR spectra... <br />
-														<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
-															title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
-													  </div>
-													</div>
-												</c:when>
-											</c:choose>
+											<!--nmrpro-->
+											<div class="div_container_nmrpro_wrapper">
+											  <div id="container_nmrpro<%=randomID %>" class="div_container_nmrpro">
+											  	loading NMR spectra... <br />
+												<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
+													title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
+											  </div>
+											</div>
 										</c:if>
 									</c:if>
 									
@@ -216,7 +209,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelStd" text="Sample type: Standardized Matrix" /></h3>
 			</div>
 			<div class="panel-body">
-				<a target="_BLANK" href="${fn:escapeXml(spectrum_matrix_link)}">${fn:escapeXml(spectrum_matrix_name)}</a>
+				${(standardized_matrix.getHtmlDisplay())}
 				<c:if test="${spectrum_has_main_compound}">
 					<br />
 					<br />
@@ -256,7 +249,11 @@ int randomID = randomGenerator.nextInt(1000000);
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelMatrix" text="Sample type: Analytical Matrix" /></h3>
 			</div>
 			<div class="panel-body">
-			...
+				<% if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) { %>
+					${(analytical_matrix.getHtmlDisplay())}
+				<% } else { %>
+					${(analytical_matrix.getNaturalLanguage())}
+				<% }  %>
 			</div>
 	</c:when>
 </c:choose>
@@ -399,7 +396,7 @@ int randomID = randomGenerator.nextInt(1000000);
 			</div>
 			<div class="panel-body">
 				<ul class="list-group" style="max-width: 600px;">
-					<li class="list-group-item">Instrument: ${fn:escapeXml(spectrum_ms_analyzer.instrumentName)}</li>
+<%-- 					<li class="list-group-item">Instrument: ${fn:escapeXml(spectrum_ms_analyzer.instrumentName)}</li> --%>
 					<li class="list-group-item">Analyzer type: ${fn:escapeXml(spectrum_ms_analyzer.getIonAnalyzerType())}</li>
 					<li class="list-group-item">Model: ${fn:escapeXml(spectrum_ms_analyzer.instrumentModel)}</li>
 <%-- 					<li class="list-group-item">Resolution FWHM: ${spectrum_ms_analyzer.instrumentResolutionFWHMresolution}@${spectrum_ms_analyzer.instrumentResolutionFWHMmass}</li> --%>
@@ -408,6 +405,38 @@ int randomID = randomGenerator.nextInt(1000000);
 				</ul>
 			</div>
 		</div>
+		<!-- start MSMS only -->
+		<c:if test="${spectrum_type == 'lc-fragmentation'}">
+			<div class="panel panel-default">
+				<!-- // if ION STORAGE -->
+				<c:if test="${not empty spectrum_msms_iontrap}">
+					<div class="panel-heading">
+						<h3 class="panel-title"><spring:message code="page.spectrum.metadata.msms.labelIonStorage" text="Ion storage" /></h3>
+					</div>
+					<div class="panel-body">
+						<ul class="list-group" style="max-width: 600px;">
+							<li class="list-group-item">Gas: ${(spectrum_msms_iontrap.getIonGasAsHTML())}</li>
+							<li class="list-group-item">Gas pressure: ${spectrum_msms_iontrap.getIonGazPressure()} ${fn:escapeXml(spectrum_msms_iontrap.getIonGazPressureUnitAsString())} </li>
+							<li class="list-group-item">Frequency shift: ${fn:escapeXml(spectrum_msms_iontrap.getIonFrequencyShift())} KHz</li>
+							<li class="list-group-item">Ion number (AGC or ICC): ${fn:escapeXml(spectrum_msms_iontrap.getIonNumberAGC())} </li>
+						</ul>
+					</div>
+				</c:if>
+				<!-- // if ION BEAM -->
+				<c:if test="${not empty spectrum_msms_ionbeam }">
+					<div class="panel-heading">
+						<h3 class="panel-title"><spring:message code="page.spectrum.metadata.msms.labelIonBeam" text="Ion beam" /></h3>
+					</div>
+					<div class="panel-body">
+						<ul class="list-group" style="max-width: 600px;">
+							<li class="list-group-item">Gas: ${(spectrum_msms_ionbeam.getIonGasAsHTML())}</li>
+							<li class="list-group-item">Gas pressure: ${spectrum_msms_ionbeam.getIonGazPressure()} ${fn:escapeXml(spectrum_msms_ionbeam.getIonGazPressureUnitAsString())} </li>
+						</ul>
+					</div>
+				</c:if>
+			</div>
+		</c:if>
+		<!-- end MSMS only -->
 	</div>
 	
 	<div class="tab-pane " id="MS_peaks">
@@ -426,13 +455,34 @@ int randomID = randomGenerator.nextInt(1000000);
 								<li class="list-group-item">Resolution FWHM: ${spectrum_ms_resolution_FWHM}</li>
 							</ul>
 						</td>
-						<td width="67%">
+						<td width="33%">
 							<ul class="list-group" style="max-width: 300px;">
 								<li class="list-group-item">Mass range: [${spectrum_ms_range_from} .. ${spectrum_ms_range_to}]</li>
 								<li class="list-group-item">Retention time <small>(min)</small>: [${spectrum_rt_min_from} .. ${spectrum_rt_min_to}]</li>
 								<li class="list-group-item">Retention time <small>(MeOH)</small>: [${spectrum_rt_meoh_from} .. ${spectrum_rt_meoh_to}]</li>
 								<li class="list-group-item">Retention time<sup title="based on %MeOH = 1.28 %ACN ">*</sup> <small>(ACN)</small>: [${spectrum_rt_acn_from} .. ${spectrum_rt_acn_to}]</li>
 							</ul>
+						</td>
+						<td width="33%">
+							<!-- only if msms -->
+							<c:if test="${spectrum_type == 'lc-fragmentation'}">
+								<ul class="list-group" >
+									<c:if test="${spectrum_msms_isMSMS}">
+										<li class="list-group-item">Parent ion M/Z: ${spectrum_msms_parentIonMZ} </li>
+										<li class="list-group-item">
+											Parent spectrum: 
+											<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum_msms_parentSpectrum.getPeakForestID()}">${ spectrum_msms_parentSpectrum.getPeakForestID()}</a> <small>${fn:escapeXml(spectrum_msms_parentSpectrum.getMassBankName())}</small> 
+										</li>
+									</c:if>
+									<c:if test="${spectrum_msms_hasChild}">
+										<li class="list-group-item">Children: 
+											<c:forEach var="tSpectrum" items="${spectrum_msms_children}">
+												<br /> <a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${tSpectrum.getPeakForestID()}">${tSpectrum.getPeakForestID()}</a> <small> ${fn:escapeXml(tSpectrum.getMassBankName())} </small>
+											</c:forEach>
+										</li>
+									</c:if>
+								</ul>
+							</c:if>
 						</td>
 					</tr>
 				</table>
@@ -446,17 +496,24 @@ int randomID = randomGenerator.nextInt(1000000);
 				<table class="table" style="max-width: 900px;">
 					<thead>
 						<tr style="white-space: nowrap;">
-							<th>m/z</th><th>RI (%)</th><th>theo. mass</th><th>delta (ppm)</th><th>composition</th><th>attribution</th>
+							<th>m/z</th><th>RI (%)</th><th>theo. mass</th><th>delta (ppm)</th><th>RDB equiv.</th><th>composition</th><th>attribution</th>
 						</tr>
 					</thead>
 					<tbody>
 						<c:forEach var="peak" items="${spectrum_ms_peaks}">
 						<tr>
-							<td>${peak.massToChargeRatio}</td><td>${peak.relativeIntensity}</td><td>${peak.getTheoricalMass()}</td><td>${peak.getDeltaPPM()}</td><td>${fn:escapeXml(peak.composition)}</td><td>${fn:escapeXml(peak.getAttributionAsString())}</td>
+							<td>${peak.massToChargeRatio}</td>
+							<td>${peak.relativeIntensity}</td>
+							<td>${peak.getTheoricalMass()}</td>
+							<td>${peak.getDeltaPPM()}</td>
+							<td>${peak.getRDBequiv()}</td>
+							<td>${fn:escapeXml(peak.composition)}</td>
+							<td>${fn:escapeXml(peak.getAttributionAsString())}</td>
 						</tr>
 						</c:forEach>
 					</tbody>
 				</table>
+				Curation: ${spectrum_ms_peaks_curation_lvl} 
 			</div>
 		</div>
 	</div>
@@ -562,7 +619,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">Temperature: ${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)} (K)</li>
 				<li class="list-group-item">Relaxation delay D1: ${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)} (s)</li>
 				<li class="list-group-item">SW (1H): ${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)} (ppm)</li>
-				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.nus)}</li>
+				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.getNusAsTrueFalse())}</li>
 				<li class="list-group-item">NusAmount: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusAmount)} (%)</li>
 				<li class="list-group-item">NusPoints: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusPoints)}</li>
 			</ul>
@@ -579,7 +636,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">Temperature: ${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)} (K)</li>
 				<li class="list-group-item">Relaxation delay D1: ${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)} (s)</li>
 				<li class="list-group-item">SW (1H): ${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)} (ppm)</li>
-				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.nus)}</li>
+				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.getNusAsTrueFalse())}</li>
 				<li class="list-group-item">NusAmount: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusAmount)} (%)</li>
 				<li class="list-group-item">NusPoints: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusPoints)}</li>
 			</ul>
@@ -596,7 +653,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">Relaxation delay D1: ${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)} (s)</li>
 				<li class="list-group-item">Mixing time D8: ${fn:escapeXml(spectrum_nmr_analyzer_data.mixingTime)} (s)</li>
 				<li class="list-group-item">SW (1H): ${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)} (ppm)</li>
-				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.nus)}</li>
+				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.getNusAsTrueFalse())}</li>
 				<li class="list-group-item">NusAmount: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusAmount)} (%)</li>
 				<li class="list-group-item">NusPoints: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusPoints)}</li>
 			</ul>
@@ -615,7 +672,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">SW (13C): ${fn:escapeXml(spectrum_nmr_analyzer_data.swF2)} (ppm)</li>
 				<li class="list-group-item">Decouplage type: ${fn:escapeXml(spectrum_nmr_analyzer_data.decouplageType)}</li>
 				<li class="list-group-item">JXH: ${fn:escapeXml(spectrum_nmr_analyzer_data.jxh)} (Hz)</li>
-				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.nus)}</li>
+				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.getNusAsTrueFalse())}</li>
 				<li class="list-group-item">NusAmount: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusAmount)} (%)</li>
 				<li class="list-group-item">NusPoints: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusPoints)}</li>
 			</ul>
@@ -633,7 +690,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">SW (1H): ${fn:escapeXml(spectrum_nmr_analyzer_data.swF1)} (ppm)</li>
 				<li class="list-group-item">SW (13C): ${fn:escapeXml(spectrum_nmr_analyzer_data.swF2)} (ppm)</li>
 				<li class="list-group-item">JXH long range: ${fn:escapeXml(spectrum_nmr_analyzer_data.jxh)} (Hz)</li>
-				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.nus)}</li>
+				<li class="list-group-item">NUS: ${fn:escapeXml(spectrum_nmr_analyzer_data.getNusAsTrueFalse())}</li>
 				<li class="list-group-item">NusAmount: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusAmount)} (%)</li>
 				<li class="list-group-item">NusPoints: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusPoints)}</li>
 			</ul>
@@ -663,7 +720,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">SSB (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF1)}</li>
 				<li class="list-group-item">SSB (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF2)}</li>
 				<li class="list-group-item">GB (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}</li>
-				<li class="list-group-item">GB (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}</li>
+				<li class="list-group-item">GB (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.gbF2)}</li>
 				<li class="list-group-item">Peak Peaking: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPeakPickingAsString())}</li>
 				<li class="list-group-item">NUS processing parameter: ${fn:escapeXml(spectrum_nmr_analyzer_data.nusProcessingParameter)}</li>
 			</ul>
@@ -679,7 +736,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">SSB (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF1)}</li>
 				<li class="list-group-item">SSB (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.ssbF2)}</li>
 				<li class="list-group-item">GB (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}</li>
-				<li class="list-group-item">GB (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.gbF1)}</li>
+				<li class="list-group-item">GB (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.gbF2)}</li>
 				<li class="list-group-item">Peak Peaking: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPeakPickingAsString())}</li>
 				<li class="list-group-item">Symmetrize: ${fn:escapeXml(spectrum_nmr_analyzer_data.getSymmetrizeAsString())}</li>
 			</ul>
@@ -828,7 +885,9 @@ int randomID = randomGenerator.nextInt(1000000);
 <c:if test="${mol_nb_3D_exists}">
 													<!-- if mol 3D -->
 													<div id="showMol-3D-numbered" class="tab-pane fade ${mol_nb_3D_exists_fad}">
-														<iframe id="jsmol" height="520" width="420" style="border-width: inherit;" >loading...</iframe>
+														<div id="jsmol" height="520" width="420" style="border-width: inherit;" >
+															loading...
+														</div>
 													</div>
 </c:if>
 <c:if test="${mol_nb_2D_exists}">
@@ -1489,7 +1548,7 @@ $.each($(".cpdFormula"), function(k,v) {
 			if (typeSpectrum == 'lc-fullscan')
 				spectrumFullScanLCToLoad.push(idSpectrum);
 			else if ( typeSpectrum == 'lc-fragmentation')
-				spectrumFullScanLCToLoad.push(idSpectrum);
+				spectrumFragLCToLoad.push(idSpectrum);
 			// load ajax
 			$.ajax({
 				type: "post",
@@ -1529,18 +1588,11 @@ $.each($(".cpdFormula"), function(k,v) {
 			});
 			// </c:if>
 			// <c:if test="${display_real_spectrum}">
-			// <c:if test="${spectrum_nmr_analyzer_data_acquisition == 'Proton-1D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-1D' || spectrum_nmr_analyzer_data_acquisition == 'CPMG-1D'}">
-			$("#stgraph<%=randomID %>").css("width",$("#cardSheet1").css("width"));
-			// display ML & DJ viewer 
-			nmrSingle("${real_spectrum_code}", <%=randomID %>, "", rawSpectrumTitle );
-			// </c:if>
-			// <c:if test="${spectrum_nmr_analyzer_data_acquisition == 'Carbon13-1D' || spectrum_nmr_analyzer_data_acquisition == 'JRES-2D' || spectrum_nmr_analyzer_data_acquisition == 'COSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'TOCSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-2D' || spectrum_nmr_analyzer_data_acquisition == 'HMBC-2D' || spectrum_nmr_analyzer_data_acquisition == 'HSQC-2D'}">
 			setTimeout(function(){
 				var scriptsURL = ('<c:url value="/resources/nmrpro/specdraw.min.css" />').replace("specdraw.min.css","");
 				var jsonURL = "spectrum-json";
 				loadSpectrumNMRPro ("container_nmrpro<%=randomID %>", "${real_spectrum_code}", rawSpectrumTitle, scriptsURL, jsonURL)
 			},150);
-			// </c:if>
 			// </c:if>
 		}
 	}
@@ -1593,22 +1645,23 @@ $.each($(".cpdFormula"), function(k,v) {
 	var jsMolSRC = false;
 	refreshJSmol = function() {
 		if (!jsMolSRC) {
-			var iframe = document.getElementById("jsmol"),
-			doc = iframe.contentWindow.document;
+// 			var iframe = document.getElementById("jsmol"),
+// 			doc = iframe.contentWindow.document;
 			$.get("js_sandbox/${spectrum_id}", function( data ) {
-				doc.open().write(data);
-				doc.close();
+// 				doc.open().write(data);
+// 				doc.close();
+				$("#jsmol").html(data)
 				jsMolSRC = true;
 			});
 		}
-		try {
-			if (!jsMolLoaded && /firefox/.test(navigator.userAgent.toLowerCase())) {
-				document.getElementById("jsmol").contentDocument.location.reload(true);
-				jsMolLoaded = true;
-			} else {
-				document.getElementById("jsmol").contentWindow.refreshJSmol();
-			}
-		} catch(e) {}
+// 		try {
+// 			if (!jsMolLoaded && /firefox/.test(navigator.userAgent.toLowerCase())) {
+// 				document.getElementById("jsmol").contentDocument.location.reload(true);
+// 				jsMolLoaded = true;
+// 			} else {
+// 				document.getElementById("jsmol").contentWindow.refreshJSmol();
+// 			}
+// 		} catch(e) {}
 	}
 	</script>
 

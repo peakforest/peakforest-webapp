@@ -109,6 +109,12 @@
 														%>
 														<td class="smiles" <%=smilesAlert %>>${smiles}</td>
 													</tr>
+													<c:if test="${not empty iupacName}">
+														<tr>
+															<td><spring:message code="modal.show.basicInfos.iupac.simple" text="IUPAC" /></td>
+															<td>${iupacName}</td>
+														</tr>
+													</c:if>
 												</tbody>
 											</table>
 										</div>

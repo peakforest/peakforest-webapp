@@ -1,18 +1,12 @@
 package fr.metabohub.peakforest.controllers;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.LineNumberReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import fr.metabohub.peakforest.model.metadata.AnalyticalMatrix;
 import fr.metabohub.peakforest.services.ProcessProgressManager;
 import fr.metabohub.peakforest.services.metadata.AnalyticalMatrixManagementService;
 import fr.metabohub.peakforest.utils.EncodeUtils;
@@ -66,7 +61,7 @@ public class TemplateController {
 
 		// init / db connect
 		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String login = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
 		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 
 		// process flag
@@ -108,48 +103,28 @@ public class TemplateController {
 					&& jsonDataSample.get("sample_type") instanceof String) {
 				switch (jsonDataSample.get("sample_type").toString()) {
 				case "analytical-matrix":
-					// init: if analytical matrix, add in DB
-					String ontologiesFileDir = appRoot + Utils.getBundleConfElement("ontologies.folder");
-					// analytical-matrix-source
-					if (jsonDataSample.containsKey("analytical-matrix-source")
-							&& jsonDataSample.get("analytical-matrix-source").toString() != "") {
-						try {
-							long sourceId = Long
-									.parseLong(jsonDataSample.get("analytical-matrix-source").toString());
-							// ORIGINE FILE
-							String ontologiesSourceFileName = Utils
-									.getBundleConfElement("ontologies.source.file");
-							File sourceOntologyFile = new File(
-									ontologiesFileDir + File.separator + ontologiesSourceFileName);
-							String sourceName = grepOntologyNameByID(sourceId, sourceOntologyFile);
-							AnalyticalMatrixManagementService.createSource(sourceId, sourceName, dbName,
-									login, password);
-						} catch (NumberFormatException e) {
-						}
+					String filter = jsonDataSample.get("analytical-matrix-filter").toString();
+					List<AnalyticalMatrix> listRaw = new ArrayList<>();
+					if (filter.equalsIgnoreCase("allPF")) {
+						listRaw = AnalyticalMatrixManagementService.readAll(dbName, username, password);
+					} else if (filter.equalsIgnoreCase("topPF")) {
+						listRaw = AnalyticalMatrixManagementService.listFavourtie(dbName, username, password);
+					} else if (filter.equalsIgnoreCase("allOntoFW")) {
+						// not scheduled... yet!
 					}
-					// analytical-matrix-type
-					if (jsonDataSample.containsKey("analytical-matrix-type")
-							&& jsonDataSample.get("analytical-matrix-type").toString() != "") {
-						try {
-							long typeId = Long
-									.parseLong(jsonDataSample.get("analytical-matrix-type").toString());
-							// ORIGINE FILE
-							String ontologiesTypeFileName = Utils
-									.getBundleConfElement("ontologies.type.file");
-							File sourceOntologyFile = new File(
-									ontologiesFileDir + File.separator + ontologiesTypeFileName);
-							String typeName = grepOntologyNameByID(typeId, sourceOntologyFile);
-							AnalyticalMatrixManagementService.createType(typeId, typeName, dbName, login,
-									password);
-						} catch (NumberFormatException e) {
-						}
+					List<LinkedHashMap<String, Object>> listClean = new ArrayList<>();
+					for (AnalyticalMatrix matrix : listRaw) {
+						LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+						// data.put("id", matrix.getId());
+						data.put("key", matrix.getKey());
+						data.put("naturalLanguage", matrix.getNaturalLanguage());
+						// data.put("html", matrix.getHtmlDisplay());
+						// data.put("isFav", matrix.isFavourite());
+						// data.put("countSpectra", matrix.getSpectraNumber());
+						listClean.add(data);
 					}
-					// fetch all analytical matrix / update XLSM template
-					List<String> sources = AnalyticalMatrixManagementService.listSources(dbName, login,
-							password);
-					List<String> types = AnalyticalMatrixManagementService.listTypes(dbName, login, password);
-					jsonData.put("sources-list", sources);
-					jsonData.put("types-list", types);
+
+					jsonData.put("matrix", listClean);
 					break;
 				}
 			}
@@ -168,7 +143,7 @@ public class TemplateController {
 				isLCMSMS = true;
 				dumperKey = "LC-MSMS_";
 				break;
-			// TODO gc-ms / lc-nmr / ...
+			// reserved for gc-ms / lc-nmr / fia / ...
 			default:
 				// not supported
 				break;
@@ -266,28 +241,28 @@ public class TemplateController {
 		return response;
 	}
 
-	private String grepOntologyNameByID(long id, File sourceOntologyFile) {
-		String name = null;
-		Pattern regexp = Pattern.compile("^0*" + id + "\\t");
-		Matcher matcher = regexp.matcher("");
-
-		Path path = Paths.get(sourceOntologyFile.getAbsolutePath());
-		try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
-				LineNumberReader lineReader = new LineNumberReader(reader);) {
-			String line = null;
-			while ((line = lineReader.readLine()) != null) {
-				matcher.reset(line.toLowerCase()); // reset the input
-				if (matcher.find()) {
-					String[] dataLine = line.split("\\t");
-					name = dataLine[1];
-					// results.add(new OntologyMapper(Long.parseLong(dataLine[0]), dataLine[1]));
-				}
-			}
-		} catch (Exception ex) {
-			// ex.printStackTrace();
-			// results.add("s");
-		}
-		return name;
-	}
+	// private String grepOntologyNameByID(long id, File sourceOntologyFile) {
+	// String name = null;
+	// Pattern regexp = Pattern.compile("^0*" + id + "\\t");
+	// Matcher matcher = regexp.matcher("");
+	//
+	// Path path = Paths.get(sourceOntologyFile.getAbsolutePath());
+	// try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+	// LineNumberReader lineReader = new LineNumberReader(reader);) {
+	// String line = null;
+	// while ((line = lineReader.readLine()) != null) {
+	// matcher.reset(line.toLowerCase()); // reset the input
+	// if (matcher.find()) {
+	// String[] dataLine = line.split("\\t");
+	// name = dataLine[1];
+	// // results.add(new OntologyMapper(Long.parseLong(dataLine[0]), dataLine[1]));
+	// }
+	// }
+	// } catch (Exception ex) {
+	// // ex.printStackTrace();
+	// // results.add("s");
+	// }
+	// return name;
+	// }
 
 }

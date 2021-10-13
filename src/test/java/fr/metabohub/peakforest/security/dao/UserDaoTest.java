@@ -38,8 +38,8 @@ public class UserDaoTest {
 		Utils.setBundleConf(ResourceBundle.getBundle("confTest"));
 		try {
 			// manual configuration
-			Configuration configuration = new Configuration().configure(Utils
-					.getBundleConfElement("hibernate.metadb.configuration.file"));
+			Configuration configuration = new Configuration()
+					.configure(Utils.getBundleConfElement("hibernate.metadb.configuration.file"));
 			configuration.setProperty("hibernate.connection.url",
 					"jdbc:" + Utils.getBundleConfElement("hibernate.connection.meta.database.type") + "://"
 							+ Utils.getBundleConfElement("hibernate.connection.meta.database.host") + "/"
@@ -48,8 +48,8 @@ public class UserDaoTest {
 					Utils.getBundleConfElement("hibernate.connection.meta.database.username"));
 			configuration.setProperty("hibernate.connection.meta.password",
 					Utils.getBundleConfElement("hibernate.connection.meta.database.password"));
-			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(
-					configuration.getProperties()).buildServiceRegistry();
+			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
+					.applySettings(configuration.getProperties()).buildServiceRegistry();
 			testSessionFactory = configuration.buildSessionFactory(serviceRegistry);
 		} catch (Throwable ex) {
 			System.err.println("Initial SessionFactory creation failed.");
@@ -86,10 +86,10 @@ public class UserDaoTest {
 		long beforeTime = System.currentTimeMillis();
 
 		// if exist => delete
-		if (UserDao.exists(testSessionFactory, "npaulhe@clermont.inra.fr"))
-			UserDao.delete(testSessionFactory, "npaulhe@clermont.inra.fr");
-		if (UserDao.exists(testSessionFactory, "franck.giacomoni@clermont.inra.fr"))
-			UserDao.delete(testSessionFactory, "franck.giacomoni@clermont.inra.fr");
+		if (UserDao.exists(testSessionFactory, "nils.paulhe@inra.fr"))
+			UserDao.delete(testSessionFactory, "nils.paulhe@inra.fr");
+		if (UserDao.exists(testSessionFactory, "franck.giacomoni@inra.fr"))
+			UserDao.delete(testSessionFactory, "franck.giacomoni@inra.fr");
 		if (UserDao.exists(testSessionFactory, "niel.maccormack@hero-corp.com")) {
 			UserDao.delete(testSessionFactory, "niel.maccormack@hero-corp.com");
 			logger.error("[warning] user not deleted in previous tests.");
@@ -101,13 +101,13 @@ public class UserDaoTest {
 		// test create
 		User franck = new User();
 		franck.setLogin("franck");
-		franck.setEmail("franck.giacomoni@clermont.inra.fr");
+		franck.setEmail("franck.giacomoni@inra.fr");
 		franck.setPassword(encoder.encode("franckTestPassword"));
 		long idFranck = UserDao.create(testSessionFactory, franck);
 
 		User nils = new User();
 		nils.setLogin("nils");
-		nils.setEmail("nils.paulhe@clermont.inra.fr");
+		nils.setEmail("nils.paulhe@inra.fr");
 		nils.setPassword(encoder.encode("nilsTestPassword"));
 		UserDao.create(testSessionFactory, nils);
 
@@ -123,7 +123,7 @@ public class UserDaoTest {
 		franckFromDB.setAdmin(true);
 		UserDao.update(testSessionFactory, franckFromDB);
 
-		// if (!UserDao.updateAdmin(idNils, "npaulhe", "npaulhe@clermont.inra.fr", User.ADMIN))
+		// if (!UserDao.updateAdmin(idNils, "npaulhe", "nils.paulhe@inra.fr", User.ADMIN))
 		// fail("[fail] could not update user");
 
 		// test delete

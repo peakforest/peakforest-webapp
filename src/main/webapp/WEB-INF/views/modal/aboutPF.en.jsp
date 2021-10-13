@@ -24,7 +24,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="modalAboutLabel"><spring:message code="block.footer.aboutModal.title" text="About the Peak Forest Database" /></h4>
+				<h4 class="modal-title" id="modalAboutLabel"><spring:message code="block.footer.aboutModal.title" text="About the PeakForest Database" /></h4>
 			</div>
 			<div class="modal-body">
 			
@@ -101,6 +101,13 @@
 						<br />The basic spectra and data viewers use <a href="http://www.highcharts.com/" target="_blank">HighChart</a> libraries (Creative Commons Attribution-NonCommercial 3.0 License, free for non-commercial website).
 						<br />The NMR spectra viewers using raw data are powered thanks "NMR viewer for PeakForest" by Marie Lefebvre and Daniel Jacob (based on <a href="https://bitbucket.org/sbeisken/specktackle/" target="_blank">Specktackle</a>, using <a href="https://cran.r-project.org/" target="_blank">R-Base</a> in back-end).
 						<br />The table displayed with spreadsheet-like formatting are powered thanks <a href="http://handsontable.com/" target="_blank">Handsontable</a> (MIT license).
+						<hr style="margin-top: 5px; margin-bottom: 5px;" />
+							MetExploreViz is a tool to visualize metabolic network. 
+							It allows to map "omics" data and to interact with metabolic networks. 
+							It is usable as a javascript library via the MetExplore web server or within your website. 
+							For further information please refer to <a href="http://metexplore.toulouse.inra.fr/metexploreViz/doc/documentation.php" target="_blank">MetExploreViz documentation</a> 
+							and the <a href="https://doi.org/10.1093/bioinformatics/btx588" target="_blank">Bioinformatics publication</a>.
+						<br />Powered by the <!-- amazing --> <a href="http://metexplore.toulouse.inra.fr/metexploreViz/doc/team.php" target="_blank">MetExplore Team</a>.
 					</div>
 				</div>
 				

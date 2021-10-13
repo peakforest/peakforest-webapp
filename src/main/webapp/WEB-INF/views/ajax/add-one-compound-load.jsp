@@ -620,6 +620,7 @@ loadStarListener<%=randomID %>();
 					var alert = '<div class="alert alert-success alert-dismissible" role="alert">';
 					alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
 					alert += '<strong><spring:message code="alert.strong.success" text="Success!" /></strong> Compound successfully updated!';
+					alert += '<br /><a href="?PFc='+id+'">Click to view it</a>.';
 					alert += ' </div>';
 					$("#alertBoxAddOneCC").html(alert);
 // 					alert('<spring:message code="modal.show.alert.failUpdate" text="Failed to update compound!" />'); 

@@ -14,6 +14,7 @@
 		<ul class="nav nav-tabs" style="margin-bottom: 15px;">
 			<li class="active"><a href="#curation-messages-panel" data-toggle="tab"><i class="fa fa-comment"></i> Curation Messages</a></li>
 			<li><a href="#bibliography-panel" data-toggle="tab"> <i class="fa fa-certificate"></i> Bibliography Annotations </a></li>
+			<li><a href="#cpd-name-conv-panel" data-toggle="tab"> <i class="fa fa-certificate"></i> CAS / IUPAC conv. </a></li>
 		</ul>
 
 		<div id="curate-mgmt" class="tab-content">
@@ -148,18 +149,6 @@
 									<li><a href="#" onclick="$('#search-citationMng-filter-status').html($(this).html()); citationStatusFilter = 'x'; displayCitationsMs(0)"> <i class="fa fa-search"></i> All status </a></li>
 								</ul>
 							</div>
-<!-- 							<div class="input-group-btn"> -->
-<!-- 								<button type="button" class="btn btn-primary dropdown-toggle" -->
-<!-- 									data-toggle="dropdown"> -->
-<!-- 									<span id="search-citationMng-filter"><i -->
-<!-- 										class="fa fa-search"></i> All types</span> <span class="caret"></span> -->
-<!-- 								</button> -->
-<!-- 								<ul class="dropdown-menu pull-right"> -->
-<!-- 									<li><a href="#" onclick="$('#search-citationMng-filter').html($(this).html()); citationEntityFilter = 'all'; displayCurateMsgs(0)"><i class="fa fa-search"></i> All types</a></li> -->
-<!-- 									<li><a href="#" onclick="$('#search-citationMng-filter').html($(this).html()); citationEntityFilter = 'compound'; displayCurateMsgs(0)"><i class="fa fa-search"></i> Only Compounds</a></li> -->
-<!-- 									<li><a href="#" onclick="$('#search-citationMng-filter').html($(this).html()); citationEntityFilter = 'spectrum'; displayCurateMsgs(0)"><i class="fa fa-search"></i> Only Spectrum</a></li> -->
-<!-- 								</ul> -->
-<!-- 							</div> -->
 						</div>
 						<div class="col-lg-6">
 							<div id="alertCitationManagement"></div>
@@ -218,6 +207,78 @@
 					<div class="col-lg-6">
 						<ul id="searchCitationPagination" class="pagination pagination-sm">
 						</ul>
+					</div>
+					<div class="col-lg-6"></div>
+
+				</div>
+				<!--.row-->
+			
+			</div>
+
+
+			<div class="tab-pane fade" id="cpd-name-conv-panel">
+			
+				<div class="row">
+					<!-- menu filter -->
+					<!-- 
+					<div class="col-lg-12" style="z-index: 500;">
+						<div class="form-group input-group col-lg-6">
+							<input type="text" id="cpdNameConvMngSearchFilter"
+								class="form-control" placeholder="e.g. Journal of chemistry"
+								onkeyup="displayCpdNameConvMs(0)">
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-primary dropdown-toggle"
+									data-toggle="dropdown">
+									<span id="search-cpdNameConv-filter-status"> <i class="fa fa-search"></i> Only waiting</span>
+									<span class="caret"></span>
+								</button>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div id="alertNameConvManagement"></div>
+						</div>
+					</div>
+					 -->
+					 
+					<!--display-->
+					<div id="cpdNameConv-search-results" class="col-lg-11">
+						<div class="table-responsive">
+							<table id="cpdNameConvMngSearchTable"
+								class="table table-hover tablesorter table-search">
+								<thead>
+									<tr style="white-space: nowrap;">
+										<th>cpd id <i class="fa fa-sort"></i></th>
+										<th>cpd name <i class="fa fa-sort"></i></th>
+										<th>action(s) </th>
+										<th>edit </th>
+									</tr>
+								</thead>
+								<tbody id="cpdNameConvMngsTableBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+<script  type="text/x-jquery-tmpl" id="templateCpdNameConv">
+<tr id="conv-cpd-id-{%= id %}" >
+	<td>{%= pfID %} </td>
+	<td>{%= mainName %} </td>
+	<td>
+		{%each(i) actions%}
+    		<br />{%= actions[i] %}
+		{%/each%}
+	</td>
+	<td>
+		<a class="btn btn-info btn-xs" href="edit-compound-modal/{%= compound_type %}/{%= id %}" data-toggle="modal" data-target="#modalEditCompound">
+			<i class="fa fa-pencil fa-lg"></i>
+		</a>
+	</td>
+</tr>
+</script>
+
+					<!--pagination-->
+					<div class="col-lg-6">
+						<button id="moreCpdNameConv" class="btn btn-info" onclick="initLoadNamesConv()"><i class="fa fa-refresh"></i> <span>reload top 50</span></button>
 					</div>
 					<div class="col-lg-6"></div>
 
@@ -854,6 +915,72 @@
 		});
 	}
 	
+	/////////////////////
+	// init var
+	var numberMaxResultsNamesConv = 20;
+	var namesConvDisplayed = [];
+	
+	resizeNamesConvListPanel = function () {
+		var diff_screen = 320;
+		try{
+// 			$("#cpdNameConv-search-results").height($(window).height()-diff_screen);
+			$("#cpdNameConv-search-results").css("overflow","auto"); 
+		}catch(e){} 
+	};
+	$(window).resize(function() {
+		resizeNamesConvListPanel();
+	});
+	
+	var listOfAllNamesConv = [];
+	
+	// load curation messages
+	function initLoadNamesConv() {
+		$("#cpdNameConvMngsTableBody").html("");	
+		$("#cpdNameConv-search-results").hide(500)
+		$("#moreCpdNameConv i").addClass("fa-spin");
+		$("#moreCpdNameConv span").html("Loading...");
+		listOfAllNamesConv = [];
+		$.get("list-cpd-names-to-convert/50", function(data) {
+// 		console.log(data);
+			$.each(data, function(k, v){
+				var cpd = new Object();
+				cpd['id'] = v.id;
+				cpd['mainName'] = v.mainName;
+				cpd['pfID'] = v.pfID;
+				if (v.type == <%=Compound.CHEMICAL_TYPE%>)
+					cpd['compound_type'] = "chemical";
+				else if (v.type == <%=Compound.GENERIC_TYPE%>)
+					cpd['compound_type'] = "generic";
+				else if (v.type == <%=Compound.SUBSTRUCTURE_TYPE%>)
+					cpd['compound_type'] = "substructure";
+				else if (v.type == <%=Compound.PUTATIVE_TYPE%>)
+					cpd['compound_type'] = "putative";
+				var actions = [];
+				var potIUPACname = "";
+				var potIUPACcount = 0;
+				// check if cas(s)
+				$.each(v.names, function(kName, vName) {
+					if (vName.score == 1 && vName.name.toUpperCase().startsWith("CAS:") ) { actions.push("" + vName.name) ;}
+					if (vName.score == 2.5 ) { potIUPACname = vName.name; potIUPACcount++; }
+				});
+				// check if potential iupac
+				if (potIUPACname != "" && potIUPACcount == 1 && v.upacName == null) {
+					actions.push("IUPAC: " + potIUPACname);
+				}
+				// set action
+				cpd['actions'] = actions;
+				// pupush
+				console.log(cpd);
+				listOfAllNamesConv.push(cpd);
+			});
+			console.log("name conv: ready!");
+			$("#templateCpdNameConv").tmpl(listOfAllNamesConv).appendTo("#cpdNameConvMngsTableBody");
+			$("#moreCpdNameConv i").removeClass("fa-spin");
+			$("#moreCpdNameConv span").html("reload top 50 ");
+			$("#cpdNameConv-search-results").show(250)
+		});
+	} // initLoadCitation
+	initLoadNamesConv();
 	
 	</script>
 	

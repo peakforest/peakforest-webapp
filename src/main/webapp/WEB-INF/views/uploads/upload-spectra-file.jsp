@@ -44,8 +44,8 @@
 		<a class="btn btn-success" href="show-spectra-modal/${idsALLspectra}" data-toggle="modal" data-target="#modalShowSpectra"><i class="fa fa-eye"></i> View spectrum</a>
 		<script type="text/javascript">
 			// init var
-//			var listSpectraNMRids = '${idsNMRspectra}';
-// 			var listSpectraLCMSids = ${idsLCMSspectra};
+			var listSpectraNMRids = '${idsNMRspectra}';
+ 			var listSpectraLCMSids = ${idsLCMSspectra};
 			
 		</script>
 		</c:if>

@@ -95,7 +95,38 @@ int randomID = randomGenerator.nextInt(1000000);
 												<table class="table">
 													<tr>
 														<td style="width: 100px;"><spring:message code="modal.show.basicInfos.name" text="Name" /></td>
-														<td>${compoundNames.get(0).name}</td>
+														<td>
+															${compoundNames.get(0).name}
+															<!-- display stars -->
+															<div class="pull-right">
+																<c:choose>
+																	<c:when test="${nbStarCuration == 0}">
+																		<i class="fa fa-star-o"></i>
+																		<i class="fa fa-star-o"></i>
+																		<i class="fa fa-star-o"></i>
+																	</c:when>
+																	<c:when test="${nbStarCuration == 1}">
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star-o"></i>
+																		<i class="fa fa-star-o"></i>
+																	</c:when>
+																	<c:when test="${nbStarCuration == 2}">
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star-o"></i>
+																	</c:when>
+																	<c:when test="${nbStarCuration == 3}">
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star"></i>
+																	</c:when>
+																	<c:otherwise>
+																		<!-- ??? -->
+																	</c:otherwise>
+																</c:choose>
+															</div>
+															<!-- end display stats -->
+														</td>
 													</tr>
 													<tr>
 														<td><spring:message code="modal.show.basicInfos.formula" text="Formula" /></td>
@@ -221,6 +252,14 @@ int randomID = randomGenerator.nextInt(1000000);
 <!-- 															class="fa fa-star-o"></i><i class="fa fa-star-o"></i>&nbsp;</span> -->
 <!-- 													</li> -->
 												</ul>
+												
+												<c:if test="${not empty iupacName}">
+													<li class="list-group-item">
+														<spring:message code="modal.show.basicInfos.iupac" text="IUPAC:" /> 
+														${iupacName}
+													</li>
+												</c:if>
+												
 												<c:if test="${editor}">
 												<div class="input-group">
 													<span class="input-group-addon">
@@ -613,7 +652,17 @@ ${mol}</textarea>
 														<td><spring:message code="modal.show.inOtherDatabases.kegg" text="KEGG" /></td>
 														<td>
 															<c:forEach var="kegg" items="${keggs}">
-																<a href="<spring:message code="resources.banklink.kegg" text="http://www.genome.jp/dbget-bin/www_bget?cpd:" />${kegg}" target="_blank">${kegg}</a>
+																<br /> <a href="<spring:message code="resources.banklink.kegg" text="http://www.genome.jp/dbget-bin/www_bget?cpd:" />${kegg}" target="_blank">${kegg}</a>
+															</c:forEach>
+														</td>
+													</tr>
+													</c:if>
+													<c:if test="${not empty cas}">
+													<tr>
+														<td><spring:message code="modal.show.inOtherDatabases.cas.simple" text="CAS" /></td>
+														<td>
+															<c:forEach var="casEntity" items="${cas}">
+																<br /> ${casEntity.getCasNumber()};${casEntity.getCasProviderAsString()};${casEntity.getCasReferencer()}
 															</c:forEach>
 														</td>
 													</tr>

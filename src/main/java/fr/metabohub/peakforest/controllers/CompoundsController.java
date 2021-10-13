@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.springframework.web.servlet.ModelAndView;
 import fr.metabohub.chemicallibraries.mapper.ChemicalCompoundMapper;
 import fr.metabohub.externalbanks.rest.EbiPubClient;
 import fr.metabohub.peakforest.model.CurationMessage;
+import fr.metabohub.peakforest.model.compound.CAS;
 import fr.metabohub.peakforest.model.compound.ChemicalCompound;
 import fr.metabohub.peakforest.model.compound.Citation;
 import fr.metabohub.peakforest.model.compound.Compound;
@@ -132,6 +134,10 @@ public class CompoundsController {
 		List<CompoundName> listOfNames = refCompound.getListOfCompoundNames();
 		Collections.sort(listOfNames, new CompoundNameComparator());
 
+		// new 2.0: debug empty names
+		if (listOfNames.isEmpty())
+			listOfNames.add(new CompoundName("?", refCompound));
+
 		// prevent XSS
 		for (CompoundName cn : listOfNames) {
 			cn.setName(Jsoup.clean(cn.getName(), Whitelist.basic()));
@@ -143,10 +149,27 @@ public class CompoundsController {
 			cn.setScore(Utils.round(cn.getScore(), 1));
 
 		// BUILD MODEL
-
 		model.addAttribute("id", refCompound.getId());
-
 		model.addAttribute("compoundNames", listOfNames);
+
+		// new 2.0 IUPAC / CAS
+		model.addAttribute("cpdFullData", refCompound);
+		if (refCompound.getIupacName() != null)
+			model.addAttribute("iupacName", Jsoup.clean(refCompound.getIupacName(), Whitelist.basic()));
+		List<CAS> listOfCAS = refCompound.getListOfCAS();
+		for (CAS cn : listOfCAS) {
+			cn.setCasNumber(Jsoup.clean(cn.getCasNumber(), Whitelist.basic()));
+			if (cn.getCasProviderOther() != null)
+				cn.setCasProviderOther(Jsoup.clean(cn.getCasProviderOther(), Whitelist.basic()));
+			cn.setCasReferencer(Jsoup.clean(cn.getCasReferencer(), Whitelist.basic()));
+		}
+		if (!listOfCAS.isEmpty())
+			model.addAttribute("cas", listOfCAS);
+
+		// new 2.0: stars curation
+		model.addAttribute("nbStarCuration", refCompound.getCurationAsStars());
+		model.addAttribute("hasBeenStructuralChecked", refCompound.hasBeenStructuralChecked());
+		model.addAttribute("hasBeenManualChecked", refCompound.hasBeenManualChecked());
 
 		model.addAttribute("type", type);
 		model.addAttribute("inchikey", refCompound.getInChIKey());
@@ -155,8 +178,8 @@ public class CompoundsController {
 			model.addAttribute("isBioactive", true);
 			model.addAttribute("isBioactiveV", refCompound.getIsBioactive());
 		}
-		if (refCompound instanceof ChemicalCompound)
-			model.addAttribute("inchi", ((ChemicalCompound) refCompound).getInChI());
+		if (refCompound instanceof StructureChemicalCompound)
+			model.addAttribute("inchi", refCompound.getInChI());
 		model.addAttribute("exactMass", Utils.round(refCompound.getExactMass(), 7));
 		model.addAttribute("molWeight", Utils.round(refCompound.getMolWeight(), 7));
 		model.addAttribute("formula", formula);
@@ -314,14 +337,13 @@ public class CompoundsController {
 			if (!((GenericCompound) refCompound).getChildren().isEmpty()) {
 				model.addAttribute("contains_alt_structure", true);
 				model.addAttribute("alt_structure_children", ((GenericCompound) refCompound).getChildren());
-				model.addAttribute("alt_structure_parent", ((GenericCompound) refCompound));
+				model.addAttribute("alt_structure_parent", (refCompound));
 			}
 		} else if (refCompound instanceof ChemicalCompound) {
 			model.addAttribute("alt_structure_isGeneric", false);
 			if (((ChemicalCompound) refCompound).getParent() != null) {
 				model.addAttribute("contains_alt_structure", true);
-				model.addAttribute("alt_structure_parent",
-						((GenericCompound) ((ChemicalCompound) refCompound).getParent()));
+				model.addAttribute("alt_structure_parent", (((ChemicalCompound) refCompound).getParent()));
 				// load children?
 			}
 		}
@@ -352,12 +374,18 @@ public class CompoundsController {
 
 		// ranking
 		model.addAttribute("ranking_data", true);
-		model.addAttribute("page_title", listOfNames.get(0).getName());
-		model.addAttribute("page_keyworks",
-				listOfNames.get(0) + ", " + refCompound.getInChIKey() + ", chemical compound");
-		model.addAttribute("page_description", "chemical compound " + listOfNames.get(0).getName()
-				+ " identified as " + refCompound.getInChIKey());
-
+		if (listOfNames.isEmpty()) {
+			model.addAttribute("page_title", "?");
+			model.addAttribute("page_keyworks", refCompound.getInChIKey() + ", chemical compound");
+			model.addAttribute("page_description",
+					"chemical compound " + " identified as " + refCompound.getInChIKey());
+		} else {
+			model.addAttribute("page_title", listOfNames.get(0).getName());
+			model.addAttribute("page_keyworks",
+					listOfNames.get(0).getName() + ", " + refCompound.getInChIKey() + ", chemical compound");
+			model.addAttribute("page_description", "chemical compound " + listOfNames.get(0).getName()
+					+ " identified as " + refCompound.getInChIKey());
+		}
 		// END
 	}
 
@@ -756,6 +784,138 @@ public class CompoundsController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+		// new 2.0: IUPAC and CAS from common names
+		List<Long> nameSwitchedToCAS = new ArrayList<>();
+		List<Integer> nameSwitchedToCASraw = (List<Integer>) data.get("nameSwitchedToCAS");
+		for (int i : nameSwitchedToCASraw)
+			nameSwitchedToCAS.add(Long.parseLong(i + ""));
+		String nameSwitchedToIUPACraw = null;
+		if (data.get("nameSwitchedToIUPAC") != null)
+			nameSwitchedToIUPACraw = data.get("nameSwitchedToIUPAC").toString();
+		Long nameSwitchedToIUPAC = null;
+		if (nameSwitchedToIUPACraw != null) {
+			try {
+				nameSwitchedToIUPAC = Long.parseLong(nameSwitchedToIUPACraw);
+			} catch (NumberFormatException e) {
+			}
+		}
+		if (nameSwitchedToIUPAC != null || !nameSwitchedToCAS.isEmpty()) {
+			if (type.equalsIgnoreCase("chemical"))
+				try {
+					ChemicalCompoundManagementService.switchNames(id, nameSwitchedToIUPAC, nameSwitchedToCAS,
+							dbName, username, password);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return false;
+				}
+			else if (type.equalsIgnoreCase("generic"))
+				try {
+					GenericCompoundManagementService.switchNames(id, nameSwitchedToIUPAC, nameSwitchedToCAS,
+							dbName, username, password);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		}
+
+		// new 2.0: update IUPAC
+		if (data.get("newIupacName") != null) {
+			String newIupacName = data.get("newIupacName").toString();
+			if (type.equalsIgnoreCase("chemical"))
+				try {
+					ChemicalCompoundManagementService.updateIUPAC(id, newIupacName, dbName, username,
+							password);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return false;
+				}
+			else if (type.equalsIgnoreCase("generic"))
+				try {
+					GenericCompoundManagementService.updateIUPAC(id, newIupacName, dbName, username,
+							password);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		}
+
+		// new 2.0: add / remove CAS
+		List<CAS> newCasObjs = new ArrayList<>();
+		List<Long> removeCasIds = new ArrayList<>();
+		// newCASs
+		for (Object rawEntry : ((ArrayList<Object>) data.get("newCASs"))) {
+			if (rawEntry instanceof LinkedHashMap<?, ?>) {
+				LinkedHashMap<String, String> entry = (LinkedHashMap<String, String>) rawEntry;
+				CAS newCas = new CAS();
+				newCas.setCasNumber(entry.get("number"));
+				newCas.setCasProviderFromString(entry.get("provider"));
+				newCas.setCasReferencer(entry.get("reference"));
+				newCasObjs.add(newCas);
+			}
+		}
+		// deleteCASs
+		for (int i : (List<Integer>) data.get("deleteCASs"))
+			removeCasIds.add(Long.parseLong(i + ""));
+
+		if (!newCasObjs.isEmpty() || !removeCasIds.isEmpty()) {
+			if (type.equalsIgnoreCase("chemical"))
+				try {
+					ChemicalCompoundManagementService.addRemoveCas(id, newCasObjs, removeCasIds, dbName,
+							username, password);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return false;
+				}
+			else if (type.equalsIgnoreCase("generic"))
+				try {
+					GenericCompoundManagementService.addRemoveCas(id, newCasObjs, removeCasIds, dbName,
+							username, password);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		}
+
+		// new 2.0: set curation flag / do curation action
+		boolean flagAsManudalCurated = false;
+		boolean doStructureCheck = false;
+		for (String curationAction : (List<String>) data.get("curationUpdate")) {
+			if (curationAction.equalsIgnoreCase("manual")) {
+				flagAsManudalCurated = true;
+			} else if (curationAction.equalsIgnoreCase("structure")) {
+				doStructureCheck = true;
+			}
+		}
+
+		if (flagAsManudalCurated) {
+			if (type.equalsIgnoreCase("chemical"))
+				try {
+					ChemicalCompoundManagementService.setCurationToManual(id, dbName, username, password);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return false;
+				}
+			else if (type.equalsIgnoreCase("generic"))
+				try {
+					GenericCompoundManagementService.setCurationToManual(id, dbName, username, password);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		}
+
+		if (doStructureCheck) {
+			if (type.equalsIgnoreCase("chemical"))
+				try {
+					ChemicalCompoundManagementService.doStructuralCuration(id, dbName, username, password);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return false;
+				}
+			else if (type.equalsIgnoreCase("generic"))
+				try {
+					GenericCompoundManagementService.doStructuralCuration(id, dbName, username, password);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		}
 
 		// remove / update curation messages: get data from client
 		Map<Long, Object> newCurationMessages = (Map<Long, Object>) data.get("newCurationMessages");
@@ -1215,7 +1375,8 @@ public class CompoundsController {
 		// init var
 
 		// load data in model
-		loadCompoundMeta(type, model, refCompound, request);
+		if (refCompound != null)
+			loadCompoundMeta(type, model, refCompound, request);
 		return "block/meta";
 	}
 

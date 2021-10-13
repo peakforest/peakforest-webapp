@@ -119,7 +119,7 @@ int randomID = randomGenerator.nextInt(1000000);
 												<!--		      <div class="panel-heading">Names</div>-->
 												<ul class="list-group" id="cc_listNameCurator" style="margin-bottom: 0px;">
 													<c:forEach var="compoundName" items="${compoundNames}">
-													<li id="compundName_${compoundName.id}" class="list-group-item">
+													<li id="compundNameModal_${compoundName.id}" class="list-group-item">
 														<span id="showEditScore_${compoundName.id}" class="badge" style="margin-right: 60px;">${compoundName.score}</span>
 														<span id="showEditName_${compoundName.id}" class="showEditName_${compoundName.id} compoundNameEdit">${compoundName.name}</span>
 <%-- 														<span id="inputEditName_${compoundName.id}" style="display: none" class="input-group"><input type=text class="form-control" value="${compoundName.name}" placeholder="${compoundName.name}"></span> --%>
@@ -139,13 +139,45 @@ int randomID = randomGenerator.nextInt(1000000);
 <%-- 																	<a class="btn btn-success btn-xs" onclick="saveCompoundName(${compoundName.id});" href="#"> <i class="fa fa-check-square-o fa-lg"></i></a> --%>
 															</span>
 														</div>
-														<span class="pull-right" style="/*margin-right: -170px;position: absolute;padding-left: 425px;*/margin-right: -100px; ">
+														<span id="btnSelectorCpdNameEdit_${compoundName.id}" class="pull-right" style="margin-right: -100px; ">
+															<c:if test="${compoundName.matchCas()}">
+																<a class="btn btn-warning btn-xs switchNameToCAS_${compoundName.id}" onclick="switchToCAS(${compoundName.id});" href="#"> <i class="fa fa-refresh fa-lg"></i> CAS</a>
+																<script type="text/javascript"> 
+																	$("#showEditScore_${compoundName.id}").hide();
+																	$("#btnSelectorCpdNameEdit_${compoundName.id}").css('margin-right', '-10px');
+																</script>
+															</c:if>
+															<c:if test="${compoundName.score == 2.5 and cpdFullData.containPotentialIupacInCommonNames() }">
+																<a class="btn btn-warning btn-xs switchNameToIUPAC_${compoundName.id}" onclick="switchToIUPAC(${compoundName.id}, '${compoundName.name}');" href="#"> <i class="fa fa-refresh fa-lg"></i> IUPAC</a>
+																<script type="text/javascript"> 
+																	$("#showEditScore_${compoundName.id}").hide();
+																	$("#btnSelectorCpdNameEdit_${compoundName.id}").css('margin-right', '-10px');
+																</script>
+															</c:if>
 															<a class="btn btn-info btn-xs showEditName_${compoundName.id}" onclick="editCompoundName(${compoundName.id});" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
-<%-- 														<a class="btn btn-success btn-xs" onclick="saveCompoundName(${compoundName.id});" href="#"> <i class="fa fa-check-square-o fa-lg"></i></a> --%>
 															<a class="btn btn-danger btn-xs showEditName_${compoundName.id}" onclick="deleteCompoundName(${compoundName.id}, '${compoundName.name}');" href="#"> <i class="fa fa-trash fa-lg"></i></a>
 														</span>
 													</li>
+													
 													</c:forEach>
+													<li class="list-group-item">
+														<spring:message code="modal.show.basicInfos.iupac" text="IUPAC:" />
+														<c:if test="${not empty iupacName}">
+															<span class="displayIupac">${iupacName}</span> 
+															
+														</c:if> 
+														<c:if test="${empty iupacName}">
+															<span id="targetNewIUPAC" class="displayIupac"></span>
+														</c:if> 
+														
+														<a class="btn btn-info btn-xs showEditIupacName" onclick="editCompoundIupacName();" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+														<div id="inputEditIupacName" class="form-group input-group" style="display: none; width: 250px;">
+															<input type="text" class="form-control input-active-enter-key" style="" value="${iupacName}" placeholder="${iupacName}">
+															<span class="input-group-btn">
+																<button class="btn btn-success" type="button" onclick="saveIupacName();"><i class="fa fa-search fa-check-square-o"></i></button>
+															</span>
+														</div>
+													</li>
 												</ul>
 
 												<div class="input-group">
@@ -210,6 +242,23 @@ function editCompoundName (id) {
 	$("#inputEditName_"+id).show();
 };
 
+function switchToCAS (id) {
+	//add cas in CAS gui
+	$("#casEntities").append($("#showEditName_"+id).html().replace(/^CAS:/i, ''));
+	// remove from names GUI
+	$("#showEditName_"+id).hide();
+	$("#compundNameModal_"+id).remove();
+	// add new CAS to backend
+	nameSwitchedToCAS.push(id);
+}
+
+function switchToIUPAC (id, name) {
+	$(".showEditName_"+id).hide();
+	$("#compundNameModal_"+id).hide();
+	$("#targetNewIUPAC").html(name);
+	nameSwitchedToIUPAC = (id);
+}
+
 function saveCompoundName (id) {
 	$("#inputEditName_"+id).hide();
 	$(".showEditName_"+id).show();
@@ -223,13 +272,24 @@ function saveCompoundName (id) {
 
 function deleteCompoundName (id, name) {
 	if (confirm("Delete compound name '"+ name +"' ?")) {
-		$("#compundName_"+id).remove();
-		$("#compundName_"+id).remove();
+		$("#compundNameModal_"+id).remove();
 		// delete name (list)
 		namesDeletedCurator.push(id);
 	}
 };
 
+function editCompoundIupacName() {
+	$(".showEditIupacName").hide();
+	$("#inputEditIupacName").show();
+	setTimeout(function(){$("#inputEditIupacName input")}, 250);
+}
+
+function saveIupacName() {
+	$(".showEditIupacName").show();
+	$("#inputEditIupacName").hide();
+	$(".displayIupac").html($("#inputEditIupacName input").val());
+	newIupacName = $("#inputEditIupacName input").val();
+}
 											</script>
 <script src="<c:url value="/resources/js/md5.min.js" />"></script>
 											<!--  ++++++++++++++++++++++++++++ end card 2  -->
@@ -245,7 +305,6 @@ function deleteCompoundName (id, name) {
 										</h4>
 									</div>
 									<div id="card5Curation" class="panel-collapse collapse">
-<!-- 										<div class="panel-body">TODO</div> -->
 												<table class="table">
 													<tr>
 														<td style="width: 100px;"><spring:message code="modal.show.inOtherDatabases.inchikey" text="InChIKey" /></td>
@@ -324,6 +383,31 @@ function deleteCompoundName (id, name) {
 														</td>
 													</tr>
 <%-- 													</c:if> --%>
+
+													<tr>
+														<td><spring:message code="modal.show.inOtherDatabases.cas.simple" text="CAS" /></td>
+														<td>
+															<ul id="casEntities" style="width: 250px;">
+																<!-- CAS:58-08-2;Sigma-Aldrich;27600 -->
+																<c:forEach var="casEntity" items="${cas}">
+																	<li id="casId_${casEntity.id}" style="margin-bottom: 10px;">
+																		${casEntity.getCasNumber()};${casEntity.getCasProviderAsString()};${casEntity.getCasReferencer()}
+																		<span class="pull-right" style=""><a id="btn-delete-cas-${casEntity.id}" class="btn btn-danger btn-xs " onclick="deleteCas('${casEntity.id}');" href="#"> <i class="fa fa-trash-o fa-1"></i></a></span>
+																	</li>
+																</c:forEach>
+															</ul>
+															
+															<div id="inputAdd_cas" class="form-group input-group input-sm" style="width: 530px;">
+																<input style="width: 130px;" type="text" class="form-control input-active-enter-key" style="" value="" placeholder="CAS nb. (e.g.: 58-08-2)">
+																<input style="width: 170px;" type="text" class="form-control input-active-enter-key" style="" value="" placeholder="provider (e.g.: Sigma-Aldrich)">
+																<input style="width: 170px;" type="text" class="form-control input-active-enter-key" style="" value="" placeholder="ref. (e.g.: 27600)">
+																<span style="width: 40px;" class="input-group-btn">
+																	<button class="btn btn-success" type="button" onclick="addCas();"><i class="fa fa-search fa-plus"></i></button>
+																</span>
+															</div>
+														</td>
+													</tr>
+
 												</table>
 												<script type="text/javascript">
 												
@@ -372,11 +456,6 @@ function deleteCompoundName (id, name) {
 												}
 												
 												function addKeggIdKey() {
-// 													<span id="keggId_${kegg}">
-// 													<a href="<spring:message code="resources.banklink.kegg" text="http://www.genome.jp/dbget-bin/www_bget?cpd:" />${kegg}" target="_blank">${kegg}</a>
-// 													<span class="pull-right" style="margin-right: 400px; "><a id="btn-delete-kegg-${kegg}" class="btn btn-danger btn-xs " onclick="deleteKeggKey('${kegg}');" href="#"> <i class="fa fa-trash-o fa-lg"></i></a></span>
-// 													<br />
-// 													</span>
 													var newCID = $("#inputAdd_kegg input").val();
 													if($('#keggId_'+newCID).length != 0)
 														alert("KEGG ID already exists");
@@ -394,8 +473,6 @@ function deleteCompoundName (id, name) {
 															deleteKeggIDs.splice($.inArray(newCID, deleteKeggIDs),1);
 														};
 													};
-// 													var newKeggIDs = [];
-// 													var deleteKeggIDs = []; 
 												}
 												function deleteKeggKey(id) {
 													$("#keggId_"+id).remove();
@@ -406,6 +483,27 @@ function deleteCompoundName (id, name) {
 														deleteKeggIDs.push(id); 
 													}
 												}
+												
+												function addCas() {
+													var newCasNumber = $($("#inputAdd_cas input")[0]).val();
+													var newCasProvider = $($("#inputAdd_cas input")[1]).val();
+													var newCasReference = $($("#inputAdd_cas input")[2]).val();
+
+													var newDiv = '<li style="margin-bottom: 10px;">';
+													newDiv += newCasNumber +';'+newCasProvider+";"+newCasReference;
+// 													newDiv += '<span class="pull-right" style=" "><a id="btn-delete-kegg-'+newCID+'" class="btn btn-danger btn-xs " onclick="deleteKeggKey(\''+newCID+'\');" href="#"> <i class="fa fa-trash-o fa-1"></i></a></span>';
+													//newDiv += '<br />';
+													newDiv += '</li>';
+													$("#casEntities").append(newDiv);
+													$("#inputAdd_cas input").val("");
+													newCASs.push({'number':newCasNumber,'provider':newCasProvider,'reference':newCasReference});
+
+												}
+												function deleteCas(id) {
+													$("#casId_"+id).remove();
+													deleteCASs.push(Number(id)); 
+												}
+												
 												</script>
 									</div>
 								</div>
@@ -688,12 +786,37 @@ function deleteCompoundName (id, name) {
 			<div class="modal-footer">
 
 				<button type="button" class="btn btn-default" data-dismiss="modal" onclick="checkIfReOpenDetailsModal();"><spring:message code="modal.cancel" text="Cancel" /></button>
-
-
+				
+				<c:if test="${not hasBeenManualChecked}">
+					<button type="button" class="btn btn-info" onclick="flagManualCurated(this);"><i></i> Flag as curated for names / IDs / ...</button>
+				</c:if>
+				<c:if test="${not hasBeenStructuralChecked}">
+					<button type="button" class="btn btn-info" onclick="checkStructure(this);"><i></i> Check structure</button>
+				</c:if>
+				
 				<button type="button" onclick="updateCurrentCompoundCurator('${type}', ${id})" class="btn btn-primary">
 					<i class="fa fa-save"></i> <spring:message code="modal.saveChanges" text="Save Changes" />
 				</button>
+				
 				<script type="text/javascript">
+				var isManualCurated = false;
+				var doStructureCheck = false;
+				
+				function flagManualCurated(btn) {
+					isManualCurated = true;
+					$(btn).find("i").addClass("fa").addClass("fa-check-circle");
+					$(btn).addClass("btn-disabled");
+					$(btn).attr('disabled', true);
+				}
+				
+				function checkStructure(btn) {
+					doStructureCheck = true;
+					$(btn).find("i").addClass("fa").addClass("fa-check-circle");
+					$(btn).addClass("btn-disabled");
+					$(btn).attr('disabled', true);
+				}
+				
+				
 				var namesDeletedCurator = [];
 				var namesUpdatedCurator = new Object();
 				var scoresUpdatedCurator = new Object();
@@ -702,7 +825,15 @@ function deleteCompoundName (id, name) {
 				var newCompoundIdExtDB = new Object();
 				var newKeggIDs = [];
 				var deleteKeggIDs = [];
+				var nameSwitchedToCAS = [];
+				var nameSwitchedToIUPAC = null;
+				var newIupacName = null;
+				var newCASs = [], deleteCASs = [];
 				updateCurrentCompoundCurator = function(type, id) {
+					
+					var curationUpdate = [];
+					if (isManualCurated) { curationUpdate.push('manual'); }
+					if (doStructureCheck) { curationUpdate.push('structure'); }
 					
 					newKeggIDs = $.unique( newKeggIDs );
 					deleteKeggIDs = $.unique( deleteKeggIDs );
@@ -724,7 +855,13 @@ function deleteCompoundName (id, name) {
 							newKeggIDs : newKeggIDs,
 							newCurationMessages: newCurationMessagesCurator,
 							updateCitations: newCitationCuratorUpdate,
-							newCitations: newCitationsCuratorList
+							newCitations: newCitationsCuratorList,
+							nameSwitchedToCAS: nameSwitchedToCAS,
+							nameSwitchedToIUPAC: nameSwitchedToIUPAC,
+							newIupacName: newIupacName,
+							newCASs: newCASs,
+							deleteCASs: deleteCASs,
+							curationUpdate: curationUpdate
 						}),
 						contentType: 'application/json',
 						success: function(data) {

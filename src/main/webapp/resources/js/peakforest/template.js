@@ -24,82 +24,49 @@ defaultFileDownload = function(subid) {
 	}
 }
 
+function ontologies_load(filter) {
+	$(".ontologies_modalTitle").hide();
+	$("#ontologies_show").hide();
+	$("#ontologies_loading").show();
+	if (filter == "top") {
+		$("#ontologies_topPeakForest").show();
+		listOntologiesFromPeakForest (filter)
+	} else if (filter == "all") {
+		$("#ontologies_allPeakForest").show();
+		listOntologiesFromPeakForest (filter)
+	}
+}
+
+function listOntologiesFromPeakForest (filter) {
+ 	$.ajax({ 
+ 		type: "get",
+ 		url: "list-peakforest-ontologies?filter="+filter+"",
+ 		async: true,
+ 		success: function(data) {
+ 			$("#ontologies_tbody").empty();
+ 			$("#templateListOntologies").tmpl(data).appendTo("#ontologies_tbody");
+ 			$.each($(".ontologiesHTML"),function() {
+ 				$(this).html($(this).text());
+ 			});
+ 			$("#ontologies_loading").hide();
+ 			$("#ontologies_show").show();
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not load ontologies.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
 /**
  * Add JS listener in template form
  */
 $(document).ready(function() {
-	//  use select2 for ontologies data
-	$("#downloadTemplateSpectrumSampleTypeAnalyticalMatrix_source").select2({
-		ajax: {
-			url: "ontologies-sources",
-			dataType: 'json',
-			delay: 250,
-			data: function (params) {
-				return {
-					q: params.term, // search term
-					page: params.page
-				};
-			},
-			processResults: function (data, params) {
-				return {
-					results: data//,
-//					pagination: {
-//						more: (params.page * 30) < data.total_count
-//					}
-				};
-			},
-			cache: true
-		},
-		escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-		minimumInputLength: 3//,
-//		templateResult: formatOntologies, // omitted for brevity, see the source of this page
-//		templateSelection: formatOntologiesSelection // omitted for brevity, see the source of this page
-	});
-	$.ajax({
-		type: "GET",
-		dataType: "text/tsv",
-		async: false,
-		url: "resources/ontologies/brenda_tissus_obo.tsv",//
-		complete: function (result) { 
-			var data3 =[];
-			$.each(result.responseText.split('\n'),function(k,v){
-				var obj = {};
-				var tmp = v.split("\t");
-				obj.id = tmp[0]; obj.text = tmp[1];
-				data3.push(obj);
-			});
-			$("#downloadTemplateSpectrumSampleTypeAnalyticalMatrix_type").select2({
-				data: data3
-			});
-		}
-	});
-	$("#downloadTemplateSpectrumSampleTypeAnalyticalMatrix_type").select2({
-		ajax: {
-			url: "ontologies-types",
-			dataType: 'json',
-			delay: 250,
-			data: function (params) {
-				return {
-					q: params.term, // search term
-					page: params.page
-				};
-			},
-			processResults: function (data, params) {
-				return {
-					results: data//,
-//					pagination: {
-//						more: (params.page * 30) < data.total_count
-//					}
-				};
-			},
-			cache: true
-		},
-		escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-		minimumInputLength: 3//,
-//		templateResult: formatOntologies, // omitted for brevity, see the source of this page
-//		templateSelection: formatOntologiesSelection // omitted for brevity, see the source of this page
-	});
-	
 	
 	// build form from JSON file
 	$("#generateFromLCMSmethod").append('<option value="" selected="selected" disabled="disabled"></option>');
@@ -190,6 +157,8 @@ dumpEmptyTemplate = function() {
 //	$(".downloadTemplateSelectMatrix").hide();
 	$("#generateFromLCMSmethod").val("");
 	$("#generateFromLCMSMSmethod").val("");
+	// lock
+	$("input[name='matrixToDump']").attr("disabled", true);
 	switch($("#downloadTemplateSpectrumType").val()) {
 	case "lc-ms":
 		// choose to prefield
@@ -276,8 +245,7 @@ dumpEmptyFile = function(method, sampleType) {
 		case SAMPLE_TYPE_ANALYTICAL_MATRIX:
 			initSample = true;
 			sampleObject["sample_type"] = "analytical-matrix";
-			sampleObject["analytical-matrix-source"] = Number($("#downloadTemplateSpectrumSampleTypeAnalyticalMatrix_source").val());
-			sampleObject["analytical-matrix-type"] = Number($("#downloadTemplateSpectrumSampleTypeAnalyticalMatrix_type").val());
+			sampleObject["analytical-matrix-filter"] = $("input[name='matrixToDump']:checked").val();
 			break;
 		default:
 			break;
@@ -312,8 +280,7 @@ dumpJsonDataInXLSMfile = function(json) {
 		// II.D - bio matrix
 	case "3":
 		jsonSampleD["sample_type"] = "analytical-matrix";
-		jsonSampleD["analytical-matrix-source"] = Number($("#downloadTemplateSpectrumSampleTypeAnalyticalMatrix_source").val());
-		jsonSampleD["analytical-matrix-type"] = Number($("#downloadTemplateSpectrumSampleTypeAnalyticalMatrix_type").val());
+		jsonSampleD["analytical-matrix-filter"] = $("input[name='matrixToDump']:checked").val();
 		break;
 	default:
 		return false;
@@ -407,6 +374,9 @@ resetAllDumperForms = function() {
 	$("#select2-downloadTemplateSpectrumSampleTypeAnalyticalMatrix_type-container").html("").attr("title","");
 	// set to enabled
 	$("select.downloadTemplateForm").attr("disabled", false);
+	//
+	$("input[name='matrixToDump']").attr("disabled", false).attr("selected", false);
+	$("#dumpTopMatrix").attr("selected", true);
 	// reset data
 	resetNMRFileUpload4Dump();
 	// reset link

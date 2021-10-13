@@ -115,6 +115,12 @@
 								useHTML: true
 							},
 							//</c:if>
+							//<c:if test="${mode_light}">
+							subtitle : {
+								text : '${spectrum_pf_id}',
+								useHTML: true
+							},
+							//</c:if>
 							xAxis : {
 								type : 'number',
 								maxZoom : 2, // in %

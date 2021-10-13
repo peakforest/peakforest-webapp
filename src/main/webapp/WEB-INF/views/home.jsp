@@ -33,7 +33,7 @@ if (request.getParameter("cpd")!=null) {
 } else {
 %>
 <c:if test="${not ranking_data}">
-<title><spring:message code="home.title" text="Peak Forest" /></title>
+<title><spring:message code="home.title" text="PeakForest" /></title>
 <meta name="keywords" content="spectral database, mass spectrometry, nmr, lc-ms, gc-ms, chemical, metabolomic, compound, library">
 <meta name="description" content="PeakForest is the MetaboHUB's Spectral Database. It provides storage and annotation services for metabolic profils of biological matrix. It relies on the wide range of complementary methods using UPLC-(API)HRMS, GC-QToF, and NMR.">
 </c:if>
@@ -70,7 +70,8 @@ if (request.getParameter("cpd")!=null) {
 <!--multiselect-->
 <link href="<c:url value="/resources/css/bootstrap-multiselect.min.css" />" media="screen" rel="stylesheet" type="text/css">
 <script src="<c:url value="/resources/js/bootstrap-multiselect.min.js" />" type="text/javascript"></script>
-<script type="text/javascript" src="<c:url value="/resources/metExploreViz/metexploreviz.js" />" charset="utf-8">  </script>
+<script type="text/javascript" src="<c:url value="/resources/metExploreViz/metexploreviz.js" />" charset="utf-8"></script>
+<script type="text/javascript" src="<c:url value="/resources/metExploreViz/resources/lib/d3.js/d3.min.js" />"></script>
 <% } %>
 
 <!--dropdown multi select-->
@@ -108,15 +109,6 @@ if (request.getParameter("cpd")!=null) {
 <!-- table -->
 <script type="text/javascript" src="<c:url value="/resources/js/tablesorter/jquery.tablesorter.min.js" />"></script>
 <script type="text/javascript" src="<c:url value="/resources/js/tablesorter/tables.min.js" />"></script>
-<!-- SpeckTackle CSS containing chart stylings -->
-<link rel="stylesheet" type="text/css" href="<c:url value="/resources/nmrviewer/css/st.min.css" />">
-<!-- SpeckTackle library -->
-<script type="text/javascript" src="<c:url value="/resources/nmrviewer/st.min.js" />"></script>
-<!-- SpeckTackle dependencies -->
-<script type="text/javascript" src="<c:url value="/resources/nmrviewer/libs/d3/d3.min.js" />"></script>
-<%-- <script type="text/javascript" src="<c:url value="/resources/nmrviewer/libs/jquery/jquery.min.js" />"></script> --%>
-<script type="text/javascript" src="<c:url value="/resources/nmrviewer/js/live.min.js" />"></script>
-<script type="text/javascript" src="<c:url value="/resources/nmrviewer/custome.min.js" />"></script>
 <!-- NMRPro -->
 <link rel="stylesheet" href="<c:url value="/resources/nmrpro/specdraw.min.css" />" type="text/css">
 </head>
@@ -125,7 +117,7 @@ if (request.getParameter("cpd")!=null) {
 		<!-- Sidebar -->
 		<jsp:include page="block/header.jsp" />
 		<!-- content -->
-		<div id="page-wrapper">
+		<div id="page-wrapper" class="peakforest-main-wrapper">
 		<div id="demo-webapp" style="max-width: 600px;"></div>
 		<% 
 	User user = null;

@@ -6,7 +6,7 @@
 	<artifactId>peakforest-webapp</artifactId>
 	<name>PeakForest - Webapp</name>
 	<packaging>war</packaging>
-	<version>1.8-beta</version>
+	<version>2.0</version>
 	<properties>
 		<!-- project -->
 		<java-version>1.8</java-version>
@@ -27,7 +27,7 @@
 		<!-- <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format> -->
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<!-- PeakForest5Ever -->
-		<peakforest.version>1.8</peakforest.version>
+		<peakforest.version>2.0</peakforest.version>
 	</properties>
 	<scm>
 		<connection>scm:git:git://git@pfemw3.clermont.inra.fr:dev-team/peakforest-webapp.git</connection>

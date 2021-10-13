@@ -5,7 +5,7 @@ Metadata
 -----------
 
  * **@name**: PeakForest - WebApp
- * **@version**: 1.8
+ * **@version**: 2.0
  * **@authors**: Nils Paulhe <nils.paulhe@inra.fr>
  * **@date creation**: 2014/01/23
  * **@main usage**: PeakForest web-application; for further informations, please refer to [peakforest.org](https://peakforest.org/aboutPF) 
@@ -37,7 +37,7 @@ Configuration
     * reader.jar (*via* [jnmrread](https://bitbucket.org/peakforestmodule/jnmrread))
 
 ### Deploy:
- * get project data `git clone ssh://git@pfemw3.clermont.inra.fr:dev-team/peakforest-webapp.git`
+ * get project data `git clone git@pfemw3.clermont.inra.fr:dev-team/peakforest-webapp.git`
  * config files:
     * `src/main/resources/conf.properties`
     * `src/main/resources/hibernate-metadb.cfg.xml`
@@ -51,23 +51,35 @@ See [git@pfemw3.clermont.inra.fr:dev-team/doc-metabohub.git](main documentation)
 
 Services provided
 -----------
+
  * chemical compound library manager
  * spectra library manager
  * spectrum viewers
  * curation interface
  * admin interface
 
-
-Technical description
+NMR viewer with Docker wrapper
 -----------
-...
 
-Notes
+The NMR spectra viewer `NMR pro` run on a python server. 
+In order to avoid install issues and socket conflict, it is isolated in a Docker container. 
+Run the docker container with the following command:
+```bash
+docker run \
+  -d \ # mode deamon
+  -p 127.0.0.1:8000:8000 \ # redirect port
+  -v /peakforest/data/nmr_spectra/raw:/mnt/raw_spectra \ # mount volum in the docker container
+  npaulhe/nmrpro python nmrpro_server/manage.py runserver 0.0.0.0:8000 \ # run command
+```
+
+Developper notes
 -----------
-...
+
+You should open your MySQL socket on your computer for the local tests.
 
 Licenses
 -----------
+
  * Frameworks:
    * Spring / Spring Security - http://projects.spring.io/spring-framework/
    * Bootstrap - http://getbootstrap.com/

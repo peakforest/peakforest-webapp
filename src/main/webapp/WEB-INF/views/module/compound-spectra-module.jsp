@@ -24,6 +24,20 @@
 			<li class="disabled"><a><spring:message code="module.spectra.tag.lcms" text="LC-MS" /></a></li>
 		</c:if>
 		
+		<c:if test="${first_tab_open =='lc-msms'}">
+			<li<c:if test="${first_tab_open =='lc-msms'}"> class="active"</c:if>>
+				<a href="#spectrum-mod-lcmsms" data-toggle="tab"> <spring:message code="module.spectra.tag.msms" text="LC-MSMS" /> </a>
+			</li>
+		</c:if>
+		<c:if test="${first_tab_open !='lc-msms'}">
+			<c:if test="${not empty spectrum_mass_fragmt_lc}">
+				<li><a href="#spectrum-mod-lcmsms" data-toggle="tab"><spring:message code="module.spectra.tag.lcmsms" text="LC-MSMS" /></a></li>
+			</c:if>
+			<c:if test="${empty spectrum_mass_fragmt_lc}">
+				<li class="disabled"><a><spring:message code="module.spectra.tag.lcmsms" text="LC-MSMS" /></a></li>
+			</c:if>
+		</c:if>
+		
 		<c:if test="${not empty spectrum_nmr}">
 			<li<c:if test="${first_tab_open =='nmr'}"> class="active"</c:if>>
 				<a href="#spectrum-mod-nmr" data-toggle="tab"> <spring:message code="module.spectra.tag.nmr" text="NMR" /> </a>
@@ -51,6 +65,20 @@
 						<!--container-->
 						<div id="containerLCspectrum" style="min-width: 600px; height: 400px; margin: 0 auto">
 							<spring:message code="module.spectra.load.lcms" text="loading LC-MS spectra..." />
+							<br /><img src="<c:url value="/resources/img/ajax-loader-big.gif" />" title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="tab-pane fade <c:if test="${first_tab_open =='lc-msms'}">active in</c:if>" id="spectrum-mod-lcmsms">
+			<!-- display -->
+			<table class="table">
+				<tr>
+					<td>
+						<!--container-->
+						<div id="containerLCMSMSspectrum" style="min-width: 600px; height: 400px; margin: 0 auto">
+							<spring:message code="module.spectra.load.lcmsms" text="loading LC-MSMS spectra..." />
 							<br /><img src="<c:url value="/resources/img/ajax-loader-big.gif" />" title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
 						</div>
 					</td>
@@ -90,10 +118,18 @@
 </div>
 <script type="text/javascript">
 // LC-MS spectra
-<c:if test="${not empty spectrum_mass_fullscan_lc || not empty spectrum_mass_fragmt_lc}">
+<c:if test="${not empty spectrum_mass_fullscan_lc}">
 $.get("compound-spectra-carrousel-full-module/${type}/${id}/lcms?isExt=false", function( data ) {
 	$("#containerLCspectrum").html( data );
 	console.log("spectrum lcms: ready!");
+});
+</c:if>
+
+//LC-MSMS spectra
+<c:if test="${not empty spectrum_mass_fragmt_lc}">
+$.get("compound-spectra-carrousel-full-module/${type}/${id}/lcmsms?isExt=false", function( data ) {
+	$("#containerLCMSMSspectrum").html( data );
+	console.log("spectrum lcmsms: ready!");
 });
 </c:if>
 

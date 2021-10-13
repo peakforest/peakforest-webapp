@@ -40,9 +40,9 @@ the main instance of PeakForest may be enriched thanks to these sub-datasets aft
 					<td style="width: 45%"><img style="max-width: 100%;" class="" alt="my peakforest" src="<c:url value="/resources/img/my-peakforest/diag_offre_service.002.png" />"></td>
 				</tr>
 				<tr>
-					<td>PeakForest.org is the showcase fulfilled with MetaboHUB's datum</td>
+					<td align="center">PeakForest.org is the showcase fulfilled with MetaboHUB's datum</td>
 					<td></td>
-					<td>Get your own instance of PeakForest with your own datum!</td>
+					<td align="center">Get your own instance of PeakForest with your own datum!</td>
 				</tr>
 			</table>
 		</p>

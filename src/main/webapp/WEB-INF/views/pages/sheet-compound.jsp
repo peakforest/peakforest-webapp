@@ -137,7 +137,39 @@ ${mol}</textarea>
 				</c:if>
 														</td>
 														<td style="width: 100px;"><spring:message code="modal.show.basicInfos.name" text="Name" /></td>
-														<td>${compoundNames.get(0).name}</td>
+														<td>
+															${compoundNames.get(0).name}
+															
+															<!-- display stars -->
+															<div class="pull-right">
+																<c:choose>
+																	<c:when test="${nbStarCuration == 0}">
+																		<i class="fa fa-star-o"></i>
+																		<i class="fa fa-star-o"></i>
+																		<i class="fa fa-star-o"></i>
+																	</c:when>
+																	<c:when test="${nbStarCuration == 1}">
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star-o"></i>
+																		<i class="fa fa-star-o"></i>
+																	</c:when>
+																	<c:when test="${nbStarCuration == 2}">
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star-o"></i>
+																	</c:when>
+																	<c:when test="${nbStarCuration == 3}">
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star"></i>
+																		<i class="fa fa-star"></i>
+																	</c:when>
+																	<c:otherwise>
+																		<!-- ??? -->
+																	</c:otherwise>
+																</c:choose>
+															</div>
+															<!-- end display stats -->
+														</td>
 													</tr>
 													<tr>
 														<td><spring:message code="modal.show.basicInfos.formula" text="Formula" /></td>
@@ -257,6 +289,15 @@ ${mol}</textarea>
 <!-- 															class="fa fa-star"></i><i class="fa fa-star"></i><i -->
 <!-- 															class="fa fa-star-o"></i><i class="fa fa-star-o"></i>&nbsp;</span> -->
 <!-- 													</li> -->
+
+													<!-- new 2.0 IUPAC NAME -->
+													<c:if test="${not empty iupacName}">
+														<li class="list-group-item">
+															<spring:message code="modal.show.basicInfos.iupac" text="IUPAC:" /> 
+															${iupacName}
+														</li>
+													</c:if>
+												
 												</ul>
 												<c:if test="${editor}">
 												<div class="input-group">
@@ -494,7 +535,7 @@ ${mol}</textarea>
 <c:if test="${mol_nb_3D_exists}">
 													<!-- if mol 3D -->
 													<div id="showMol-3D-numbered" class="tab-pane fade">
-														<iframe id="jsmol" height="520" width="820"  style="border-width: inherit;">loading...</iframe>
+														<div id="jsmol" height="520" width="820"  style="border-width: inherit;">loading...</div>
 													</div>
 </c:if>
 <c:if test="${mol_nb_2D_exists}">
@@ -791,10 +832,20 @@ function startUpload() {
 														<td><spring:message code="modal.show.inOtherDatabases.kegg" text="KEGG" /></td>
 														<td>
 															<c:forEach var="kegg" items="${keggs}">
-																<a href="<spring:message code="resources.banklink.kegg" text="http://www.genome.jp/dbget-bin/www_bget?cpd:" />${kegg}" target="_blank">${kegg}</a>
+																<br /><a href="<spring:message code="resources.banklink.kegg" text="http://www.genome.jp/dbget-bin/www_bget?cpd:" />${kegg}" target="_blank">${kegg}</a>
 															</c:forEach>
 														</td>
 													</tr>
+													</c:if>
+													<c:if test="${not empty cas}">
+														<tr>
+															<td><spring:message code="modal.show.inOtherDatabases.cas.simple" text="CAS" /></td>
+															<td>
+																<c:forEach var="casEntity" items="${cas}">
+																	<br />${casEntity.getCasNumber()};${casEntity.getCasProviderAsString()};${casEntity.getCasReferencer()}
+																</c:forEach>
+															</td>
+														</tr>
 													</c:if>
 												</table>
 									</div>
@@ -1296,22 +1347,19 @@ $("#removeCpdFromCart").click(function(){removeCpdFromCart(Number('${id}'))});
 	var jsMolLoaded = false;	
 	refreshJSmol = function() {
 		if (!jsMolSRC) {
-			var iframe = document.getElementById("jsmol"),
-			doc = iframe.contentWindow.document;
 			$.get("js_cpd_sandbox/${inchikey}", function( data ) {
-				doc.open().write(data);
-				doc.close();
+				$("#jsmol").html(data)
 				jsMolSRC = true;
 			});
 		}
-		try {
-			if (!jsMolLoaded && /firefox/.test(navigator.userAgent.toLowerCase())) {
-				document.getElementById("jsmol").contentDocument.location.reload(true);
-				jsMolLoaded = true;
-			} else {
-				document.getElementById("jsmol").contentWindow.refreshJSmol();
-			}
-		} catch(e) {}
+// 		try {
+// 			if (!jsMolLoaded && /firefox/.test(navigator.userAgent.toLowerCase())) {
+// 				document.getElementById("jsmol").contentDocument.location.reload(true);
+// 				jsMolLoaded = true;
+// 			} else {
+// 				document.getElementById("jsmol").contentWindow.refreshJSmol();
+// 			}
+// 		} catch(e) {}
 	}
 	</script>
 	<div style="display:none;">

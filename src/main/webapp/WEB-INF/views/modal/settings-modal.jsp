@@ -51,10 +51,10 @@
 							<div class="form-group input-group" style="width: 500px;">
 								<span class="input-group-addon" style="width: 250px;"><i class="fa fa-heart"></i> <spring:message code="modal.settings.mainTechnology" text="Main Technology" /></span>
 								<select id="mainTechnology" class="advancedSearch form-control " style="width: 250px;">
-									<option <c:if test="${mainTechnology eq 'gcms'}">selected</c:if> value="<%=User.PREF_GCMS %>" disabled="disabled">GCMS</option>
-									<option <c:if test="${mainTechnology eq 'lcms'}">selected</c:if> value="<%=User.PREF_LCMS %>">LCMS</option>
-									<option <c:if test="${mainTechnology eq 'lcmsms'}">selected</c:if> value="<%=User.PREF_LCMSMS %>" disabled="disabled">LCMSMS</option>
-									<option <c:if test="${mainTechnology eq 'nmr'}">selected</c:if> value="<%=User.PREF_NMR %>">NMR</option>
+									<option ${mainTechnology eq 'gcms'   ? " selected" : " "} value="<%=User.PREF_GCMS %>" disabled="disabled">GCMS</option>
+									<option ${mainTechnology eq 'lcms'   ? " selected" : " "} value="<%=User.PREF_LCMS %>">LCMS</option>
+									<option ${mainTechnology eq 'lcmsms' ? " selected" : " "} value="<%=User.PREF_LCMSMS %>">LCMSMS</option>
+									<option ${mainTechnology eq 'nmr'    ? " selected" : " "} value="<%=User.PREF_NMR %>">NMR</option>
 								</select>
 							</div>
 							<c:if test="${user.confirmed}">

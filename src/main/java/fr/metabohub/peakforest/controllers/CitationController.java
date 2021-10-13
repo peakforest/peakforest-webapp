@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fr.metabohub.peakforest.security.model.User;
+import fr.metabohub.peakforest.model.AbstractDatasetObject;
 import fr.metabohub.peakforest.model.compound.Citation;
+import fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound;
+import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.CitationManagementService;
+import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
 import fr.metabohub.peakforest.utils.Utils;
@@ -123,6 +127,71 @@ public class CitationController {
 	// // RETURN
 	// return usersMap;
 	// }
+
+	///////////////////////////////////////////////////////////////////////////
+
+	@RequestMapping(value = "/list-cpd-names-to-convert/{limit}", method = RequestMethod.GET)
+	public @ResponseBody Object compoundsNameToConvertList(@PathVariable int limit)
+			throws PeakForestManagerException {
+		// init request
+		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+
+		// init data
+		List<ReferenceChemicalCompound> dataRawCC = new ArrayList<>();
+		List<Long> listCpdIdCC = new ArrayList<>();
+		List<ReferenceChemicalCompound> dataRawGC = new ArrayList<>();
+		List<Long> listCpdIdGC = new ArrayList<>();
+
+		List<AbstractDatasetObject> data = new ArrayList<>();
+
+		// load data
+
+		try {
+			dataRawGC.addAll(GenericCompoundManagementService.readAllWithNames(dbName, username, password));
+			dataRawCC.addAll(ChemicalCompoundManagementService.readAllWithNames(dbName, username, password));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// filter
+		int count = 0;
+		for (ReferenceChemicalCompound rcc : dataRawCC) {
+			if (rcc.containPotentialCasInCommonNames() || rcc.containPotentialIupacInCommonNames()) {
+				listCpdIdCC.add(rcc.getId());
+				count++;
+				if (count >= limit)
+					break;
+			}
+		}
+		if (count < limit)
+			for (ReferenceChemicalCompound rcc : dataRawGC) {
+				if (rcc.containPotentialCasInCommonNames() || rcc.containPotentialIupacInCommonNames()) {
+					listCpdIdGC.add(rcc.getId());
+					count++;
+					if (count >= limit)
+						break;
+				}
+			}
+
+		// load from DB
+		try {
+			if (!listCpdIdGC.isEmpty())
+				data.addAll(GenericCompoundManagementService.read(listCpdIdGC, dbName, username, password));
+			if (!listCpdIdCC.isEmpty())
+				data.addAll(ChemicalCompoundManagementService.read(listCpdIdCC, dbName, username, password));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// prune
+		data = Utils.prune(data);
+
+		return data;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * @param logMessage

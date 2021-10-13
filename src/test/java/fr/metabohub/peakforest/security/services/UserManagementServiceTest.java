@@ -70,10 +70,10 @@ public class UserManagementServiceTest {
 		long beforeTime = System.currentTimeMillis();
 
 		// if exist => delete
-		if (UserManagementService.exists("npaulhe@clermont.inra.fr"))
-			UserManagementService.delete("npaulhe@clermont.inra.fr");
-		if (UserManagementService.exists("franck.giacomoni@clermont.inra.fr"))
-			UserManagementService.delete("franck.giacomoni@clermont.inra.fr");
+		if (UserManagementService.exists("nils.paulhe@inra.fr"))
+			UserManagementService.delete("nils.paulhe@inra.fr");
+		if (UserManagementService.exists("franck.giacomoni@inra.fr"))
+			UserManagementService.delete("franck.giacomoni@inra.fr");
 		if (UserManagementService.exists("niel.maccormack@hero-corp.com")) {
 			UserManagementService.delete("niel.maccormack@hero-corp.com");
 			logger.error("[warning] user not deleted in previous tests.");
@@ -85,7 +85,7 @@ public class UserManagementServiceTest {
 		// test create
 		User franck = new User();
 		franck.setLogin("franck");
-		franck.setEmail("franck.giacomoni@clermont.inra.fr");
+		franck.setEmail("franck.giacomoni@inra.fr");
 		franck.setPassword(encoder.encode("franckTestPassword"));
 		long idFranck = UserManagementService.create(franck);
 
@@ -108,7 +108,7 @@ public class UserManagementServiceTest {
 		if (!UserManagementService.update(franckFromDB))
 			fail("[fail] could not update user");
 
-		if (!UserManagementService.updateAdmin(idNils, "toto", "npaulhe@clermont.inra.fr", User.ADMIN))
+		if (!UserManagementService.updateAdmin(idNils, "toto", "nils.paulhe@inra.fr", User.ADMIN))
 			fail("[fail] could not update user");
 
 		// test delete

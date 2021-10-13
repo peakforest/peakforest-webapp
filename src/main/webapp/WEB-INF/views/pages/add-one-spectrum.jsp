@@ -7,7 +7,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page session="false"%>
-<script src="<c:url value="/resources/js/peakforest/add-one-spectrum.js" />"></script>
+<script src="<c:url value="/resources/js/peakforest/add-one-spectrum.min.js" />"></script>
 <div class="panel-group" id="accordion">
 	<!-- ############################################################################################################################################# STEP 0: SPECTRUM TYPE -->
 	<div class="panel panel-default">
@@ -22,6 +22,7 @@
 			<div class="panel-body">
 				<button class="btn btn-disabled" disabled="disabled"><i class="fa fa-plus-circle"></i> GC-MS spectrum</button>
 				<button class="btn btn-primary" onclick="addOneSpectrum(2);"><i class="fa fa-plus-circle"></i> LC-MS spectrum</button>
+				<button class="btn btn-primary" onclick="addOneSpectrum(5);"><i class="fa fa-plus-circle"></i> LC-MSMS spectrum</button>
 				<button class="btn btn-primary" onclick="addOneSpectrum(3);"><i class="fa fa-plus-circle"></i> NMR spectrum</button>
 				<button class="btn btn-disabled" disabled="disabled"><i class="fa fa-plus-circle"></i> LC-NMR spectrum</button>
 			</div>
@@ -120,7 +121,7 @@
 										<option value="compound-ref">Ref. Chemical Compound</option>
 										<option value="compound-mix">Mix of Ref. Chemical Compound</option>
 										<option value="matrix-ref">Ref. Matrix</option>
-										<option value="matrix-bio" disabled="disabled">Analytical Matrix</option>
+										<option value="matrix-bio">Analytical Matrix</option>
 									</select>
 								</div>
 							</div>
@@ -164,11 +165,15 @@
 								</div>
 								<div id="add1spectrum-sample-type-matrix-ref" class="add1spectrum-sample-type-panel" style="display:none;">
 									<div class="form-group input-group " style="">
-										<span class="input-group-addon">Matrix Type <a target="_blank" style="display: none"><i class="fa fa-info-circle"></i></a></span> 
+										<span class="input-group-addon">Matrix Type </span> 
 										<select id="add1spectrum-sample-stdMatrix" class="form-control add1spectrum add1spectrum-sampleForm is-mandatory">
 											<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
-											<option value="NIST plasma">NIST plasma</option>
 										</select>
+									</div>
+									<div>
+										<p id="add1spectrum-sample-type-matrix-ref-help" class="help-block"  style="display: none;">
+											<small></small>
+										</p>
 									</div>
 								</div>
 								<div id="add1spectrum-sample-type-rcc-added" class="panel panel-default add1spectrum-sample-type-panel" style="display:none;">
@@ -180,7 +185,22 @@
 									</div>
 								</div>
 								<div id="add1spectrum-sample-type-matrix-bio" class="add1spectrum-sample-type-panel" style="display:none;">
-									TODO
+									<div class="form-group input-group " style="">
+										<span class="input-group-addon">Matrix Type </span> 
+										<select id="add1spectrum-sample-bioMatrix" class="form-control add1spectrum add1spectrum-sampleForm is-mandatory">
+											<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+										</select>
+									</div>
+									<div>
+										<p id="add1spectrum-sample-type-matrix-bio-help" class="help-block" >
+											<small></small>
+											<small>
+												<br />Note: To create a new ontologie, please go to 
+												<a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfemw3.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>, 
+												then ask us to refer it into PeakForest.
+											</small>
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -815,7 +835,8 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</div><!-- ./col-lg-6 -->
+					
 					<div class="col-lg-6">
 						<br />
 						<div class="panel panel-default">
@@ -826,7 +847,7 @@
 								<div class="form-group input-group ">
 									<span class="input-group-addon">Ionization method <small>(POS/NEG)</small></span> 
 									<select id="add1spectrum-analyzserMS-ionizationMethod-pos" style="max-width: 50%;" class="form-control add1spectrum add1spectrum-analyzerMSForm is-mandatory one-or-more">
-										<option value="" selected="selected" disabled="disabled">choose in listlist&hellip; (POS)</option>
+										<option value="" selected="selected" disabled="disabled">choose in list&hellip; (POS)</option>
 									</select>
 									<select id="add1spectrum-analyzserMS-ionizationMethod-neg" style="max-width: 50%;" class="form-control add1spectrum add1spectrum-analyzerMSForm is-mandatory one-or-more">
 										<option value="" selected="selected" disabled="disabled">choose in list&hellip; (NEG)</option>
@@ -864,7 +885,58 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</div><!-- ./col-lg-6 -->
+					
+					<div class="col-lg-6 opt-msms">
+						<br />
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Ion Storage / Ion Beam</h3>
+							</div>
+							<div class="panel-body">
+								<div class="form-group input-group ">
+									<span class="input-group-addon">Type <small>(storage / beam)</small></span> 
+									<select id="add1spectrum-ionTrapBeam-type" class="form-control add1spectrum add1spectrum-analyzerMSForm is-optional one-or-more">
+										<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+										<option value="trap">Ion Trap</option>
+										<option value="beam">Ion Beam</option>
+									</select>
+								</div>
+								<p class="help-block">
+									<small>
+										Ion storage: Ion Trap (IT) and ICR.
+										<br />Ion beam: Q or H collision Cell (QQQ, QQIT, QQ/TOF, Fusion). 
+									</small>
+								</p>
+								<div class="form-group input-group ">
+									<span class="input-group-addon">Gas </span> 
+									<select id="add1spectrum-ionTrapBeam-ionGas" class="form-control add1spectrum add1spectrum-analyzerMSForm is-optional ">
+										<option value="He">He</option>
+										<option value="N2">N<sub>2</sub></option>
+										<option value="Ar">Ar</option>
+									</select>
+								</div>
+								<div class="form-group input-group ">
+									<span class="input-group-addon">Gas pressure</span> 
+									<input id="add1spectrum-ionTrapBeam-ionGasPressureValue" type="text" style="max-width: 50%;" class="form-control add1spectrum add1spectrum-analyzerMSForm is-optional " />
+									<select id="add1spectrum-ionTrapBeam-ionGasPressureUnit" style="max-width: 50%;" class="form-control add1spectrum add1spectrum-analyzerMSForm is-optional ">
+										<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+										<option value="mbar" >mbar</option>
+										<option value="au" >a.u.</option>
+									</select>
+								</div>
+								<div class="form-group input-group add1spectrum-ionTrap">
+									<span class="input-group-addon">Frequency Shift <small>(KHz)</small></span> 
+									<input id="add1spectrum-ionTrapBeam-ionFrequencyShift" type="text" class="form-control add1spectrum add1spectrum-analyzerMSForm is-optional" placeholder="e.g.: ...">
+								</div>
+								<div class="form-group input-group add1spectrum-ionTrap">
+									<span class="input-group-addon">Ion Number <small>(AGC or ICC)</small></span> 
+									<input id="add1spectrum-ionTrapBeam-ionNumber" type="text" class="form-control add1spectrum add1spectrum-analyzerMSForm is-optional" placeholder="e.g.: ...">
+								</div>
+							</div>
+						</div>
+					</div><!-- ./col-lg-6 -->
+					
 				</div>
 				<div class="col-lg-12">
 					<div class="col-lg-8">
@@ -1026,32 +1098,105 @@
 		<div id="step4-ms" class="panel-collapse collapse" >
 			<div class="panel-body">
 				<div class="col-lg-12">
-						<div class="form-group input-group col-lg-4">
-							<span class="input-group-addon">scan type</span> 
-							<select  style="width: 150px;" id="add1spectrum-peaksMS-msLevel" class="form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm-peaklist-reset add1spectrum-peaksMSForm is-mandatory">
-								<option value=""  disabled="disabled">choose in list&hellip;</option>
-								<option value="ms" selected="selected">ms</option>
-								<option value="ms2" disabled="disabled">ms2</option>
-								<option value="ms3" disabled="disabled">ms3</option>
-							</select>
-						</div>
-						<div class="form-group input-group col-lg-4">
-							<span class="input-group-addon">polarity</span> 
-							<select  style="width: 150px;" id="add1spectrum-peaksMS-polarity" class="form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm-peaklist-reset add1spectrum-peaksMSForm is-mandatory">
-								<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
-								<option value="positive" disabled="disabled">positive</option>
-								<option value="negative" disabled="disabled">negative</option>
-							</select>
-						</div>
-						<div class="form-group input-group col-lg-4">
-							<span class="input-group-addon">resolution</span> 
-							<select  style="width: 150px;" id="add1spectrum-peaksMS-resolution" class="form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm-peaklist-reset add1spectrum-peaksMSForm is-mandatory">
-								<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
-								<option value="low">low</option>
-								<option value="high">high</option>
-							</select>
-						</div>
-<!-- 					</div> -->
+					<div class="form-group input-group col-lg-3">
+						<span class="input-group-addon">scan type</span> 
+						<select  style="width: 150px;" id="add1spectrum-peaksMS-msLevel" class="form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm-peaklist-reset add1spectrum-peaksMSForm is-mandatory">
+							<option value=""  disabled="disabled">choose in list&hellip;</option>
+							<option value="ms" selected="selected">ms</option>
+							<option class="enable-if-msms" value="ms2" disabled="disabled">ms2</option>
+							<option class="enable-if-msms" value="ms3" disabled="disabled">ms3</option>
+						</select>
+					</div>
+					<div class="form-group input-group col-lg-3">
+						<span class="input-group-addon">polarity</span> 
+						<select  style="width: 150px;" id="add1spectrum-peaksMS-polarity" class="form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm-peaklist-reset add1spectrum-peaksMSForm is-mandatory">
+							<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+							<option value="positive" disabled="disabled">positive</option>
+							<option value="negative" disabled="disabled">negative</option>
+						</select>
+					</div>
+					<div class="form-group input-group col-lg-3">
+						<span class="input-group-addon">resolution</span> 
+						<select  style="width: 150px;" id="add1spectrum-peaksMS-resolution" class="form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm-peaklist-reset add1spectrum-peaksMSForm is-mandatory">
+							<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+							<option value="low">low</option>
+							<option value="high">high</option>
+						</select>
+					</div>
+					<div class="form-group input-group col-lg-3">
+						<span class="input-group-addon">curation</span> 
+						<select  style="width: 150px;" id="add1spectrum-peaksMS-curation" class="form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm-peaklist-reset add1spectrum-peaksMSForm is-optional">
+							<option value="no_curation" selected="selected">no curation</option>
+							<option value="peaks_RI_sup_1percent">Peaks RI > 1%</option>
+							<option value="top_50_peaks">Top 50 peaks</option>
+							<option value="top_20_peaks">Top 20 peaks</option>
+							<option value="top_10_peaks">Top 10 peaks</option>
+							<option value="similar_chromatographic_profile">Similar chromatographic profile</option>
+						</select>
+					</div>
+				</div>
+				<br />
+				<div class="col-lg-12 opt-msms">
+					
+					<hr />
+					
+					<div class="form-group input-group col-lg-4">
+						<span class="input-group-addon">precursor spectrum</span> 
+						<select style="width: 150px;" id="add1spectrum-peaksMS-msPrecursor" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm-peaklist-reset add1spectrum-peaksMSForm is-optional">
+							<option value=""  disabled="disabled">choose in list&hellip;</option>
+						</select>
+					</div>
+					
+					<div class="form-group input-group col-lg-4">
+						<span class="input-group-addon">Precursor ion <i class="fa fa-question-circle" title="2 digits of precision."></i> <small>(M/Z)</small></span> 
+						<input id="add1spectrum-peaksMS-msPrecursorIon" type="text" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist is-optional add1spectrum-peaksMSForm-peaklist-reset" placeholder="e.g. 123.45">
+					</div>
+
+					<div class="form-group input-group col-lg-4">
+						<span class="input-group-addon">Isolation mode <i class="fa fa-question-circle" title="IT / Q / TOF / ICR"></i></span> 
+<!-- 						<input id="add1spectrum-peaksMS-isolationMode" type="text" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist is-optional add1spectrum-peaksMSForm-peaklist-reset" placeholder="e.g. ..."> -->
+						<select id="add1spectrum-peaksMS-isolationMode" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm is-optional add1spectrum-peaksMSForm-peaklist-reset">
+							<option value=""  disabled="disabled">choose in list&hellip;</option>
+							<option value="IT">IT</option>
+							<option value="Q">Q</option>
+							<option value="TOF">TOF</option>
+							<option value="ICR">ICR</option>
+						</select>
+						
+					</div>
+					
+					<div class="form-group input-group col-lg-4">
+						<span class="input-group-addon">Isolation window <i class="fa fa-question-circle" title="(+ / - value)"></i></span> 
+						<input id="add1spectrum-peaksMS-isolationWindow" type="text" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist is-optional add1spectrum-peaksMSForm-peaklist-reset" placeholder="e.g. ...">
+					</div>
+					
+					<div class="form-group input-group col-lg-4">
+						<span class="input-group-addon">qz isolation / activation <i class="fa fa-question-circle" title="if IT"></i> <small>(no unit)</small></span> 
+						<input id="add1spectrum-peaksMS-qzIsolation" type="text" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist is-optional add1spectrum-peaksMSForm-peaklist-reset" placeholder="e.g. ...">
+					</div>
+					
+					<div class="form-group input-group col-lg-4">
+						<span class="input-group-addon">Activation time <i class="fa fa-question-circle" title="if FT-ICR (SORI-CID) or IT"></i> <small>(ms)</small></span> 
+						<input id="add1spectrum-peaksMS-activationTime" type="text" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist is-optional add1spectrum-peaksMSForm-peaklist-reset" placeholder="e.g. ...">
+					</div>
+					
+					<div class="form-group input-group col-lg-4">
+						<span class="input-group-addon">Mode <i class="fa fa-question-circle" title="HCD / CID / ECD /ETD"></i></span> 
+<!-- 						<input id="add1spectrum-peaksMS-mode" type="text" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist is-optional add1spectrum-peaksMSForm-peaklist-reset" placeholder="e.g. ..."> -->
+						<select id="add1spectrum-peaksMS-mode"" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist add1spectrum-peaksMSForm is-optional ">
+							<option value=""  disabled="disabled">choose in list&hellip;</option>
+							<option value="HCD">HCD</option>
+							<option value="CID">CID</option>
+							<option value="ECD">ECD</option>
+							<option value="ETD">ETD</option>
+						</select>
+					</div>
+
+					<div class="form-group input-group col-lg-4">
+						<span class="input-group-addon">Frag. energy <i class="fa fa-question-circle" title="without unit"></i> </span> 
+						<input id="add1spectrum-peaksMS-frag-nrj" type="text" class="disabled-if-ms-in-msms form-control add1spectrum add1spectrum-peaksMSForm-peaklist is-optional" placeholder="e.g. ...">
+					</div>
+					
 				</div>
 				<div class="col-lg-12">
 					<div class="form-group input-group col-lg-4">

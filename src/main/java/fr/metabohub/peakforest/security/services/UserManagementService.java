@@ -315,7 +315,6 @@ public class UserManagementService {
 		try {
 			transaction = session.beginTransaction();
 			UserDao.delete(session, email);
-
 			transaction.commit();
 		} catch (Exception e) {
 			transaction.rollback();

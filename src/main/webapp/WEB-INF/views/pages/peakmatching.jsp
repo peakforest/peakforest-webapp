@@ -9,6 +9,7 @@
 	<div class="col-lg-12">
 		<ul class="nav nav-tabs" style="margin-bottom: 15px;">
 			<li class=""><a id="link-pm-lcms" href="#peakmatching-lcms" data-toggle="tab"><i class="fa fa-bar-chart-o"></i> <spring:message code="page.peakmatching.title.lcms" text="LC-MS" /></a></li>
+			<li class=""><a id="link-pm-lcmsms" href="#peakmatching-lcmsms" data-toggle="tab"><i class="fa fa-bar-chart-o"></i> <spring:message code="page.peakmatching.title.lcmsms" text="LC-MSMS" /></a></li>
 			<li class=""><a id="link-pm-nmr" href="#peakmatching-nmr" data-toggle="tab"><i class="fa fa-bar-chart-o fa-flip-horizontal"></i> <spring:message code="page.peakmatching.title.nmr" text="NMR" /></a></li>
 		</ul>
 		<div id="peakmatching" class="tab-content" style="">
@@ -29,8 +30,8 @@ if (user !=null && user.getMainTechnology() == User.PREF_NMR) {
 }
 if (displayNMRfirst) {
 %>
-				<div class="col-lg-6">
-					<button id="run-pm-nmr" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-nmr').click();" style="margin: 10px;">
+				<div class="col-lg-4">
+					<button id="run-pm-nmr" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-nmr').click();" style="margin: 5px;">
 						<h3>
 							<i class="fa fa-bar-chart-o fa-flip-horizontal"></i> NMR peak matching &nbsp;
 						</h3>
@@ -41,18 +42,25 @@ if (displayNMRfirst) {
 }
 %>
 
-				<div class="col-lg-6">
-					<button id="run-pm-lcms" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-lcms').click();" style="margin: 10px;">
+				<div class="col-lg-4">
+					<button id="run-pm-lcms" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-lcms').click();" style="margin: 5px;">
 						<h3>
 							<i class="fa fa-bar-chart-o"></i> LC-MS peak matching &nbsp;
+						</h3>
+					</button>
+				</div>
+				<div class="col-lg-4">
+					<button id="run-pm-lcms" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-lcmsms').click();" style="margin: 5px;">
+						<h3>
+							<i class="fa fa-bar-chart-o"></i> MSMS peak matching &nbsp;
 						</h3>
 					</button>
 				</div>
 <%
 if (!isNMRbtnDisplayed) {
 %>
-				<div class="col-lg-6">
-					<button id="run-pm-nmr" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-nmr').click();" style="margin: 10px;">
+				<div class="col-lg-4">
+					<button id="run-pm-nmr" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-nmr').click();" style="margin: 5px;">
 						<h3>
 							<i class="fa fa-bar-chart-o fa-flip-horizontal"></i> NMR peak matching &nbsp;
 						</h3>
@@ -69,6 +77,10 @@ if (!isNMRbtnDisplayed) {
 			<div class="tab-pane fade " id="peakmatching-lcms">
 				<!-- peakmatching LCMS -->
 				<jsp:include page="peakmatching-lcms.jsp" />
+			</div>
+			<div class="tab-pane fade " id="peakmatching-lcmsms">
+				<!-- peakmatching LCMSMS -->
+				<jsp:include page="peakmatching-lcmsms.jsp" />
 			</div>
 		</div><!-- /.peakmatching -->
 	</div>
@@ -101,6 +113,9 @@ $("#link-pm-nmr").click();
 <% } %>
 <% if (request.getParameter("searchLCMS") != null && request.getParameter("searchLCMS") != "") { %>
 $("#link-pm-lcms").click();
+<% } %>
+<% if (request.getParameter("searchLCMSMS") != null && request.getParameter("searchLCMSMS") != "") { %>
+$("#link-pm-lcmsms").click();
 <% } %>
 var Utils_SEARCH_COMPOUND_AVERAGE_MASS = "<%=Utils.SEARCH_COMPOUND_AVERAGE_MASS %>";
 var Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS = "<%=Utils.SEARCH_COMPOUND_MONOISOTOPIC_MASS %>";

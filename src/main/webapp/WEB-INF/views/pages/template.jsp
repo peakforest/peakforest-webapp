@@ -27,29 +27,35 @@
 				<option value="<%= PeakForestDataMapper.SAMPLE_TYPE_CHEMICAL_COMPOUND_LIBRARY %>">Chemical Compound from Library (single)</option>
 				<option value="<%= PeakForestDataMapper.SAMPLE_TYPE_CHEMICAL_COMPOUND_MIX %>">mix of Chemical Compound from Library</option>
 				<option value="<%= PeakForestDataMapper.SAMPLE_TYPE_STANDARDIZED_MATRIX %>">Standardized Matrix</option>
-				<option disabled="disabled" value="<%= PeakForestDataMapper.SAMPLE_TYPE_ANALYTICAL_MATRIX %>">Analytical Matrix</option>
+				<option value="<%= PeakForestDataMapper.SAMPLE_TYPE_ANALYTICAL_MATRIX %>">Analytical Matrix</option>
 			</select>
 		</div>
 	</div>
 	<div class="col-lg-6">&nbsp;</div>
 </div>
 <div class="col-lg-10 downloadTemplateSelectMatrix" style="display: none;">
-	<div class="col-lg-5">
-		<div class="form-group input-group">
-			<span class="input-group-addon">analytical matrix source</span> 
-			<select id="downloadTemplateSpectrumSampleTypeAnalyticalMatrix_source" class="form-control downloadTemplateForm js-example-data-array" style="width: 300px;">
-				<option value="" disabled="disabled"></option>
-			</select>
-		</div>
+	<div class="radio">
+		<label>
+			<input id="dumpTopMatrix" name="matrixToDump" type="radio" value="topPF" checked class="downloadTemplateForm">
+			Dump only PeakForest's &quot;top&quot; analytical matrix.
+			<a onclick="ontologies_load('top')" data-toggle="modal" data-target="#modalListOntologies"><i class="fa fa-question-circle" aria-hidden="true"></i> </a>
+		</label>
 	</div>
-	<div class="col-lg-5">
-		<div class="form-group input-group">
-			<span class="input-group-addon">analytical matrix type</span> 
-			<select id="downloadTemplateSpectrumSampleTypeAnalyticalMatrix_type" class="form-control downloadTemplateForm js-example-data-array" style="width: 300px;">
-				<option value="" disabled="disabled"></option>
-			</select>
-		</div>
+	<div class="radio">
+		<label>
+			<input id="dumpAllPForestMatrix" name="matrixToDump" type="radio" value="allPF" class="downloadTemplateForm">
+			Dump all PeakForest's analytical matrix.
+			<a onclick="ontologies_load('all')" data-toggle="modal" data-target="#modalListOntologies"><i class="fa fa-question-circle" aria-hidden="true"></i> </a>
+		</label>
 	</div>
+	<!-- 
+	<div class="radio">
+		<label>
+			<input id="dumpAllOntolgiesFWMatrix" name="matrixToDump" type="radio" value="allOntoFW" class="downloadTemplateForm">
+			Add all analytical matrix described through <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfemw3.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>.
+		</label>
+	</div>  
+	-->
 </div>
 <div class="col-lg-10">
 	<div class="col-lg-6">
@@ -218,4 +224,68 @@ var SAMPLE_TYPE_CHEMICAL_COMPOUND_LIBRARY = '<%= PeakForestDataMapper.SAMPLE_TYP
 var SAMPLE_TYPE_CHEMICAL_COMPOUND_MIX = '<%= PeakForestDataMapper.SAMPLE_TYPE_CHEMICAL_COMPOUND_MIX %>';
 var SAMPLE_TYPE_STANDARDIZED_MATRIX = '<%= PeakForestDataMapper.SAMPLE_TYPE_STANDARDIZED_MATRIX %>';
 var SAMPLE_TYPE_ANALYTICAL_MATRIX = '<%= PeakForestDataMapper.SAMPLE_TYPE_ANALYTICAL_MATRIX %>';
+</script>
+<div class="modal " id="modalListOntologies" tabindex="-1" role="dialog" aria-labelledby="modalListOntologiesLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="modalListOntologiesLabel">
+					<span id="ontologies_topPeakForest" class="ontologies_modalTitle">PeakForest's favourite analytical matrix</span>
+					<span id="ontologies_allPeakForest" class="ontologies_modalTitle">All PeakForest's analytical matrix</span>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div id="ontologies_loading">
+					<img src="<c:url value="/resources/img/ajax-loader-big.gif" />" title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
+				</div>
+				<div id="ontologies_show">
+					<!-- -->
+					<div class="table-responsive">
+						<table class="table table-hover tablesorter table-search">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>spectra nb</th>
+									<th>Fav.</th>
+								</tr>
+							</thead>
+							<tbody id="ontologies_tbody">
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan="3">
+										Note: contact an administrator if you want an analytical matrix added as favourite.
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<!-- -->
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<script  type="text/x-jquery-tmpl" id="templateListOntologies">
+<tr>
+	<td class="ontologiesHTML">{%= html%}</td>
+	<td>{%= countSpectra%}</td>
+	<td>
+		{%if isFav%}
+			<a class="btn btn-xs btn-success">
+				<i class="fa fa-star"></i>
+			</a>
+		{%else%}
+			<a class="btn btn-xs btn-danger">
+				<i class="fa fa-star"></i>
+			</a>
+		{%/if%}
+	</td>
+</tr>
 </script>

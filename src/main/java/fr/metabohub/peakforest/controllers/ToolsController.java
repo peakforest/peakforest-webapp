@@ -36,6 +36,7 @@ import fr.metabohub.peakforest.model.compound.ChemicalCompound;
 import fr.metabohub.peakforest.model.compound.GenericCompound;
 import fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound;
 import fr.metabohub.peakforest.model.compound.StructureChemicalCompound;
+import fr.metabohub.peakforest.model.spectrum.FragmentationLCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.MassSpectrum;
 import fr.metabohub.peakforest.model.spectrum.NMR1DSpectrum;
@@ -43,6 +44,7 @@ import fr.metabohub.peakforest.services.SearchService;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.services.metadata.LiquidChromatographyMetadataManagementService;
+import fr.metabohub.peakforest.services.peakmatching.LCMSMSPeakMatchingService;
 import fr.metabohub.peakforest.services.peakmatching.LCMSPeakMatchingService;
 import fr.metabohub.peakforest.services.peakmatching.NMR1DPeakMatchingService;
 import fr.metabohub.peakforest.services.threads.CompoundsImagesAndMolFilesGeneratorThread;
@@ -59,8 +61,11 @@ import fr.metabohub.peakmatching.mapper.NMRCandidate;
 public class ToolsController {
 
 	@RequestMapping(value = "/404", method = RequestMethod.GET)
-	public ModelAndView redirectFrom404(HttpServletResponse httpServletResponse) {
+	public ModelAndView redirectFrom404(HttpServletResponse httpServletResponse, HttpServletRequest request) {
 		// httpServletResponse.setHeader("Location", "home?page=template");
+		if (!request.getHeader("Referer").endsWith("&try=1")) {
+			return new ModelAndView("redirect:" + request.getHeader("Referer") + "&try=1");
+		}
 		return new ModelAndView("redirect:" + "home?page=404");
 	}
 
@@ -147,6 +152,13 @@ public class ToolsController {
 				if (dataJson.size() > 30)
 					dataJson = dataJson.subList(0, 30);
 				searchResults.put("lcmsSpectra", dataJson);
+			}
+			if (searchResults.containsKey("lcmsmsSpectra")) {
+				List<AbstractDatasetObject> dataJson = Utils
+						.prune((List<AbstractDatasetObject>) searchResults.get("lcmsmsSpectra"));
+				if (dataJson.size() > 30)
+					dataJson = dataJson.subList(0, 30);
+				searchResults.put("lcmsmsSpectra", dataJson);
 			}
 			if (searchResults.containsKey("nmrSpectra")) {
 				List<AbstractDatasetObject> dataJson = Utils
@@ -407,6 +419,10 @@ public class ToolsController {
 						searchResults.put("error", results.get("error"));
 						searchResults.put("success", false);
 					} else {
+
+						// success
+						searchResults.put("success", true);
+
 						// get
 						@SuppressWarnings("unchecked")
 						List<FullScanLCSpectrum> listOfSpectra = (List<FullScanLCSpectrum>) results
@@ -418,9 +434,129 @@ public class ToolsController {
 					}
 				}
 
+			} else if (entity.equalsIgnoreCase("lcmsms-spectra")) {
+
+				// 0 - init
+				String mode = null;
+				String resolution = null;
+
+				Double precursorMZ = null;
+				Double precursorMZdelta = null;
+				Double peaklistDeltaPPM = null;
+
+				List<Double> queryMZ = new ArrayList<>();
+				List<Double> queryRI = new ArrayList<>();
+
+				Map<String, Object> results = new HashMap<String, Object>();
+
+				// I - recover query param
+				// I.A - mode / res
+				String[] tabFilterVal = value.split(";");
+				// filterVal:neg;h;
+				mode = tabFilterVal[0];
+				resolution = tabFilterVal[1];
+
+				// I.B - tolerances
+				String[] tabFilterVal2 = value2.split(";");
+				// filterVal2: 254.0;0.1;5
+				try {
+					precursorMZ = Double.parseDouble(tabFilterVal2[0]);
+				} catch (NumberFormatException e) {
+				}
+				try {
+					precursorMZdelta = Double.parseDouble(tabFilterVal2[1]);
+				} catch (NumberFormatException e) {
+				}
+				try {
+					peaklistDeltaPPM = Double.parseDouble(tabFilterVal2[2]);
+				} catch (NumberFormatException e) {
+				}
+
+				// I.C - peaklists
+				// query:123.45,124.567,124.96;;
+				String tabMZvRI = query;
+				if (tabMZvRI != null) {
+					tabMZvRI = tabMZvRI.substring(1, tabMZvRI.length() - 1);
+					for (String kv : tabMZvRI.split("\\],\\[")) {
+						String cleanKV = kv.replaceAll("\"", "").replaceAll("\\[", "").replaceAll("\\]", "");
+						String[] dataKV = cleanKV.split(",");
+						try {
+							queryMZ.add(Double.parseDouble(dataKV[0]));
+							queryRI.add(Double.parseDouble(dataKV[1]));
+						} catch (NumberFormatException e) {
+						}
+					}
+				}
+
+				// II - run algo peakmatching
+				// II.A - standardiz values
+				Short modeN = null;
+				if (mode != null)
+					switch (mode.toUpperCase()) {
+					case "POS":
+					case "POSITIVE":
+						modeN = MassSpectrum.MASS_SPECTRUM_POLARITY_POSITIVE;
+						break;
+					case "NEG":
+					case "NEGATIVE":
+						modeN = MassSpectrum.MASS_SPECTRUM_POLARITY_NEGATIVE;
+						break;
+					// case "NEU":
+					// case "NEUTRAL":
+					// default:
+					// modeN = null;
+					// break;
+					}
+				char resolutionN = LCMSPeakMatchingService.PM_RESOLUTION_HIGH;
+				if (resolution != null)
+					switch (resolution.toUpperCase()) {
+					case "H L":
+						resolutionN = LCMSPeakMatchingService.PM_RESOLUTION_ALL;
+						break;
+					case "L":
+						resolutionN = LCMSPeakMatchingService.PM_RESOLUTION_LOW;
+						break;
+					case "H":
+					default:
+						resolutionN = LCMSPeakMatchingService.PM_RESOLUTION_HIGH;
+						break;
+					}
+
+				// II.B - Chuck Testa ~> NOPE!
+				if (queryMZ.isEmpty()) {
+					searchResults.put("error", "empty_mz_peaklist");
+					searchResults.put("success", false);
+					return searchResults;
+				}
+
+				// II.C - RUN B***, RUN!!!
+				results = LCMSMSPeakMatchingService.runPeakMatching(queryMZ, queryRI, precursorMZ,
+						precursorMZdelta, peaklistDeltaPPM, modeN, resolutionN, dbName, username, password);
+
+				// III - fetch/prune results
+
+				if (results.containsKey("success") && results.get("success") instanceof Boolean) {
+					boolean algoSuccess = (boolean) results.get("success");
+					if (!algoSuccess) {
+						// error feedback
+						searchResults.put("error", results.get("error"));
+						searchResults.put("success", false);
+					} else {
+						// success
+						searchResults.put("success", true);
+						// get
+						@SuppressWarnings("unchecked")
+						List<FragmentationLCSpectrum> listOfSpectra = (List<FragmentationLCSpectrum>) results
+								.get("results");
+						// prune
+						listOfSpectra = Utils.pruneFragmentationLCMSspectra(listOfSpectra);
+						// map
+						searchResults.put("lcmsmsSpectra", listOfSpectra);
+					}
+				}
+
 			}
-			// success
-			searchResults.put("success", true);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			searchResults.put("success", false);

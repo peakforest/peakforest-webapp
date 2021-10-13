@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -31,11 +30,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import fr.metabohub.externaltools.nmr.ViewerProcessing;
 import fr.metabohub.peakforest.model.CurationMessage;
 import fr.metabohub.peakforest.model.compound.Compound;
 import fr.metabohub.peakforest.model.compound.StructureChemicalCompound;
 import fr.metabohub.peakforest.model.metadata.AnalyticalMatrix;
+import fr.metabohub.peakforest.model.metadata.AnalyzerMassIonBeamMetadata;
+import fr.metabohub.peakforest.model.metadata.AnalyzerMassIonTrapMetadata;
 import fr.metabohub.peakforest.model.metadata.AnalyzerMassIonization;
 import fr.metabohub.peakforest.model.metadata.AnalyzerMassSpectrometerDevice;
 import fr.metabohub.peakforest.model.metadata.AnalyzerNMRSpectrometerDevice;
@@ -43,15 +43,20 @@ import fr.metabohub.peakforest.model.metadata.LiquidChromatography;
 import fr.metabohub.peakforest.model.metadata.OtherMetadata;
 import fr.metabohub.peakforest.model.metadata.SampleMix;
 import fr.metabohub.peakforest.model.metadata.SampleNMRTubeConditions;
+import fr.metabohub.peakforest.model.metadata.StandardizedMatrix;
 import fr.metabohub.peakforest.model.spectrum.CompoundSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FragmentationLCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanGCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum;
+import fr.metabohub.peakforest.model.spectrum.IFragmentationSpectrum;
 import fr.metabohub.peakforest.model.spectrum.ILCSpectrum;
+import fr.metabohub.peakforest.model.spectrum.ISampleSpectrum;
 import fr.metabohub.peakforest.model.spectrum.MassPeak;
 import fr.metabohub.peakforest.model.spectrum.MassSpectrum;
 import fr.metabohub.peakforest.model.spectrum.NMR1DPeak;
 import fr.metabohub.peakforest.model.spectrum.NMR1DSpectrum;
+import fr.metabohub.peakforest.model.spectrum.NMR2DJRESPeak;
+import fr.metabohub.peakforest.model.spectrum.NMR2DPeak;
 import fr.metabohub.peakforest.model.spectrum.NMR2DSpectrum;
 import fr.metabohub.peakforest.model.spectrum.NMRSpectrum;
 import fr.metabohub.peakforest.model.spectrum.Peak;
@@ -69,6 +74,7 @@ import fr.metabohub.peakforest.services.metadata.LiquidChromatographyMetadataMan
 import fr.metabohub.peakforest.services.metadata.OtherMetadataManagementService;
 import fr.metabohub.peakforest.services.metadata.SampleMixMetadataManagementService;
 import fr.metabohub.peakforest.services.metadata.SampleNMRTubeConditionsManagementService;
+import fr.metabohub.peakforest.services.spectrum.FragmentationLCSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.FullScanLCSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.ImportService;
 import fr.metabohub.peakforest.services.spectrum.NMR1DSpectrumManagementService;
@@ -240,8 +246,13 @@ public class SpectraController {
 		default:
 			break;
 		case "lcms":
-		case "lcmsms":
 			// model.addAttribute("spectrum_mass_fullscan_lc", new ArrayList<Spectrum>());
+			model.addAttribute("spectrum_mass_fullscan_gc", new ArrayList<Spectrum>());
+			model.addAttribute("spectrum_mass_fragmt_lc", new ArrayList<Spectrum>());
+			model.addAttribute("spectrum_nmr", new ArrayList<Spectrum>());
+			break;
+		case "lcmsms":
+			model.addAttribute("spectrum_mass_fullscan_lc", new ArrayList<Spectrum>());
 			model.addAttribute("spectrum_mass_fullscan_gc", new ArrayList<Spectrum>());
 			// model.addAttribute("spectrum_mass_fragmt_lc", new ArrayList<Spectrum>());
 			model.addAttribute("spectrum_nmr", new ArrayList<Spectrum>());
@@ -311,9 +322,8 @@ public class SpectraController {
 		// basic
 		model.addAttribute("spectrum_name", name.replaceAll("&amp;", "&"));
 
-		// load spectrums data from DB
+		// load FullScan and Frag. spectra data from DB
 		List<FullScanLCSpectrum> listFullScanLcSpectra = new ArrayList<>();
-		List<FullScanLCSpectrum> listFragLcSpectra = new ArrayList<>();
 		try {
 			listFullScanLcSpectra = FullScanLCSpectrumManagementService.read(fullscan, dbName, username,
 					password);
@@ -321,7 +331,13 @@ public class SpectraController {
 			e.printStackTrace();
 		}
 
-		// TODO load frag. spectrum
+		List<FragmentationLCSpectrum> listFragLcSpectra = new ArrayList<>();
+		try {
+			listFragLcSpectra = FragmentationLCSpectrumManagementService.read(frag, dbName, username,
+					password);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// I - load series
 		int seriesCount = listFullScanLcSpectra.size() + listFragLcSpectra.size();
@@ -343,11 +359,15 @@ public class SpectraController {
 		// I.D - load metadata
 		Object[] seriesSpectrumMetadata = new Object[seriesCount];
 
+		List<MassSpectrum> listMassSpectra = new ArrayList<>();
+		listMassSpectra.addAll(listFullScanLcSpectra);
+		listMassSpectra.addAll(listFragLcSpectra);
+
 		// II.A - load series
 		int cpt = 0;
 		Double peakDelta = 0.0000001;
 		Double peakHideRI = -100.0;
-		for (FullScanLCSpectrum spectrum : listFullScanLcSpectra) {
+		for (MassSpectrum spectrum : listMassSpectra) {
 			// basic data
 			Double currentMassMin = spectrum.getRangeMassFrom();
 			Double currentMassMax = spectrum.getRangeMassTo();
@@ -371,10 +391,12 @@ public class SpectraController {
 				peakListH.put(mp.getMassToChargeRatio(), mp.getRelativeIntensity());
 				peakListH.put(mp.getMassToChargeRatio() + peakDelta, peakHideRI);
 				// super data
-				peakListAdducts.put(mp.getMassToChargeRatio(),
-						Jsoup.clean(mp.getAttributionAsString(), Whitelist.basic()));
-				peakListComposition.put(mp.getMassToChargeRatio(),
-						Jsoup.clean(mp.getComposition(), Whitelist.basic()));
+				if (mp.getAttributionAsString() != null)
+					peakListAdducts.put(mp.getMassToChargeRatio(),
+							Jsoup.clean(mp.getAttributionAsString(), Whitelist.basic()));
+				if (mp.getComposition() != null)
+					peakListComposition.put(mp.getMassToChargeRatio(),
+							Jsoup.clean(mp.getComposition(), Whitelist.basic()));
 				// ...
 				if (minMass.equals(mp.getMassToChargeRatio()))
 					minMass -= (minMass * 0.1);
@@ -404,7 +426,7 @@ public class SpectraController {
 				spectrum.setListOfCompounds(listCC);
 			}
 			// name
-			String spectrumName = spectrum.getMassBankName();
+			String spectrumName = spectrum.getMassBankName().replaceAll("'", "\\'");
 			// if (spectrum.getPolarity() == MassSpectrum.MASS_SPECTRUM_POLARITY_POSITIVE)
 			// spectrumName += "MS-POS";
 			// else if (spectrum.getPolarity() == MassSpectrum.MASS_SPECTRUM_POLARITY_NEGATIVE)
@@ -417,7 +439,7 @@ public class SpectraController {
 			HashMap<String, String> metadata = new HashMap<>();
 			metadata.put("code", spectrumName);
 			// metadata basic
-			metadata.put("name", spectrum.getName());
+			metadata.put("name", spectrumName);
 			metadata.put("RT",
 					"[" + spectrum.getRangeRetentionTimeFrom() + " - " + spectrum.getRangeMassTo() + "]");
 			switch (spectrum.getPolarity()) {
@@ -444,12 +466,19 @@ public class SpectraController {
 			metadata.put("label", spectrum.getLabel() + "");
 			// metadata.put("date", spectrum.getOtherMetadata().getDate() + "");
 			// metadata legal
-			metadata.put("authors", spectrum.getOtherMetadata().getAuthors() + "");
-			metadata.put("owners", spectrum.getOtherMetadata().getAuthors() + "");
+			metadata.put("authors", spectrum.getOtherMetadata().getAuthors().replaceAll("'", "\\'") + "");
+			metadata.put("owners", spectrum.getOtherMetadata().getAuthors().replaceAll("'", "\\'") + "");
 			metadata.put("license", spectrum.getOtherMetadata().getLicense() + "");
-			metadata.put("licenseOther", spectrum.getOtherMetadata().getLicenseOther() + "");
+			metadata.put("licenseOther", "");
+			if (spectrum.getOtherMetadata().getLicenseOther() != null)
+				metadata.put("licenseOther",
+						spectrum.getOtherMetadata().getLicenseOther().replaceAll("'", "\\'") + "");
+
 			seriesSpectrumMetadata[cpt] = metadata;
 			cpt++;
+
+			// only for light
+			model.addAttribute("spectrum_pf_id", spectrum.getPeakForestID());
 		}
 
 		// spectrum basic data
@@ -530,8 +559,10 @@ public class SpectraController {
 			model.addAttribute("spectrum_nmr", nmrSpectrumList);
 
 			// first tab:
-			if (!(fullscanLcMsSpectrumList.isEmpty() && fragLcMsSpectrumList.isEmpty()))
+			if (!fullscanLcMsSpectrumList.isEmpty())
 				model.addAttribute("first_tab_open", "lc-ms");
+			else if (!fragLcMsSpectrumList.isEmpty())
+				model.addAttribute("first_tab_open", "lc-msms");
 			else if (!nmrSpectrumList.isEmpty())
 				model.addAttribute("first_tab_open", "nmr");
 			else if (!fullscanGcMsSpectrumList.isEmpty())
@@ -879,14 +910,14 @@ public class SpectraController {
 				spectrum.setListOfCompounds(listCC);
 			}
 			// name
-			String spectrumName = "" + spectrum.getMassBankLikeName();
+			String spectrumName = "" + spectrum.getMassBankLikeName().replaceAll("'", "\\'");
 			// spectrumName += "[" + spectrum.getPulseSequence() + "]";
 			seriesNames[cpt] = spectrumName + " (" + (cpt + 1) + ")";
 			// metadata
 			HashMap<String, String> metadata = new HashMap<>();
 			metadata.put("code", spectrumName);
 			// metadata basic
-			metadata.put("name", spectrum.getName());
+			metadata.put("name", spectrumName);
 
 			// switch (spectrum.getIonization()) {
 			// case MassSpectrum.MASS_SPECTRUM_IONIZATION_ESI:
@@ -903,7 +934,10 @@ public class SpectraController {
 			metadata.put("authors", spectrum.getOtherMetadata().getAuthors() + "");
 			metadata.put("owners", spectrum.getOtherMetadata().getAuthors() + "");
 			metadata.put("license", spectrum.getOtherMetadata().getLicense() + "");
-			metadata.put("licenseOther", spectrum.getOtherMetadata().getLicenseOther() + "");
+			metadata.put("licenseOther", "");
+			if (spectrum.getOtherMetadata().getLicenseOther() != null)
+				metadata.put("licenseOther",
+						spectrum.getOtherMetadata().getLicenseOther().replaceAll("'", "\\'") + "");
 			seriesSpectrumMetadata[cpt] = metadata;
 			cpt++;
 		}
@@ -939,7 +973,7 @@ public class SpectraController {
 		// get template type;
 		// boolean isGCMS = false;
 		boolean isLCMS = false;
-		// boolean isLCMSMS = false;
+		boolean isLCMSMS = false;
 		boolean isNMR = false;
 		// boolean isLCNMR = false;
 
@@ -951,10 +985,14 @@ public class SpectraController {
 			case "lc-ms":
 				isLCMS = true;
 				break;
+			case "lc-msms":
+				isLCMSMS = true;
+				break;
 			case "nmr":
 				isNMR = true;
 				break;
-			// TODO lc-msms / gc-ms / lc-nmr / ...
+
+			// TODO gc-ms / lc-nmr / ...
 			default:
 				// not supported
 				break;
@@ -965,6 +1003,8 @@ public class SpectraController {
 		PeakForestDataMapper dataMapper = null;
 		if (isLCMS)
 			dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_LC_MS);
+		else if (isLCMSMS)
+			dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_LC_MSMS);
 		else if (isNMR)
 			dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_NMR);
 		else
@@ -1253,18 +1293,22 @@ public class SpectraController {
 			break;
 		case Spectrum.SPECTRUM_SAMPLE_STANDARDIZED_MATRIX:
 			model.addAttribute("spectrum_sample_type", "std-matrix");
-			if (spectrum.getSampleMixMetadata() != null)
-				sampleMixData = SampleMixMetadataManagementService
-						.read(spectrum.getSampleMixMetadata().getId(), dbName, username, password);
-			AnalyticalMatrix analyticalMatrix = spectrum.getAnalyticalMatrixMetadata();
-			if (analyticalMatrix != null) {
-				model.addAttribute("spectrum_matrix_name", analyticalMatrix.getMatrixTypeAsString());
-				model.addAttribute("spectrum_matrix_link", analyticalMatrix.getMatrixTypeOntology());
-			}
+			// if (spectrum.getSampleMixMetadata() != null)
+			// sampleMixData = SampleMixMetadataManagementService
+			// .read(spectrum.getSampleMixMetadata().getId(), dbName, username, password);
+			// AnalyticalMatrix analyticalMatrix = spectrum.getAnalyticalMatrixMetadata();
+			// if (analyticalMatrix != null) {
+			// model.addAttribute("spectrum_matrix_name", analyticalMatrix.getMatrixTypeAsString());
+			// model.addAttribute("spectrum_matrix_link", analyticalMatrix.getMatrixTypeOntology());
+			// }
+			StandardizedMatrix standardizedMatrix = ((ISampleSpectrum) spectrum)
+					.getStandardizedMatrixMetadata();
+			model.addAttribute("standardized_matrix", standardizedMatrix);
 			break;
 		case Spectrum.SPECTRUM_SAMPLE_ANALYTICAL_MATRIX:
 			model.addAttribute("spectrum_sample_type", "analytical-matrix");
-			// TODO
+			AnalyticalMatrix analyticalMatrix = ((ISampleSpectrum) spectrum).getAnalyticalMatrixMetadata();
+			model.addAttribute("analytical_matrix", analyticalMatrix);
 			break;
 		default:
 			break;
@@ -1349,16 +1393,19 @@ public class SpectraController {
 			model.addAttribute("display_real_spectrum", abstractSpec.hasRawData());
 			model.addAttribute("real_spectrum_code", abstractSpec.getRawDataFolder());
 
-		} else if (spectrum instanceof FullScanLCSpectrum) {
+		} else if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FragmentationLCSpectrum) {
 			// BASIC
 			model.addAttribute("spectrum_name",
-					Utils.convertGreekCharToHTML(((FullScanLCSpectrum) spectrum).getMassBankName()));
-			model.addAttribute("spectrum_type", "lc-fullscan");
+					Utils.convertGreekCharToHTML(((MassSpectrum) spectrum).getMassBankName()));
+
+			if (spectrum instanceof FullScanLCSpectrum)
+				model.addAttribute("spectrum_type", "lc-fullscan");
+			else if (spectrum instanceof FragmentationLCSpectrum)
+				model.addAttribute("spectrum_type", "lc-fragmentation");
 			// LC DATA
 			model.addAttribute("spectrum_chromatography", "lc");
 			LiquidChromatography lcData = LiquidChromatographyMetadataManagementService.read(
-					((FullScanLCSpectrum) spectrum).getLiquidChromatography().getId(), dbName, username,
-					password);
+					((ILCSpectrum) spectrum).getLiquidChromatography().getId(), dbName, username, password);
 			model.addAttribute("spectrum_chromatography_method", lcData.getMethodProtocolAsString());
 			model.addAttribute("spectrum_chromatography_col_constructor",
 					lcData.getColumnConstructorAString());
@@ -1394,6 +1441,22 @@ public class SpectraController {
 			model.addAttribute("spectrum_ms_analyzer",
 					((MassSpectrum) spectrum).getAnalyzerMassSpectrometerDevice());
 
+			// MSMS
+			if (spectrum instanceof IFragmentationSpectrum) {
+				// MSMS ion beam
+				if (((IFragmentationSpectrum) spectrum)
+						.getAnalyzerMassIon() instanceof AnalyzerMassIonBeamMetadata) {
+					model.addAttribute("spectrum_msms_ionbeam",
+							((IFragmentationSpectrum) spectrum).getAnalyzerMassIon());
+				}
+				// MSMS ion storage
+				else if (((IFragmentationSpectrum) spectrum)
+						.getAnalyzerMassIon() instanceof AnalyzerMassIonTrapMetadata) {
+					model.addAttribute("spectrum_msms_iontrap",
+							((IFragmentationSpectrum) spectrum).getAnalyzerMassIon());
+				}
+			}
+
 			// PEAKLIST DATA
 			model.addAttribute("spectrum_ms_polarity", "");
 			if (((MassSpectrum) spectrum).getPolarity() != null) {
@@ -1423,35 +1486,62 @@ public class SpectraController {
 			}
 			model.addAttribute("spectrum_ms_resolution_FWHM",
 					((MassSpectrum) spectrum).getInstrumentResolutionFWHM());
-			model.addAttribute("spectrum_ms_scan_type", "MS (fullscan)");
+
+			if (spectrum instanceof FullScanLCSpectrum)
+				model.addAttribute("spectrum_ms_scan_type", "MS (fullscan)");
+			else if (spectrum instanceof FragmentationLCSpectrum) {
+				model.addAttribute("spectrum_ms_scan_type",
+						((FragmentationLCSpectrum) spectrum).getFragmentationLevelString());
+			}
 			model.addAttribute("spectrum_ms_range_from", ((MassSpectrum) spectrum).getRangeMassFrom());
 			model.addAttribute("spectrum_ms_range_to", ((MassSpectrum) spectrum).getRangeMassTo());
 			model.addAttribute("spectrum_rt_min_from",
-					shortifyText(((FullScanLCSpectrum) spectrum).getRangeRetentionTimeFrom()));
+					shortifyText(((MassSpectrum) spectrum).getRangeRetentionTimeFrom()));
 			model.addAttribute("spectrum_rt_min_to",
-					shortifyText(((FullScanLCSpectrum) spectrum).getRangeRetentionTimeTo()));
-			model.addAttribute("spectrum_rt_meoh_from", shortifyText(
-					((FullScanLCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom()));
+					shortifyText(((MassSpectrum) spectrum).getRangeRetentionTimeTo()));
+			model.addAttribute("spectrum_rt_meoh_from",
+					shortifyText(((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom()));
 			model.addAttribute("spectrum_rt_meoh_to",
-					shortifyText(((FullScanLCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo()));
+					shortifyText(((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo()));
 			//
 			try {
 				model.addAttribute("spectrum_rt_acn_from",
-						shortifyText(
-								(((FullScanLCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom())
-										* ChromatoUtils.MEOH_TO_ACN_RATIO));
+						shortifyText((((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom())
+								* ChromatoUtils.MEOH_TO_ACN_RATIO));
 			} catch (NullPointerException npe) {
 			}
 			try {
 				model.addAttribute("spectrum_rt_acn_to",
-						shortifyText(
-								(((FullScanLCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo())
-										* ChromatoUtils.MEOH_TO_ACN_RATIO));
+						shortifyText((((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo())
+								* ChromatoUtils.MEOH_TO_ACN_RATIO));
 			} catch (NullPointerException npe) {
 			}
+
+			// OTHER MSMS
+			if (spectrum instanceof FragmentationLCSpectrum) {
+				// is MSMS child
+				model.addAttribute("spectrum_msms_isMSMS", ((FragmentationLCSpectrum) spectrum)
+						.getMsLevel() > FragmentationLCSpectrum.FRAGMENTATION_MS);
+
+				model.addAttribute("spectrum_msms_parentIonMZ",
+						((FragmentationLCSpectrum) spectrum).getParentIonMZ());
+
+				// model.addAttribute("spectrum_msms_parentIonMZ",
+				// ((FragmentationLCSpectrum) spectrum).getParentIonMZ());
+				// model.addAttribute("spectrum_msms_parentSpectrum",
+				// ((FragmentationLCSpectrum) spectrum).getParentSpectrum());
+				// is MSMS parent
+				// model.addAttribute("spectrum_msms_hasChild", !((FragmentationLCSpectrum)
+				// spectrum).getChildrenSpectra().isEmpty());
+			}
+
 			//
 			// PEAKLIST TAB
 			model.addAttribute("spectrum_ms_peaks", spectrum.getPeaks());
+
+			// peaklist curation lvl
+			model.addAttribute("spectrum_ms_peaks_curation_lvl",
+					((MassSpectrum) spectrum).getCurationLevelAsString());
 
 		}
 
@@ -1463,6 +1553,9 @@ public class SpectraController {
 
 		// RELATED SPECTRA (same other metadata)
 		List<Spectrum> relatedSpectra = new ArrayList<Spectrum>();
+		List<Spectrum> spectraChildren = new ArrayList<>();
+		FragmentationLCSpectrum parent = null;
+
 		for (Spectrum s : otherMetadata.getListOfSpectrum()) {
 			if (s instanceof CompoundSpectrum) {
 				//
@@ -1474,12 +1567,34 @@ public class SpectraController {
 			s.setMetadata(spectrum.getMetadata());
 			if (s.getId() != spectrum.getId())
 				relatedSpectra.add(s);
+			// parent / child
+			if (s instanceof FragmentationLCSpectrum) {
+				if (((FragmentationLCSpectrum) spectrum).getParentSpectrum() != null
+						&& s.getId() == ((FragmentationLCSpectrum) spectrum).getParentSpectrum().getId()) {
+					parent = (FragmentationLCSpectrum) s;
+				} else if (((FragmentationLCSpectrum) s).getParentSpectrum() != null
+						&& spectrum.getId() == ((FragmentationLCSpectrum) s).getParentSpectrum().getId()) {
+					spectraChildren.add(s);
+				}
+			}
 		}
 		if (relatedSpectra.isEmpty())
 			model.addAttribute("spectrum_has_related_spectra", false);
 		else
 			model.addAttribute("spectrum_has_related_spectra", true);
 		model.addAttribute("spectrum_related_spectra", relatedSpectra);
+
+		// children
+		if (!spectraChildren.isEmpty()) {
+			model.addAttribute("spectrum_msms_hasChild", true);
+			model.addAttribute("spectrum_msms_children", spectraChildren);
+		} else
+			model.addAttribute("spectrum_msms_hasChild", false);
+
+		// parent
+		if (parent != null) {
+			model.addAttribute("spectrum_msms_parentSpectrum", parent);
+		}
 
 		// END
 	}
@@ -1539,14 +1654,18 @@ public class SpectraController {
 		} else if (spectrum instanceof FullScanLCSpectrum) {
 			spectrumName = Utils.convertGreekCharToHTML(((FullScanLCSpectrum) spectrum).getMassBankName());
 			spectrumTechnique += ", LCMS";
+		} else if (spectrum instanceof FragmentationLCSpectrum) {
+			spectrumName = Utils
+					.convertGreekCharToHTML(((FragmentationLCSpectrum) spectrum).getMassBankName());
+			spectrumTechnique += ", LCMSMS";
 		}
 
 		// ranking
 		model.addAttribute("ranking_data", true);
 		model.addAttribute("page_title", spectrumName);
-		model.addAttribute("page_keyworks", spectrumName + spectrumTechnique + spectrumOther);
+		model.addAttribute("page_keywords", spectrumName + spectrumTechnique + spectrumOther);
 		model.addAttribute("page_description",
-				"spectrum " + spectrumName + " identified as pf:" + spectrum.getId());
+				"spectrum " + spectrumName + " identified as " + spectrum.getPeakForestID());
 
 		// END
 	}
@@ -1867,10 +1986,10 @@ public class SpectraController {
 			}
 
 			// I.C - update NMR sample tube metadata
-			if (spectrum instanceof NMR1DSpectrum) {
+			if (spectrum instanceof NMRSpectrum) {
 				boolean updateSampleNMRtube = false;
 				SampleNMRTubeConditions nmrTubeMetadata = SampleNMRTubeConditionsManagementService.read(
-						((NMR1DSpectrum) spectrum).getSampleNMRTubeConditionsMetadata().getId(), dbName,
+						((NMRSpectrum) spectrum).getSampleNMRTubeConditionsMetadata().getId(), dbName,
 						username, password);
 
 				// spectrum_nmr_tube_prep_solvent
@@ -2210,6 +2329,7 @@ public class SpectraController {
 
 			Integer msResolutionFWHMresolution = null;
 			Integer msResolutionFWHMmass = null;
+			Integer msCurationLvl = null;
 
 			AnalyzerMassSpectrometerDevice msAnalyzerMetatada = null;
 			AnalyzerMassIonization msIonizationMetatada = null;
@@ -2238,29 +2358,6 @@ public class SpectraController {
 					msAnalyzerMetatada.setIonAnalyzerType(
 							spectrumDataToUpdate.get("spectrum_ms_analyzer_ion_analyzer_type").toString());
 				}
-				// spectrum_ms_analyzer_resolution_fwhm: "30000@"
-				// if (constainKey(spectrumDataToUpdate, "spectrum_ms_analyzer_resolution_fwhm")) {
-				// updateMSanalyzer = true;
-				// String[] tabData = spectrumDataToUpdate.get("spectrum_ms_analyzer_resolution_fwhm")
-				// .toString().split("@");
-				// Integer instrumentResolutionFWHMresolution = null;
-				// Integer instrumentResolutionFWHMmass = null;
-				// try {
-				// if (tabData.length == 0) {
-				//
-				// } else if (tabData.length == 1) {
-				//
-				// instrumentResolutionFWHMresolution = Integer.parseInt(tabData[0]);
-				// } else if (tabData.length == 2) {
-				// instrumentResolutionFWHMresolution = Integer.parseInt(tabData[0]);
-				// instrumentResolutionFWHMmass = Integer.parseInt(tabData[1]);
-				// }
-				// } catch (NumberFormatException nfe) {
-				// }
-				// msAnalyzerMetatada
-				// .setInstrumentResolutionFWHMresolution(instrumentResolutionFWHMresolution);
-				// msAnalyzerMetatada.setInstrumentResolutionFWHMmass(instrumentResolutionFWHMmass);
-				// }
 
 				// III.A.2 - ionization
 
@@ -2351,6 +2448,8 @@ public class SpectraController {
 				msResolutionFWHMresolution = ((MassSpectrum) spectrum)
 						.getInstrumentResolutionFWHMresolution();
 				msResolutionFWHMmass = ((MassSpectrum) spectrum).getInstrumentResolutionFWHMmass();
+				// new 2.0
+				msCurationLvl = ((MassSpectrum) spectrum).getCurationLevel();
 
 				// get updated data
 
@@ -2412,7 +2511,20 @@ public class SpectraController {
 					} catch (NumberFormatException nfe) {
 					}
 				}
+
+				// new 2.0
+				// spectrum_ms_curation_lvl
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_curation_lvl")) {
+					updateMSranges = true;
+					try {
+						msCurationLvl = MassSpectrum.getStandardizedCurationLevel(
+								spectrumDataToUpdate.get("spectrum_ms_curation_lvl").toString());
+					} catch (NumberFormatException e) {
+					}
+				}
 			}
+
+			// TODO if instance of FRAG spectra update specific fields
 
 			if (spectrum instanceof ILCSpectrum) {
 				// get original data
@@ -2456,9 +2568,16 @@ public class SpectraController {
 				if (spectrum instanceof FullScanLCSpectrum) {
 					FullScanLCSpectrumManagementService.update(spectrum.getId(), msRangeMassFrom,
 							msRangeMassTo, msRangeRTminFrom, msRangeRTminTo, msRangeRTmeohFrom,
-							msRangeRTmeohTo, msResolutionFWHMresolution, msResolutionFWHMmass, dbName,
-							username, password);
+							msRangeRTmeohTo, msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl,
+							dbName, username, password);
 				} // else if instance of FragLC / GC / ...
+				else if (spectrum instanceof FragmentationLCSpectrum) {
+					// TODO update other MSMS specific fields
+					FragmentationLCSpectrumManagementService.update(spectrum.getId(), msRangeMassFrom,
+							msRangeMassTo, msRangeRTminFrom, msRangeRTminTo, msRangeRTmeohFrom,
+							msRangeRTmeohTo, msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl,
+							dbName, username, password);
+				}
 			}
 
 			// IV - update NMR analyzer data
@@ -2474,56 +2593,8 @@ public class SpectraController {
 
 				// IV.B - update object
 
-				// spectrum_nmr_analyzer_name
-				if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_name")) {
-					updateNMRanalyzerData = true;
-					analyzerNMRdevice
-							.setInstrumentName(AnalyzerNMRSpectrometerDevice.getStandardizedNMRinstrumentName(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_name").toString()));
-				}
-
-				// spectrum_nmr_analyzer_magneticFieldStrength
-				if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_magneticFieldStrength")) {
-					updateNMRanalyzerData = true;
-					analyzerNMRdevice.setMagneticFieldStrenght(AnalyzerNMRSpectrometerDevice
-							.getStandardizedNMRmagneticFieldStength(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_magneticFieldStrength").toString(), null));
-				}
-
-				// spectrum_nmr_analyzer_software
-				if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_software")) {
-					updateNMRanalyzerData = true;
-					analyzerNMRdevice
-							.setSoftware(AnalyzerNMRSpectrometerDevice.getStandardizedNMRsoftwareVersion(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_software").toString()));
-				}
-
-				// spectrum_nmr_analyzer_probe
-				if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_probe")) {
-					updateNMRanalyzerData = true;
-					analyzerNMRdevice.setProbe(AnalyzerNMRSpectrometerDevice.getStandardizedNMRprobe(
-							spectrumDataToUpdate.get("spectrum_nmr_analyzer_probe").toString()));
-				}
-
-				// spectrum_nmr_analyzer_tube
-				if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_tube")) {
-					updateNMRanalyzerData = true;
-					analyzerNMRdevice
-							.setNMRtubeDiameter(AnalyzerNMRSpectrometerDevice.getStandardizedNMRtubeDiameter(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_tube").toString(), null));
-				}
-
-				// spectrum_nmr_analyzer_flow_cell_vol
-				if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_flow_cell_vol")) {
-					updateNMRanalyzerData = true;
-					Double newCellVol = null;
-					try {
-						newCellVol = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_nmr_analyzer_flow_cell_vol").toString());
-					} catch (NumberFormatException nfe) {
-					}
-					analyzerNMRdevice.setFlowCellVolume(newCellVol);
-				}
+				updateNMRanalyzerData = extractUpdatableAnalyzer(spectrumDataToUpdate, updateNMRanalyzerData,
+						analyzerNMRdevice);
 
 				String pulseSeq = ((NMR1DSpectrum) spectrum).getPulseSequence();
 				Double pulseAngle = ((NMR1DSpectrum) spectrum).getPulseAngle();
@@ -2721,7 +2792,682 @@ public class SpectraController {
 					AnalyzerNMRSpectrometerDeviceManagementService.update(analyzerNMRdevice.getId(),
 							analyzerNMRdevice, dbName, username, password);
 				}
-			}
+			} else if (spectrum instanceof NMR2DSpectrum) {
+
+				if (((NMR2DSpectrum) spectrum).getAcquisition() == NMR2DSpectrum.ACQUISITION_2D_JRES) {
+
+					// JRES
+
+					// IV.A - init var
+					boolean updateNMRspectrumData = false;
+					boolean updateNMRanalyzerData = false;
+					boolean updateNMRprocessingData = false;
+
+					AnalyzerNMRSpectrometerDevice analyzerNMRdevice = ((NMR2DSpectrum) spectrum)
+							.getAnalyzerNMRSpectrometerDevice();
+
+					// IV.B - update object
+
+					updateNMRanalyzerData = extractUpdatableAnalyzer(spectrumDataToUpdate,
+							updateNMRanalyzerData, analyzerNMRdevice);
+
+					String pulseSequence = ((NMR2DSpectrum) spectrum).getPulseSequence();
+					// Double pulseAngle = ((NMR2DSpectrum) spectrum).getPulseAngle();
+					Integer sizeOfFIDF1 = ((NMR2DSpectrum) spectrum).getSizeOfFIDF1();// sp
+					Integer sizeOfFIDF2 = ((NMR2DSpectrum) spectrum).getSizeOfFIDF2();// sp
+					Integer numberOfScansF2 = ((NMR2DSpectrum) spectrum).getNumberOfScansF2();// sp
+					String acquisitionModeFor2DF1 = ((NMR2DSpectrum) spectrum).getAcquisitionModeFor2DF1();// sp
+					// Double mixingTime = ((NMR2DSpectrum) spectrum).getMixingTime();
+					Double temperature = ((NMR2DSpectrum) spectrum).getTemperature();
+					Double relaxationDelayD1 = ((NMR2DSpectrum) spectrum).getRelaxationDelayD1();
+					Double sw1d = ((NMR2DSpectrum) spectrum).getSwF1();// sp
+					Double sw13c = ((NMR2DSpectrum) spectrum).getSwF2();// sp
+					// Double jxh = ((NMR2DSpectrum) spectrum).getJxh();// sp
+					// Boolean nus = ((NMR2DSpectrum) spectrum).getNus();// sp
+					// Double nusAmount = ((NMR2DSpectrum) spectrum).getNusAmount();// sp
+					// Integer nusPoints = ((NMR2DSpectrum) spectrum).getNusPoints();// sp
+
+					// PROCESSING
+					Boolean fourierTransform = ((NMR2DSpectrum) spectrum).getFourierTransform();
+					Boolean tilt = ((NMR2DSpectrum) spectrum).getTilt();
+					Integer siF1 = ((NMR2DSpectrum) spectrum).getSiF1();
+					Integer siF2 = ((NMR2DSpectrum) spectrum).getSiF2();
+					Short windowFunctionF1 = ((NMR2DSpectrum) spectrum).getWindowFunctionF1();
+					Short windowFunctionF2 = ((NMR2DSpectrum) spectrum).getWindowFunctionF2();
+					Double lbF1 = ((NMR2DSpectrum) spectrum).getLbF1();
+					Double lbF2 = ((NMR2DSpectrum) spectrum).getLbF2();
+					Double ssbF1 = ((NMR2DSpectrum) spectrum).getSsbF1();
+					Double ssbF2 = ((NMR2DSpectrum) spectrum).getSsbF2();
+					String gbF1 = ((NMR2DSpectrum) spectrum).getGbF1();
+					String gbF2 = ((NMR2DSpectrum) spectrum).getGbF2();
+					char peakPicking = ((NMR2DSpectrum) spectrum).getPeakPicking();
+					Boolean symmetrize = ((NMR2DSpectrum) spectrum).getSymmetrize();
+					// String nusProcessingParameter = ((NMR2DSpectrum) spectrum).getNusProcessingParameter();
+
+					// spectrum_nmr_analyzer_pulse_seq
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_pulse_seq")) {
+						updateNMRspectrumData = true;
+						pulseSequence = spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_seq")
+								.toString();
+					}
+
+					// spectrum_nmr_analyzer_size_of_fid_f1
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_size_of_fid_f1")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_size_of_fid_f1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						sizeOfFIDF1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_size_of_fid_f2
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_size_of_fid_f2")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_size_of_fid_f2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						sizeOfFIDF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_number_of_scans
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_number_of_scans")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_number_of_scans").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						numberOfScansF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_temperature
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_temperature")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_temperature").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						temperature = newVal;
+					}
+
+					// spectrum_nmr_analyzer_relaxationDelayD1
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_relaxationDelayD1")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_relaxationDelayD1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						relaxationDelayD1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_swF1
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_swF1")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						sw1d = newVal;
+					}
+
+					// spectrum_nmr_analyzer_swF2
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_swF2")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						sw13c = newVal;
+					}
+
+					// spectrum_nmr_analyzer_acquisition_mode_for_2d
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_acquisition_mode_for_2d")) {
+						updateNMRspectrumData = true;
+						acquisitionModeFor2DF1 = spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_acquisition_mode_for_2d").toString();
+					}
+
+					/// ----- PROCESSING GATHERING
+
+					// spectrum_nmr_analyzer_data_fourier_transform: undefined
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_fourier_transform")) {
+						updateNMRprocessingData = true;
+						Boolean newVal = null;
+						try {
+							newVal = Boolean.parseBoolean(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_data_fourier_transform").toString());
+						} catch (Exception e) {
+						}
+						fourierTransform = newVal;
+					}
+
+					// spectrum_nmr_analyzer_tilt string
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_tilt")) {
+						updateNMRspectrumData = true;
+						tilt = getStandardizedTrueFalse(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_tilt").toString());
+					}
+
+					// spectrum_nmr_analyzer_data_siF1 int
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_siF1")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						siF1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_data_siF2 int
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_siF2")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						siF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_data_windowFunctionF1 char
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_windowFunctionF1")) {
+						updateNMRspectrumData = true;
+						windowFunctionF1 = NMR2DSpectrum.getStandardizedWindowFunction(spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_data_windowFunctionF1").toString());
+					}
+
+					// spectrum_nmr_analyzer_data_windowFunctionF2 char
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_windowFunctionF2")) {
+						updateNMRspectrumData = true;
+						windowFunctionF2 = NMR2DSpectrum.getStandardizedWindowFunction(spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_data_windowFunctionF2").toString());
+					}
+
+					// spectrum_nmr_analyzer_lbF1 double
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_lbF1")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						lbF1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_lbF2 double
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_lbF2")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						lbF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_ssbF1 double
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_ssbF1")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						ssbF1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_ssbF2 double
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_ssbF2")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						ssbF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_gbF1
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_gbF1")) {
+						updateNMRspectrumData = true;
+						gbF1 = spectrumDataToUpdate.get("spectrum_nmr_analyzer_gbF1").toString();
+					}
+
+					// spectrum_nmr_analyzer_gbF2
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_gbF2")) {
+						updateNMRspectrumData = true;
+						gbF2 = spectrumDataToUpdate.get("spectrum_nmr_analyzer_gbF2").toString();
+					}
+
+					// spectrum_nmr_analyzer_data_peak_peaking manu/auto/none
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_peak_peaking")) {
+						updateNMRspectrumData = true;
+						peakPicking = NMR2DSpectrum.getStandardizedPeakPeaking(spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_data_peak_peaking").toString());
+					}
+
+					// spectrum_nmr_analyzer_symmetrize string
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_symmetrize")) {
+						updateNMRspectrumData = true;
+						symmetrize = getStandardizedTrueFalse(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_symmetrize").toString());
+					}
+
+					// IV.C - save object (if needed)
+					if (updateNMRspectrumData || updateNMRprocessingData) {
+						NMR2DSpectrumManagementService.updateBasicAttributes(spectrum.getId(), pulseSequence,
+								sizeOfFIDF1, sizeOfFIDF2, numberOfScansF2, acquisitionModeFor2DF1,
+								temperature, relaxationDelayD1, sw1d, sw13c, fourierTransform, tilt, siF1,
+								siF2, windowFunctionF1, windowFunctionF2, lbF1, lbF2, ssbF1, ssbF2, gbF1,
+								gbF2, peakPicking, symmetrize, dbName, username, password);
+					}
+					if (updateNMRanalyzerData) {
+						AnalyzerNMRSpectrometerDeviceManagementService.update(analyzerNMRdevice.getId(),
+								analyzerNMRdevice, dbName, username, password);
+					}
+
+				} else {
+					// ALL CLASSIC 2D
+
+					// IV.A - init var
+					boolean updateNMRspectrumData = false;
+					boolean updateNMRanalyzerData = false;
+					boolean updateNMRprocessingData = false;
+
+					AnalyzerNMRSpectrometerDevice analyzerNMRdevice = ((NMR2DSpectrum) spectrum)
+							.getAnalyzerNMRSpectrometerDevice();
+
+					// IV.B - update object
+
+					updateNMRanalyzerData = extractUpdatableAnalyzer(spectrumDataToUpdate,
+							updateNMRanalyzerData, analyzerNMRdevice);
+
+					String pulseSequence = ((NMR2DSpectrum) spectrum).getPulseSequence();
+					Double pulseAngle = ((NMR2DSpectrum) spectrum).getPulseAngle();
+					Integer sizeOfFIDF1 = ((NMR2DSpectrum) spectrum).getSizeOfFIDF1();// sp
+					Integer sizeOfFIDF2 = ((NMR2DSpectrum) spectrum).getSizeOfFIDF2();// sp
+					Integer numberOfScansF2 = ((NMR2DSpectrum) spectrum).getNumberOfScansF2();// sp
+					String acquisitionModeFor2DF1 = ((NMR2DSpectrum) spectrum).getAcquisitionModeFor2DF1();// sp
+					Double mixingTime = ((NMR2DSpectrum) spectrum).getMixingTime();
+					Double temperature = ((NMR2DSpectrum) spectrum).getTemperature();
+					Double relaxationDelayD1 = ((NMR2DSpectrum) spectrum).getRelaxationDelayD1();
+					Double sw1d = ((NMR2DSpectrum) spectrum).getSwF1();// sp
+					Double sw13c = ((NMR2DSpectrum) spectrum).getSwF2();// sp
+					Double jxh = ((NMR2DSpectrum) spectrum).getJxh();// sp
+					Boolean nus = ((NMR2DSpectrum) spectrum).getNus();// sp
+					Double nusAmount = ((NMR2DSpectrum) spectrum).getNusAmount();// sp
+					Integer nusPoints = ((NMR2DSpectrum) spectrum).getNusPoints();// sp
+
+					// PROCESSING
+					Boolean fourierTransform = ((NMR2DSpectrum) spectrum).getFourierTransform();
+					Integer siF1 = ((NMR2DSpectrum) spectrum).getSiF1();
+					Integer siF2 = ((NMR2DSpectrum) spectrum).getSiF2();
+					Short windowFunctionF1 = ((NMR2DSpectrum) spectrum).getWindowFunctionF1();
+					Short windowFunctionF2 = ((NMR2DSpectrum) spectrum).getWindowFunctionF2();
+					Double lbF1 = ((NMR2DSpectrum) spectrum).getLbF1();
+					Double lbF2 = ((NMR2DSpectrum) spectrum).getLbF2();
+					Double ssbF1 = ((NMR2DSpectrum) spectrum).getSsbF1();
+					Double ssbF2 = ((NMR2DSpectrum) spectrum).getSsbF2();
+					String gbF1 = ((NMR2DSpectrum) spectrum).getGbF1();
+					String gbF2 = ((NMR2DSpectrum) spectrum).getGbF2();
+					char peakPicking = ((NMR2DSpectrum) spectrum).getPeakPicking();
+					String nusProcessingParameter = ((NMR2DSpectrum) spectrum).getNusProcessingParameter();
+
+					// spectrum_nmr_analyzer_pulse_seq
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_pulse_seq")) {
+						updateNMRspectrumData = true;
+						pulseSequence = spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_seq")
+								.toString();
+					}
+
+					// spectrum_nmr_analyzer_pulse_angle
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_pulse_angle")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_angle").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						pulseAngle = newVal;
+					}
+
+					// spectrum_nmr_analyzer_size_of_fid_f1
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_size_of_fid_f1")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_size_of_fid_f1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						sizeOfFIDF1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_size_of_fid_f2
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_size_of_fid_f2")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_size_of_fid_f2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						sizeOfFIDF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_number_of_scans
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_number_of_scans")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_number_of_scans").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						numberOfScansF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_temperature
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_temperature")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_temperature").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						temperature = newVal;
+					}
+
+					// spectrum_nmr_analyzer_relaxationDelayD1
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_relaxationDelayD1")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_relaxationDelayD1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						relaxationDelayD1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_mixingTime
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_mixingTime")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_mixingTime").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						mixingTime = newVal;
+					}
+
+					// spectrum_nmr_analyzer_swF1
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_swF1")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						sw1d = newVal;
+					}
+
+					// spectrum_nmr_analyzer_swF2
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_swF2")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						sw13c = newVal;
+					}
+
+					// spectrum_nmr_analyzer_jxh
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_jxh")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_jxh").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						jxh = newVal;
+					}
+
+					// spectrum_nmr_analyzer_acquisition_mode_for_2d
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_acquisition_mode_for_2d")) {
+						updateNMRspectrumData = true;
+						acquisitionModeFor2DF1 = spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_acquisition_mode_for_2d").toString();
+					}
+
+					// spectrum_nmr_analyzer_jxh
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_jxh")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_jxh").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						jxh = newVal;
+					}
+
+					// spectrum_nmr_analyzer_nus: undefined
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_nus")) {
+						updateNMRspectrumData = true;
+						Boolean newVal = null;
+						try {
+							newVal = Boolean.parseBoolean(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_nus").toString());
+						} catch (Exception e) {
+						}
+						nus = newVal;
+					}
+
+					// spectrum_nmr_analyzer_nus_amount
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_nus_amount")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_nus_amount").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						nusAmount = newVal;
+					}
+
+					// spectrum_nmr_analyzer_nus_points
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_nus_points")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_nus_points").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						nusPoints = newVal;
+					}
+
+					/// ----- PROCESSING GATHERING
+
+					// spectrum_nmr_analyzer_data_fourier_transform: undefined
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_fourier_transform")) {
+						updateNMRprocessingData = true;
+						Boolean newVal = null;
+						try {
+							newVal = Boolean.parseBoolean(spectrumDataToUpdate
+									.get("spectrum_nmr_analyzer_data_fourier_transform").toString());
+						} catch (Exception e) {
+						}
+						fourierTransform = newVal;
+					}
+
+					// spectrum_nmr_analyzer_data_siF1 int
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_siF1")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						siF1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_data_siF2 int
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_siF2")) {
+						updateNMRspectrumData = true;
+						Integer newVal = null;
+						try {
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						siF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_data_windowFunctionF1 char
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_windowFunctionF1")) {
+						updateNMRspectrumData = true;
+						windowFunctionF1 = NMR2DSpectrum.getStandardizedWindowFunction(spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_data_windowFunctionF1").toString());
+					}
+
+					// spectrum_nmr_analyzer_data_windowFunctionF2 char
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_windowFunctionF2")) {
+						updateNMRspectrumData = true;
+						windowFunctionF2 = NMR2DSpectrum.getStandardizedWindowFunction(spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_data_windowFunctionF2").toString());
+					}
+
+					// spectrum_nmr_analyzer_lbF1 double
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_lbF1")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						lbF1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_lbF2 double
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_lbF2")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						lbF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_ssbF1 double
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_ssbF1")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF1").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						ssbF1 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_ssbF2 double
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_ssbF2")) {
+						updateNMRspectrumData = true;
+						Double newVal = null;
+						try {
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF2").toString());
+						} catch (NumberFormatException nfe) {
+						}
+						ssbF2 = newVal;
+					}
+
+					// spectrum_nmr_analyzer_gbF1
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_gbF1")) {
+						updateNMRspectrumData = true;
+						gbF1 = spectrumDataToUpdate.get("spectrum_nmr_analyzer_gbF1").toString();
+					}
+
+					// spectrum_nmr_analyzer_gbF2
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_gbF2")) {
+						updateNMRspectrumData = true;
+						gbF2 = spectrumDataToUpdate.get("spectrum_nmr_analyzer_gbF2").toString();
+					}
+
+					// spectrum_nmr_analyzer_data_peak_peaking manu/auto/none
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_peak_peaking")) {
+						updateNMRspectrumData = true;
+						peakPicking = NMR2DSpectrum.getStandardizedPeakPeaking(spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_data_peak_peaking").toString());
+					}
+
+					// spectrum_nmr_analyzer_nusProcessingParameter string
+					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_nusProcessingParameter")) {
+						updateNMRspectrumData = true;
+						nusProcessingParameter = spectrumDataToUpdate
+								.get("spectrum_nmr_analyzer_nusProcessingParameter").toString();
+					}
+
+					// IV.C - save object (if needed)
+					if (updateNMRspectrumData || updateNMRprocessingData) {
+						NMR2DSpectrumManagementService.updateBasicAttributes(spectrum.getId(), pulseSequence,
+								pulseAngle, sizeOfFIDF1, sizeOfFIDF2, numberOfScansF2, acquisitionModeFor2DF1,
+								temperature, relaxationDelayD1, sw1d, sw13c, mixingTime, jxh, nus, nusAmount,
+								nusPoints, fourierTransform, siF1, siF2, windowFunctionF1, windowFunctionF2,
+								lbF1, lbF2, ssbF1, ssbF2, gbF1, gbF2, peakPicking, nusProcessingParameter,
+								dbName, username, password);
+					}
+					if (updateNMRanalyzerData) {
+						AnalyzerNMRSpectrometerDeviceManagementService.update(analyzerNMRdevice.getId(),
+								analyzerNMRdevice, dbName, username, password);
+					}
+					// if (updateNMRprocessingData) {
+					// NMR2DSpectrumManagementService.updateProcessingAttributes(spectrum.getId(),
+					// //
+					// fourierTransform, siF1, siF2, windowFunctionF1, windowFunctionF2, lbF1, lbF2,
+					// ssbF1, ssbF2, gbF1, gbF2, peakPicking, nusProcessingParameter,
+					// //
+					// dbName, username, password);
+					// }
+
+				} // all 2D NMR
+			} // 2D NMR spectra
+
 			// V - update MASS PEAK LIST data
 
 			if (spectrum instanceof MassSpectrum) {
@@ -2783,11 +3529,14 @@ public class SpectraController {
 						FullScanLCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList,
 								dbName, username, password);
 					} // GCMS //MSMS
+					else if (spectrum instanceof FragmentationLCSpectrum) {
+						FragmentationLCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList,
+								dbName, username, password);
+					}
 				}
 			}
 
 			// VI - update NMR PEAK LIST data
-
 			if (spectrum instanceof NMR1DSpectrum) {
 
 				// VI.A - init var
@@ -2915,7 +3664,151 @@ public class SpectraController {
 							dbName, username, password);
 				}
 
-			}
+			} else if (spectrum instanceof NMR2DSpectrum) {
+
+				if (((NMR2DSpectrum) spectrum).getAcquisition() == NMR2DSpectrum.ACQUISITION_2D_JRES) {
+
+					// JRES
+					// VI.A - init var
+					boolean updatePeakList = false;
+					List<NMR2DJRESPeak> newPeakList = new ArrayList<NMR2DJRESPeak>();
+
+					// annotation: "2"
+					// chemicalShift: 3.6163
+					// halfWidth: 0.001527993310974196
+					// halfWidthHz: 0
+					// index: 1
+					// relativeIntensity: 33.27
+
+					// VI.B - update object
+					if (spectrumDataToUpdate.containsKey("spectrum_nmr_jres_peaks")
+							&& spectrumDataToUpdate.get("spectrum_nmr_jres_peaks") != null) {
+						if (spectrumDataToUpdate.get("spectrum_nmr_jres_peaks") instanceof ArrayList<?>) {
+							// newPeakList = new HashMap<>();
+							updatePeakList = true;
+							ArrayList<Map<String, Object>> rawPeakList = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
+									.get("spectrum_nmr_jres_peaks");
+							for (Map<String, Object> rawPeak : rawPeakList) {
+								if (rawPeak.containsKey("chemicalShiftF1")
+										&& rawPeak.get("chemicalShiftF1") != null
+										&& rawPeak.containsKey("chemicalShiftF2")
+										&& rawPeak.get("chemicalShiftF2") != null) {
+									// {mz=213.1241, ri=100, theoricalMass=213.1245, deltaMass=0.161,
+									// composition=C10H17N2O3, attribution=[M-H]-}
+									Double chemicalShiftF1 = null;
+									Double chemicalShiftF2 = null;
+									Double intensity = null;
+									try {
+										chemicalShiftF1 = Double
+												.parseDouble(rawPeak.get("chemicalShiftF1").toString());
+										chemicalShiftF2 = Double
+												.parseDouble(rawPeak.get("chemicalShiftF2").toString());
+									} catch (NumberFormatException nfe) {
+									}
+									if (rawPeak.get("intensity") != null)
+										try {
+											intensity = Double
+													.parseDouble(rawPeak.get("intensity").toString());
+										} catch (NumberFormatException nfe) {
+										}
+
+									String multiplicity = rawPeak.get("multiplicity").toString();
+									String j = rawPeak.get("j").toString();
+									String annotation = rawPeak.get("annotation").toString();
+
+									NMR2DJRESPeak nmrP = new NMR2DJRESPeak((NMR2DSpectrum) spectrum);
+									nmrP.setChemicalShiftF1(chemicalShiftF1);
+									nmrP.setChemicalShiftF2(chemicalShiftF2);
+									nmrP.setIntensity(intensity);
+									try {
+										nmrP.addCouplageConstant(Double.parseDouble(j));
+									} catch (NumberFormatException e) {
+										nmrP.gatherCouplingConstants(j);
+									}
+									nmrP.setMultiplicity(
+											PeakPattern.getStandardizedPatternType(multiplicity));
+									nmrP.setAnnotation(annotation);
+									// if (relativeIntensity != 0.0 && chemicalShift != 0.0)
+									newPeakList.add(nmrP);
+								}
+							}
+						}
+					}
+
+					// VI.C - save object (if needed)
+					// set newPeakList for spectrum
+					if (updatePeakList) {
+						NMR2DSpectrumManagementService.updatePeakListJRES(spectrum.getId(), newPeakList,
+								dbName, username, password);
+					}
+
+				} else {
+					// ALL CLASSIC 2D
+					// VI.A - init var
+					boolean updatePeakList = false;
+					List<NMR2DPeak> newPeakList = new ArrayList<NMR2DPeak>();
+
+					// annotation: "2"
+					// chemicalShift: 3.6163
+					// halfWidth: 0.001527993310974196
+					// halfWidthHz: 0
+					// index: 1
+					// relativeIntensity: 33.27
+
+					// VI.B - update object
+					if (spectrumDataToUpdate.containsKey("spectrum_nmr_2dpeaks")
+							&& spectrumDataToUpdate.get("spectrum_nmr_2dpeaks") != null) {
+						if (spectrumDataToUpdate.get("spectrum_nmr_2dpeaks") instanceof ArrayList<?>) {
+							// newPeakList = new HashMap<>();
+							updatePeakList = true;
+							ArrayList<Map<String, Object>> rawPeakList = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
+									.get("spectrum_nmr_2dpeaks");
+							for (Map<String, Object> rawPeak : rawPeakList) {
+								if (rawPeak.containsKey("chemicalShiftF1")
+										&& rawPeak.get("chemicalShiftF1") != null
+										&& rawPeak.containsKey("chemicalShiftF2")
+										&& rawPeak.get("chemicalShiftF2") != null) {
+									// {mz=213.1241, ri=100, theoricalMass=213.1245, deltaMass=0.161,
+									// composition=C10H17N2O3, attribution=[M-H]-}
+									Double chemicalShiftF1 = null;
+									Double chemicalShiftF2 = null;
+									Double intensity = null;
+									try {
+										chemicalShiftF1 = Double
+												.parseDouble(rawPeak.get("chemicalShiftF1").toString());
+										chemicalShiftF2 = Double
+												.parseDouble(rawPeak.get("chemicalShiftF2").toString());
+									} catch (NumberFormatException nfe) {
+									}
+									if (rawPeak.get("intensity") != null)
+										try {
+											intensity = Double
+													.parseDouble(rawPeak.get("intensity").toString());
+										} catch (NumberFormatException nfe) {
+										}
+									String annotation = rawPeak.get("annotation").toString();
+
+									NMR2DPeak nmrP = new NMR2DPeak((NMR2DSpectrum) spectrum);
+									nmrP.setChemicalShiftF1(chemicalShiftF1);
+									nmrP.setChemicalShiftF2(chemicalShiftF2);
+									nmrP.setIntensity(intensity);
+									nmrP.setAnnotation(annotation);
+									// if (relativeIntensity != 0.0 && chemicalShift != 0.0)
+									newPeakList.add(nmrP);
+								}
+							}
+						}
+					}
+
+					// VI.C - save object (if needed)
+					// set newPeakList for spectrum
+					if (updatePeakList) {
+						NMR2DSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList, dbName,
+								username, password);
+					}
+
+				} // else all kind of 2D
+			} // if 2D NMR spectra
 
 			// VIII - update OTHER data
 
@@ -3021,6 +3914,65 @@ public class SpectraController {
 		return true;
 	}
 
+	/**
+	 * @param spectrumDataToUpdate
+	 * @param updateNMRanalyzerData
+	 * @param analyzerNMRdevice
+	 * @return
+	 */
+	private boolean extractUpdatableAnalyzer(Map<String, Object> spectrumDataToUpdate,
+			boolean updateNMRanalyzerData, AnalyzerNMRSpectrometerDevice analyzerNMRdevice) {
+		// spectrum_nmr_analyzer_name
+		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_name")) {
+			updateNMRanalyzerData = true;
+			analyzerNMRdevice
+					.setInstrumentName(AnalyzerNMRSpectrometerDevice.getStandardizedNMRinstrumentName(
+							spectrumDataToUpdate.get("spectrum_nmr_analyzer_name").toString()));
+		}
+
+		// spectrum_nmr_analyzer_magneticFieldStrength
+		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_magneticFieldStrength")) {
+			updateNMRanalyzerData = true;
+			analyzerNMRdevice.setMagneticFieldStrenght(
+					AnalyzerNMRSpectrometerDevice.getStandardizedNMRmagneticFieldStength(spectrumDataToUpdate
+							.get("spectrum_nmr_analyzer_magneticFieldStrength").toString(), null));
+		}
+
+		// spectrum_nmr_analyzer_software
+		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_software")) {
+			updateNMRanalyzerData = true;
+			analyzerNMRdevice.setSoftware(AnalyzerNMRSpectrometerDevice.getStandardizedNMRsoftwareVersion(
+					spectrumDataToUpdate.get("spectrum_nmr_analyzer_software").toString()));
+		}
+
+		// spectrum_nmr_analyzer_probe
+		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_probe")) {
+			updateNMRanalyzerData = true;
+			analyzerNMRdevice.setProbe(AnalyzerNMRSpectrometerDevice.getStandardizedNMRprobe(
+					spectrumDataToUpdate.get("spectrum_nmr_analyzer_probe").toString()));
+		}
+
+		// spectrum_nmr_analyzer_tube
+		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_tube")) {
+			updateNMRanalyzerData = true;
+			analyzerNMRdevice.setNMRtubeDiameter(AnalyzerNMRSpectrometerDevice.getStandardizedNMRtubeDiameter(
+					spectrumDataToUpdate.get("spectrum_nmr_analyzer_tube").toString(), null));
+		}
+
+		// spectrum_nmr_analyzer_flow_cell_vol
+		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_flow_cell_vol")) {
+			updateNMRanalyzerData = true;
+			Double newCellVol = null;
+			try {
+				newCellVol = Double.parseDouble(
+						spectrumDataToUpdate.get("spectrum_nmr_analyzer_flow_cell_vol").toString());
+			} catch (NumberFormatException nfe) {
+			}
+			analyzerNMRdevice.setFlowCellVolume(newCellVol);
+		}
+		return updateNMRanalyzerData;
+	}
+
 	private boolean constainKey(Map<String, Object> spectrumDataToUpdate, String string) {
 		return spectrumDataToUpdate.containsKey(string) && spectrumDataToUpdate.get(string) != null;
 	}
@@ -3041,25 +3993,26 @@ public class SpectraController {
 		}
 	}
 
-	/**
-	 * @param data
-	 * @return
-	 */
-	@RequestMapping(value = "/nmr-viewer-converter", headers = {
-			"Content-type=application/json" }, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Object getNMRspectrumJsonData(@RequestBody Map<String, Object> data) {
-
-		// {"type":"single","id":"test","sample":1,"pdata":1}
-		String rawFolder = Utils.getBundleConfElement("rawFile.nmr.folder");
-		if (!rawFolder.endsWith(File.separator))
-			rawFolder += File.separator;
-		String id = rawFolder + (String) data.get("id");
-		int sample = (int) data.get("sample");
-		String type = (String) data.get("type");
-		int pdata = (int) data.get("pdata");
-
-		return ViewerProcessing.getJsonData(id, sample, type, pdata);
-	}
+	// /**
+	// * @param data
+	// * @return
+	// */
+	// @RequestMapping(value = "/nmr-viewer-converter", headers = {
+	// "Content-type=application/json" }, method = RequestMethod.POST, produces =
+	// MediaType.APPLICATION_JSON_VALUE)
+	// public @ResponseBody Object getNMRspectrumJsonData(@RequestBody Map<String, Object> data) {
+	//
+	// // {"type":"single","id":"test","sample":1,"pdata":1}
+	// String rawFolder = Utils.getBundleConfElement("rawFile.nmr.folder");
+	// if (!rawFolder.endsWith(File.separator))
+	// rawFolder += File.separator;
+	// String id = rawFolder + (String) data.get("id");
+	// int sample = (int) data.get("sample");
+	// String type = (String) data.get("type");
+	// int pdata = (int) data.get("pdata");
+	//
+	// return ViewerProcessing.getJsonData(id, sample, type, pdata);
+	// }
 
 	/**
 	 * @param request
@@ -3133,6 +4086,30 @@ public class SpectraController {
 
 		// RETURN
 		return "module/jsmol_sandbox";
+	}
+
+	/**
+	 * @param booleanTF
+	 * @return
+	 */
+	public static Boolean getStandardizedTrueFalse(String booleanTF) {
+		if (booleanTF != null)
+			switch (booleanTF.trim().toLowerCase()) {
+			case "yes":
+			case "y":
+			case "true":
+			case "t":
+				return true;
+			case "false":
+			case "f":
+			case "no":
+			case "n":
+				return false;
+			default:
+				return null;
+			}
+		else
+			return null;
 	}
 
 	/**

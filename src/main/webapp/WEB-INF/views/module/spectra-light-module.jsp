@@ -121,18 +121,8 @@ var tabRawSpectrumName = [];
 								</div>
 							</c:if>
 							<c:if test="${spectrum.hasRawData()}"> 
-								<c:if test="${spectrum.getAcquisitionAsString() == 'Proton-1D' || spectrum.getAcquisitionAsString() == 'NOESY-1D' || spectrum.getAcquisitionAsString() == 'CPMG-1D'}">
-									<!--stgraph-->
-									<div id="stgraph<%=randomID %><%=cptSpectrumDisplayed %>" class="stgraph-light">
-										loading NMR spectra... <br />
-										<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
-											title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
-									</div>
-								</c:if>
-								<c:if test="${spectrum.getAcquisitionAsString() == 'Carbon13-1D' || spectrum.getAcquisitionAsString() == 'COSY-2D' || spectrum.getAcquisitionAsString() == 'TOCSY-2D' || spectrum.getAcquisitionAsString() == 'NOESY-2D' || spectrum.getAcquisitionAsString() == 'HMBC-2D' || spectrum.getAcquisitionAsString() == 'HSQC-2D'}">
-									<!-- static image -->
-									<img class="spectraLightImg" alt="${spectrum.getMassBankLikeName()}" title="${spectrum.getMassBankLikeName()}" src="spectra_img/${fn:escapeXml(spectrum.getRawDataFolder())}.png">
-								</c:if>
+								<!-- static image -->
+								<img class="spectraLightImg" alt="${spectrum.getMassBankLikeName()}" title="${spectrum.getMassBankLikeName()}" src="spectra_img/${fn:escapeXml(spectrum.getRawDataFolder())}.png">
 							</c:if>
 						</td>
 						<td width="20px"></td>
@@ -250,7 +240,7 @@ var tabRawSpectrumName = [];
 			if (typeSpectrum == 'lc-fullscan')
 				spectrumFullScanLCToLoad.push(tabIdSpectrum[cpt]);
 			else if ( typeSpectrum == 'lc-fragmentation')
-				spectrumFullScanLCToLoad.push(tabIdSpectrum[cpt]);
+				spectrumFragLCToLoad.push(tabIdSpectrum[cpt]);
 			// seek title
 			var titleSpectrum = encodeURIComponent("" + tabNameSpectrum[cpt]);
 			// load ajax
@@ -272,8 +262,6 @@ var tabRawSpectrumName = [];
 			});
 		} else if (typeSpectrum == 'nmr' ) {
 			if (tabHasRawSpectrum[cpt]) {
-				// display ML & DJ viewer 
-				nmrSingle(tabRawSpectrumName[cpt], <%=randomID %>, cpt, tabNameSpectrum[cpt] );
 			} else {
 				// display "dumy" spectra
 				// set element to load

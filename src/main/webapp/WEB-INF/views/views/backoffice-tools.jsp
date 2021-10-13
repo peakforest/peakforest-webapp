@@ -13,16 +13,15 @@
 <%
 boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metexplore.ws.use"));
 %>
-
+<script src="<c:url value="/resources/js/select2.min.js" />"></script>
+<link href="<c:url value="/resources/css/select2.min.css" />" rel="stylesheet">
 <div class="col-lg-12">
-	
 	<div id="backOfficeToolsAltert" style="max-width: 500px;"></div>
-
 	<div class="table-responsive">
 		<table class="table table-hover ">
 			<thead>
 				<tr>
-					<th colspan="3">Update statistics</th>
+					<th colspan="4">Update statistics</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -33,10 +32,15 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 					<td>
 <% if (useMEwebservice) { %>
 						<a class="btn btn-info" href="#" onclick="updateMetExloreStats(this);"> <i class="fa fa-refresh"></i> Update MetExplore stats. </a>
-<% } %>
+<% } else { %>
+						<a class="btn btn-info btn-disabled" href="#"> <i class="fa fa-refresh"></i> Update MetExplore stats. </a>
+	<% } %>
 					</td>
 					<td>
 						<a class="btn btn-info" href="#" onclick="updateMassVsLogP(this);"> <i class="fa fa-refresh"></i> Update Mass Vs LogP </a>
+					</td>
+					<td>
+						<a class="btn btn-info" href="#" onclick="curateCompoundStructures(this);"> <i class="fa fa-refresh"></i> Curate structures </a>
 					</td>
 				</tr>
 				<tr>
@@ -48,6 +52,9 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 					</td>
 					<td>
 						<a class="btn btn-info" href="#" onclick="updateBioSM(this);"> <i class="fa fa-refresh"></i> Process BioSM </a>
+					</td>
+					<td>
+						<a class="btn btn-info" href="#" onclick="flushSessions(this);"> <i class="fa fa-refresh"></i> Flush Sessions </a>
 					</td>
 				</tr>
 			</tbody>
@@ -80,7 +87,8 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 			</tbody>
 		</table>
 	</div> 
-	<br>
+	<hr />
+	<h3>Clean PeakForest data</h3>
 	<div class="table-responsive">
 		<table class="table table-hover tablesorter table-search">
 			<thead>
@@ -153,6 +161,13 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 					</td>
 				</tr>
 			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="5">
+						Warning: this routine delete all kind of metadata not related to any spectra, including Standardized and Analytical matrix metadata!
+					</td>
+				</tr>
+			</tfoot>
 		</table>
 	</div>
 	<div class="table-responsive">
@@ -174,11 +189,12 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 					<td id="">
 						<a class="btn btn-warning" href="#" onclick="cleanEntityCM(<%=CurationMessage.STATUS_REJECTED %> , this);"> <i class="fa fa-eraser"></i> Clean CM rejected <br /> <small>(nb tot. status rejected: <span id="cmCount2"></span>)</small></a>
 					</td>
-					<td id=>
+					<td id="">
 						<a class="btn btn-danger" href="#" onclick="cleanEntityCM(<%=CurationMessage.STATUS_WAITING %> , this);"> <i class="fa fa-eraser"></i> Clean CM waiting <br /> <small>(nb tot. status waiting: <span id="cmCount3"></span>)</small></a>
 					</td>
 				</tr>
 			</tbody>
+			<tfoot>
 				<tr>
 					<td colspan="4">
 						<div class="form-group input-group ">
@@ -191,7 +207,78 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 						</div>
 					</td>
 				</tr>
+			</tfoot>
+		</table>
+	</div>
+	<hr />
+	<h3>Manage analytical matrix <small>using ontologies</small></h3>
+	<div class="table-responsive">
+		<table class="table table-hover tablesorter table-search">
+			<thead>
+				<tr>
+					<th>Ontology key</th>
+					<th>Natural Language</th>
+					<th>HTML display</th>
+					<th>spectra nb</th>
+					<th>manage</th>
+				</tr>
+			</thead>
+			<tbody id="manageOntologies">
+			</tbody>
 			<tfoot>
+				<tr>
+					<td colspan="5">
+<!-- 						<div class="form-group input-group "> -->
+<!-- 							<span class="input-group-addon">Add</span>  -->
+<!-- 							<input id="add-new-ontology" type="text" class="form-control" value="" placeholder="search..."> -->
+<!-- 							<span class="input-group-btn"> -->
+<!-- 								<button class="btn btn-primary" onclick="addOntologyInDatabase ();"><i class="fa fa-plus-circle"></i></button> -->
+<!-- 							</span>  -->
+<!-- 						</div> -->
+						<div class="form-group input-group">
+							<span class="input-group-addon">Add</span> 
+							<select id="add-new-ontology" class="form-control" style="width: 300px;">
+								<option value="" disabled="disabled"></option>
+							</select>
+							<span class="input-group-btn">
+								<button class="btn btn-primary" onclick="addOntologyInDatabase ();"><i class="fa fa-plus-circle"></i></button>
+							</span> 
+						</div>
+						<div>To create a new ontologie, please go to <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfemw3.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>.</div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	
+	<hr />
+	<h3>Manage standardized matrix </h3>
+	<div class="table-responsive">
+		<table class="table table-hover tablesorter table-search">
+			<thead>
+				<tr>
+					<th>Natural Language</th>
+					<th>HTML display</th>
+					<th>spectra nb</th>
+					<th>manage</th>
+				</tr>
+			</thead>
+			<tbody id="manageStdMatrix">
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="5">
+						<div class="form-group input-group">
+							<span class="input-group-addon">Add</span> 
+							<input id="stdMatrixTxtDescription" type="text" class="form-control" style="width: 150px;" placeholder="text description" />
+							<input id="stdMatrixHtmlDescription" type="text" class="form-control" style="width: 400px;" placeholder="HTML description" />
+							<span class="input-group-btn">
+								<button class="btn btn-primary" onclick="addStdMatrixInDatabase();"><i class="fa fa-plus-circle"></i></button>
+							</span> 
+						</div>
+						<div>
+					</td>
+				</tr>
 			</tfoot>
 		</table>
 	</div>
@@ -653,6 +740,76 @@ updateSplash = function(btn, force) {
  	});
 }
 
+flushSessions = function(btn) {
+	$(btn).attr("disabled", true);
+	$(btn).children("i").addClass("fa-spin");
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/flush-sessions",
+ 		async: true,
+ 		success: function(ret) {
+			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not fush Sessions';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+			$(btn).children("i").removeClass("fa-spin");
+			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not fush Sessions';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+curateCompoundStructures = function(btn, force) {
+	$(btn).attr("disabled", true);
+	$(btn).children("i").addClass("fa-spin");
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/process-structural-curation",
+ 		async: true,
+ 		success: function(ret) {
+			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not curate structures';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+			$(btn).children("i").removeClass("fa-spin");
+			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not curate structures';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
 updatePeakforestStats = function(btn) {
 // 	$(btn).addClass("btn-disabled");
 	$(btn).attr("disabled", true);
@@ -690,8 +847,281 @@ updatePeakforestStats = function(btn) {
  	});
 }
 
-$(document).ready(function(){
-	$('.datepicker').datepicker();
+function listOntologiesInDatabase () {
+ 	$.ajax({ 
+ 		type: "get",
+ 		url: "admin/list-ontologies",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(data) {
+ 			// console.log(data);
+ 			$("#manageOntologies").empty();
+ 			$("#templateListOntologies").tmpl(data).appendTo("#manageOntologies");
+ 			$.each($(".ontologiesHTML"),function() {
+ 				$(this).html($(this).text());
+ 			});
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not load ontologies.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+function addOntologyInDatabase () {
+	var ontologyKey = $("#add-new-ontology").val();
+	if (ontologyKey.trim() == "") {
+		return false;
+	}
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/add-analytical-matrix",
+ 		async: true,
+ 		data: "key=" + ontologyKey,
+ 		success: function(data) {
+ 			if (data) {
+ 				$("#add-new-ontology").val("");
+ 				listOntologiesInDatabase ();
+ 			} else {
+ 	 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 	 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 	 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could add ontology.';
+ 	 			alert += ' </div>';
+ 	 			$("#backOfficeToolsAltert").html(alert);
+ 			}
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could add ontology.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+function addStdMatrixInDatabase () {
+	var matrixText = $("#stdMatrixTxtDescription").val();
+	var matrixHtml = $("#stdMatrixHtmlDescription").val();
+	if (matrixText.trim() == "") {
+		return false;
+	}
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/add-std-matrix",
+ 		async: true,
+ 		data: "text=" + matrixText + "&html=" + matrixHtml,
+ 		success: function(data) {
+ 			if (data) {
+ 				$("#stdMatrixTxtDescription").val("");
+ 				$("#stdMatrixHtmlDescription").val("");
+ 				listStdMatrixInDatabase ();
+ 			} else {
+ 	 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 	 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 	 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could add std matrix.';
+ 	 			alert += ' </div>';
+ 	 			$("#backOfficeToolsAltert").html(alert);
+ 			}
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could add std matrix.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+function listStdMatrixInDatabase () {
+ 	$.ajax({ 
+ 		type: "get",
+ 		url: "admin/list-std-matrix",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(data) {
+ 			// console.log(data);
+ 			$("#manageStdMatrix").empty();
+ 			$("#templateListStdMatrix").tmpl(data).appendTo("#manageStdMatrix");
+ 			$.each($(".matrixHTML"),function() {
+ 				$(this).html($(this).text());
+ 			});
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not load std matrix.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+function setOntologyFavourite (ontologyKey, isFav) {
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/set-ontology-favourite",
+ 		async: true,
+ 		data: "key=" + ontologyKey + "&favourite=" + isFav,
+ 		success: function(data) {
+ 			if (data) {
+ 				listOntologiesInDatabase ();
+ 			} else {
+ 	 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 	 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 	 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could set ontology.';
+ 	 			alert += ' </div>';
+ 	 			$("#backOfficeToolsAltert").html(alert);
+ 			}
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could set ontology.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+function deleteAnalyticalMatrix (id) { alert("TODO"); }
+
+function setStdMatrixFavourite (id, isFav) {
+	var naturalLanguage = $($("#stdMatrixTab"+id).find("td")[0]).html();
+	var htmlDisplay = $($("#stdMatrixTab"+id).find("td")[1]).html();
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/set-stdMatrix-favourite",
+ 		async: true,
+ 		data: "naturalLanguage=" + naturalLanguage + "&htmlDisplay=" + htmlDisplay+"&favourite=" + isFav,
+ 		success: function(data) {
+ 			if (data) {
+ 				listStdMatrixInDatabase ();
+ 			} else {
+ 	 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 	 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 	 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could set std matrix.';
+ 	 			alert += ' </div>';
+ 	 			$("#backOfficeToolsAltert").html(alert);
+ 			}
+ 		},
+ 		error : function(xhr) {
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could set std matrix.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
+function deleteStdMatrix (id) { alert("TODO"); }
+
+$("#add-new-ontology").select2({
+	ajax: {
+		url: "https://pfemw3.clermont.inra.fr/elasticsearch-proxies/ontologies/_search",
+		dataType: 'jsonp',
+		delay: 250,
+		data: function (params) {
+			return {
+				q: params.term, // search term
+				page: params.page
+			};
+		},
+		processResults: function (data, params) {
+			//console.log(data); 
+			var controle = [];
+			if (data.hasOwnProperty("hits") && data.hits.hasOwnProperty("hits") ) { 
+				$.each(data.hits.hits, function(){
+					var e = this['_source'];
+					controle.push({"id": e.id, "text": e.naturalLanguage});
+				});
+			}
+			return {
+				results: controle
+			};
+		},
+		cache: true
+	},
+	escapeMarkup: function (markup) { return markup; }, 
+	minimumInputLength: 6
 });
 
+$(document).ready(function(){
+	$('.datepicker').datepicker();
+	listOntologiesInDatabase ();
+	listStdMatrixInDatabase ();
+});
+
+</script>
+<script  type="text/x-jquery-tmpl" id="templateListOntologies">
+<tr>
+	<td>{%= key%}</td>
+	<td>{%= text%}</td>
+	<td class="ontologiesHTML">{%= html%}</td>
+	<td>{%= countSpectra%}</td>
+	<td>
+		{%if isFav%}
+			<a href="javascript:void(0)" onclick="setOntologyFavourite('{%= key%}', false)" class="btn btn-xs btn-success">
+				<i class="fa fa-star"></i>
+			</a>
+		{%else%}
+			<a href="javascript:void(0)" onclick="setOntologyFavourite('{%= key%}', true)" class="btn btn-xs btn-danger">
+				<i class="fa fa-star"></i>
+			</a>
+		{%/if%}
+		{%if (countSpectra==0 && !isFav)%}
+			<button onclick="deleteAnalyticalMatrix({%= id%})" class="btn btn-xs btn-danger">
+				<i class="fa fa-trash"></i>
+			</button>
+		{%else%}
+			<!--<button class="btn btn-xs btn-danger btn-disabled">
+				<i class="fa fa-trash"></i>
+			</button>-->
+		{%/if%}
+	</td>
+</tr>
+</script>
+<script  type="text/x-jquery-tmpl" id="templateListStdMatrix">
+<tr id="stdMatrixTab{%= id%}">
+	<td>{%= text%}</td>
+	<td class="matrixHTML">{%= html%}</td>
+	<td>{%= countSpectra%}</td>
+	<td>
+		{%if isFav%}
+			<a href="javascript:void(0)" onclick="setStdMatrixFavourite('{%= id%}', false)" class="btn btn-xs btn-success">
+				<i class="fa fa-star"></i>
+			</a>
+		{%else%}
+			<a href="javascript:void(0)" onclick="setStdMatrixFavourite('{%= id%}', true)" class="btn btn-xs btn-danger">
+				<i class="fa fa-star"></i>
+			</a>
+		{%/if%}
+		{%if (countSpectra==0 && !isFav)%}
+			<button onclick="deleteStdMatrix({%= id%})" class="btn btn-xs btn-danger">
+				<i class="fa fa-trash"></i>
+			</button>
+		{%else%}
+			<!--<button class="btn btn-xs btn-danger btn-disabled">
+				<i class="fa fa-trash"></i>
+			</button>-->
+		{%/if%}
+	</td>
+</tr>
 </script>

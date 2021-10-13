@@ -1,7 +1,25 @@
 Patchnote
 =======
 
-2017.0?.??
+2017.09.27
+-----------
+ * **@tag**: v2.0.0
+ * **@version**: 2.0.0
+ * **@notes**:
+    * fourth WebApp release!
+ * **@new**:
+     * MSMS spectra management / peakmatching - 24d32633
+     * edit 2D NMR spectra data - 6edb286e
+     * Analytical Matrix management - eaa1c179
+     * Analytical Matrix spectra management - eaa1c179
+ * **@bug fixed**:
+     * bug fixed in search - a9f26997 / b6721a4a
+     * bug fixed in NMR spectra edit - 1de6aa55
+ * **@other**:
+     * cleanup and performance improvement.
+     * improve numbered compound loading.
+
+2017.03.16
 -----------
  * **@tag**: v1.8.0
  * **@version**: 1.8.0
@@ -16,6 +34,7 @@ Patchnote
  * **@bug fixed**:
      * login: return to last visited page - 797c1e4e
      * analytics: set code as a customizable value for admins - 81aabb3e
+     * compounds search and score management - #93 #94 #95
  * **@other**:
      * SEO, JS debug, ...
 

@@ -127,21 +127,21 @@ public class ModalController {
 		}
 		model.addAttribute("user", user);
 		model.addAttribute("mainTechnology", "lcms");
-			switch (user.getMainTechnology()) {
-			case  User.PREF_GCMS:
-				model.addAttribute("mainTechnology", "gcms");
-				break;
-			case  User.PREF_LCMSMS:
-				model.addAttribute("mainTechnology", "lcmsms");
-				break;
-			case  User.PREF_NMR:
-				model.addAttribute("mainTechnology", "nmr");
-				break;
-			case  User.PREF_LCMS:
-			default:
-				model.addAttribute("mainTechnology", "lcms");
-				break;
-			}
+		switch (user.getMainTechnology()) {
+		case User.PREF_GCMS:
+			model.addAttribute("mainTechnology", "gcms");
+			break;
+		case User.PREF_LCMSMS:
+			model.addAttribute("mainTechnology", "lcmsms");
+			break;
+		case User.PREF_NMR:
+			model.addAttribute("mainTechnology", "nmr");
+			break;
+		case User.PREF_LCMS:
+		default:
+			model.addAttribute("mainTechnology", "lcms");
+			break;
+		}
 		model.addAttribute("token", user.getToken());
 		model.addAttribute("ldap", isLDAP);
 		return "modal/settings-modal";
@@ -171,5 +171,12 @@ public class ModalController {
 			Locale locale) {
 		response.setHeader("Cache-Control", "max-age=0");
 		return "modal/peakmatching-lcms-query-modal";
+	}
+
+	@RequestMapping(value = "/peakmatching-lcmsms-query-modal", method = RequestMethod.GET)
+	public String peakMatchingLCMSMSquertModal(HttpServletRequest request, HttpServletResponse response,
+			Locale locale) {
+		response.setHeader("Cache-Control", "max-age=0");
+		return "modal/peakmatching-lcmsms-query-modal";
 	}
 }

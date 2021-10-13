@@ -4,6 +4,7 @@ var hideSpectraScoreZero = true;
 var filterCpd = 0;
 var filterNMR = [];
 var filterLCMS = [];
+var filterLCMSMS = [];
 checkIfReOpenDetailsModal = function() {
 	if (reopenDetailsModal) {
 		$('#modalShowCompound').modal('show');
@@ -68,29 +69,37 @@ var spectrumData = new Array();
 var metadataData = new Array();
 var isMainQueryAnsync = false;
 var divSearch = "search";
-var inputSearch = $("input#search");
-//var inputSearchLCMS = $("input#searchLCMS");
-var inputSearchNMR = $("input#searchNMR");
 
+// SEARCH ALL
+var inputSearch = $("input#search");
 if (($(inputSearch).length)&&($("#search").val() != ""))
 	loadSearchResults();
 
+// PEAKMATCHING NMR
+var inputSearchNMR = $("input#searchNMR");
 if (($(inputSearchNMR).length)&&($("#searchNMR").val() != "")) {
 	divSearch = "searchNMR";
 	isMainQueryAnsync = true;
 	loadSearchResults();
 }
 
+// PEAKMATCHING MS
 var inputSearchLCMS = $("input#searchLCMS");
-
-if (($(inputSearch).length)&&($("#search").val() != ""))
-	loadSearchResults();
-
 if (($(inputSearchLCMS).length)&&($("#searchLCMS").val() != "")) {
 	divSearch = "searchLCMS";
 	isMainQueryAnsync = true;
 	loadSearchResults();
 }
+
+////////////////////////////////////////////////////
+// new 2.0 MSMS MATCHING
+var inputSearchLCMSMS = $("input#searchLCMSMS");
+if (($(inputSearchLCMSMS).length)&&($("#searchLCMSMS").val() != "")) {
+	divSearch = "searchLCMSMS";
+	isMainQueryAnsync = true;
+	loadSearchResults();
+}
+
 
 // 	var numberTotalResults = 0;
 var totalElementFound = 0;
@@ -119,6 +128,7 @@ function loadSearchResults() {
 		var qFilterVal2 = "";
 		var qFilterVal3 = "";
 		var rawQueryTab = rawSearchRequestQuery.split(" ");
+		var specialQuery = false;
 		$.each(rawQueryTab, function(k, v) {
 			if (v != "") {
 				var res = v.split(":");
@@ -134,6 +144,7 @@ function loadSearchResults() {
 						qFilerType = Utils_SEARCH_COMPOUND_AVERAGE_MASS
 						qFilterVal = mass;
 						qFilterVal2 = tol;
+						specialQuery = true;
 						break;
 					case "MIM":
 						var massData = filterVal.split("d");
@@ -143,16 +154,19 @@ function loadSearchResults() {
 						qFilerType = Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS
 						qFilterVal = mass;
 						qFilterVal2 = tol;
+						specialQuery = true;
 						break;
 					case "mode":
 						qFilterVal3 = filterVal;
 						qFilterEntity = "compounds";
+//						specialQuery = true;
 						break;
 					case "FOR":
 						qFilterEntity = "compounds";
 						qFilerType = Utils_SEARCH_COMPOUND_FORMULA
 						qFilterVal = filterVal;
 						qFilterVal2 = "";
+						specialQuery = true;
 						break;
 					case "NMR":
 						qFilterEntity = "nmr-spectra";
@@ -162,6 +176,7 @@ function loadSearchResults() {
 						qFilterVal = jsonData.d;
 						qFilterVal2 = jsonData.mm + '-' +jsonData.pH;
 						break;
+					case "LC-MS":
 					case "LCMS":
 						qFilterEntity = "lcms-spectra";
 						var jsonData = JSON.parse(filterVal.replace(/=/g, ':'));
@@ -169,6 +184,19 @@ function loadSearchResults() {
 						qFilerType = -1;
 						qFilterVal = jsonData.pol + ';' + jsonData.res + ';' + jsonData.algo;
 						qFilterVal2 = jsonData.dM + ';' +jsonData.dT;
+						break;
+					case "LC-MSMS":
+					case "LCMSMS":
+						qFilterEntity = "lcmsms-spectra";
+						var jsonData = JSON.parse(filterVal.replace(/=/g, ':'));
+						//JSON.stringify(lcmsmsPeakList)
+						cleanQuery = JSON.stringify(jsonData.pl) ;
+						qFilerType = -1;
+						qFilterVal = jsonData.pol + ';' + jsonData.res + ';';
+						qFilterVal2 = jsonData.P + ';' +jsonData.dP + ';' +jsonData.dPL;
+						if(jsonData.hasOwnProperty('dmz')) {
+							qFilterVal2 += ''+jsonData.dmz+';'+jsonData.intexp+';'+jsonData.mzexp+';';     
+						}
 						break;
 					default:
 						qFilerEntity = "compounds";
@@ -181,7 +209,7 @@ function loadSearchResults() {
 			}
 			//console.log(v);
 		});
-		if ($.trim(cleanQuery) == "")
+		if ($.trim(cleanQuery) == "" && !specialQuery)
 			searchRequest = "query=" + $.trim(rawSearchRequestQuery);
 		else {
 			try {
@@ -343,6 +371,7 @@ function loadSearchResults() {
 					} // if(json.hasOwnProperty('nmrCandidates')) {
 					var containsNMRspectra = false;
 					var containsLCMSspectra = false;
+					var containsLCMSMSspectra = false;
 					
 					if(json.hasOwnProperty('nmrSpectra') && !json.hasOwnProperty('nmrCandidates'))
 						$.each(json.nmrSpectra, function() {
@@ -390,8 +419,14 @@ function loadSearchResults() {
 							}
 						});
 					
-					if(json.hasOwnProperty('lcmsSpectra'))
-						$.each(json.lcmsSpectra, function() {
+					if(json.hasOwnProperty('lcmsSpectra') || json.hasOwnProperty('lcmsmsSpectra')) {
+						var arrayMSspectra = [];
+						if (json.hasOwnProperty('lcmsSpectra')) {
+							arrayMSspectra = json.lcmsSpectra;
+						} else {
+							arrayMSspectra = json.lcmsmsSpectra;
+						} 
+						$.each(arrayMSspectra, function() {
 							containsLCMSspectra = true;
 							var rawSpectra = this;
 							if (rawSpectra !== undefined) {
@@ -433,6 +468,7 @@ function loadSearchResults() {
 							spectrumCount++;
 							}
 						});
+					}
 					
 					if (containsNMRspectra && containsLCMSspectra)
 						spectraDataTmp.sort(function(a, b) { 
@@ -479,6 +515,7 @@ function filterSearchResults(startPoint, numberTotalResults) {
 	$("#spectrumResultsTable").hide();
 	$("#spectrumNMRResultsTable").hide();
 	$("#spectrumLCMSResultsTable").hide();
+	$("#spectrumLCMSMSResultsTable").hide();
 	$("#metadataResultsTable").hide();
 	$("#noSearchResults").hide();
 	// init local var
@@ -659,6 +696,7 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 	$("#spectrumResultsTableBody").empty();
 	$("#spectrumNMRResultsTableBody").empty();
 	$("#spectrumLCMSResultsTableBody").empty();
+	$("#spectrumLCMSMSResultsTableBody").empty();
 	if (!$.isEmptyObject(spectrumDataDisplay)) {
 		if ($($("tbody#spectrumResultsTableBody")).length) {
 			$("#templateSpectra").tmpl(spectrumDataDisplay).appendTo("#spectrumResultsTableBody");
@@ -677,6 +715,12 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 				$("#searchLCMSfilterDiv").show();
 				hideSpectraScoreZeroF('spectrumLCMSResultsTableBody');
 			}
+			if ($($("tbody#spectrumLCMSMSResultsTableBody")).length) {
+				$("#templateLCMSMSSpectra").tmpl(spectrumDataDisplay).appendTo("#spectrumLCMSMSResultsTableBody");
+				$("#spectrumLCMSMSResultsTable").show();
+				$("#searchLCMSMSfilterDiv").show();
+				hideSpectraScoreZeroF('spectrumLCMSMSResultsTableBody');
+			}
 		}
 	}
 	
@@ -686,6 +730,7 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 		$("#noSearchResults").show();
 		$("#noNMRSearchResults").show();
 		$("#noLCMSSearchResults").show();
+		$("#noLCMSMSSearchResults").show();
 //		$("#searchNMRfilterDiv").hide();
 		$("#"+divSearch+"Pagination").html("");
 		return true;
@@ -695,6 +740,7 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 	computeDisplayCpdInCartList();
 	
 	// rebuild page nav
+	var moreThanOne = false;
 	var currentPage = startPoint / numberMaxResults;
 	var lastPage = Math.ceil(numberTotalResults / numberMaxResults);
 // 		console.log("currentPage=" + currentPage);
@@ -723,6 +769,7 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 	}
 	// n-1
 	if (currentPage>=1){
+		moreThanOne = true;
 		//htmlPagination += '<li class="disabled"><a href="#">&hellip;</a></li>';
 		var before = startPoint-numberMaxResults;
 		htmlPagination += '<li><a href="#" onclick="filterSearchResults('+before+', '+numberTotalResults+');">'+(currentPage)+'</a></li>';
@@ -731,6 +778,7 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 	htmlPagination += '<li class="active"><a href="#">'+(currentPage+1)+'</a></li>';
 	// n+1
 	if ((currentPage+1)<lastPage){
+		moreThanOne = true;
 		var after = startPoint+numberMaxResults;
 		htmlPagination += '<li><a href="#" onclick="filterSearchResults('+after+', '+numberTotalResults+');">'+(currentPage+2)+'</a></li>';
 //				if (!((currentPage+3)<lastPage))
@@ -760,8 +808,10 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 		htmlPagination += '<li><a href="#" onclick="filterSearchResults('+after+', '+numberTotalResults+');">&raquo;</a></li>';
 	}
 	// display pageination
-	$("#"+divSearch+"Pagination").html(htmlPagination);
-	$("#"+divSearch+"Pagination").show();
+	if (moreThanOne) {
+		$("#"+divSearch+"Pagination").html(htmlPagination);
+		$("#"+divSearch+"Pagination").show();
+	}
 	// sort page
 	if (firstLoadTabData) {
 		setTimeout(function() { 
@@ -769,6 +819,7 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 			$("#spectrumResultsTable").tablesorter();
 			$("#spectrumNMRResultsTable").tablesorter(); 
 			$("#spectrumLCMSResultsTable").tablesorter(); 
+			$("#spectrumLCMSMSResultsTable").tablesorter(); 
 		}, 150);
 	}
 	setTimeout(function() { 
@@ -933,7 +984,7 @@ matchingSpectraKeywords = function (rawQwery, results) {
 			} 
 			//////////// LCMS
 			else if (keyword.toLowerCase().startsWith("lc")) {
-				outData = outData + "LCMS";
+				outData = outData + "LC-MS";
 			} else if (keyword.toLowerCase().startsWith("to")) {
 				outData = outData + "TOF";
 			} else if (keyword.toLowerCase().startsWith("qt")) {
@@ -941,6 +992,10 @@ matchingSpectraKeywords = function (rawQwery, results) {
 			} else if (keyword.toLowerCase().startsWith("qq")) {
 				outData = outData + "QQQ";
 			} 
+			//////////// LCMSMS
+			else if (keyword.toLowerCase().startsWith("lc-msm")||keyword.toLowerCase().startsWith("lc-ms2")) {
+				outData = outData + "LC-MSMS";
+			}
 			//////////// MS
 			else if (keyword.toLowerCase().startsWith("pos")) {
 				outData = outData + "positive";
@@ -1149,6 +1204,84 @@ $("#searchLCMS").click(function() {
 	openLCMStoolbox();
 });
 
+///////////////////////////////////////////////////////////////////////////////
+// NEW 2.0: MSMS matching
+$("#filterLCMSMStype").change(function() {
+	var filterType = $("#filterLCMSMStype").val();
+	switch(filterType){
+	case "1":
+		$(".filterType").hide();
+		$("#filterLCMSMSIonizationMethodValue").show();
+		break;
+	case "2":
+		$(".filterType").hide();
+		$("#filterLCMSMStextIonAnalyzerValue").show();
+		break;
+	case "3":
+		$(".filterType").hide();
+		$("#filterLCMSMStextCpdNameValue").show();
+		break;
+	}
+});
+addLCMSMSfilter = function() {
+	var filterType = $("#filterLCMSMStype").val();
+	var filterValue = "";
+	var newLabel = '';
+	switch(filterType){
+	case "1":
+		var filterValue = $("#filterLCMSMSIonizationMethodValue").val();
+		filterLCMSMS[filterCpd]={"ioniztionMethod":filterValue};
+		// create label
+		newLabel = '<span id="filter'+filterCpd+'"><span class="label label-warning ">'+TXT_LABEL__IONIZATION_METHOD+': '+filterValue+' | <a href="#" onclick="removeLCMSMSfilter('+filterCpd+');"class="">&times;</a></span><span>&nbsp;</span></span>';
+		break;
+	case "2":
+		var filterValue = $("#filterLCMSMStextIonAnalyzerValue").val();
+		filterLCMSMS[filterCpd]={"ionAnalyzer":filterValue};
+		// create label
+		newLabel = '<span id="filter'+filterCpd+'"><span class="label label-warning ">'+TXT_LABEL__ION_ANALYZER+': '+filterValue+' | <a href="#" onclick="removeLCMSMSfilter('+filterCpd+');"class="">&times;</a></span><span>&nbsp;</span></span>';
+		break;
+	case "3":
+		var filterValue = $("#filterLCMSMStextCpdNameValue").val();
+		filterLCMSMS[filterCpd]={"cpd":filterValue};
+		// create label
+		newLabel = '<span id="filter'+filterCpd+'"><span class="label label-warning ">'+TXT_LABEL__CPD_NAME+': '+filterValue+' | <a href="#" onclick="removeLCMSMSfilter('+filterCpd+');"class="">&times;</a></span><span>&nbsp;</span></span>';
+		break;
+	}
+	$("#filterLCMSMSdisplay").append(newLabel);
+	// filter in gui
+	filterSearchResults(0, totalElementFound);
+	filterCpd++;
+}
+
+removeLCMSMSfilter = function(id) {
+	filterLCMSMS[id]=null;
+	// filter in gui
+	filterSearchResults(0, totalElementFound);
+	// remove label
+	$("#filter"+id).remove();
+}
+
+var isLCMSMSModalLoaded = false;
+openLCMSMStoolbox = function () {
+	if (isLCMSMSModalLoaded) {
+		$("#LCMSMSModal").modal("show");
+		loadRawQueryLCMSMS();
+	} else {
+		$("#LCMSMSModal .modal-dialog").load("peakmatching-lcmsms-query-modal", function() { 
+			$("#LCMSMSModal").modal("show"); 
+			isLCMSMSModalLoaded = true;
+		});
+	}
+};
+
+$("#peakmatchingLCMSMSmodalBtn").click(function() {
+	openLCMSMStoolbox();
+});
+$("#searchLCMSMS").click(function() {
+	openLCMSMStoolbox();
+});
+///////////////////////////////////////////////////////////////////////////////
+
 // modal gui interaction
 $( document ).ready(function() {
 	$("#link-pm-nmr").click(function() {
@@ -1159,6 +1292,12 @@ $( document ).ready(function() {
 	$("#link-pm-lcms").click(function() {
 		if (($($("#searchLCMS")).length)&&$("#searchLCMS").val().trim()=="") {
 			$("#peakmatchingLCMSmodalBtn").click();
+		}
+	});
+	// new 2.0: MSMS matching
+	$("#link-pm-lcmsms").click(function() {
+		if (($($("#searchLCMSMS")).length)&&$("#searchLCMSMS").val().trim()=="") {
+			$("#peakmatchingLCMSMSmodalBtn").click();
 		}
 	});
 });

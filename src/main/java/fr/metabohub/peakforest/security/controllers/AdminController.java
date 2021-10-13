@@ -27,13 +27,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import fr.metabohub.peakforest.dao.SessionFactoryManager;
+import fr.metabohub.peakforest.model.metadata.AnalyticalMatrix;
+import fr.metabohub.peakforest.model.metadata.StandardizedMatrix;
 import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.security.services.UserManagementService;
 import fr.metabohub.peakforest.services.LicenseManager;
+import fr.metabohub.peakforest.services.metadata.AnalyticalMatrixManagementService;
+import fr.metabohub.peakforest.services.metadata.StandardizedMatrixManagementService;
 import fr.metabohub.peakforest.utils.MetExploreRequestJob;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
-import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 import fr.metabohub.peakforest.utils.ProcessBioSMvalues;
+import fr.metabohub.peakforest.utils.ProcessStructuralCuration;
+import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 import fr.metabohub.peakforest.utils.UpdateMassVsLogPStats;
 import fr.metabohub.peakforest.utils.UpdatePeakforestStats;
 import fr.metabohub.peakforest.utils.UpdateSplash;
@@ -56,6 +62,8 @@ public class AdminController {
 
 	@Resource(name = "sessionRegistry")
 	private SessionRegistryImpl sessionRegistry;
+
+	private static boolean structuralChecking = false;
 
 	// ////////////////////////////////////////////////////////////////////////
 	// user mgmt
@@ -295,6 +303,9 @@ public class AdminController {
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	@RequestMapping(value = "/process-biosm", method = RequestMethod.POST)
 	@ResponseBody
 	public boolean updateBioSM() {
@@ -307,11 +318,47 @@ public class AdminController {
 		}
 	}
 
+	/**
+	 * @param force
+	 * @return
+	 */
 	@RequestMapping(value = "/update-splash", method = RequestMethod.POST)
 	@ResponseBody
 	public boolean updateSplash(@RequestParam("force") boolean force) {
 		try {
 			UpdateSplash.updateStats(force);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	@RequestMapping(value = "/process-structural-curation", method = RequestMethod.POST)
+	@ResponseBody
+	public boolean structuralDataCuration() {
+		if (structuralChecking)
+			return false;
+		structuralChecking = true;
+		try {
+			ProcessStructuralCuration.fetchMoreStructures();
+			structuralChecking = false;
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			structuralChecking = false;
+			return false;
+		}
+	}
+
+	@RequestMapping(value = "/flush-sessions", method = RequestMethod.POST)
+	@ResponseBody
+	public boolean fushSessionFactories() {
+		try {
+			SessionFactoryManager.getInstance().flushSessionFactoryPool();
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -330,6 +377,9 @@ public class AdminController {
 			return false;
 		}
 	}
+
+	// ////////////////////////////////////////////////////////////////////////
+	// views
 
 	@RequestMapping(value = "/backoffice-tools", method = RequestMethod.GET)
 	public String adminToolsView(HttpServletRequest request, HttpServletResponse response, Locale locale,
@@ -415,6 +465,9 @@ public class AdminController {
 		// RETURN
 		return "views/backoffice-users-stats";
 	}
+
+	// ////////////////////////////////////////////////////////////////////////
+	// license
 
 	@RequestMapping(value = "/getLicenseData", method = RequestMethod.POST)
 	public @ResponseBody Object getLicenseData() {
@@ -503,6 +556,104 @@ public class AdminController {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////
+	// ontologies
+
+	@RequestMapping(value = "/list-ontologies", method = RequestMethod.GET)
+	@ResponseBody
+	public List<HashMap<String, Object>> getListOntologies() throws Exception {
+		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		List<AnalyticalMatrix> listRaw = AnalyticalMatrixManagementService.readAll(dbName, username,
+				password);
+		List<HashMap<String, Object>> listClean = new ArrayList<>();
+		for (AnalyticalMatrix matrix : listRaw) {
+			HashMap<String, Object> data = new HashMap<>();
+			data.put("id", matrix.getId());
+			data.put("key", matrix.getKey());
+			data.put("text", matrix.getNaturalLanguage());
+			data.put("html", matrix.getHtmlDisplay());
+			data.put("isFav", matrix.isFavourite());
+			data.put("countSpectra", matrix.getSpectraNumber());
+			listClean.add(data);
+		}
+		return listClean;
+	}
+
+	@RequestMapping(value = "/list-std-matrix", method = RequestMethod.GET)
+	@ResponseBody
+	public List<HashMap<String, Object>> getListStdMatrix() throws Exception {
+		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		List<StandardizedMatrix> listRaw = StandardizedMatrixManagementService.readAll(dbName, username,
+				password);
+		List<HashMap<String, Object>> listClean = new ArrayList<>();
+		for (StandardizedMatrix matrix : listRaw) {
+			HashMap<String, Object> data = new HashMap<>();
+			data.put("id", matrix.getId());
+			data.put("text", matrix.getNaturalLanguage());
+			data.put("html", matrix.getHtmlDisplay());
+			data.put("isFav", matrix.isFavourite());
+			data.put("countSpectra", matrix.getSpectraNumber());
+			listClean.add(data);
+		}
+		return listClean;
+	}
+
+	@RequestMapping(value = "/add-analytical-matrix", method = RequestMethod.POST, params = { "key" })
+	@ResponseBody
+	public boolean addAnalyticalMatrix(@RequestParam("key") String key, HttpServletRequest request)
+			throws Exception {
+		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		// log
+		adminLog("add analytical matrix: " + key);
+		return AnalyticalMatrixManagementService.setFavourite(key, true, dbName, username, password) > 0;
+	}
+
+	@RequestMapping(value = "/add-std-matrix", method = RequestMethod.POST, params = { "text" })
+	@ResponseBody
+	public boolean addStdMatrix(@RequestParam("text") String text, @RequestParam("html") String html,
+			HttpServletRequest request) throws Exception {
+		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		// log
+		// <a href="http://srm1950.nist.gov/" target="_blank">NIST plasma</a>
+		adminLog("add std matrix: " + text);
+		return StandardizedMatrixManagementService.setFavourite(text, html, true, dbName, username,
+				password) > 0;
+	}
+
+	@RequestMapping(value = "/set-ontology-favourite", method = RequestMethod.POST, params = { "key",
+			"favourite" })
+	@ResponseBody
+	public boolean setOntologyFavourite(@RequestParam("key") String key,
+			@RequestParam("favourite") boolean favourite, HttpServletRequest request) throws Exception {
+		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		adminLog("set ontology favourite: " + key + " " + favourite);
+		return AnalyticalMatrixManagementService.setFavourite(key, favourite, dbName, username, password) > 0;
+	}
+
+	@RequestMapping(value = "/set-stdMatrix-favourite", method = RequestMethod.POST, params = {
+			"naturalLanguage", "favourite" })
+	@ResponseBody
+	public boolean setStdMatrixFavourite(@RequestParam("naturalLanguage") String naturalLanguage,
+			@RequestParam("htmlDisplay") String htmlDisplay, @RequestParam("favourite") boolean favourite,
+			HttpServletRequest request) throws Exception {
+		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		adminLog("set std matrix favourite: " + naturalLanguage + " " + favourite);
+		return StandardizedMatrixManagementService.setFavourite(naturalLanguage, htmlDisplay, favourite,
+				dbName, username, password) > 0;
 	}
 
 	// ////////////////////////////////////////////////////////////////////////

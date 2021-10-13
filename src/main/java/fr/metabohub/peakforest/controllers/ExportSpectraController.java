@@ -26,11 +26,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import fr.metabohub.peakforest.model.compound.ChemicalCompound;
 import fr.metabohub.peakforest.model.compound.Compound;
 import fr.metabohub.peakforest.model.compound.GenericCompound;
+import fr.metabohub.peakforest.model.spectrum.FragmentationLCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum;
 import fr.metabohub.peakforest.services.ProcessProgressManager;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.services.spectrum.ExportService;
+import fr.metabohub.peakforest.services.spectrum.FragmentationLCSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.FullScanLCSpectrumManagementService;
 import fr.metabohub.peakforest.utils.Utils;
 
@@ -153,6 +155,50 @@ public class ExportSpectraController {
 
 		try {
 			FullScanLCSpectrum lcms = FullScanLCSpectrumManagementService.read(id, dbName, username,
+					password);
+			//
+			if (lcms.getLabel() == FullScanLCSpectrum.SPECTRUM_LABEL_REFERENCE
+					&& lcms.getListOfCompounds().size() == 1) {
+				List<Compound> listRCC = new ArrayList<Compound>();
+				ChemicalCompound cc = ChemicalCompoundManagementService
+						.read(lcms.getListOfCompounds().get(0).getId(), dbName, username, password);
+				if (cc != null) {
+					listRCC.add(cc);
+				} else {
+					GenericCompound gc = GenericCompoundManagementService
+							.read(lcms.getListOfCompounds().get(0).getId(), dbName, username, password);
+					if (gc != null) {
+						listRCC.add(gc);
+					}
+				}
+				lcms.setListOfCompounds(listRCC);
+			}
+			massBankSheet = lcms.getMassBankSheet(pfPublicURL);
+			fileName = lcms.getMassBankName();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new IOException("error");
+		}
+
+		response.setContentType("application/force-download");
+		response.setHeader("Content-disposition", "attachment; filename=\"" + fileName + ".txt\"");
+		return massBankSheet;
+	}
+
+	@RequestMapping(value = "/spectrum-msms-massbank-export/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public @ResponseBody String spectrumMSMSMassBankExport(HttpServletResponse response,
+			@PathVariable long id) throws IOException {
+
+		// init request
+		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
+		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
+		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		String pfPublicURL = Utils.getBundleConfElement("peakforest.url");
+		String fileName = "";
+		String massBankSheet = "";
+
+		try {
+			FragmentationLCSpectrum lcms = FragmentationLCSpectrumManagementService.read(id, dbName, username,
 					password);
 			//
 			if (lcms.getLabel() == FullScanLCSpectrum.SPECTRUM_LABEL_REFERENCE

@@ -52,6 +52,7 @@
 		<mapping class="fr.metabohub.peakforest.model.compound.TemporaryCompound" />
 		<!-- label / name compounds -->
 		<mapping class="fr.metabohub.peakforest.model.compound.CompoundName" />
+		<mapping class="fr.metabohub.peakforest.model.compound.CAS" />
 		<mapping class="fr.metabohub.peakforest.model.compound.Putative2Reference" />
 		<!-- peaks -->
 		<mapping class="fr.metabohub.peakforest.model.spectrum.NMR1DPeak" />
@@ -76,10 +77,8 @@
 		<!-- <mapping class="fr.metabohub.peakforest.model.spectrum.NMRSpectrumPool" 
 			/> -->
 		<!-- metadata -->
-		<mapping
-			class="fr.metabohub.peakforest.model.metadata.AnalyticalMatrixSource" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.AnalyticalMatrixType" />
 		<mapping class="fr.metabohub.peakforest.model.metadata.AnalyticalMatrix" />
+		<mapping class="fr.metabohub.peakforest.model.metadata.StandardizedMatrix" />
 		<mapping class="fr.metabohub.peakforest.model.metadata.OtherMetadata" />
 		<mapping class="fr.metabohub.peakforest.model.metadata.SampleMix" />
 		<mapping class="fr.metabohub.peakforest.model.metadata.SampleExtraData" />

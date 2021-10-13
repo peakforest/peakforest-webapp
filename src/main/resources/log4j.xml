@@ -10,7 +10,7 @@
 		</layout>
 	</appender>
 	
-	<logger name="fr.smetabohub.samples">
+	<logger name="fr.metabohub.samples">
 		<level value="debug" />
 	</logger>
 	
