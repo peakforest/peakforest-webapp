@@ -2,10 +2,10 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page session="false"%>
-<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@ page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%
-boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metexplore.ws.use"));
-boolean useWS = Boolean.parseBoolean(Utils.getBundleConfElement("use.peakforest.webservices"));
+	boolean useMEwebservice = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("metexplore.ws.use"));
+boolean useWS = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("use.peakforest.webservices"));
 %>
 <div class="row">
 	<div class="col-lg-12">

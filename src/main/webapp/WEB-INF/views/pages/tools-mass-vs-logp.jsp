@@ -1,4 +1,4 @@
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -28,7 +28,7 @@ var dualDimData = [];
 var inchikey2Dots = [];
 var chartMassVsLogP = null;
 $( document ).ready(function() {
-	$.getJSON('json/<%=Utils.getBundleConfElement("json.massVsLogP")%>', function(jsonData) {
+	$.getJSON('json/<%=PeakForestUtils.getBundleConfElement("json.massVsLogP")%>', function(jsonData) {
 		chartMassVsLogP = new Highcharts.Chart( {
 			chart : { zoomType : 'xy', renderTo : 'container-mass-vs-logp' },
 // 			zoomType : 'xy',

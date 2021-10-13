@@ -26,8 +26,8 @@ import fr.metabohub.peakforest.services.ProcessProgressManager;
 import fr.metabohub.peakforest.services.compound.ImportService;
 import fr.metabohub.peakforest.utils.EncodeUtils;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
 
 @Controller
 @RequestMapping("/upload-compound-file")
@@ -49,15 +49,13 @@ public class ChemicalLibraryUploadController {
 	@Secured("ROLE_EDITOR")
 	public String processUpload(HttpServletRequest request, @RequestParam MultipartFile file,
 			@RequestParam(value = "requestID", required = true) String requestID, Model model)
-					throws IOException, PeakForestManagerException {
-
+			throws IOException, PeakForestManagerException {
 		// -1 - check server OK
 		if (!ProcessProgressManager.isThreadSvgMolFilesGenerationFree()) {
 			model.addAttribute("success", false);
 			model.addAttribute("error", "server_too_busy");
 			return "/uploads/upload-compound-file";
 		}
-
 		// 0 - init
 		File upLoadedfile = null;
 		String originalFilename = file.getOriginalFilename();
@@ -69,22 +67,18 @@ public class ChemicalLibraryUploadController {
 		String tmpName = EncodeUtils.getMD5(System.currentTimeMillis() + originalFilename)
 				+ originalFilename.substring(originalFilename.lastIndexOf("."), originalFilename.length());
 		String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL + requestID;
-
 		// create upload dir if empty
-		File uploadDir = new File(Utils.getBundleConfElement("uploadedFiles.folder"));
+		File uploadDir = new File(PeakForestUtils.getBundleConfElement("uploadedFiles.folder"));
 		if (!uploadDir.exists())
 			uploadDir.mkdirs();
-
 		// get images path
-		String svgImagesPath = Utils.getBundleConfElement("compoundImagesSVG.folder");
+		String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
 		if (!(new File(svgImagesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
-
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
 		// I - copy file
 		if (file.getSize() > 0) { // writing file to a directory
 			upLoadedfile = new File(
-					Utils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
+					PeakForestUtils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
 			upLoadedfile.createNewFile();
 			FileOutputStream fos = new FileOutputStream(upLoadedfile);
 			fos.write(file.getBytes());
@@ -104,10 +98,7 @@ public class ChemicalLibraryUploadController {
 		try {
 			model.addAttribute("success", true);
 			Map<String, Object> data = ImportService.importChemiothequeFile(upLoadedfile.getAbsolutePath(),
-					Utils.XLS_EXT, true, clientID, svgImagesPath, null, user.getId(),
-					Utils.getBundleConfElement("hibernate.connection.database.dbName"),
-					Utils.getBundleConfElement("hibernate.connection.database.username"),
-					Utils.getBundleConfElement("hibernate.connection.database.password"));
+					PeakForestUtils.XLS_EXT, true, clientID, svgImagesPath, null, user.getId());
 			model.addAttribute("data", data);
 
 			int totalCompounds = (Integer) data.get("numberOfCompounds");
@@ -120,7 +111,8 @@ public class ChemicalLibraryUploadController {
 			model.addAttribute("mergedCompounds", mergeCompNb);
 			model.addAttribute("mergedCompoundsPerCent", getPerCentage(mergeCompNb, totalCompounds));
 
-			// model.addAttribute("warningCompounds", ((List<Object>) data.get("warningCompounds")).size());
+			// model.addAttribute("warningCompounds", ((List<Object>)
+			// data.get("warningCompounds")).size());
 
 			int errorCompNb = ((List<Object>) data.get("errorCompounds")).size();
 			model.addAttribute("errorCompounds", errorCompNb);
@@ -143,15 +135,6 @@ public class ChemicalLibraryUploadController {
 		return "/uploads/upload-compound-file";
 	}
 
-	/**
-	 * Get a percentage
-	 * 
-	 * @param a
-	 *            number
-	 * @param b
-	 *            total
-	 * @return
-	 */
 	private static String getPerCentage(int a, int b) {
 		double c = new Double(b);
 		double resultat = a / c;
@@ -160,9 +143,6 @@ public class ChemicalLibraryUploadController {
 		return df.format(resultatFinal);
 	}
 
-	/**
-	 * @param logMessage
-	 */
 	private void chemicalLibraryLog(String logMessage) {
 		String username = "?";
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
@@ -173,10 +153,4 @@ public class ChemicalLibraryUploadController {
 		SpectralDatabaseLogger.log(username, logMessage, SpectralDatabaseLogger.LOG_INFO);
 	}
 
-	// @RequestMapping(method = RequestMethod.GET)
-	// public @ResponseBody RedirectView redirectHome(HttpServletRequest request, HttpServletResponse
-	// response,
-	// Locale locale) {
-	// return new RedirectView("home");
-	// }
 }

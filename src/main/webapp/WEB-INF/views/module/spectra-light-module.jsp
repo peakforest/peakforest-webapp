@@ -1,5 +1,4 @@
 <%@page import="java.util.Random"%>
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
@@ -32,11 +31,14 @@ var tabRawSpectrumName = [];
 			<li data-target="#carousel-spectrum<%=randomID %>" data-slide-to="<%=cptSpectrumDisplayed %>" <% if(cptSpectrumDisplayed ==0) { out.print("class=\"active\"");} %>></li>
 			<% cptSpectrumDisplayed++; %>
 		</c:forEach>
+		<c:forEach var="spectrum" items="${spectrum_mass_fullscan_gc}">
+			<li data-target="#carousel-spectrum<%=randomID %>" data-slide-to="<%=cptSpectrumDisplayed %>" <% if(cptSpectrumDisplayed ==0) { out.print("class=\"active\"");} %>></li>
+			<% cptSpectrumDisplayed++; %>
+		</c:forEach>
 		<c:forEach var="spectrum" items="${spectrum_nmr}">
 			<li data-target="#carousel-spectrum<%=randomID %>" data-slide-to="<%=cptSpectrumDisplayed %>" <% if(cptSpectrumDisplayed ==0) { out.print("class=\"active\"");} %>></li>
 			<% cptSpectrumDisplayed++; %>
 		</c:forEach>
-		<!-- TODO each GC -->
 	</ol>
 
 	<!-- Wrapper for slides -->
@@ -50,7 +52,7 @@ var tabRawSpectrumName = [];
 						<td width="20px"></td>
 						<td width="">
 							<!--container-->
-							<div id="containerLCspectrum<%=randomID %><%=cptSpectrumDisplayed %>"
+							<div id="containerMSspectrum<%=randomID %><%=cptSpectrumDisplayed %>"
 								style="min-width: 650px; height: 300px; margin: 0 auto">
 								loading LC-MS spectra... <br />
 								<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
@@ -81,9 +83,9 @@ var tabRawSpectrumName = [];
 						<td width="20px"></td>
 						<td width="">
 							<!--container-->
-							<div id="containerLCspectrum<%=randomID %><%=cptSpectrumDisplayed %>"
+							<div id="containerMSspectrum<%=randomID %><%=cptSpectrumDisplayed %>"
 								style="width: 650px; height: 300px; margin: 0 auto">
-								loading LC-MS spectra... <br />
+								loading LC-MSMS spectra... <br />
 								<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
 									title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
 							</div>
@@ -101,6 +103,37 @@ var tabRawSpectrumName = [];
 				tabTypeSpectrum[<%=cptSpectrumDisplayed %>]='lc-fragmentation';
 				tabIdSpectrum[<%=cptSpectrumDisplayed %>]=${spectrum.id};
 				tabNameSpectrum[<%=cptSpectrumDisplayed %>]='${spectrum.getMassBankName()};';
+				</script>
+			</div>
+			<% cptSpectrumDisplayed++; %>
+		</c:forEach>
+		<c:forEach var="spectrum" items="${spectrum_mass_fullscan_gc}">
+			<div class="item <% if(cptSpectrumDisplayed ==0) { out.print("active");} %>">
+				<table class="table" style="width:90%">
+					<tr>
+						<td width="20px"></td>
+						<td width="">
+							<!--container-->
+							<div id="containerMSspectrum<%=randomID %><%=cptSpectrumDisplayed %>"
+								style="min-width: 650px; height: 300px; margin: 0 auto">
+								loading GC-MS spectra... <br />
+								<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
+									title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
+							</div>
+						</td>
+						<td width="20px"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td> &nbsp;</td>
+						<td></td>
+					</tr>
+				</table>
+				<div class="carousel-caption"></div>
+				<script type="text/javascript">
+				tabTypeSpectrum[<%=cptSpectrumDisplayed %>]='gc-fullscan';
+				tabIdSpectrum[<%=cptSpectrumDisplayed %>]=${spectrum.id};
+				tabNameSpectrum[<%=cptSpectrumDisplayed %>]='${fn:escapeXml((spectrum.getMassBankNameHTML()))}';
 				</script>
 			</div>
 			<% cptSpectrumDisplayed++; %>
@@ -123,6 +156,9 @@ var tabRawSpectrumName = [];
 							<c:if test="${spectrum.hasRawData()}"> 
 								<!-- static image -->
 								<img class="spectraLightImg" alt="${spectrum.getMassBankLikeName()}" title="${spectrum.getMassBankLikeName()}" src="spectra_img/${fn:escapeXml(spectrum.getRawDataFolder())}.png">
+								<script type="text/javascript">
+								$(".pforest-spectra-name-${spectrum.getPeakForestID()}").html("${spectrum.getMassBankNameHTML()}");
+								</script>
 							</c:if>
 						</td>
 						<td width="20px"></td>
@@ -233,26 +269,32 @@ var tabRawSpectrumName = [];
 			 unloadSpectrum<%=randomID %>(cpt);
 		// TODO load
 		var typeSpectrum = tabTypeSpectrum[cpt];
-		if (typeSpectrum == 'lc-fullscan' || typeSpectrum == 'lc-fragmentation') {
+		if (typeSpectrum == 'lc-fullscan' || typeSpectrum == 'lc-fragmentation'  
+				|| typeSpectrum == 'gc-fullscan') {
 			// set element to load
 			var spectrumFullScanLCToLoad = [];
 			var spectrumFragLCToLoad = [];
+			var spectrumFullScanGCToLoad = [];
 			if (typeSpectrum == 'lc-fullscan')
 				spectrumFullScanLCToLoad.push(tabIdSpectrum[cpt]);
 			else if ( typeSpectrum == 'lc-fragmentation')
 				spectrumFragLCToLoad.push(tabIdSpectrum[cpt]);
+			else if (typeSpectrum == 'gc-fullscan')
+				spectrumFullScanGCToLoad.push(tabIdSpectrum[cpt]);
 			// seek title
 			var titleSpectrum = encodeURIComponent("" + tabNameSpectrum[cpt]);
 			// load ajax
 			$.ajax({
 				type: "post",
-				url: "load-lc-spetra",
-				data: "fullscan=" + spectrumFullScanLCToLoad + "&frag=" + spectrumFragLCToLoad+"&name="+ titleSpectrum+"&mode=light&id=<%=randomID %>"+cpt,
+				url: "load-ms-spectra",
+				data: "fullscan-lc=" + spectrumFullScanLCToLoad + "&frag-lc=" + spectrumFragLCToLoad 
+						+ "&fullscan-gc=" + spectrumFullScanGCToLoad +"&name="+ titleSpectrum
+						+"&mode=light&id=<%=randomID %>"+cpt,
 				// dataType: "script",
 				async: false,
 				success: function(data) {
-					$("#containerLCspectrum<%=randomID %>"+cpt+"").html("");
-					$("#ajaxModuleLCSpectrum<%=randomID %>-"+cpt+"").html(data);
+					$("#containerMSspectrum<%=randomID %>"+cpt+"").html("");
+					$("#ajaxModuleMSSpectrum<%=randomID %>-"+cpt+"").html(data);
 					isSpectrumLoaded<%=randomID %>[i] = true;
 				}, 
 				error : function(data) {
@@ -296,8 +338,7 @@ var tabRawSpectrumName = [];
 </script>
 
 <% for (int i = 0; i<= cptSpectrumDisplayed; i++) { %>
-<div id="ajaxModuleLCSpectrum<%=randomID %>-<%=i %>"></div>
-<div id="ajaxModuleGCSpectrum<%=randomID %>-<%=i %>"></div>
+<div id="ajaxModuleMSSpectrum<%=randomID %>-<%=i %>"></div>
 <div id="ajaxModuleNMRSpectrum<%=randomID %>-<%=i %>"></div>
 <script type="text/javascript">
 

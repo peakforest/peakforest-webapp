@@ -1,12 +1,10 @@
 <%@page import="fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound"%>
 <%@page import="java.util.List"%>
 <%@page import="fr.metabohub.peakforest.model.maps.MapManager"%>
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page session="false"%>
-<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">Compounds</h3>

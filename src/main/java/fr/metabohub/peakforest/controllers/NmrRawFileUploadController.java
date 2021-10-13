@@ -21,15 +21,16 @@ import org.springframework.web.multipart.MultipartFile;
 import fr.metabohub.externaltools.nmr.FileConverter;
 import fr.metabohub.externaltools.nmr.ImageGenerator;
 import fr.metabohub.mvc.extensions.ajax.AjaxUtils;
+import fr.metabohub.peakforest.dao.spectrum.NMR1DSpectrumDao;
+import fr.metabohub.peakforest.dao.spectrum.NMR2DSpectrumDao;
 import fr.metabohub.peakforest.model.spectrum.NMR1DSpectrum;
 import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.services.spectrum.NMR1DSpectrumManagementService;
-import fr.metabohub.peakforest.services.spectrum.NMR2DSpectrumManagementService;
 import fr.metabohub.peakforest.utils.EncodeUtils;
 import fr.metabohub.peakforest.utils.IOUtils;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
 
 @Controller
 @RequestMapping("/upload-nmr-raw-file")
@@ -74,7 +75,8 @@ public class NmrRawFileUploadController {
 
 		String tmpName = EncodeUtils.getMD5(System.currentTimeMillis() + originalFilename)
 				+ originalFilename.substring(originalFilename.lastIndexOf("."), originalFilename.length());
-		// String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL + requestID;
+		// String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL +
+		// requestID;
 		String keyRawFile = System.currentTimeMillis() + "_";
 		if (spectrumID != -1)
 			keyRawFile += spectrumID;
@@ -82,12 +84,12 @@ public class NmrRawFileUploadController {
 			keyRawFile += "NEW";
 
 		// create upload dir if empty
-		File uploadDir = new File(Utils.getBundleConfElement("uploadedFiles.folder"));
+		File uploadDir = new File(PeakForestUtils.getBundleConfElement("uploadedFiles.folder"));
 		if (!uploadDir.exists())
 			uploadDir.mkdirs();
 
 		// get NMR raw file path
-		String uploadedNmrRawFilePath = Utils.getBundleConfElement("rawFile.nmr.folder");
+		String uploadedNmrRawFilePath = PeakForestUtils.getBundleConfElement("rawFile.nmr.folder");
 		if (!(new File(uploadedNmrRawFilePath)).exists()) {
 			(new File(uploadedNmrRawFilePath)).mkdirs();
 			if (!(new File(uploadedNmrRawFilePath)).exists())
@@ -98,7 +100,7 @@ public class NmrRawFileUploadController {
 		// I - copy file
 		if (file.getSize() > 0) { // writing file to a directory
 			upLoadedfile = new File(
-					Utils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
+					PeakForestUtils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
 			upLoadedfile.createNewFile();
 			FileOutputStream fos = new FileOutputStream(upLoadedfile);
 			fos.write(file.getBytes());
@@ -110,11 +112,12 @@ public class NmrRawFileUploadController {
 			model.addAttribute("tmpFileName", null);
 
 		String uploadedFileCheckExt = upLoadedfile.getName().toLowerCase();
-		// String ext = uploadedFileCheckExt.substring(uploadedFileCheckExt.lastIndexOf(".") + 1,
+		// String ext =
+		// uploadedFileCheckExt.substring(uploadedFileCheckExt.lastIndexOf(".") + 1,
 		// uploadedFileCheckExt.length());
 		if (uploadedFileCheckExt.endsWith("zip")) {
 			File uploadedDir = new File(
-					Utils.getBundleConfElement("uploadedFiles.folder") + File.separator + keyRawFile);
+					PeakForestUtils.getBundleConfElement("uploadedFiles.folder") + File.separator + keyRawFile);
 
 			// unzip in upload dir
 			IOUtils.unZip(upLoadedfile.getAbsolutePath(), uploadedDir.getAbsolutePath());
@@ -137,8 +140,8 @@ public class NmrRawFileUploadController {
 	 * @return
 	 * @throws Exception
 	 */
-	private String processRawNmrFile(File uploadedFile, Model model, long idSpectrum, String keyRawFile,
-			String aqFile, String procFile) throws Exception {
+	private String processRawNmrFile(File uploadedFile, Model model, long idSpectrum, String keyRawFile, String aqFile,
+			String procFile) throws Exception {
 		// check this dir
 		String[] files = uploadedFile.list();
 		if (files.length == 0) {
@@ -170,13 +173,13 @@ public class NmrRawFileUploadController {
 			if (hasRequiredFiles1 && hasRequiredFiles2) {
 				// copy to /pf/data dir
 				File rawSpectraFilesDir = new File(
-						Utils.getBundleConfElement("rawFile.nmr.folder") + File.separator + keyRawFile);
+						PeakForestUtils.getBundleConfElement("rawFile.nmr.folder") + File.separator + keyRawFile);
 				FileUtils.copyDirectory(uploadedFile, rawSpectraFilesDir);
 				// Files.copy(uploadedFile.toPath(), rawSpectraFilesDir.toPath(),
 				// StandardCopyOption.REPLACE_EXISTING);
 
 				// check if only one folder in pdata
-				File pdataFolder = new File(Utils.getBundleConfElement("rawFile.nmr.folder") + File.separator
+				File pdataFolder = new File(PeakForestUtils.getBundleConfElement("rawFile.nmr.folder") + File.separator
 						+ keyRawFile + File.separator + "pdata");
 				String[] procFiles = pdataFolder.list();
 				if (procFiles.length == 0) {
@@ -213,32 +216,24 @@ public class NmrRawFileUploadController {
 					return "/uploads/upload-nmr-raw-file";
 				}
 				// process data
-				String basDir = Utils.getBundleConfElement("rawFile.nmr.folder") + keyRawFile;
+				String basDir = PeakForestUtils.getBundleConfElement("rawFile.nmr.folder") + keyRawFile;
 				FileConverter.convertFile(basDir + File.separator + "pdata" + File.separator + "1",
-						basDir + File.separator + "_pdata_out.txt",
-						basDir + File.separator + "_pdata_param.txt");
+						basDir + File.separator + "_pdata_out.txt", basDir + File.separator + "_pdata_param.txt");
 
 				// generate image
-				String toolURL = Utils.getBundleConfElement("nmrspectrum.getpng.service.url");
-				String spectraImgDirectory = Utils.getBundleConfElement("imageFile.nmr.folder");
+				String toolURL = PeakForestUtils.getBundleConfElement("nmrspectrum.getpng.service.url");
+				String spectraImgDirectory = PeakForestUtils.getBundleConfElement("imageFile.nmr.folder");
 				ImageGenerator.getSpectrumPNGimage(toolURL, keyRawFile, spectraImgDirectory);
 
 				// update spectrum in DB
 				if (idSpectrum == -1) {
 					model.addAttribute("new_raw_file_name", keyRawFile);
 				} else {
-					String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-					String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-					String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
-					NMR1DSpectrum s = NMR1DSpectrumManagementService.read(idSpectrum, dbName, username,
-							password);
+					NMR1DSpectrum s = NMR1DSpectrumManagementService.read(idSpectrum);
 					if (s != null) {
-						NMR1DSpectrumManagementService.updateRawFileName(idSpectrum, keyRawFile, dbName,
-								username, password);
+						NMR1DSpectrumDao.updateRawFileName(idSpectrum, keyRawFile);
 					} else {
-						NMR2DSpectrumManagementService.updateRawFileName(idSpectrum, keyRawFile, dbName,
-								username, password);
+						NMR2DSpectrumDao.updateRawFileName(idSpectrum, keyRawFile);
 					}
 				}
 				// return success

@@ -22,8 +22,8 @@ import fr.metabohub.mvc.extensions.ajax.AjaxUtils;
 import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.utils.EncodeUtils;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
 
 @Controller
 @RequestMapping("/upload-compound-numbered-file")
@@ -44,15 +44,7 @@ public class ChemicalNumberedFileUploadController {
 	@Secured("ROLE_EDITOR")
 	public String processUpload(HttpServletRequest request, @RequestParam MultipartFile file,
 			@RequestParam(value = "inchikey", required = true) String inchikey, Model model)
-					throws IOException, PeakForestManagerException {
-
-		// // -1 - check server OK
-		// if (!ProcessProgressManager.isThreadSvgMolFilesGenerationFree()) {
-		// model.addAttribute("success", false);
-		// model.addAttribute("error", "server_too_busy");
-		// return "/uploads/upload-compound-numbered-file";
-		// }
-
+			throws IOException, PeakForestManagerException {
 		// 0 - init
 		File upLoadedfile = null;
 		String originalFilename = file.getOriginalFilename();
@@ -63,23 +55,23 @@ public class ChemicalNumberedFileUploadController {
 		}
 		String tmpName = EncodeUtils.getMD5(System.currentTimeMillis() + originalFilename)
 				+ originalFilename.substring(originalFilename.lastIndexOf("."), originalFilename.length());
-				// String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL + requestID;
+		// String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL +
+		// requestID;
 
 		// create upload dir if empty
-		File uploadDir = new File(Utils.getBundleConfElement("uploadedFiles.folder"));
+		File uploadDir = new File(PeakForestUtils.getBundleConfElement("uploadedFiles.folder"));
 		if (!uploadDir.exists())
 			uploadDir.mkdirs();
 
 		// get images path
-		String uploadedImagesPath = Utils.getBundleConfElement("compoundNumberedFiles.folder");
+		String uploadedImagesPath = PeakForestUtils.getBundleConfElement("compoundNumberedFiles.folder");
 		if (!(new File(uploadedImagesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + uploadedImagesPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + uploadedImagesPath);
 
 		// I - copy file
 		if (file.getSize() > 0) { // writing file to a directory
 			upLoadedfile = new File(
-					Utils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
+					PeakForestUtils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
 			upLoadedfile.createNewFile();
 			FileOutputStream fos = new FileOutputStream(upLoadedfile);
 			fos.write(file.getBytes());
@@ -99,16 +91,15 @@ public class ChemicalNumberedFileUploadController {
 			File imgPath = new File(uploadedImagesPath + File.separator + inchikey + "." + ext);
 			// avoid overwrite
 			if (imgPath.exists()) {
-				File newFileName2 = new File(uploadedImagesPath + File.separator + inchikey + "_"
-						+ System.currentTimeMillis() + "." + ext);
+				File newFileName2 = new File(
+						uploadedImagesPath + File.separator + inchikey + "_" + System.currentTimeMillis() + "." + ext);
 				imgPath.renameTo(newFileName2);
 				chemicalLibraryLog("rename chemical numbered file from '" + imgPath.getName() + "' to '"
 						+ newFileName2.getName() + "'");
 			}
 			// copy file
 			Files.copy(upLoadedfile.toPath(), imgPath.toPath());
-			chemicalLibraryLog(
-					"upload chemical numbered file '" + upLoadedfile.getName() + "' for " + inchikey);
+			chemicalLibraryLog("upload chemical numbered file '" + upLoadedfile.getName() + "' for " + inchikey);
 			// success!
 			model.addAttribute("success", true);
 			return "/uploads/upload-compound-numbered-file";
@@ -117,12 +108,8 @@ public class ChemicalNumberedFileUploadController {
 			model.addAttribute("error", "wrong_ext");
 			return "/uploads/upload-compound-numbered-file";
 		}
-
 	}
 
-	/**
-	 * @param logMessage
-	 */
 	private void chemicalLibraryLog(String logMessage) {
 		String username = "?";
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {

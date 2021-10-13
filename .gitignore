@@ -10,3 +10,4 @@ src/main/webapp/META-INF
 /*.springBeans
 src/main/webapp/WEB-INF/lib/*.jar
 .externalToolBuilders
+src/main/webapp/resources/data/spectrum_template_all.xlsm

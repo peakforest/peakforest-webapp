@@ -15,8 +15,11 @@ import javax.persistence.Version;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+//import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
- * This class defines the inherited id attribute for all model's objects in classes
+ * This class defines the inherited id attribute for all model's objects in
+ * classes
  * 
  * @author Nils Paulhe
  * 
@@ -47,8 +50,7 @@ public abstract class AbstractMapObject {
 	}
 
 	/**
-	 * @param id
-	 *            the id to set
+	 * @param id the id to set
 	 */
 	public void setId(long id) {
 		this.id = id;
@@ -63,16 +65,17 @@ public abstract class AbstractMapObject {
 	}
 
 	/**
-	 * @param version
-	 *            the version to set
+	 * @param version the version to set
 	 */
 	public void setVersion(Long version) {
 		this.version = version;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @see java.lang.Object#equals(java.lang.Object) */
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object o) {
 		return (o != null && o instanceof AbstractMapObject && ((AbstractMapObject) o).getId() == id);
 	}
@@ -86,8 +89,7 @@ public abstract class AbstractMapObject {
 	}
 
 	/**
-	 * @param created
-	 *            the created to set
+	 * @param created the created to set
 	 */
 	public void setCreated(Date created) {
 		this.created = created;
@@ -102,8 +104,7 @@ public abstract class AbstractMapObject {
 	}
 
 	/**
-	 * @param updated
-	 *            the updated to set
+	 * @param updated the updated to set
 	 */
 	public void setUpdated(Date updated) {
 		this.updated = updated;

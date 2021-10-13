@@ -22,20 +22,9 @@ public class ProcessProgressionController {
 	@Autowired
 	protected MessageSource messageSource;
 
-	/**
-	 * fetches the progression percentage for a specific task, and returns it
-	 * 
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param processProgressLabel
-	 * @return an {@link Integer} ranging from 0 to 100 indicating the progression percentage
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/processProgression", method = RequestMethod.POST)
-	public @ResponseBody Integer getProcessProgression(HttpServletRequest request,
-			HttpServletResponse response, Locale locale,
-			@RequestParam(value = "requestID", required = true) String requestID,
+	public @ResponseBody Integer getProcessProgression(HttpServletRequest request, HttpServletResponse response,
+			Locale locale, @RequestParam(value = "requestID", required = true) String requestID,
 			@RequestParam(value = "requestLabel", required = true) String requestLabel) throws IOException {
 		Integer progression = new Integer(-1);
 
@@ -48,8 +37,10 @@ public class ProcessProgressionController {
 		} else if (requestLabel.equals(ProcessProgressManager.XLSX_IMPORT_CHEMICAL_LIB_LABEL)) {
 			currentSessionId = ProcessProgressManager.XLSX_IMPORT_CHEMICAL_LIB_LABEL + currentSessionId;
 		}
-		// else if (processProgressLabel.equals(ProcessProgressManager.XLSX_IMPORT_LABEL)) {
-		// currentSessionId = ProcessProgressManager.XLSX_IMPORT_LABEL + currentSessionId;
+		// else if
+		// (processProgressLabel.equals(ProcessProgressManager.XLSX_IMPORT_LABEL)) {
+		// currentSessionId = ProcessProgressManager.XLSX_IMPORT_LABEL +
+		// currentSessionId;
 		// }
 
 		// get the percentage progression
@@ -63,18 +54,4 @@ public class ProcessProgressionController {
 		return progression;
 	}
 
-	// /**
-	// * @param request
-	// * @param response
-	// * @param locale
-	// * @param processProgressLabel
-	// * @return a {@link ModelAndView} object (progress bar view + the process type)
-	// * @throws IOException
-	// */
-	// @RequestMapping(value = "/progressBar", method = RequestMethod.GET)
-	// public ModelAndView getProgressBarPage(HttpServletRequest request, HttpServletResponse response,
-	// Locale locale, String processProgressLabel) throws IOException {
-	//
-	// return new ModelAndView("blocks/progressBar", "processProgressLabel", processProgressLabel);
-	// }
 }

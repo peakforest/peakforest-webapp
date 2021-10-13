@@ -1,92 +1,135 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-configuration PUBLIC
         "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-        "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<!-- MYSQL -->
-		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-		<property name="hibernate.connection.url">jdbc:mysql://147.99.130.243/peakforest</property>
-		<!-- POSTGRES -->
-		<!-- <property name="hibernate.connection.driver_class">org.postgresql.Driver</property> -->
-		<!-- <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/metaboHubTest</property> -->
-
-		<property name="hibernate.connection.username">peakforest</property>
-		<property name="hibernate.connection.password">9nnbbjanzq4rVKb3</property>
-		<property name="hibernate.connection.pool_size">1</property>
-
-		<!-- encoding -->
-		<property name="hibernate.connection.CharSet">utf8</property>
-		<property name="hibernate.connection.characterEncoding">utf8</property>
-		<property name="hibernate.connection.useUnicode">true</property>
-
-		<!-- MYSQL -->
-		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-		<!-- POSTGRES -->
-		<!-- <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property> -->
-
+		<!-- JDBC Database connection settings -->
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql://localhost:3306/peakforest?useSSL=false&amp;serverTimezone=UTC</property>
+		<property name="connection.username">peakforest</property>
+		<property name="connection.password">peakforest</property>
+		<!-- JDBC connection pool settings ... using built-in test pool -->
+		<property name="connection.pool_size">5</property>
+		<!-- Select our SQL dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+		<!-- Echo the SQL to stdout -->
 		<property name="show_sql">true</property>
-
-		<property name="hibernate.c3p0.timeout">7200</property>
-		<property name="hibernate.c3p0.max_statements">10</property>
-
+		<!-- Set the current session context -->
+		<property name="current_session_context_class">thread</property>
 		<!-- validate: validate the schema, makes no changes to the database. update: 
 			update the schema. create: creates the schema, destroying previous data. 
 			create-drop: drop the schema at the end of the session. -->
 		<property name="hbm2ddl.auto">update</property>
+		<!-- encoding -->
+		<property name="hibernate.connection.CharSet">utf8</property>
+		<property name="hibernate.connection.characterEncoding">utf8</property>
+		<property name="hibernate.connection.useUnicode">true</property>
+		<!-- dbcp connection pool configuration -->
+		<property name="hibernate.dbcp.initialSize">5</property>
+		<property name="hibernate.dbcp.maxTotal">20</property>
+		<property name="hibernate.dbcp.maxIdle">10</property>
+		<property name="hibernate.dbcp.minIdle">5</property>
+		<property name="hibernate.dbcp.maxWaitMillis">-1</property>
+		<!-- ====================== entites mapping: Meta ====================== -->
+		<mapping class="fr.metabohub.peakforest.security.model.User" />
+		<!-- ====================== entites mapping: extra ====================== -->
+		<mapping class="fr.metabohub.peakforest.model.maps.MapManager" />
+		<mapping class="fr.metabohub.peakforest.model.maps.MapEntity" />
+		<!-- ====================== entites mapping: API ====================== -->
 		<!-- abstract -->
-		<mapping class="fr.metabohub.peakforest.model.compound.PutativeCompound" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.CompoundSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.PutativeCompound" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.CompoundSpectrum" />
 		<mapping class="fr.metabohub.peakforest.model.spectrum.Peak" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.Spectrum" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.Metadata" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.Spectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.Metadata" />
 		<mapping
 			class="fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound" />
 		<mapping
 			class="fr.metabohub.peakforest.model.compound.StructureChemicalCompound" />
 		<!-- chemical compounds -->
-		<mapping class="fr.metabohub.peakforest.model.compound.Compound" />
-		<mapping class="fr.metabohub.peakforest.model.compound.GenericCompound" />
-		<mapping class="fr.metabohub.peakforest.model.compound.ChemicalCompound" />
-		<mapping class="fr.metabohub.peakforest.model.compound.SubStructure" />
-		<mapping class="fr.metabohub.peakforest.model.compound.TemporaryCompound" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.Compound" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.GCDerivedCompound" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.GenericCompound" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.ChemicalCompound" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.SubStructure" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.TemporaryCompound" />
 		<!-- label / name compounds -->
-		<mapping class="fr.metabohub.peakforest.model.compound.CompoundName" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.CompoundName" />
 		<mapping class="fr.metabohub.peakforest.model.compound.CAS" />
-		<mapping class="fr.metabohub.peakforest.model.compound.Putative2Reference" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.Putative2Reference" />
 		<!-- peaks -->
-		<mapping class="fr.metabohub.peakforest.model.spectrum.NMR1DPeak" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.NMR2DPeak" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.NMR2DJRESPeak" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.MassPeak" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.NMR1DPeak" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.NMR2DPeak" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.NMR2DJRESPeak" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.MassPeak" />
 		<mapping class="fr.metabohub.peakforest.model.spectrum.UVPeak" />
 		<!-- spectra -->
-		<mapping class="fr.metabohub.peakforest.model.spectrum.NMRSpectrum" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.NMR1DSpectrum" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.NMR2DSpectrum" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.MassSpectrum" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.FullScanGCSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.NMRSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.NMR1DSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.NMR2DSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.MassSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.FullScanGCSpectrum" />
 		<mapping
 			class="fr.metabohub.peakforest.model.spectrum.FragmentationLCSpectrum" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.UVSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.UVSpectrum" />
 		<!-- nmr spec -->
-		<mapping class="fr.metabohub.peakforest.model.spectrum.PeakPattern" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.CouplingConstant" />
-		<mapping class="fr.metabohub.peakforest.model.spectrum.CorrelationSpot" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.PeakPattern" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.CouplingConstant" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.CorrelationSpot" />
 		<!-- <mapping class="fr.metabohub.peakforest.model.spectrum.NMRSpectrumPool" 
 			/> -->
 		<!-- metadata -->
-		<mapping class="fr.metabohub.peakforest.model.metadata.AnalyticalMatrix" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.StandardizedMatrix" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.OtherMetadata" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.SampleMix" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.SampleExtraData" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.LiquidChromatography" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.GazChromatography" />
 		<mapping
-			class="fr.metabohub.peakforest.model.metadata.AnalyzerMassIonization" />
-		<mapping class="fr.metabohub.peakforest.model.metadata.AnalyzerMassIon" />
+			class="fr.metabohub.peakforest.model.metadata.AnalyticalMatrix" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.StandardizedMatrix" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.OtherMetadata" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.ASampleMix" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.LiquidSampleMix" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.GasSampleMix" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.SampleExtraData" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.LiquidChromatography" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.GazChromatography" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.AnalyzerGasMassIonization" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.AnalyzerLiquidMassIonization" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.AnalyzerMassIon" />
 		<mapping
 			class="fr.metabohub.peakforest.model.metadata.AnalyzerMassIonTrapMetadata" />
 		<mapping
@@ -97,9 +140,13 @@
 			class="fr.metabohub.peakforest.model.metadata.AnalyzerNMRSpectrometerDevice" />
 		<mapping
 			class="fr.metabohub.peakforest.model.metadata.SampleNMRTubeConditions" />
+		<mapping
+			class="fr.metabohub.peakforest.model.metadata.GCDerivedCompoundMetadata" />
 		<!-- other -->
-		<mapping class="fr.metabohub.peakforest.model.spectrum.Chromatogram" />
+		<mapping
+			class="fr.metabohub.peakforest.model.spectrum.Chromatogram" />
 		<mapping class="fr.metabohub.peakforest.model.CurationMessage" />
-		<mapping class="fr.metabohub.peakforest.model.compound.Citation" />
+		<mapping
+			class="fr.metabohub.peakforest.model.compound.Citation" />
 	</session-factory>
 </hibernate-configuration>

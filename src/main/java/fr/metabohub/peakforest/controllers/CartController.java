@@ -22,7 +22,7 @@ import fr.metabohub.peakforest.model.compound.StructureChemicalCompound;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestPruneUtils;
 
 /**
  * @author Nils Paulhe
@@ -35,20 +35,9 @@ import fr.metabohub.peakforest.utils.Utils;
 // @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class CartController {
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param id
-	 * @param model
-	 * @param session
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/is-cpd-in-cart/{id}", method = RequestMethod.GET)
-	public @ResponseBody boolean isCpdInCart(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable int id, Model model, HttpSession session)
-			throws PeakForestManagerException {
+	public @ResponseBody boolean isCpdInCart(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable int id, Model model, HttpSession session) throws PeakForestManagerException {
 		List<ReferenceChemicalCompound> cpds = getListRcc(session);
 		// ReferenceChemicalCompound refCompound = getRefCompound(id);
 		for (ReferenceChemicalCompound rcc : cpds) {
@@ -58,20 +47,9 @@ public class CartController {
 		return false;
 	}
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param id
-	 * @param model
-	 * @param session
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/add-cpd-in-cart/{id}", method = RequestMethod.POST)
-	public @ResponseBody boolean addCpdInCart(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable int id, Model model, HttpSession session)
-			throws PeakForestManagerException {
+	public @ResponseBody boolean addCpdInCart(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable int id, Model model, HttpSession session) throws PeakForestManagerException {
 		if (isCpdInCart(request, response, locale, id, model, session)) {
 			return false;
 		}
@@ -85,8 +63,7 @@ public class CartController {
 
 	@RequestMapping(value = "/remove-cpd-from-cart/{id}", method = RequestMethod.POST)
 	public @ResponseBody boolean removeCpdFromCart(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable int id, Model model, HttpSession session)
-			throws PeakForestManagerException {
+			Locale locale, @PathVariable int id, Model model, HttpSession session) throws PeakForestManagerException {
 		if (!isCpdInCart(request, response, locale, id, model, session)) {
 			return false;
 		}
@@ -108,9 +85,8 @@ public class CartController {
 	}
 
 	@RequestMapping(value = "/get-cpd-in-cart.json", method = RequestMethod.GET)
-	public @ResponseBody List<String> getCpdFromCartAsJson(HttpServletRequest request,
-			HttpServletResponse response, Locale locale, Model model, HttpSession session)
-			throws PeakForestManagerException {
+	public @ResponseBody List<String> getCpdFromCartAsJson(HttpServletRequest request, HttpServletResponse response,
+			Locale locale, Model model, HttpSession session) throws PeakForestManagerException {
 		List<String> data = new ArrayList<>();
 		for (ReferenceChemicalCompound rcc : getListRcc(session)) {
 			if (rcc instanceof StructureChemicalCompound)
@@ -126,7 +102,7 @@ public class CartController {
 		List<AbstractDatasetObject> rccList = (new ArrayList<AbstractDatasetObject>());
 		for (ReferenceChemicalCompound rcc : getListRcc(session))
 			rccList.add((AbstractDatasetObject) rcc);
-		return Utils.prune(rccList);
+		return PeakForestPruneUtils.prune(rccList);
 	}
 
 	@RequestMapping(value = "/load-cpd-in-cart", method = RequestMethod.POST, headers = {
@@ -134,35 +110,23 @@ public class CartController {
 	public @ResponseBody boolean loadCpdInCart(HttpServletRequest request, @RequestBody List<String> data,
 			HttpServletResponse response, Locale locale, Model model, HttpSession session)
 			throws PeakForestManagerException {
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-		for (String inchikey : data) {
+		for (final String inchikey : data) {
 			ReferenceChemicalCompound refCompound = null;
 			try {
-				refCompound = ChemicalCompoundManagementService.readByInChIKey(inchikey, dbName, username,
-						password);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (refCompound == null)
-				try {
-					refCompound = GenericCompoundManagementService.readByInChIKey(inchikey, dbName, username,
-							password);
-				} catch (Exception e) {
-					e.printStackTrace();
+				refCompound = ChemicalCompoundManagementService.readByInChIKey(inchikey);
+				if (refCompound == null) {
+					refCompound = GenericCompoundManagementService.readByInChIKey(inchikey);
 				}
-			if (refCompound != null) {
-				addCpdInCart(request, response, locale, (int) refCompound.getId(), model, session);
+				if (refCompound != null) {
+					addCpdInCart(request, response, locale, (int) refCompound.getId(), model, session);
+				}
+			} catch (final Exception e) {
+				e.printStackTrace();
 			}
 		}
 		return true;
 	}
 
-	/**
-	 * @param session
-	 * @return
-	 */
 	@SuppressWarnings("unchecked")
 	private List<ReferenceChemicalCompound> getListRcc(HttpSession session) {
 		List<ReferenceChemicalCompound> cpds = new ArrayList<ReferenceChemicalCompound>();
@@ -172,24 +136,16 @@ public class CartController {
 		return cpds;
 	}
 
-	/**
-	 * @param id
-	 * @param refCompound
-	 * @return
-	 */
 	private ReferenceChemicalCompound getRefCompound(int id) {
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		ReferenceChemicalCompound refCompound = null;
 		try {
-			refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+			refCompound = ChemicalCompoundManagementService.read(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if (refCompound == null)
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

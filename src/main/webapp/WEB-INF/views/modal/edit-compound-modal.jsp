@@ -382,6 +382,25 @@ function saveIupacName() {
 															</div>
 														</td>
 													</tr>
+													<tr>
+														<td><spring:message code="modal.show.inOtherDatabases.networkIds" text="Networks IDs" /></td>
+														<td>
+															<ul id="networkIds" style="width: 200px;">
+																<c:forEach var="network" items="${networks}">
+																	<li id="networkId_${network}" style="margin-bottom: 10px;">
+																		${network}
+																		<span class="pull-right" style=""><a id="btn-delete-network-${network}" class="btn btn-danger btn-xs " onclick="deleteNetworkKey('${network}');" href="#"> <i class="fa fa-trash-o fa-1"></i></a></span>
+																	</li>
+																</c:forEach>
+															</ul>
+															<div id="inputAdd_network" class="form-group input-group input-sm" style="max-width: 400px;">
+																<input type="text" class="form-control input-active-enter-key" style="" value="" placeholder="...">
+																<span class="input-group-btn">
+																	<button class="btn btn-success" type="button" onclick="addNetworkIdKey();"><i class="fa fa-search fa-plus"></i></button>
+																</span>
+															</div>
+														</td>
+													</tr>
 <%-- 													</c:if> --%>
 
 													<tr>
@@ -483,6 +502,39 @@ function saveIupacName() {
 														deleteKeggIDs.push(id); 
 													}
 												}
+												
+												///
+												function addNetworkIdKey() {
+													var newCID = $("#inputAdd_network input").val();
+													if($('#networkId_'+newCID).length != 0)
+														alert("Network ID already exists");
+													else {
+														var newDiv = '<li id="networkId_'+newCID+'" style="margin-bottom: 10px;">';
+														newDiv += ''+newCID+'';
+														newDiv += '<span class="pull-right" style=" "><a id="btn-delete-network-'+newCID+'" class="btn btn-danger btn-xs " onclick="deleteNetworkKey(\''+newCID+'\');" href="javascript:void(0)"> <i class="fa fa-trash-o fa-1"></i></a></span>';
+														//newDiv += '<br />';
+														newDiv += '</li>';
+														$("#networkIds").append(newDiv);
+														$("#inputAdd_network input").val("");
+														if ($.inArray(newCID, newNetworksIDs)!=0)
+															newNetworksIDs.push(newCID);
+														if ($.inArray(newCID, deleteNetworksIDs)==0){
+															deleteNetworksIDs.splice($.inArray(newCID, deleteNetworksIDs),1);
+														};
+													};
+												}
+												function deleteNetworkKey(id) {
+													$("#networkId_"+id).remove();
+													if ($.inArray(id, newNetworksIDs)==0){
+														newNetworksIDs.splice($.inArray(id, newNetworksIDs),1);
+													}
+													if ($.inArray(id, deleteNetworksIDs)!=0){
+														deleteNetworksIDs.push(id); 
+													}
+												}
+												
+												///
+												
 												
 												function addCas() {
 													var newCasNumber = $($("#inputAdd_cas input")[0]).val();
@@ -829,6 +881,8 @@ function saveIupacName() {
 				var nameSwitchedToIUPAC = null;
 				var newIupacName = null;
 				var newCASs = [], deleteCASs = [];
+				var newNetworksIDs = [], deleteNetworksIDs = [];
+				
 				updateCurrentCompoundCurator = function(type, id) {
 					
 					var curationUpdate = [];
@@ -837,6 +891,9 @@ function saveIupacName() {
 					
 					newKeggIDs = $.unique( newKeggIDs );
 					deleteKeggIDs = $.unique( deleteKeggIDs );
+					
+					newNetworksIDs = $.unique( newNetworksIDs );
+					deleteNetworksIDs = $.unique( deleteNetworksIDs );
 					
 					var newCitationsCuratorList = [];
 					$.each(newCitationsCurator, function(k,v){ newCitationsCuratorList.push(v); });
@@ -853,6 +910,8 @@ function saveIupacName() {
 							newExtID: newCompoundIdExtDB,
 							deleteKeggIDs: deleteKeggIDs,
 							newKeggIDs : newKeggIDs,
+							deleteNetworksIDs: deleteNetworksIDs,
+							newNetworksIDs : newNetworksIDs,
 							newCurationMessages: newCurationMessagesCurator,
 							updateCitations: newCitationCuratorUpdate,
 							newCitations: newCitationsCuratorList,

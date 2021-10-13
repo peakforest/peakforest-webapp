@@ -6,8 +6,8 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>LCMSMS PeakMatching</title>
-<script src="<c:url value="/resources/handsontable/dist/handsontable.full.min.js" />"></script>
-<link rel="stylesheet" media="screen" href="<c:url value="/resources/handsontable/dist/handsontable.full.min.css" />">
+<script src="<c:url value="/resources/handsontable/dist2/handsontable.full.min.js" />"></script>
+<link rel="stylesheet" media="screen" href="<c:url value="/resources/handsontable/dist2/handsontable.full.min.css" />">
 <link rel="stylesheet" media="screen" href="<c:url value="/resources/handsontable/bootstrap/handsontable.bootstrap.min.css" />">
 
 <style type='text/css'>
@@ -92,6 +92,7 @@
 									<div class="form-group input-group lcms-peakmatching-mass-ri" style="width: 700px;">
 										<label class="text-inline"><spring:message code="modal.peakmatching.params.peakListRIList" text="Peaks &amp; RI list" /></label>
 										<div id="container_peakmatching_mass_ri" class="handsontable"></div>
+										<br />
 									</div>
 									<!-- PEAKLIST TOL -->
 									<div class="col-lg-12" style="padding-left: 0px !important;">
@@ -168,11 +169,9 @@
 										<span class="pull-right">&nbsp;</span>
 										<button class="btn btn-warning btn-xs pull-right" onclick="resetLCMSMSdemoData()"><i class="fa fa-eraser"></i> <spring:message code="modal.peakmatching.params.resetForm" text="reset" /></button>
 										<small class="">
-											<spring:message code="modal.peakmatching.params.msmsmatching.poweredBy" text="powered by LCMSMS Matching - Alexis Delabrière &copy; CEA - MetaboHUB / W4M" />
+											<spring:message code="modal.peakmatching.params.msmsmatching.poweredBy" text="powered by LCMSMS Matching - Alexis Delabriï¿½re &copy; CEA - MetaboHUB / W4M" />
 											<hr />
-										 	How scores are computed? 
-										 	We get the count of similar peaks between the query and matched spectrum, then remove the sum of all deltas between earch query and matched peaks.
-										 	Finally we divide this result by the number of matched spectra.
+										 	<!-- TODO set message for MSMS -> add publication DOI when available -->
 										</small>
 									</div>
 							</div>
@@ -278,10 +277,14 @@ function handsontable_mass_ri(data) {
 		minSpareRows : 1,
 		colHeaders : true,
 		colHeaders: ["M/Z", "RI (%)"],
-		contextMenu : false
+		contextMenu : false,
+		stretchH: 'none',
+		colWidths: [250, 250],
+		width: 500,
+		height: 220,
 	});
 	function bindDumpButton_mass_ri() {
-		Handsontable.Dom.addEvent(document.body, 'click', function(e) {
+		Handsontable.dom.addEvent(document.body, 'click', function(e) {
 			var element = e.target || e.srcElement;
 			if (element.nodeName == "BUTTON"&& element.name == 'dump') {
 				var name = element.getAttribute('data-dump');

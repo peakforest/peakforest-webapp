@@ -1,15 +1,5 @@
 in this folder: 
 
 	bioSM.jar
-	externalbanks-api-X.jar  
-	externaltools-api-X.jar  
-	io-chemfile-api-X.jar    
-	io-spectrafile-api-X.jar
 	openbabel.jar
-	peakforest-api-X.jar
-	peakforest-datamodel-X.jar
-	peakforest-license-manager-X_out.jar
-	peakforest-peakmatching-api-X.jar
 	reader.jar
-
-Note: replace `X` with the current version number of PeakForest

@@ -6,8 +6,8 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>LCMS PeakMatching</title>
-<script src="<c:url value="/resources/handsontable/dist/handsontable.full.min.js" />"></script>
-<link rel="stylesheet" media="screen" href="<c:url value="/resources/handsontable/dist/handsontable.full.min.css" />">
+<script src="<c:url value="/resources/handsontable/dist2/handsontable.full.min.js" />"></script>
+<link rel="stylesheet" media="screen" href="<c:url value="/resources/handsontable/dist2/handsontable.full.min.css" />">
 <link rel="stylesheet" media="screen" href="<c:url value="/resources/handsontable/bootstrap/handsontable.bootstrap.min.css" />">
 
 <style type='text/css'>
@@ -16,7 +16,6 @@
 	//<![CDATA[ 
 	//]]>
 </script>
-
 
 </head>
 <body>
@@ -121,6 +120,9 @@
 									<div class="form-group input-group lcms-peakmatching-mass-rt" style="width: 700px; display: none;">
 										<label class="text-inline"><spring:message code="modal.peakmatching.params.peakListRTList" text="Peaks &amp; RT list" /></label>
 										<div id="container_peakmatching_mass_rt" class="handsontable"></div>
+										<br />
+										<br />
+										<br />
 									</div>
 									<!-- TOL MASS -->
 									<div class="col-lg-12 lcms-peakmatching-mass-rt lcms-peakmatching-mass">
@@ -717,10 +719,12 @@ function handsontableBiHmassRT(data) {
 		minSpareRows : 1,
 		colHeaders : true,
 		colHeaders: ["mass (Da)", "RT (min)"],
-		contextMenu : false
+		contextMenu : false,
+		stretchH: 'none',
+		colWidths: [150, 150],
 	});
 	function bindDumpButton_bih_mass_rt() {
-		Handsontable.Dom.addEvent(document.body, 'click', function(e) {
+		Handsontable.dom.addEvent(document.body, 'click', function(e) {
 			var element = e.target || e.srcElement;
 			if (element.nodeName == "BUTTON"&& element.name == 'dump') {
 				var name = element.getAttribute('data-dump');

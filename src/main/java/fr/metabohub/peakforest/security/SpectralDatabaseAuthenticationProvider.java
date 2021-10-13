@@ -24,7 +24,7 @@ import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.security.services.UserManagementService;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 
 /**
  * @author Nils Paulhe
@@ -32,67 +32,55 @@ import fr.metabohub.peakforest.utils.Utils;
  */
 public class SpectralDatabaseAuthenticationProvider implements AuthenticationProvider {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.security.authentication.AuthenticationProvider#authenticate(org.springframework
-	 * .security.core.Authentication) */
+	 * @see org.springframework.security.authentication.AuthenticationProvider#
+	 * authenticate(org.springframework .security.core.Authentication)
+	 */
 	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
+	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 		// 0 - init
-		UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
-
+		final UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
 		// 1. retrieve entered user credentials
-		String submittedUserID = String.valueOf(auth.getPrincipal());
-
+		final String submittedUserID = String.valueOf(auth.getPrincipal());
 		// 2. login
 		if (submittedUserID.contains("@")) {
 			return authenticateByEmail(authentication);
 		} else {
 			return authenticateByLDAP(authentication);
 		}
-
 	}
 
-	/**
-	 * @param authentication
-	 * @return
-	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Authentication authenticateByLDAP(Authentication authentication) {
-
+	private Authentication authenticateByLDAP(final Authentication authentication) {
 		// 0 - init
-		UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
-
+		final UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
 		// 1. retrieve entered user credentials
-		String submittedUserLdapLogin = String.valueOf(auth.getPrincipal());
-		String submittedPassword = String.valueOf(auth.getCredentials());
-
+		final String submittedUserLdapLogin = String.valueOf(auth.getPrincipal());
+		final String submittedPassword = String.valueOf(auth.getCredentials());
 		// 2. retrieve matching user in meta DB
 		User user = null;
 		try {
 			user = UserManagementService.readLogin(submittedUserLdapLogin);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-
 		// 3. check login / password
 		boolean isLdapUser = false;
 		String userLDAPmail = null;
-
 		// 3.A - search ldap
 		String userPrincipal = null;
-		Hashtable envLogin = new Hashtable();
+		final Hashtable envLogin = new Hashtable();
 		envLogin.put(Context.INITIAL_CONTEXT_FACTORY,
-				Utils.bundleConf.getString("ldap.initial_context_factory"));
-		envLogin.put(Context.PROVIDER_URL, Utils.bundleConf.getString("ldap.provider_url"));
+				PeakForestUtils.bundleConf.getString("ldap.initial_context_factory"));
+		envLogin.put(Context.PROVIDER_URL, PeakForestUtils.bundleConf.getString("ldap.provider_url"));
 		envLogin.put(Context.SECURITY_AUTHENTICATION,
-				Utils.bundleConf.getString("ldap.security_authentication"));
+				PeakForestUtils.bundleConf.getString("ldap.security_authentication"));
 		DirContext ctxLogin = null;
-		String searchFilter = Utils.bundleConf.getString("ldap.filter").replace("USERNAME",
+		final String searchFilter = PeakForestUtils.bundleConf.getString("ldap.filter").replace("USERNAME",
 				submittedUserLdapLogin);
-		String searchBase = Utils.bundleConf.getString("ldap.searchbase");
+		final String searchBase = PeakForestUtils.bundleConf.getString("ldap.searchbase");
 		try {
 			ctxLogin = new InitialDirContext(envLogin);
 			SearchControls constraints = new SearchControls();
@@ -102,22 +90,21 @@ public class SpectralDatabaseAuthenticationProvider implements AuthenticationPro
 				SearchResult sr = (SearchResult) answer.next();
 				userPrincipal = sr.getName() + "," + searchBase;
 			}
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			// e.printStackTrace();
 		} finally {
 			if (ctxLogin != null) {
 				try {
 					ctxLogin.close();
-				} catch (Exception e) {
+				} catch (final Exception e) {
 				}
 			}
 		}
-
 		// 3.B - login ldap
-		Hashtable env = new Hashtable();
-		env.put(Context.INITIAL_CONTEXT_FACTORY, Utils.bundleConf.getString("ldap.initial_context_factory"));
-		env.put(Context.PROVIDER_URL, Utils.bundleConf.getString("ldap.provider_url"));
-		env.put(Context.SECURITY_AUTHENTICATION, Utils.bundleConf.getString("ldap.security_authentication"));
+		final Hashtable env = new Hashtable();
+		env.put(Context.INITIAL_CONTEXT_FACTORY, PeakForestUtils.bundleConf.getString("ldap.initial_context_factory"));
+		env.put(Context.PROVIDER_URL, PeakForestUtils.bundleConf.getString("ldap.provider_url"));
+		env.put(Context.SECURITY_AUTHENTICATION, PeakForestUtils.bundleConf.getString("ldap.security_authentication"));
 		env.put(Context.SECURITY_PRINCIPAL, userPrincipal);
 		env.put(Context.SECURITY_CREDENTIALS, submittedPassword);
 		DirContext ctx = null;
@@ -131,7 +118,7 @@ public class SpectralDatabaseAuthenticationProvider implements AuthenticationPro
 				userLDAPmail = submittedUserLdapLogin;
 			}
 			isLdapUser = true;
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			e.printStackTrace();
 			isLdapUser = false;
 		} finally {
@@ -179,10 +166,6 @@ public class SpectralDatabaseAuthenticationProvider implements AuthenticationPro
 		return new UsernamePasswordAuthenticationToken(user, null, grantedAuthorities);
 	}
 
-	/**
-	 * @param authentication
-	 * @return
-	 */
 	private Authentication authenticateByEmail(Authentication authentication) {
 		// 0 - init
 		UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
@@ -225,9 +208,13 @@ public class SpectralDatabaseAuthenticationProvider implements AuthenticationPro
 		return new UsernamePasswordAuthenticationToken(user, null, grantedAuthorities);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.security.authentication.AuthenticationProvider#supports(java.lang.Class) */
+	 * @see
+	 * org.springframework.security.authentication.AuthenticationProvider#supports(
+	 * java.lang.Class)
+	 */
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));

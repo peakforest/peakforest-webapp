@@ -3,16 +3,13 @@ package fr.metabohub.peakforest.services.maps;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.metabohub.peakforest.model.maps.MapEntity;
 import fr.metabohub.peakforest.model.maps.MapManager;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 
 public class MapManagerManagementServiceTest {
 	public Logger logger = Logger.getRootLogger();
@@ -20,19 +17,7 @@ public class MapManagerManagementServiceTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		// set test properties file
-		Utils.setBundleConf(ResourceBundle.getBundle("confTest"));
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
+		PeakForestUtils.setBundleConf(ResourceBundle.getBundle("confTest"));
 	}
 
 	@Test

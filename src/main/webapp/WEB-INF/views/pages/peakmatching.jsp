@@ -4,7 +4,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page session="false"%>
-<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@ page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <div class="row">
 	<div class="col-lg-12">
 		<ul class="nav nav-tabs" style="margin-bottom: 15px;">
@@ -17,19 +17,19 @@
 				<br />
 				<br />
 				<br />			
-<% 
-User user = null;
-if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
-	user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-}
+<%
+				User user = null;
+			if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
+				user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+			}
 
-boolean displayNMRfirst = false;
-boolean isNMRbtnDisplayed = false;
-if (user !=null && user.getMainTechnology() == User.PREF_NMR) {
-	displayNMRfirst = true;
-}
-if (displayNMRfirst) {
-%>
+			boolean displayNMRfirst = false;
+			boolean isNMRbtnDisplayed = false;
+			if (user !=null && user.getMainTechnology() == User.PREF_NMR) {
+				displayNMRfirst = true;
+			}
+			if (displayNMRfirst) {
+			%>
 				<div class="col-lg-4">
 					<button id="run-pm-nmr" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-nmr').click();" style="margin: 5px;">
 						<h3>
@@ -57,7 +57,7 @@ if (displayNMRfirst) {
 					</button>
 				</div>
 <%
-if (!isNMRbtnDisplayed) {
+	if (!isNMRbtnDisplayed) {
 %>
 				<div class="col-lg-4">
 					<button id="run-pm-nmr" type="button" class="btn btn-primary btn-lg" onclick="$('#link-pm-nmr').click();" style="margin: 5px;">
@@ -67,7 +67,7 @@ if (!isNMRbtnDisplayed) {
 					</button>
 				</div>
 <%
-}
+	}
 %>
 			</div>
 			<div class="tab-pane fade " id="peakmatching-nmr">
@@ -108,18 +108,18 @@ if (!isNMRbtnDisplayed) {
 <!-- /.modal SPECTRA -->
 <script src="<c:url value="/resources/js/peakforest/search.min.js" />"></script>
 <script type="text/javascript">
-<% if (request.getParameter("searchNMR") != null && request.getParameter("searchNMR") != "") { %>
+<%if (request.getParameter("searchNMR") != null && request.getParameter("searchNMR") != "") {%>
 $("#link-pm-nmr").click();
-<% } %>
-<% if (request.getParameter("searchLCMS") != null && request.getParameter("searchLCMS") != "") { %>
+<%}%>
+<%if (request.getParameter("searchLCMS") != null && request.getParameter("searchLCMS") != "") {%>
 $("#link-pm-lcms").click();
-<% } %>
-<% if (request.getParameter("searchLCMSMS") != null && request.getParameter("searchLCMSMS") != "") { %>
+<%}%>
+<%if (request.getParameter("searchLCMSMS") != null && request.getParameter("searchLCMSMS") != "") {%>
 $("#link-pm-lcmsms").click();
-<% } %>
-var Utils_SEARCH_COMPOUND_AVERAGE_MASS = "<%=Utils.SEARCH_COMPOUND_AVERAGE_MASS %>";
-var Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS = "<%=Utils.SEARCH_COMPOUND_MONOISOTOPIC_MASS %>";
-var Utils_SEARCH_COMPOUND_FORMULA = "<%=Utils.SEARCH_COMPOUND_FORMULA %>";
+<%}%>
+var Utils_SEARCH_COMPOUND_AVERAGE_MASS = "<%=PeakForestUtils.SEARCH_COMPOUND_AVERAGE_MASS%>";
+var Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS = "<%=PeakForestUtils.SEARCH_COMPOUND_MONOISOTOPIC_MASS%>";
+var Utils_SEARCH_COMPOUND_FORMULA = "<%=PeakForestUtils.SEARCH_COMPOUND_FORMULA%>";
 
 </script>
 <script src="<c:url value="/resources/js/md5.min.js" />"></script>

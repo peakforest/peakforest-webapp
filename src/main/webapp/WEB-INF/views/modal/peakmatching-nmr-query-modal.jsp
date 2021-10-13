@@ -60,7 +60,7 @@
 								<button class="btn btn-info btn-xs pull-right" onclick="loadNMRdemoData()"><i class="fa fa-magic"></i> <spring:message code="modal.peakmatching.params.loadDemo" text="load demo" /></button>
 								<span class="pull-right">&nbsp;</span>
 								<button class="btn btn-warning btn-xs pull-right" onclick="resetNMRdemoData()"><i class="fa fa-eraser"></i> <spring:message code="modal.peakmatching.params.resetForm" text="reset" /></button>
-								<small><spring:message code="modal.peakmatching.params.poweredBy" text="powered by <a href='http://www.bordeaux.inra.fr/pmb/PM/webapp' target='_blank'>NMR PeakMatching 1.0</a>  -  &copy; INRA UMR 1332 - MetaboHUB" /></small>
+								<small><spring:message code="modal.peakmatching.params.poweredBy" text="powered by <a href='http://www.pmb-bordeaux.fr/PM/webapp' target='_blank'>NMR PeakMatching 1.0</a>  -  &copy; INRA UMR 1332 - MetaboHUB" /></small>
 							</div>
 
 						</div>

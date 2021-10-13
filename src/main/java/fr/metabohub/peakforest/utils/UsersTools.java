@@ -92,26 +92,23 @@ public class UsersTools {
 			}
 		} else {
 			// ask user
-			Scanner reader = new Scanner(System.in);
-			Console console = System.console();
+			final Scanner reader = new Scanner(System.in);
+			final Console console = System.console();
 			if (console == null) {
 				System.err.println("Couldn't get Console instance");
 				System.exit(0);
 			}
-
 			// email
 			while (email == null || email.trim().equals("")) {
 				System.out.print("please enter an email: ");
 				email = reader.nextLine();
 			}
-
 			// password
 			while (password == null || password.trim().equals("")) {
 
 				char passwordArray[] = console.readPassword("please enter a password: ");
 				password = new String(passwordArray);
 			}
-
 			// rights
 			while (rights == null || rights.trim().equals("")) {
 				System.out.print("please enter rights level [1: user, 2: curator, 3: admin]: ");
@@ -124,19 +121,16 @@ public class UsersTools {
 					rights = "admin";
 				}
 			}
-
 			reader.close();
 		}
 
 		if (email != null && password != null && rights != null) {
-
 			if (!UserManagementService.exists(email))
 				// create!
 				try {
 					User newUser = new User();
 					newUser.setEmail(email);
 					newUser.setLogin(email);
-
 					switch (rights.toLowerCase()) {
 					case RIGHTS_ADMIN:
 						newUser.setAdmin(true);
@@ -146,9 +140,7 @@ public class UsersTools {
 						newUser.setConfirmed(true);
 						break;
 					}
-
-					StandardPasswordEncoder encoder = new StandardPasswordEncoder();
-					newUser.setPassword(encoder.encode(password));
+					newUser.setPassword((new StandardPasswordEncoder()).encode(password));
 					UserManagementService.create(newUser);
 					// log
 					System.out.println("add new user @email=" + email + " ");
@@ -157,8 +149,7 @@ public class UsersTools {
 				}
 			else {
 				// update
-				User existingUser = UserManagementService.read(email);
-
+				final User existingUser = UserManagementService.read(email);
 				// set right
 				switch (rights.toLowerCase()) {
 				case RIGHTS_ADMIN:
@@ -169,21 +160,17 @@ public class UsersTools {
 					existingUser.setConfirmed(true);
 					break;
 				}
-
 				// set password
 				StandardPasswordEncoder encoder = new StandardPasswordEncoder();
 				existingUser.setPassword(encoder.encode(password));
-
 				// update
 				UserManagementService.update(existingUser);
 			}
 		} else {
 			throw new Exception("Missing data to create new user (its 'email' or 'password' or 'rights')");
 		}
-
 		// adios!
 		// System.exit(0);
-
 	}
 
 	public static void affiUsage() {
@@ -195,8 +182,7 @@ public class UsersTools {
 		System.out.println(
 				"\t-e|--email: create/overwrite a user wit this login (warning: this script does not check if the email is valid!).");
 		System.out.println("\t-p|--password: set the user password.");
-		System.out
-				.println("\t-r|--rights: set the user rights (must be \"USER\", \"CURATOR\" or \"ADMIN\").");
+		System.out.println("\t-r|--rights: set the user rights (must be \"USER\", \"CURATOR\" or \"ADMIN\").");
 	}
 
 }

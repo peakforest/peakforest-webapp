@@ -126,6 +126,9 @@ loadCompoundInForm = function (id, inchikey, inchi, composition, exactMass, type
 		$("#add1spectrum-sample-inchi").change();
 		$("#add1spectrum-sample-commonName").val(name);
 		$("#add1spectrum-sample-commonName").change();	
+
+		$("#importspectrum-sample-inchikey").val(inchikey);
+		$("#importspectrum-sample-inchikey").change();
 	} else if (multiPickLine >= 0) {
 		hot_RCC_ADDED.setDataAtCell(multiPickLine, 0, name);
 		hot_RCC_ADDED.setDataAtCell(multiPickLine, 1, inchikey);

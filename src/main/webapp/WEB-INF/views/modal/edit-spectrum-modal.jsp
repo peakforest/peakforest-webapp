@@ -5,7 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@ page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -98,11 +98,11 @@
 							$.each(elems,function(k,v) { 
 								var idDivCM = $(v).attr("id");
 								var statusDivCM = $("#" + idDivCM + " input").val();
-								if (statusDivCM == <%=CurationMessage.STATUS_WAITING %> ) {}
-								else if (statusDivCM == <%=CurationMessage.STATUS_REJECTED %> ) { 
+								if (statusDivCM == <%=CurationMessage.STATUS_WAITING%> ) {}
+								else if (statusDivCM == <%=CurationMessage.STATUS_REJECTED%> ) { 
 									$(v).removeClass("alert-warning");
 									$(v).addClass("alert-danger");
-								} else if (statusDivCM == <%=CurationMessage.STATUS_ACCEPTED %> ) { 
+								} else if (statusDivCM == <%=CurationMessage.STATUS_ACCEPTED%> ) { 
 									$(v).removeClass("alert-warning");
 									$(v).addClass("alert-success");
 								}
@@ -161,14 +161,14 @@
 <%-- 	</c:if> --%>
 	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
 	<li class="list-group-item">
-		Solvent: <span id="select_spectrum_sample_compound_mass_solvent">${spectrum_sample_compound_mass_solvent}</span>
-		<div id="selectEdit_spectrum_sample_compound_mass_solvent" class="form-group  select-group" style="max-width: 400px; display: none;">
-			<select id="selectElem_spectrum_sample_compound_mass_solvent" class="form-control col-xs-3" style="max-width: 340px;"></select>
+		Solvent: <span id="select_spectrum_sample_compound_liquid_solvent">${select_spectrum_sample_compound_liquid_solvent}</span>
+		<div id="selectEdit_select_spectrum_sample_compound_liquid_solvent" class="form-group  select-group" style="max-width: 400px; display: none;">
+			<select id="selectElem_select_spectrum_sample_compound_liquid_solvent" class="form-control col-xs-3" style="max-width: 340px;"></select>
 			<span class="input-group-btn" style="max-width: 50px;">
-				<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_sample_compound_mass_solvent');"><i class="fa fa-check-square-o"></i></button>
+				<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('select_spectrum_sample_compound_liquid_solvent');"><i class="fa fa-check-square-o"></i></button>
 			</span>
 		</div>
-		<a id="btn-edit_spectrum_sample_compound_mass_solvent" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_sample_compound_mass_solvent');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+		<a id="btn-edit_select_spectrum_sample_compound_liquid_solvent" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('select_spectrum_sample_compound_liquid_solvent');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 	</li>
 	</c:if>
 </ul>
@@ -181,17 +181,17 @@
 			<div class="panel-body">
 							<ul style="">
 									<li class="list-group-item">
-										Solvent: <span id="select_spectrum_sample_compound_mass_solvent_mix">${spectrum_sample_compound_mass_solvent}</span>
-										<div id="selectEdit_spectrum_sample_compound_mass_solvent_mix" class="form-group  select-group" style="max-width: 400px; display: none;">
-											<select id="selectElem_spectrum_sample_compound_mass_solvent_mix" class="form-control col-xs-3" style="max-width: 340px;">
+										Solvent: <span id="select_select_spectrum_sample_compound_liquid_solvent_mix">${select_spectrum_sample_compound_liquid_solvent}</span>
+										<div id="selectEdit_select_spectrum_sample_compound_liquid_solvent_mix" class="form-group  select-group" style="max-width: 400px; display: none;">
+											<select id="selectElem_select_spectrum_sample_compound_liquid_solvent_mix" class="form-control col-xs-3" style="max-width: 340px;">
 												<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
 												<option value="H2O/ethanol (75/25)">H2O/ethanol (75/25)</option>
 											</select>
 											<span class="input-group-btn" style="max-width: 50px;">
-												<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_sample_compound_mass_solvent_mix');"><i class="fa fa-check-square-o"></i></button>
+												<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('select_spectrum_sample_compound_liquid_solvent_mix');"><i class="fa fa-check-square-o"></i></button>
 											</span>
 										</div>
-										<a id="btn-edit_spectrum_sample_compound_mass_solvent_mix" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_sample_compound_mass_solvent_mix');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+										<a id="btn-edit_select_spectrum_sample_compound_liquid_solvent_mix" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('select_spectrum_sample_compound_liquid_solvent_mix');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 									</li>
 							</ul>
 <%-- 							<c:if test="${spectrum_has_main_compound}"> --%>
@@ -772,7 +772,7 @@
 					</div>
 					<div class="panel-body">
 						<ul class="list-group" style="max-width: 600px;">
-							<li class="list-group-item">Gas: ${(spectrum_msms_iontrap.getIonGasAsHTML())}</li>
+							<li class="list-group-item">Gas: ${spectrum_msms_iontrap.getIonGasAsHTML()}</li>
 							<li class="list-group-item">Gas pressure: ${spectrum_msms_iontrap.getIonGazPressure()} </li>
 							<li class="list-group-item">Gas pressure unit: ${fn:escapeXml(spectrum_msms_iontrap.getIonGazPressureUnitAsString())} </li>
 							<li class="list-group-item">Frequency shift: ${fn:escapeXml(spectrum_msms_iontrap.getIonFrequencyShift())} KHz</li>
@@ -787,7 +787,7 @@
 					</div>
 					<div class="panel-body">
 						<ul class="list-group" style="max-width: 600px;">
-							<li class="list-group-item">Gas: ${(spectrum_msms_ionbeam.getIonGasAsHTML())}</li>
+							<li class="list-group-item">Gas: ${spectrum_msms_ionbeam.getIonGasAsHTML()}</li>
 							<li class="list-group-item">Gas pressure: ${spectrum_msms_ionbeam.getIonGazPressure()} </li>
 							<li class="list-group-item">Gas pressure unit: ${fn:escapeXml(spectrum_msms_ionbeam.getIonGazPressureUnitAsString())} </li>
 						</ul>
@@ -2240,10 +2240,12 @@
 									</tr>
 								</thead>
 								<tbody>
-									<% int i = 1; %>
+									<%
+										int i = 1;
+									%>
 									<c:forEach var="peak" items="${spectrum_nmr_analyzer_data.peaks}">
 									<tr>
-										<td><%=i %></td>
+										<td><%=i%></td>
 										<td>${peak.chemicalShift}</td>
 										<td>${peak.relativeIntensity}</td>
 										<td>${peak.halfWidth}</td>
@@ -2252,7 +2254,7 @@
 											${fn:escapeXml(peak.annotation)}
 											<script type="text/javascript">
 											var currentNMRpeak = { 
-													"index": Number("<%=i++ %>"),
+													"index": Number("<%=i++%>"),
 													"chemicalShift": Number("${peak.chemicalShift}"),
 													"relativeIntensity": Number("${peak.relativeIntensity}"),
 													"halfWidth": Number("${peak.halfWidth}"),
@@ -2279,10 +2281,12 @@
 									</tr>
 								</thead>
 								<tbody>
-									<% int i = 1; %>
+									<%
+										int i = 1;
+									%>
 									<c:forEach var="peak" items="${spectrum_nmr_analyzer_data.peaks}">
 									<tr>
-										<td><%=i %></td>
+										<td><%=i%></td>
 										<td>${peak.chemicalShift}</td>
 										<td>${peak.relativeIntensity}</td>
 										<td>${peak.halfWidth}</td>
@@ -2291,7 +2295,7 @@
 											${fn:escapeXml(peak.annotation)}
 											<script type="text/javascript">
 											var currentNMRpeak = { 
-													"index": Number("<%=i++ %>"),
+													"index": Number("<%=i++%>"),
 													"chemicalShift": Number("${peak.chemicalShift}"),
 													"relativeIntensity": Number("${peak.relativeIntensity}"),
 													"halfWidth": Number("${peak.halfWidth}"),
@@ -2325,10 +2329,12 @@
 									</tr>
 								</thead>
 								<tbody>
-									<% int i = 1; %>
+									<%
+										int i = 1;
+									%>
 									<c:forEach var="peak" items="${spectrum_nmr_analyzer_data.peaks}">
 									<tr>
-										<td><%=i %></td>
+										<td><%=i%></td>
 										<td>${peak.chemicalShiftF2}</td>
 										<td>${peak.chemicalShiftF1}</td>
 										<td class="tabStrippedBg">${peak.intensity}</td>
@@ -2338,7 +2344,7 @@
 											${fn:escapeXml(peak.annotation)}
 											<script type="text/javascript">
 											var currentNMRpeak = { 
-													"index": Number("<%=i++ %>"),
+													"index": Number("<%=i++%>"),
 													"chemicalShiftF2": Number("${peak.chemicalShiftF2}"),
 													"chemicalShiftF1": Number("${peak.chemicalShiftF1}"),
 													"intensity": Number("${peak.intensity}"),
@@ -2371,10 +2377,12 @@
 									</tr>
 								</thead>
 								<tbody>
-									<% int i = 1; %>
+									<%
+										int i = 1;
+									%>
 									<c:forEach var="peak" items="${spectrum_nmr_analyzer_data.peaks}">
 									<tr>
-										<td><%=i %></td>
+										<td><%=i%></td>
 										<td>${peak.chemicalShiftF2}</td>
 										<td>${peak.chemicalShiftF1}</td>
 										<td>${peak.intensity}</td>
@@ -2382,7 +2390,7 @@
 											${fn:escapeXml(peak.annotation)}
 											<script type="text/javascript">
 											var currentNMRpeak = { 
-													"index": Number("<%=i++ %>"),
+													"index": Number("<%=i++%>"),
 													"chemicalShiftF2": Number("${peak.chemicalShiftF2}"),
 													"chemicalShiftF1": Number("${peak.chemicalShiftF1}"),
 													"intensity": Number("${peak.intensity}"),
@@ -3267,17 +3275,17 @@ $(document).ready(function() {
 	$('.datepicker').datepicker();
 	
 	// LCMS solents
-	$("#selectElem_spectrum_sample_compound_mass_solvent").append('<option value="" disabled="disabled">choose in list&hellip;</option>');
+	$("#selectElem_select_spectrum_sample_compound_liquid_solvent").append('<option value="" disabled="disabled">choose in list&hellip;</option>');
 	$.getJSON("resources/json/list-lcms-solvents.json", function(data) {
 		// load data from json
 		$.each(data.solvents,function(){
-			$("#selectElem_spectrum_sample_compound_mass_solvent").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
+			$("#selectElem_select_spectrum_sample_compound_liquid_solvent").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
 		});
-		$("#selectElem_spectrum_sample_compound_mass_solvent").val("${spectrum_sample_compound_mass_solvent}");
+		$("#selectElem_select_spectrum_sample_compound_liquid_solvent").val("${select_spectrum_sample_compound_liquid_solvent}");
 	});
 	
 	// LCMS mix solvents
-	$("#selectElem_spectrum_sample_compound_mass_solvent_mix").val("${spectrum_sample_compound_mass_solvent}");
+	$("#selectElem_select_spectrum_sample_compound_liquid_solvent_mix").val("${select_spectrum_sample_compound_liquid_solvent}");
 
 	// LC column
 	$.getJSON("resources/json/list-lc-methods.json", function(data) {
@@ -3447,13 +3455,18 @@ $(document).ready(function() {
 	$("#selectElem_spectrum_nmr_analyzer_data_fourier_transform").append('<option value="true">True</option>');
 	$("#selectElem_spectrum_nmr_analyzer_data_fourier_transform").val(("${spectrum_nmr_analyzer_data.getFourierTransform()}").toLowerCase());
 	
+	// <!--
+	<c:choose> 
+	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'COSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'TOCSY-2D' || spectrum_nmr_analyzer_data_acquisition == 'NOESY-2D' || spectrum_nmr_analyzer_data_acquisition == 'HMBC-2D' || spectrum_nmr_analyzer_data_acquisition == 'HSQC-2D'}">
 	// NMR boolean fields
 	$("#selectElem_spectrum_nmr_analyzer_nus").empty();
 	$("#selectElem_spectrum_nmr_analyzer_nus").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
 	$("#selectElem_spectrum_nmr_analyzer_nus").append('<option value="false">No</option>');
 	$("#selectElem_spectrum_nmr_analyzer_nus").append('<option value="true">Yes</option>');
 	$("#selectElem_spectrum_nmr_analyzer_nus").val(("${spectrum_nmr_analyzer_data.nus}").toLowerCase());
-	
+	</c:when>
+	</c:choose>
+	// -->
 });
 				
 				
@@ -3590,7 +3603,7 @@ searchLocalCompound = function() {
 		url: "pick-one-compound-search",
 //			dataType: "html",
 		async: true,
-		data: "query=" + $('#add-one-cc-s1-value').val() + "&filter=<%= Utils.SEARCH_COMPOUND_CHEMICAL_NAME %>",
+		data: "query=" + $('#add-one-cc-s1-value').val() + "&filter=<%=PeakForestUtils.SEARCH_COMPOUND_CHEMICAL_NAME%>",
 		success: function(data) {
 			$("#ok-step-1").html(data);
 		},

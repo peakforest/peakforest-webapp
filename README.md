@@ -1,69 +1,121 @@
-PeakForest - WebApp
-=======
+[![pipeline status](https://services.pfem.clermont.inra.fr/gitlab/peakforest/peakforest-webapp/badges/dev/pipeline.svg)](https://services.pfem.clermont.inra.fr/gitlab/peakforest/peakforest-webapp/commits/dev)
 
-Metadata
------------
+# PeakForest - WebApp
 
- * **@name**: PeakForest - WebApp
- * **@version**: 2.0
- * **@authors**: Nils Paulhe <nils.paulhe@inra.fr>
- * **@date creation**: 2014/01/23
- * **@main usage**: PeakForest web-application; for further informations, please refer to [peakforest.org](https://peakforest.org/aboutPF) 
+## Metadata
 
-Configuration
------------
+* authors: <nils.paulhe@inrae.fr>, <franck.giacomoni@inrae.fr>
+* creation date: `2014-01-23`
+* main usage:  PeakForest web-application; for further informations, please refer to [peakforest.org](https://peakforest.org/) 
 
-### Requirement:
- * Tomcat7+ server
- * JVM 1.8
- * [Open Babel](http://openbabel.org/wiki/Main_Page) 
-    * version 2.3.2, with java bundle
-    * version 40bc0f10 (cf doc)
- * Webservice Dependencies:
-    * NCBI
-    * EBI
-    * ChemSpider
-    
- * You must have the following jar into `lib` directory (replace `X` with the current version number):
-    * externalbanks-api-X.jar (*via* [externalbanks-api](https://pfemw3.clermont.inra.fr/gitlab/dev-team/externalbanks-api))
-    * externaltools-api-X.jar (*via* [externaltools-api](https://pfemw3.clermont.inra.fr/gitlab/dev-team/externaltools-api))
-    * io-chemfile-api-X.jar (*via* [io-chemfile-api](https://pfemw3.clermont.inra.fr/gitlab/dev-team/io-chemfile-api))
-    * io-spectrafile-api-X.jar (*via* [io-spectrafile-api](https://pfemw3.clermont.inra.fr/gitlab/dev-team/io-spectrafile-api))
-    * peakforest-api-X.jar (*via* [peakforest-api](https://pfemw3.clermont.inra.fr/gitlab/dev-team/peakforest-api))
-    * peakforest-datamodel-X.jar (*via* [peakforest-datamodel-api](https://pfemw3.clermont.inra.fr/gitlab/dev-team/peakforest-datamodel-api))
-    * peakforest-license-manager-X_out.jar (*via* [peakforest-license-manager-api](https://pfemw3.clermont.inra.fr/gitlab/dev-team/peakforest-license-manager-api))
-    * peakforest-peakmatching-api-X.jar (*via* [peakforest-peakmatching-api-api](https://pfemw3.clermont.inra.fr/gitlab/dev-team/peakforest-peakmatching-api))
-    * openbabel.jar (*via* [openbabel](https://github.com/openbabel/openbabel))
-    * reader.jar (*via* [jnmrread](https://bitbucket.org/peakforestmodule/jnmrread))
+## Getting Started
 
-### Deploy:
- * get project data `git clone git@pfemw3.clermont.inra.fr:dev-team/peakforest-webapp.git`
- * config files:
-    * `src/main/resources/conf.properties`
-    * `src/main/resources/hibernate-metadb.cfg.xml`
-    * `src/main/resources/hibernate.cfg.xml`
-    * `src/main/resources/info.properties`
-    * `src/main/resources/hibernate-extradb.cfg.xml`
-    * `src/main/resources/server/metExploreData.json`
+This project uses and requires:
+- java JVM 1.8+
+- maven 4+
+- MySQL 5+
 
-### Warning:
-See [git@pfemw3.clermont.inra.fr:dev-team/doc-metabohub.git](main documentation) for Open Babel and Databases configuration.
+- [Open Babel](http://openbabel.org/wiki/Main_Page) 
+    - version `2.3.2`, with java bundle
+    - version `40bc0f10` (cf doc)
+- Webservice Dependencies: see [PForest - Ext. Banks API](https://services.pfem.clermont.inra.fr/gitlab/peakforest/externalbanks-api) for further details
 
-Services provided
------------
+### Prerequisites
 
- * chemical compound library manager
- * spectra library manager
- * spectrum viewers
- * curation interface
- * admin interface
+Use [STS](https://spring.io/tools) IDE.
 
-NMR viewer with Docker wrapper
------------
+### Install / Build
+
+- get project data `git clone git@services.pfem.clermont.inra.fr:peakforest/peakforest-webapp.git`
+- Build command `mvn clean install` produce:
+   - `peakforest-webapp-X.war` (java bin file, ready for a tomcat server deploy; `X` matching the current version number)
+
+## Running the tests
+
+Run `mvn test` command to launch all unit test.\
+You can also select a test class / package in STS or Eclipse package explorer and launch test using right click option.
+
+<!-- 
+### Break down into end to end tests
+
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+### And coding style tests
+
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+## Deployment
+
+Add additional notes about how to deploy this on a live system
+
+## Built With
+
+* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
+* [Maven](https://maven.apache.org/) - Dependency Management
+* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+
+## Contributing
+
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We use [GitLab](https://services.pfem.clermont.inra.fr/gitlab/your/project) for versioning. 
+For the versions available, see the [tags on this repository](https://services.pfem.clermont.inra.fr/gitlab/your/project/tags). 
+
+## Authors
+
+* **Firstname lastname** - *Initial work* - 
+
+See also the list of [contributors](https://services.pfem.clermont.inra.fr/gitlab/your/projectcontributors) who participated in this project.
+
+## License
+
+This project is licensed under the XXX License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* Hat tip to anyone whose code was used
+* Inspiration
+* etc
+-->
+
+### Deploy
+
+- get project data `git clone git@services.pfem.clermont.inra.fr:peakforest/peakforest-webapp.git`
+- configuration files:
+   - `src/main/resources/conf.properties`
+   - `src/main/resources/info.properties`
+   - `src/main/resources/hibernate.cfg.xml`
+   - `src/main/resources/server/metExploreData.json`
+
+### Warning
+
+See [PForest - Developers documentation](https://services.pfem.clermont.inra.fr/gitlab/metabohub/doc-pforest_devs) for Open Babel and Databases configuration.
+
+## Services provided
+
+
+- chemical compound library manager
+- spectra library manager
+- spectrum viewers
+- curation interface
+- admin interface
+
+### NMR viewer with Docker wrapper
 
 The NMR spectra viewer `NMR pro` run on a python server. 
 In order to avoid install issues and socket conflict, it is isolated in a Docker container. 
 Run the docker container with the following command:
+
 ```bash
 docker run \
   -d \ # mode deamon
@@ -72,17 +124,19 @@ docker run \
   npaulhe/nmrpro python nmrpro_server/manage.py runserver 0.0.0.0:8000 \ # run command
 ```
 
-Developper notes
------------
+## developers notes
 
 You should open your MySQL socket on your computer for the local tests.
 
-Licenses
------------
+## Licenses
 
- * Frameworks:
-   * Spring / Spring Security - http://projects.spring.io/spring-framework/
-   * Bootstrap - http://getbootstrap.com/
-   * GLmol - Molecular Viewer on WebGL/Javascript - http://webglmol.sourceforge.jp/index-en.html
- * Templates:
-   * SB Admin - http://startbootstrap.com/template-overviews/sb-admin/
+- Frameworks
+   - Spring / Spring Security - http://projects.spring.io/spring-framework/
+   - Bootstrap - http://getbootstrap.com/
+- Binary tools
+   - OpenBabel - The Open Source Chemistry Toolbox - http://openbabel.org/wiki/Main_Page
+- JS tools
+   - GLmol - Molecular Viewer on WebGL/Javascript - http://webglmol.sourceforge.jp/index-en.html
+   - NMRPro - Python package for processing NMR Spectra - https://github.com/ahmohamed/nmrpro
+- HTML/CSS Templates
+   - SB Admin - http://startbootstrap.com/template-overviews/sb-admin/

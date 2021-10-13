@@ -1,6 +1,5 @@
 <%@page import="fr.metabohub.peakforest.model.compound.Citation"%>
 <%@page import="fr.metabohub.peakforest.model.compound.Compound"%>
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
 <%@page import="fr.metabohub.peakforest.model.CurationMessage"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>

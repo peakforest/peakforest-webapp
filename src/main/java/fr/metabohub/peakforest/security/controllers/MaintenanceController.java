@@ -28,8 +28,8 @@ import fr.metabohub.peakforest.services.maintenance.CleanIsolatedEntities;
 import fr.metabohub.peakforest.services.maintenance.CleanScoredEntities;
 import fr.metabohub.peakforest.utils.IOUtils;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
 
 /**
  * @author Nils Paulhe
@@ -40,26 +40,14 @@ import fr.metabohub.peakforest.utils.Utils;
 @Secured("ROLE_ADMIN")
 public class MaintenanceController {
 
-	// @Autowired
-	// private EmailManager emailManager;
-
-	// update profile
-	// update password
-
 	@RequestMapping(value = "/get-entity-comoundnames-stats", method = RequestMethod.GET)
-	public @ResponseBody Object getCompoundNameEntityStats(HttpServletRequest request,
-			HttpServletResponse response, Locale locale) throws IOException {
+	public @ResponseBody Object getCompoundNameEntityStats(HttpServletRequest request, HttpServletResponse response,
+			Locale locale) throws IOException {
 		response.setHeader("Cache-Control", "max-age=0");
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// use API service like a boss
 		Map<String, Object> output = new HashMap<String, Object>();
 		try {
-			output = CleanScoredEntities.getCompoundNamesStats(dbName, username, password);
+			output = CleanScoredEntities.getCompoundNamesStats();
 			output.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -69,19 +57,14 @@ public class MaintenanceController {
 	}
 
 	@RequestMapping(value = "/get-entity-metadata-stats", method = RequestMethod.GET)
-	public @ResponseBody Object getMetadataEntityStats(HttpServletRequest request,
-			HttpServletResponse response, Locale locale) throws IOException {
+	public @ResponseBody Object getMetadataEntityStats(HttpServletRequest request, HttpServletResponse response,
+			Locale locale) throws IOException {
 		response.setHeader("Cache-Control", "max-age=0");
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 
 		// use API service like a boss
 		Map<String, Object> output = new HashMap<String, Object>();
 		try {
-			output = CleanIsolatedEntities.getMetadataStats(dbName, username, password);
+			output = CleanIsolatedEntities.getMetadataStats();
 			output.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -91,19 +74,14 @@ public class MaintenanceController {
 	}
 
 	@RequestMapping(value = "/get-entity-curation-message-stats", method = RequestMethod.GET)
-	public @ResponseBody Object getCurationMessageEntityStats(HttpServletRequest request,
-			HttpServletResponse response, Locale locale) throws IOException {
+	public @ResponseBody Object getCurationMessageEntityStats(HttpServletRequest request, HttpServletResponse response,
+			Locale locale) throws IOException {
 		response.setHeader("Cache-Control", "max-age=0");
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 
 		// use API service like a boss
 		Map<String, Object> output = new HashMap<String, Object>();
 		try {
-			output = CleanCurationMessageEntities.getCurationMessagesStats(dbName, username, password);
+			output = CleanCurationMessageEntities.getCurationMessagesStats();
 			output.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -112,24 +90,17 @@ public class MaintenanceController {
 		return output;
 	}
 
-	@RequestMapping(value = "/clean-entity-comoundnames", method = RequestMethod.POST, params = {
-			"listSizeThreshold", "scoreThreshold" })
-	public @ResponseBody Object cleanCompoundNameEntity(HttpServletRequest request,
-			HttpServletResponse response, Locale locale,
-			@RequestParam("listSizeThreshold") int listSizeThreshold,
+	@RequestMapping(value = "/clean-entity-comoundnames", method = RequestMethod.POST, params = { "listSizeThreshold",
+			"scoreThreshold" })
+	public @ResponseBody Object cleanCompoundNameEntity(HttpServletRequest request, HttpServletResponse response,
+			Locale locale, @RequestParam("listSizeThreshold") int listSizeThreshold,
 			@RequestParam("scoreThreshold") double scoreThreshold) throws IOException {
 		response.setHeader("Cache-Control", "max-age=0");
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 
 		// use API service like a boss
 		Map<String, Object> output = new HashMap<String, Object>();
 		try {
-			output = CleanScoredEntities.cleanCompoundNames(listSizeThreshold, scoreThreshold, dbName,
-					username, password);
+			output = CleanScoredEntities.cleanCompoundNames(listSizeThreshold, scoreThreshold);
 			output.put("success", true);
 			adminLog("clean entity 'Compound Names' with listSizeThreshold=" + listSizeThreshold
 					+ " and scoreThreshold=" + scoreThreshold);
@@ -142,19 +113,15 @@ public class MaintenanceController {
 	}
 
 	@RequestMapping(value = "/clean-entities-metadata", method = RequestMethod.POST)
-	public @ResponseBody Object cleanIsolatedMetadataEntities(HttpServletRequest request,
-			HttpServletResponse response, Locale locale) throws IOException {
+	public @ResponseBody Object cleanIsolatedMetadataEntities(HttpServletRequest request, HttpServletResponse response,
+			Locale locale) throws IOException {
 		response.setHeader("Cache-Control", "max-age=0");
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// use API service like a boss
 		Map<String, Object> output = new HashMap<String, Object>();
 		try {
-			output = CleanIsolatedEntities.cleanMetadataStats(dbName, username, password);
+			output = CleanIsolatedEntities.cleanMetadataStats();
 			output.put("success", true);
 			adminLog("clean entities 'Metadata' isolated");
 		} catch (Exception e) {
@@ -165,17 +132,11 @@ public class MaintenanceController {
 		return output;
 	}
 
-	@RequestMapping(value = "/clean-entities-curation-message", method = RequestMethod.POST, params = {
-			"status", "date" })
-	public @ResponseBody Object cleanCurationMessageEntities(HttpServletRequest request,
-			HttpServletResponse response, Locale locale, @RequestParam("status") int status,
-			@RequestParam("date") String date) throws IOException {
+	@RequestMapping(value = "/clean-entities-curation-message", method = RequestMethod.POST, params = { "status",
+			"date" })
+	public @ResponseBody Object cleanCurationMessageEntities(HttpServletRequest request, HttpServletResponse response,
+			Locale locale, @RequestParam("status") int status, @RequestParam("date") String date) throws IOException {
 		response.setHeader("Cache-Control", "max-age=0");
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 
 		Map<String, Object> output = new HashMap<String, Object>();
 		Date olderThan = null;
@@ -190,8 +151,7 @@ public class MaintenanceController {
 
 		// use API service like a boss
 		try {
-			output = CleanCurationMessageEntities.cleanCurationMessages(status, olderThan, dbName, username,
-					password);
+			output = CleanCurationMessageEntities.cleanCurationMessages(status, olderThan);
 			output.put("success", true);
 			adminLog("clean entities 'Curation Message' status =" + status + " & date < " + date);
 		} catch (Exception e) {
@@ -203,14 +163,10 @@ public class MaintenanceController {
 	}
 
 	@RequestMapping(value = "/chemical-libary-xls-download", method = RequestMethod.POST)
-	public @ResponseBody Object XlsExport(HttpServletRequest request, HttpServletResponse response,
-			Locale locale) throws IOException {
+	public @ResponseBody Object XlsExport(HttpServletRequest request, HttpServletResponse response, Locale locale)
+			throws IOException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		try {
 			// creation of the directory containing the uploaded files
 			String clientSessionId = ProcessProgressManager.XLS_EXPORT_CHEMICAL_LIB_TOTAL_LABEL
@@ -219,16 +175,16 @@ public class MaintenanceController {
 			// put to 0% the process progression
 			ProcessProgressManager.getInstance().updateProcessProgress(clientSessionId, 0);
 
-			String folderPath = Utils.getBundleConfElement("generatedFiles.prefix") + File.separator
-					+ Utils.getBundleConfElement("generatedFiles.folder") + File.separator
-					+ Utils.getBundleConfElement("generatedXlsExport.folder");
+			String folderPath = PeakForestUtils.getBundleConfElement("generatedFiles.prefix") + File.separator
+					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + File.separator
+					+ PeakForestUtils.getBundleConfElement("generatedXlsExport.folder");
 			if (!new File(folderPath).exists())
 				new File(folderPath).mkdirs();
 
 			// file to create
 			String newFileName = "peakforest-chemical-lib-" + System.currentTimeMillis() + ".xls";
-			String newFilePath = folderPath + File.separator + "peakforest-chemical-lib-"
-					+ System.currentTimeMillis() + ".xls";
+			String newFilePath = folderPath + File.separator + "peakforest-chemical-lib-" + System.currentTimeMillis()
+					+ ".xls";
 
 			// handed 9080 or other port
 			String port = request.getServerPort() + "";
@@ -240,24 +196,25 @@ public class MaintenanceController {
 
 			// url
 			String xlsFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
-					+ Utils.getBundleConfElement("generatedFiles.folder") + "/"
-					+ Utils.getBundleConfElement("generatedXlsExport.folder") + "/" + newFileName;
+					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
+					+ PeakForestUtils.getBundleConfElement("generatedXlsExport.folder") + "/" + newFileName;
 
 			// // target folder does not exist: fatal error
 			// if (!new File(folderPath).exists()) {
-			// System.err.println("folder " + Utils.getBundleConfElement("generatedFiles.prefix")
+			// System.err.println("folder " +
+			// Utils.getBundleConfElement("generatedFiles.prefix")
 			// + " not found, export is impossible");
 			// ProcessProgressManager.getInstance().removeProcessProgress(clientSessionId);
 			// // errorMessageManager.setResponseStatusAsInternalError(response);
-			// return messageSource.getMessage("xlsExport.absentPrefixFolder", null, locale) + " "
+			// return messageSource.getMessage("xlsExport.absentPrefixFolder", null, locale)
+			// + " "
 			// + folderPath;
 			// }
 
 			// create file
 			File xlsFile = null;
 			try {
-				xlsFile = ExportService.exportFullChemicalLibrary(newFilePath, clientSessionId, dbName,
-						username, password);
+				xlsFile = ExportService.exportFullChemicalLibrary(newFilePath, clientSessionId);
 
 			} catch (PeakForestManagerException e) {
 				ProcessProgressManager.getInstance().removeProcessProgress(clientSessionId);
@@ -283,34 +240,29 @@ public class MaintenanceController {
 			Locale locale) throws IOException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 
 		String appRoot = request.getSession().getServletContext().getRealPath("/");
-		String templateFileDir = appRoot + Utils.getBundleConfElement("spectralDataXlsmTemplate.folder");
-		String templateFileName = Utils.getBundleConfElement("spectralDataXlsmTemplate.file");
+		String templateFileDir = appRoot + PeakForestUtils.getBundleConfElement("spectralDataXlsmTemplate.folder");
+		String templateFileName = PeakForestUtils.getBundleConfElement("spectralDataXlsmTemplate.file");
 		File templateFile = new File(templateFileDir + File.separator + templateFileName);
 
 		try {
 			// creation of the directory containing the uploaded files
-			String clientSessionId = ProcessProgressManager.ZIP_DUMP_SPECTRAL_BASE
-					+ request.getSession().getId();
+			String clientSessionId = ProcessProgressManager.ZIP_DUMP_SPECTRAL_BASE + request.getSession().getId();
 
 			// put to 0% the process progression
 			ProcessProgressManager.getInstance().updateProcessProgress(clientSessionId, 0);
 
-			String folderPath = Utils.getBundleConfElement("generatedFiles.prefix") + File.separator
-					+ Utils.getBundleConfElement("generatedFiles.folder") + File.separator
-					+ Utils.getBundleConfElement("generatedZipExport.folder");
+			String folderPath = PeakForestUtils.getBundleConfElement("generatedFiles.prefix") + File.separator
+					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + File.separator
+					+ PeakForestUtils.getBundleConfElement("generatedZipExport.folder");
 			if (!new File(folderPath).exists())
 				new File(folderPath).mkdirs();
 
 			// file to create
-			String newFileName = "peakforest-spectral-lib-" + System.currentTimeMillis() + "."
-					+ IOUtils.ZIP_EXT;
-			String newFilePath = folderPath + File.separator + "peakforest-spectral-lib-"
-					+ System.currentTimeMillis() + "." + IOUtils.ZIP_EXT;
+			String newFileName = "peakforest-spectral-lib-" + System.currentTimeMillis() + "." + IOUtils.ZIP_EXT;
+			String newFilePath = folderPath + File.separator + "peakforest-spectral-lib-" + System.currentTimeMillis()
+					+ "." + IOUtils.ZIP_EXT;
 
 			// handed 9080 or other port
 			String port = request.getServerPort() + "";
@@ -322,16 +274,18 @@ public class MaintenanceController {
 
 			// url
 			String zipFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
-					+ Utils.getBundleConfElement("generatedFiles.folder") + "/"
-					+ Utils.getBundleConfElement("generatedZipExport.folder") + "/" + newFileName;
+					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
+					+ PeakForestUtils.getBundleConfElement("generatedZipExport.folder") + "/" + newFileName;
 
 			// // target folder does not exist: fatal error
 			// if (!new File(folderPath).exists()) {
-			// System.err.println("folder " + Utils.getBundleConfElement("generatedFiles.prefix")
+			// System.err.println("folder " +
+			// PeakForestUtils.getBundleConfElement("generatedFiles.prefix")
 			// + " not found, export is impossible");
 			// ProcessProgressManager.getInstance().removeProcessProgress(clientSessionId);
 			// // errorMessageManager.setResponseStatusAsInternalError(response);
-			// return messageSource.getMessage("xlsExport.absentPrefixFolder", null, locale) + " "
+			// return messageSource.getMessage("xlsExport.absentPrefixFolder", null, locale)
+			// + " "
 			// + folderPath;
 			// }
 
@@ -339,8 +293,7 @@ public class MaintenanceController {
 			// File xlsFile = null;
 
 			Map<String, Object> exportResults = fr.metabohub.peakforest.services.spectrum.ExportService
-					.exportAll(templateFile.getAbsolutePath(), newFilePath, clientSessionId, dbName, username,
-							password);
+					.exportAll(templateFile.getAbsolutePath(), newFilePath, clientSessionId);
 
 			exportResults.put("href", zipFileUrl);
 
@@ -361,8 +314,8 @@ public class MaintenanceController {
 	}
 
 	@RequestMapping(value = "/processProgressionSpectralExportXLSM", method = RequestMethod.POST)
-	public @ResponseBody Integer getProcessProgression(HttpServletRequest request,
-			HttpServletResponse response, Locale locale) throws IOException {
+	public @ResponseBody Integer getProcessProgression(HttpServletRequest request, HttpServletResponse response,
+			Locale locale) throws IOException {
 		Integer progression = new Integer(-1);
 
 		String clientSessionId = ProcessProgressManager.ZIP_DUMP_SPECTRAL_BASE + request.getSession().getId();
@@ -380,9 +333,7 @@ public class MaintenanceController {
 
 	// ////////////////////////////////////////////////////////////////////////
 	// log => use it if when clean file
-	/**
-	 * @param logMessage
-	 */
+
 	private void adminLog(String logMessage) {
 		String username = "?";
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {

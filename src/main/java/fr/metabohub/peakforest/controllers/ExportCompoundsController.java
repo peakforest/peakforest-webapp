@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import fr.metabohub.peakforest.services.compound.ExportService;
 import fr.metabohub.peakforest.services.ProcessProgressManager;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 
 /**
  * @author Nils Paulhe
@@ -39,42 +39,26 @@ public class ExportCompoundsController {
 	// @Autowired
 	// private ErrorMessageManager errorMessageManager;
 
-	/**
-	 * chemical library: exports all lines with errors in a XLS file
-	 * 
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param fileSource
-	 *            name of the tmp file uploaded by the user
-	 * @param listRowFailed
-	 *            list of row with errors
-	 * @return the download file URL or an error message
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/chemical-libary-xls-errors", method = RequestMethod.POST)
-	public @ResponseBody Object XlsExport(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @RequestParam(value = "fileSource") String fileSource,
+	public @ResponseBody Object XlsExport(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@RequestParam(value = "fileSource") String fileSource,
 			@RequestParam(value = "listRowFailed") String listRowFailed) throws IOException {
-
 		// string to list
 		List<Integer> clientData = new ArrayList<Integer>();
 		listRowFailed = listRowFailed.replaceAll("\\[", "").replaceAll("\\]", "");
 		for (String id : listRowFailed.split(", ")) {
 			clientData.add(Integer.parseInt(id));
 		}
-
 		try {
 			// creation of the directory containing the uploaded files
 			String clientSessionId = ProcessProgressManager.XLS_EXPORT_CHEMICAL_LIB_FAILED_LABEL
 					+ request.getSession().getId();
-
 			// put to 0% the process progression
 			ProcessProgressManager.getInstance().updateProcessProgress(clientSessionId, 0);
 
-			String folderPath = Utils.getBundleConfElement("generatedFiles.prefix") + File.separator
-					+ Utils.getBundleConfElement("generatedFiles.folder") + File.separator
-					+ Utils.getBundleConfElement("generatedXlsExport.folder");
+			String folderPath = PeakForestUtils.getBundleConfElement("generatedFiles.prefix") + File.separator
+					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + File.separator
+					+ PeakForestUtils.getBundleConfElement("generatedXlsExport.folder");
 			if (!new File(folderPath).exists())
 				new File(folderPath).mkdirs();
 
@@ -83,7 +67,7 @@ public class ExportCompoundsController {
 			String newFilePath = folderPath + File.separator + fileSource;
 
 			// uploaded file
-			String fileSourcePath = Utils.getBundleConfElement("uploadedFiles.folder") + File.separator
+			String fileSourcePath = PeakForestUtils.getBundleConfElement("uploadedFiles.folder") + File.separator
 					+ fileSource;
 			File userUploadedFile = new File(fileSourcePath);
 
@@ -97,16 +81,18 @@ public class ExportCompoundsController {
 
 			// url
 			String xlsFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
-					+ Utils.getBundleConfElement("generatedFiles.folder") + "/"
-					+ Utils.getBundleConfElement("generatedXlsExport.folder") + "/" + newFileName;
+					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
+					+ PeakForestUtils.getBundleConfElement("generatedXlsExport.folder") + "/" + newFileName;
 
 			// // target folder does not exist: fatal error
 			// if (!new File(folderPath).exists()) {
-			// System.err.println("folder " + Utils.getBundleConfElement("generatedFiles.prefix")
+			// System.err.println("folder " +
+			// Utils.getBundleConfElement("generatedFiles.prefix")
 			// + " not found, export is impossible");
 			// ProcessProgressManager.getInstance().removeProcessProgress(clientSessionId);
 			// // errorMessageManager.setResponseStatusAsInternalError(response);
-			// return messageSource.getMessage("xlsExport.absentPrefixFolder", null, locale) + " "
+			// return messageSource.getMessage("xlsExport.absentPrefixFolder", null, locale)
+			// + " "
 			// + folderPath;
 			// }
 
@@ -124,14 +110,13 @@ public class ExportCompoundsController {
 
 			if (xlsFile != null && xlsFile.exists())
 				return xlsFileUrl;
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			// errorMessageManager.setResponseStatusAsInternalError(response);
 			return "ERROR";// messageSource.getMessage("chemicalLibXlsErrorExport.genericError", null,
 							// locale);
 		}
-
+		// return
 		return null;
 	}
 

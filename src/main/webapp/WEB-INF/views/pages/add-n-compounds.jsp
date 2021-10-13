@@ -2,7 +2,6 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page session="false"%>
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
 <%@page import="fr.metabohub.peakforest.services.ProcessProgressManager" %>
 
 <form id="fileUploadForm" action="upload-compound-file" method="POST" enctype="multipart/form-data" class="cleanform" onsubmit="return checkUploadChemLibForm()">

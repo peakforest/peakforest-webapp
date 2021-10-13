@@ -5,6 +5,7 @@ var filterCpd = 0;
 var filterNMR = [];
 var filterLCMS = [];
 var filterLCMSMS = [];
+var isCountMaxResults = false;
 checkIfReOpenDetailsModal = function() {
 	if (reopenDetailsModal) {
 		$('#modalShowCompound').modal('show');
@@ -118,107 +119,7 @@ function loadSearchResults() {
 		return;
 	}
 	var searchRequest = "query=" + rawSearchRequestQuery; 
-	if (rawSearchRequestQuery.startsWith('"') && rawSearchRequestQuery.endsWith('"')) {
-		searchRequest = "query=" + $.trim((rawSearchRequestQuery).replace(/"/g,''));
-	} else if (rawSearchRequestQuery.indexOf(":") > -1) {
-		var cleanQuery = "";
-		var qFilterEntity = null;
-		var qFilterType = -1;
-		var qFilterVal = "";
-		var qFilterVal2 = "";
-		var qFilterVal3 = "";
-		var rawQueryTab = rawSearchRequestQuery.split(" ");
-		var specialQuery = false;
-		$.each(rawQueryTab, function(k, v) {
-			if (v != "") {
-				var res = v.split(":");
-				if (res != null && res.length == 2) {
-					var filterType = res[0];
-					var filterVal = res[1];
-					switch (filterType) {
-					case "AVM":
-						var massData = filterVal.split("d");
-						var mass = massData[0];
-						var tol = massData[1];
-						qFilterEntity = "compounds";
-						qFilerType = Utils_SEARCH_COMPOUND_AVERAGE_MASS
-						qFilterVal = mass;
-						qFilterVal2 = tol;
-						specialQuery = true;
-						break;
-					case "MIM":
-						var massData = filterVal.split("d");
-						var mass = massData[0];
-						var tol = massData[1];
-						qFilterEntity = "compounds";
-						qFilerType = Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS
-						qFilterVal = mass;
-						qFilterVal2 = tol;
-						specialQuery = true;
-						break;
-					case "mode":
-						qFilterVal3 = filterVal;
-						qFilterEntity = "compounds";
-//						specialQuery = true;
-						break;
-					case "FOR":
-						qFilterEntity = "compounds";
-						qFilerType = Utils_SEARCH_COMPOUND_FORMULA
-						qFilterVal = filterVal;
-						qFilterVal2 = "";
-						specialQuery = true;
-						break;
-					case "NMR":
-						qFilterEntity = "nmr-spectra";
-						var jsonData = JSON.parse(filterVal.replace(/=/g, ':'));
-						cleanQuery = jsonData.pl;
-						qFilerType = -1;
-						qFilterVal = jsonData.d;
-						qFilterVal2 = jsonData.mm + '-' +jsonData.pH;
-						break;
-					case "LC-MS":
-					case "LCMS":
-						qFilterEntity = "lcms-spectra";
-						var jsonData = JSON.parse(filterVal.replace(/=/g, ':'));
-						cleanQuery = jsonData.pl + ';' +jsonData.rtl+';'+ jsonData.col;
-						qFilerType = -1;
-						qFilterVal = jsonData.pol + ';' + jsonData.res + ';' + jsonData.algo;
-						qFilterVal2 = jsonData.dM + ';' +jsonData.dT;
-						break;
-					case "LC-MSMS":
-					case "LCMSMS":
-						qFilterEntity = "lcmsms-spectra";
-						var jsonData = JSON.parse(filterVal.replace(/=/g, ':'));
-						//JSON.stringify(lcmsmsPeakList)
-						cleanQuery = JSON.stringify(jsonData.pl) ;
-						qFilerType = -1;
-						qFilterVal = jsonData.pol + ';' + jsonData.res + ';';
-						qFilterVal2 = jsonData.P + ';' +jsonData.dP + ';' +jsonData.dPL;
-						if(jsonData.hasOwnProperty('dmz')) {
-							qFilterVal2 += ''+jsonData.dmz+';'+jsonData.intexp+';'+jsonData.mzexp+';';     
-						}
-						break;
-					default:
-						qFilerEntity = "compounds";
-						qFilerType = -1
-						break;
-					}//switch
-				} else {
-					cleanQuery += v + " ";
-				}
-			}
-			//console.log(v);
-		});
-		if ($.trim(cleanQuery) == "" && !specialQuery)
-			searchRequest = "query=" + $.trim(rawSearchRequestQuery);
-		else {
-			try {
-				searchRequest = "query=" + $.trim(cleanQuery) + "&filterEntity="+ qFilterEntity + "&filerType="+ qFilerType + "&filterVal=" + qFilterVal + "&filterVal2=" + qFilterVal2 + "&filterVal3=" + qFilterVal3 ;
-			} catch(e) {
-				searchRequest = "query=" + $.trim(rawSearchRequestQuery) ;
-			}
-		}
-	}
+	searchRequest = getSearchRequestFormated(searchRequest, rawSearchRequestQuery);
 	if ($.isEmptyObject(compoundsData) && $.isEmptyObject(spectrumData) && $.isEmptyObject(metadataData)) { // ||
 		var compoundsDataTmp = [];
 		var spectraDataTmp = [];
@@ -229,13 +130,13 @@ function loadSearchResults() {
 			async: isMainQueryAnsync,
 			data: searchRequest,
 			success: function(json) {
-				if (json.success) {
+				if (json.success ) { // || json.hasOwnProperty('nmrCandidates')
 					var compoundCount = 0;
 					var spectrumCount = 0;
 					var metadataCound = 0;
 					// names
 					var unicNameDisplay = [];
-					if(json.hasOwnProperty('compoundNames'))
+					if (json.hasOwnProperty('compoundNames'))
 						$.each(json.compoundNames, function() {
 							//console.log(this);
 							try {
@@ -277,7 +178,7 @@ function loadSearchResults() {
 						}); 
 					//
 					//try {
-					if(json.hasOwnProperty('compounds'))
+					if (json.hasOwnProperty('compounds'))
 						$.each(json.compounds, function() {
 // 							results.push(this.name);
 							var nameBestScore = this.mainName;
@@ -319,14 +220,14 @@ function loadSearchResults() {
 								compoundCount++;
 						});
 					
-					if(json.hasOwnProperty('nmrCandidates')) {
+					if (json.hasOwnProperty('nmrCandidates')) {
 						var nmrSpectraMap = {};
 						$.each(json.nmrSpectra, function() {
 							nmrSpectraMap[this.id] = this;
-						}); console.log(nmrSpectraMap)
+						}); //console.log(nmrSpectraMap)
 						$.each(json.nmrCandidates, function() {
 							var key = this.key;
-							key = Number(key.replace("pf:","")); console.log(key)
+							key = Number(key.replace("pf:","")); //console.log(key)
 							var rawSpectra = nmrSpectraMap[key];
 							if (rawSpectra !== undefined) {
 								var spectraImg = "nmr-light";
@@ -421,11 +322,14 @@ function loadSearchResults() {
 					
 					if(json.hasOwnProperty('lcmsSpectra') || json.hasOwnProperty('lcmsmsSpectra')) {
 						var arrayMSspectra = [];
+						// concat
 						if (json.hasOwnProperty('lcmsSpectra')) {
-							arrayMSspectra = json.lcmsSpectra;
-						} else {
-							arrayMSspectra = json.lcmsmsSpectra;
+							arrayMSspectra = arrayMSspectra.concat(json.lcmsSpectra);
 						} 
+						if (json.hasOwnProperty('lcmsmsSpectra')) {
+							arrayMSspectra = arrayMSspectra.concat(json.lcmsmsSpectra);
+						} 
+						// add img
 						$.each(arrayMSspectra, function() {
 							containsLCMSspectra = true;
 							var rawSpectra = this;
@@ -470,7 +374,8 @@ function loadSearchResults() {
 						});
 					}
 					
-					if (containsNMRspectra && containsLCMSspectra)
+					// sort
+					if (containsNMRspectra || containsLCMSspectra)
 						spectraDataTmp.sort(function(a, b) { 
 						    return b.score - a.score;
 						});
@@ -649,6 +554,7 @@ function filterSearchResults(startPoint, numberTotalResults) {
 	// end
 	if (!displayed)
 		displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadataDataDisplay, startPoint, numberTotalResults);		
+	
 	return true;
 };
 
@@ -843,6 +749,11 @@ function displaySearchResults(compoundsDataDisplay, spectrumDataDisplay, metadat
 //				$("#modalShowCompound .modal-dialog ").load(target, function() { $("#modalShowCompound").modal("show"); });
 //			});
 	firstLoadTabData = false;
+	
+	// new 2.0.1: load nb results
+	if (!isCountMaxResults)
+		countMaxResults()
+	
 	return true;
 }
 
@@ -852,12 +763,27 @@ $("#searchButton").click(function() {
 		$("#searchForm").submit();
 	}
 });
+var autoCompleteLoadingPanelTimeout ;
+function showAutocompleteLoadingPanel(bool) {
+	if (bool) {
+		clearTimeout(autoCompleteLoadingPanelTimeout);
+		autoCompleteLoadingPanelTimeout = setTimeout(function() {
+			$('#autoCompleteLoadingPanel').css('display', "block");
+		},500);
+	}
+	else {
+		clearTimeout(autoCompleteLoadingPanelTimeout);
+		$('#autoCompleteLoadingPanel').css('display', "none");
+	}
+}
 // autocomplete
 var subjects = [];
 //	$('#search').typeahead({source: subjects});
 $('#search').typeahead({
+	dynamic: true,
+	delay: 0,
 	source: function (query, process) {
-        return searchAjax();
+		return searchAjax(process);
     }
 });
 //  bind keys
@@ -882,16 +808,17 @@ $('#search').bind('keypress', function(e) {
 	
 }).focus();
 
-searchAjax = function () {
+searchAjax = function (callbackProcess) {
 	var results = [];
 	var rawQuery = ($('#search').val()).trim();
 	results.push(rawQuery);
 	if (rawQuery.length > 2) {
+		showAutocompleteLoadingPanel(true);
 		$.ajax({ 
 				type: "post",
 				url: "search",
 				dataType: "json",
-				async: false,
+				async: true,
 				data: "query=" + ($('#search').val()).trim() + "&quick=true",
 				success: function(json) {
 					if (json.success) {
@@ -912,17 +839,23 @@ searchAjax = function () {
 //							if($.inArray(spectraAutoComplet, results) === -1) results.push(spectraAutoComplet);
 					}
 //					console.log(json);
+					if (results.length==1)
+						results = new Array();
+					
+					callbackProcess(results);
+					showAutocompleteLoadingPanel(false);
 			},
 			error : function(xhr) {
 				subjects = [];
 				// TODO alert error xhr.responseText
 				console.log(xhr);
+
+				results = new Array();
+				callbackProcess(results);
+				showAutocompleteLoadingPanel(false);
 			}
 		});
 	}
-	if (results.length==1)
-		return (new Array());
-	return results;
 };
 
 matchingSpectraKeywords = function (rawQwery, results) {
@@ -1326,4 +1259,132 @@ function showSpectraScoreZero(tbody) {
 	$("#searchPagination").show();
 	$("#lineBtnShowMore").remove();
 	$("#"+tbody+" tr").show();
+}
+
+// 
+function countMaxResults() {
+	var searchRequest = "query=" + rawSearchRequestQuery; 
+	var rawSearchRequestQuery = $.trim($('#'+divSearch).val());
+	var searchRequest = getSearchRequestFormated(searchRequest, rawSearchRequestQuery);
+	searchRequest = "query=" + rawSearchRequestQuery;
+	$.ajax({ 
+		type: "post",
+		url: "search-count",
+		dataType: "json",
+		async: true,
+		data: searchRequest,
+		success: function(json) {
+			$("#searchExtraInfo").html(json + " relevant results." );
+		},
+		error : function(xhr) {
+			console.log(xhr);
+		}
+	});
+	isCountMaxResults = true;
+	return;
+}
+
+function getSearchRequestFormated(searchRequest, rawSearchRequestQuery) {
+	if (rawSearchRequestQuery.startsWith('"') && rawSearchRequestQuery.endsWith('"')) {
+		searchRequest = "query=" + $.trim((rawSearchRequestQuery).replace(/"/g,''));
+	} else if (rawSearchRequestQuery.indexOf(":") > -1) {
+		var cleanQuery = "";
+		var qFilterEntity = null;
+		var qFilterType = -1;
+		var qFilterVal = "";
+		var qFilterVal2 = "";
+		var qFilterVal3 = "";
+		var rawQueryTab = rawSearchRequestQuery.split(" ");
+		var specialQuery = false;
+		$.each(rawQueryTab, function(k, v) {
+			if (v != "") {
+				var res = v.split(":");
+				if (res != null && res.length == 2) {
+					var filterType = res[0];
+					var filterVal = res[1];
+					switch (filterType) {
+					case "AVM":
+						var massData = filterVal.split("d");
+						var mass = massData[0];
+						var tol = massData[1];
+						qFilterEntity = "compounds";
+						qFilterType = Utils_SEARCH_COMPOUND_AVERAGE_MASS
+						qFilterVal = mass;
+						qFilterVal2 = tol;
+						specialQuery = true;
+						break;
+					case "MIM":
+						var massData = filterVal.split("d");
+						var mass = massData[0];
+						var tol = massData[1];
+						qFilterEntity = "compounds";
+						qFilterType = Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS
+						qFilterVal = mass;
+						qFilterVal2 = tol;
+						specialQuery = true;
+						break;
+					case "mode":
+						qFilterVal3 = filterVal;
+						qFilterEntity = "compounds";
+//						specialQuery = true;
+						break;
+					case "FOR":
+						qFilterEntity = "compounds";
+						qFilterType = Utils_SEARCH_COMPOUND_FORMULA
+						qFilterVal = filterVal;
+						qFilterVal2 = "";
+						specialQuery = true;
+						break;
+					case "NMR":
+						qFilterEntity = "nmr-spectra";
+						var jsonData = JSON.parse(filterVal.replace(/=/g, ':'));
+						cleanQuery = jsonData.pl;
+						qFilterType = -1;
+						qFilterVal = jsonData.d;
+						qFilterVal2 = jsonData.mm + '-' +jsonData.pH;
+						break;
+					case "LC-MS":
+					case "LCMS":
+						qFilterEntity = "lcms-spectra";
+						var jsonData = JSON.parse(filterVal.replace(/=/g, ':'));
+						cleanQuery = jsonData.pl + ';' +jsonData.rtl+';'+ jsonData.col;
+						qFilterType = -1;
+						qFilterVal = jsonData.pol + ';' + jsonData.res + ';' + jsonData.algo;
+						qFilterVal2 = jsonData.dM + ';' +jsonData.dT;
+						break;
+					case "LC-MSMS":
+					case "LCMSMS":
+						qFilterEntity = "lcmsms-spectra";
+						var jsonData = JSON.parse(filterVal.replace(/=/g, ':'));
+						//JSON.stringify(lcmsmsPeakList)
+						cleanQuery = JSON.stringify(jsonData.pl) ;
+						qFilterType = -1;
+						qFilterVal = jsonData.pol + ';' + jsonData.res + ';';
+						qFilterVal2 = jsonData.P + ';' +jsonData.dP + ';' +jsonData.dPL;
+						if(jsonData.hasOwnProperty('dmz')) {
+							qFilterVal2 += ''+jsonData.dmz+';'+jsonData.intexp+';'+jsonData.mzexp+';';     
+						}
+						break;
+					default:
+						qFilerEntity = "compounds";
+						qFilterType = -1
+						break;
+					}//switch
+				} else {
+					cleanQuery += v + " ";
+				}
+			}
+			//console.log(v);
+		});
+		if ($.trim(cleanQuery) == "" && !specialQuery)
+			searchRequest = "query=" + $.trim(rawSearchRequestQuery);
+		else {
+			try {
+				searchRequest = "query=" + $.trim(cleanQuery) + "&filterEntity="+ qFilterEntity + "&filerType="+ qFilterType + "&filterVal=" + qFilterVal + "&filterVal2=" + qFilterVal2 + "&filterVal3=" + qFilterVal3 ;
+			} catch(e) {
+				searchRequest = "query=" + $.trim(rawSearchRequestQuery) ;
+			}
+		}
+	}
+	return searchRequest;
 }

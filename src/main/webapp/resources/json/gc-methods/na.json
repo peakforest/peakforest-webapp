@@ -1,0 +1,58 @@
+{
+	"dumper_type": "gc-ms",
+	"gc_chromatography" : {
+		"method": "NA",
+		"column_constructor": "",
+		"column_name": "",
+		"column_length": null,
+		"column_diameter": null,
+		"particule_size": null,
+		"injection_volume": null,
+		"injection_mode": null,
+		"split_ratio": null,
+		"carrier_gas": null,
+		"gas_flow": null,
+		"gas_opt": null,
+		"gas_pressure": null,
+		"GC_mode": null,
+		"liner_manufacturer": null,
+		"liner_type": null,
+		"separation_temperature_programme" : null
+	},
+	"gcms_analyzer" : {
+		"ion_analyzer_type": "",
+		"brand": ""
+	},
+	"molecule_ionization" : {
+		"mode_pos": {
+			"ionisation_method": null,
+			"electron_energy": null,
+			"emission_current": null,
+			"source_temperature": null,
+			"ionization_gas": null,
+			"ionization_gas_flow": null,
+			"gc_interface_temperature": null,
+			"repeller": null,
+			"extractor": null,
+			"ion_focus": null
+		},
+		"mode_neg": {
+			"ionisation_method": null,
+			"electron_energy": null,
+			"emission_current": null,
+			"source_temperature": null,
+			"ionization_gas": null,
+			"ionization_gas_flow": null,
+			"gc_interface_temperature": null,
+			"repeller": null,
+			"extractor": null,
+			"ion_focus": null
+		}
+	},
+	"other": {
+		"data_authors": "",
+		"data_validator": "",
+		"acquisition_date": "",
+		"data_ownership": ""
+	}
+}

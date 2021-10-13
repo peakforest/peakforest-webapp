@@ -130,15 +130,17 @@ int randomID = randomGenerator.nextInt(1000000);
 		 } 
 	};
 	///////////////////
-	//     var glmol<%=randomID %> = new GLmol('glmol<%=randomID %>');
-	var glmol<%=randomID %>;
-	setTimeout(function() {
+
+	var glmol<%=randomID %> = '';
+	initLoadGLmol1 = function() {
+		if (glmol<%=randomID %> !== '') { return false; }
 		try {
 			glmol<%=randomID %> = new GLmol('glmol<%=randomID %>');
 			setTimeout(function(){reload<%=randomID %>()},1000);
 		} catch (e) {
 		}
-	}, 150);
+		return true;
+	};
 	//]]>
 </script>
 </c:if>
@@ -309,7 +311,7 @@ int randomID = randomGenerator.nextInt(1000000);
 														</a>
 													</li>
 													<li>
-														<a href="#showMol-3D-modal" data-toggle="tab">
+														<a href="#showMol-3D-modal" data-toggle="tab" onclick="initLoadGLmol1();">
 															<i class="fa fa-cube"></i> 3D
 														</a>
 													</li>
@@ -566,6 +568,16 @@ ${mol}</textarea>
 														<td>
 															<c:forEach var="kegg" items="${keggs}">
 																<a href="<spring:message code="resources.banklink.kegg" text="http://www.genome.jp/dbget-bin/www_bget?cpd:" />${kegg}" target="_blank">${kegg}</a>
+															</c:forEach>
+														</td>
+													</tr>
+													</c:if>
+													<c:if test="${not empty networks}">
+													<tr>
+														<td><spring:message code="modal.show.inOtherDatabases.networkIds" text="Networks IDs" /></td>
+														<td>
+															<c:forEach var="network" items="${networks}">
+																${network}
 															</c:forEach>
 														</td>
 													</tr>

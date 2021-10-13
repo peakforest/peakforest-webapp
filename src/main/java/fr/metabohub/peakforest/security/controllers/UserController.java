@@ -21,15 +21,6 @@ import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 @Secured("ROLE_USER")
 public class UserController {
 
-	// @Autowired
-	// private EmailManager emailManager;
-
-	// update profile
-	// update password
-
-	/**
-	 * @return
-	 */
 	@RequestMapping(value = "/update-settings", method = RequestMethod.POST, params = { "password" })
 	@ResponseBody
 	public boolean updateSettings(@RequestParam("password") String userPassword,
@@ -42,11 +33,9 @@ public class UserController {
 			}
 			if (!user.getLogin().contains("@"))
 				userPassword = null;
-
 			// database
 			UserManagementService.update(user.getId(), user.getLogin(), user.getEmail(), userPassword,
 					userMainTechnology);
-
 			// update gui
 			((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
 					.setMainTechnology(userMainTechnology);
@@ -56,14 +45,13 @@ public class UserController {
 					SpectralDatabaseLogger.LOG_WARNING);
 
 			// update pref
-
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
+
 	@RequestMapping(value = "/renew-token", method = RequestMethod.POST)
 	@ResponseBody
 	public String renewToken() {
@@ -73,20 +61,14 @@ public class UserController {
 				user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 				user.setPassword(null);
 			}
-
 			// database
 			String token = UserManagementService.renewToken(user.getId());
-
 			// update gui
-			((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-					.setToken(token);
-
+			((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).setToken(token);
 			// log
 			SpectralDatabaseLogger.log("user '" + user.getLogin() + "'changed his token",
 					SpectralDatabaseLogger.LOG_INFO);
-
 			// update pref
-
 			return token;
 		} catch (Exception e) {
 			e.printStackTrace();

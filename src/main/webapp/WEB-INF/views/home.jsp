@@ -35,7 +35,7 @@ if (request.getParameter("cpd")!=null) {
 <c:if test="${not ranking_data}">
 <title><spring:message code="home.title" text="PeakForest" /></title>
 <meta name="keywords" content="spectral database, mass spectrometry, nmr, lc-ms, gc-ms, chemical, metabolomic, compound, library">
-<meta name="description" content="PeakForest is the MetaboHUB's Spectral Database. It provides storage and annotation services for metabolic profils of biological matrix. It relies on the wide range of complementary methods using UPLC-(API)HRMS, GC-QToF, and NMR.">
+<meta name="description" content="PeakForest is a spectral data portal for Metabolomics community. It provides storage and annotation services for metabolic profils of biological matrix. It relies on the wide range of complementary methods using UPLC-(API)HRMS, GC-QToF, and NMR.">
 </c:if>
 <c:if test="${ranking_data}">
 <title>${page_title}</title>
@@ -143,8 +143,6 @@ if (request.getParameter("cpd")!=null) {
 			%><jsp:include page="pages/stats.jsp" /><%
 		} else if (request.getParameter("page").equalsIgnoreCase("tools")) {
 			%><jsp:include page="pages/tools.jsp" /><%
-		} else if (request.getParameter("page").equalsIgnoreCase("my-peakforest-more")) {
-			%><jsp:include page="pages/my-peakforest-more.jsp" /><%
 		} else if (request.getParameter("page").equalsIgnoreCase("template")) {
 			%><jsp:include page="pages/template.jsp" /><%
 		} else if (request.getParameter("page").equalsIgnoreCase("peakmatching")) {

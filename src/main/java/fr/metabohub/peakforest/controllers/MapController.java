@@ -13,18 +13,9 @@ import fr.metabohub.peakforest.model.maps.MapEntity;
 import fr.metabohub.peakforest.services.maps.MapManagerManagementService;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
 
-/**
- * @author Nils Paulhe
- * 
- */
 @Controller
 public class MapController {
 
-	/**
-	 * @param idSource
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/get-map/{idSource}", method = RequestMethod.GET)
 	public @ResponseBody Object mapList(@PathVariable short idSource) throws PeakForestManagerException {
 

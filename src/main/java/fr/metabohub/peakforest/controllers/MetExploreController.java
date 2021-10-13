@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import fr.metabohub.externalbanks.mapper.metexplore.MetExGraph;
+import fr.metabohub.externalbanks.mapper.metexplore.MetExPathway;
 import fr.metabohub.externalbanks.rest.MetExploreClient;
 
 /**
@@ -25,57 +27,76 @@ import fr.metabohub.externalbanks.rest.MetExploreClient;
 public class MetExploreController {
 
 	/**
-	 * Webservice forwarding
+	 * Webservice forwarding fo MetExplore: list pathways
 	 * 
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param model
-	 * @param session
-	 * @param biosourceID
-	 * @return
+	 * @param request     the request
+	 * @param response    the response
+	 * @param locale      the local
+	 * @param model       the model
+	 * @param session     the session
+	 * @param biosourceID the biosource ID
+	 * @param inchikeys   a list of InChIKeys
+	 * @return a logical {@link MetExPathway} object
 	 */
 	@RequestMapping(value = "/get-pathways", method = RequestMethod.GET)
-	public @ResponseBody Object getPathways(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, Model model, HttpSession session, @RequestParam("biosource") Integer biosourceID,
+	public @ResponseBody Object getPathways(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			Model model, HttpSession session, @RequestParam("biosource") Integer biosourceID,
 			@RequestParam("inchikeys") List<String> inchikeys) {
-		// check testa
+		// init
 		if (inchikeys != null && !inchikeys.isEmpty()) {
-			MetExploreClient me = new MetExploreClient(
-					MetExploreClient.METEXPLORE_GET_PATHWAYS_FROM_BIOSOURCE_AND_INCHIKEYS, biosourceID, null,
-					inchikeys, false);
-			return me.getPathways(true);
+			// TODO missing method right now
+			///////////////////////
+			// temporary return all pathways
+			// init
+			final MetExploreClient client = new MetExploreClient();
+			// run
+			final List<MetExPathway> pathways = client.listBiosourcePathways(biosourceID);
+			// return pathways
+			return pathways;
+			///////////////////////
 		} else {
-			MetExploreClient me = new MetExploreClient(
-					MetExploreClient.METEXPLORE_GET_PATHWAYS_FROM_BIOSOURCE, biosourceID, null, false);
-			return me.getPathways(false);
+			// init
+			final MetExploreClient client = new MetExploreClient();
+			// run
+			final List<MetExPathway> pathways = client.listBiosourcePathways(biosourceID);
+			// return pathways
+			return pathways;
 		}
 	}
 
 	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param model
-	 * @param session
-	 * @param id
-	 * @param pathways
-	 * @return
+	 * Webservice forwarding fo MetExplore: get pathway fraph
+	 * 
+	 * @param request   the request
+	 * @param response  the response
+	 * @param locale    the local
+	 * @param model     the model
+	 * @param session   the session
+	 * @param id        the biosource id
+	 * @param pathways  a list of pathways
+	 * @param inchikeys a list of InChIKeys
+	 * @return a logical {@link MetExGraph} object
 	 */
 	@RequestMapping(value = "/get-graph/{id}", method = RequestMethod.GET)
-	public @ResponseBody Object getGraph(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, Model model, HttpSession session, @PathVariable int id,
-			@RequestParam("pathways") List<Integer> pathways,
+	public @ResponseBody Object getGraph(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			Model model, HttpSession session, @PathVariable int id, @RequestParam("pathways") List<Integer> pathways,
 			@RequestParam("inchikeys") List<String> inchikeys) {
 		if (inchikeys != null && !inchikeys.isEmpty()) {
-			MetExploreClient me = new MetExploreClient(
-					MetExploreClient.METEXPLORE_GET_GRAPH_FROM_BIOSOURCE_AND_PATHWAYS_AND_INCHIKEYS, id,
-					pathways, inchikeys, false);
-			return me.getGraph(true);
+			// init
+			final MetExploreClient client = new MetExploreClient();
+			final MetExGraph graph = client.getGraphFromFromBiosourceAndPathwaysAndInChIKeys(id, inchikeys, pathways,
+					Boolean.TRUE);
+			// overwrite
+			graph.setMappingName("PeakForest_MappingInChIKey");
+			graph.setMappingTagetLabel("inchikey");
+			// return
+			return graph;
 		} else {
-			MetExploreClient me = new MetExploreClient(
-					MetExploreClient.METEXPLORE_GET_GRAPH_FROM_BIOSOURCE_AND_PATHWAYS, id, pathways, false);
-			return me.getGraph(false);
+			// init
+			final MetExploreClient client = new MetExploreClient();
+			final MetExGraph graph = client.getGraphFromFromBiosourceAndPathways(id, pathways);
+			// return
+			return graph;
 		}
 	}
 }

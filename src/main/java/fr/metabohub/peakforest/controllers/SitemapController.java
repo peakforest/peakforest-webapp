@@ -23,7 +23,7 @@ import fr.metabohub.peakforest.model.compound.StructureChemicalCompound;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 
 @Controller
 public class SitemapController {
@@ -38,16 +38,11 @@ public class SitemapController {
 		create(xmlUrlSet, "/home?page=peakmatching", XmlUrl.Priority.MEDIUM);
 		create(xmlUrlSet, "/about-peakforest", XmlUrl.Priority.MEDIUM);
 
-		// db connect
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String login = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// for loop to generate all the links by querying against database
 		List<StructureChemicalCompound> listOfStructCC = new ArrayList<StructureChemicalCompound>();
 		try {
-			listOfStructCC.addAll(ChemicalCompoundManagementService.readAll(dbName, login, password));
-			listOfStructCC.addAll(GenericCompoundManagementService.readAll(dbName, login, password));
+			listOfStructCC.addAll(ChemicalCompoundManagementService.readAll());
+			listOfStructCC.addAll(GenericCompoundManagementService.readAll());
 			for (StructureChemicalCompound scc : listOfStructCC)
 				create(xmlUrlSet, "/cpd:" + scc.getInChIKey(), XmlUrl.Priority.MEDIUM);
 		} catch (Exception e) {
@@ -56,8 +51,10 @@ public class SitemapController {
 
 		// List<Spectrum> listOfSpectra = new ArrayList<Spectrum>();
 		// try {
-		// listOfSpectra.addAll(FullScanLCSpectrumManagementService.readAll(dbName, login, password));
-		// listOfSpectra.addAll(NMRSpectrumManagementService.readAll(dbName, login, password));
+		// listOfSpectra.addAll(FullScanLCSpectrumManagementService.readAll(dbName,
+		// login, password));
+		// listOfSpectra.addAll(NMRSpectrumManagementService.readAll(dbName, login,
+		// password));
 		// for (Spectrum scc : listOfSpectra)
 		// create(xmlUrlSet, "/cpd:" + scc.getId(), XmlUrl.Priority.MEDIUM);
 		// } catch (Exception e) {
@@ -66,14 +63,15 @@ public class SitemapController {
 
 		// LOG
 		UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
-		SpectralDatabaseLogger.log(request.getRemoteAddr() + " " + userAgent.getBrowser().getName() + " "
-				+ userAgent.getBrowserVersion(), "SEARCH ENGINE BOT", SpectralDatabaseLogger.LOG_INFO);
+		SpectralDatabaseLogger.log(
+				request.getRemoteAddr() + " " + userAgent.getBrowser().getName() + " " + userAgent.getBrowserVersion(),
+				"SEARCH ENGINE BOT", SpectralDatabaseLogger.LOG_INFO);
 
 		return xmlUrlSet;
 	}
 
 	private void create(XmlUrlSet xmlUrlSet, String link, XmlUrl.Priority priority) {
-		xmlUrlSet.addUrl(new XmlUrl(Utils.getBundleConfElement("peakforest.url") + link, priority));
+		xmlUrlSet.addUrl(new XmlUrl(PeakForestUtils.getBundleConfElement("peakforest.url") + link, priority));
 	}
 
 }

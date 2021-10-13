@@ -6,11 +6,15 @@
 	<div class="navbar-header navbar-inverse footer">
 		<ul id="ul-info-footer" class="nav navbar-nav">
 			<li class="li-info-footer"><a id="linkcontact" href="#"><spring:message code="block.footer.contact" text="Contact" /></a></li>
-			<li class="li-info-footer"><a id="about-peakforest" href="about-peakforest" data-toggle="modal"
-				data-target="#modalAbout"><spring:message code="block.footer.about" text="About" /></a></li>
-			<li class="li-info-footer"><a id="my-peakforest" href="my-peakforest" data-toggle="modal"
-				data-target="#modalMyPeakForest"><spring:message code="block.footer.myPeakforest" text="My PeakForest" /></a></li>
-			<li class="li-info-footer"><a href="<spring:message code="link.site.metabohub" text="http://metabohub.fr" />" target="_blank"><spring:message code="block.footer.metaboHUB" text="metaboHUB" /></a></li>
+			<li class="li-info-footer">
+				<a id="about-peakforest" href="about-peakforest" data-toggle="modal" data-target="#modalAbout"><spring:message code="block.footer.about" text="About" /></a>
+			</li>
+			<li class="li-info-footer">
+				<a href="<spring:message code="link.site.mypeakforest" text="http://peakforest.org" />" target="_blank"><spring:message code="block.footer.myPeakforest" text="My PeakForest" /></a>
+			</li>
+			<li class="li-info-footer">
+				<a href="<spring:message code="link.site.metabohub" text="http://metabohub.fr" />" target="_blank"><spring:message code="block.footer.metaboHUB" text="metaboHUB" /></a>
+			</li>
 		</ul>
 	</div>
 </nav>

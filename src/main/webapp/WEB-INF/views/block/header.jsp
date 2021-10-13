@@ -11,7 +11,7 @@
 			<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
 			<span class="icon-bar"></span> <span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="<c:url value="/home" />"><spring:message code="block.header.home" text="Peak Forest" /></a>
+		<a class="navbar-brand" href="<c:url value="/home" />"><spring:message code="block.header.home" text="PeakForest" /></a>
 	</div>
 
 	<%

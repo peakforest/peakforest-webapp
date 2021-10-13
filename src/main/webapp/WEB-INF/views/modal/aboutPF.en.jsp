@@ -13,7 +13,7 @@
 <script type='text/javascript'>
 	//<![CDATA[ 
 		if(!window.jQuery) {
-			window.location.replace("<spring:message code="peakforest.uri" text="https://peakforest.org/:" />aboutPF");
+			window.location.replace("<spring:message code="peakforest.uri" text="https://peakforest.org/" />aboutPF");
 		}
 	//]]>
 </script>
@@ -99,7 +99,7 @@
 						and use <a href="http://openbabel.org/" target="_blank">Open Babel</a> (GNU General Public License) to compute and recover compounds chemical properties.
 						<br />The molecules 3D display on webpages are powered thanks <a href="http://webglmol.osdn.jp/" target="_blank">GLmol</a> (dual license of LGPL3 or MIT license) and <a href="http://www.jmol.org" target="_blank">JSmol</a> (GNU Lesser General Public License). 
 						<br />The basic spectra and data viewers use <a href="http://www.highcharts.com/" target="_blank">HighChart</a> libraries (Creative Commons Attribution-NonCommercial 3.0 License, free for non-commercial website).
-						<br />The NMR spectra viewers using raw data are powered thanks "NMR viewer for PeakForest" by Marie Lefebvre and Daniel Jacob (based on <a href="https://bitbucket.org/sbeisken/specktackle/" target="_blank">Specktackle</a>, using <a href="https://cran.r-project.org/" target="_blank">R-Base</a> in back-end).
+						<br />The NMR spectra viewers using raw data are powered thanks <a href="https://github.com/ahmohamed/nmrpro" target="_blank">NMRPRo</a> by Ahmed Mohamed.
 						<br />The table displayed with spreadsheet-like formatting are powered thanks <a href="http://handsontable.com/" target="_blank">Handsontable</a> (MIT license).
 						<hr style="margin-top: 5px; margin-bottom: 5px;" />
 							MetExploreViz is a tool to visualize metabolic network. 

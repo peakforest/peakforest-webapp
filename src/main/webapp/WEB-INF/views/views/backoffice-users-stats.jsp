@@ -54,7 +54,7 @@
 <div class="col-lg-12">
 	<button id="updateUserStats" class="btn" onclick="updateUserStats()"><i class="fa fa-refresh"></i> Refresh</button>
 	 &nbsp; &nbsp; 
-	<a href="https://pfemw3.clermont.inra.fr/piwik/index.php?module=CoreHome&action=index&date=yesterday&period=day&idSite=1#" target="_blank"><i class="fa fa-empire"></i> Piwik</a>
+	<a href="<spring:message code="peakforest.admin.analytics" text="https://managers.pfem.clermont.inra.fr/piwik/" />" target="_blank"><i class="fa fa-empire"></i> Piwik</a>
 </div>
 <script type="text/javascript">
 $("#usersStats").tablesorter();

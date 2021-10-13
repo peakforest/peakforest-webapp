@@ -2,7 +2,6 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page session="false"%>
-<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
 
 <div class="row">
 	<div class="col-lg-12">

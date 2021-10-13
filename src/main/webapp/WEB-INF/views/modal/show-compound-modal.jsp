@@ -13,6 +13,13 @@ int randomID = randomGenerator.nextInt(1000000);
 <title>${name_rank1}</title>
 <style type='text/css'>
 </style>
+<script type='text/javascript'>
+	//<![CDATA[ 
+		if(!window.jQuery) {
+			window.location.replace("<spring:message code="peakforest.uri" text="https://peakforest.org/" />${pfID}");
+		}
+	//]]>
+</script>
 <c:if test="${mol_ready}">
 <script type='text/javascript'>
 	//<![CDATA[ 
@@ -53,15 +60,17 @@ int randomID = randomGenerator.nextInt(1000000);
 		 } 
 	};
 	///////////////////
-	//     var glmol<%=randomID %> = new GLmol('glmol<%=randomID %>');
-	var glmol<%=randomID %>;
-	setTimeout(function() {
+
+	var glmol<%=randomID %> = '';
+	initLoadGLmol1 = function() {
+		if (glmol<%=randomID %> !== '') { return false; }
 		try {
 			glmol<%=randomID %> = new GLmol('glmol<%=randomID %>');
 			setTimeout(function(){reload<%=randomID %>()},1000);
 		} catch (e) {
 		}
-	}, 150);
+		return true;
+	};
 	//]]>
 </script>
 </c:if>
@@ -396,7 +405,7 @@ loadStarListener<%=randomID %>();
 														</a>
 													</li>
 													<li>
-														<a href="#showMol-3D-modal" data-toggle="tab">
+														<a href="#showMol-3D-modal" data-toggle="tab" onclick="initLoadGLmol1();">
 															<i class="fa fa-cube"></i> 3D
 														</a>
 													</li>
@@ -653,6 +662,16 @@ ${mol}</textarea>
 														<td>
 															<c:forEach var="kegg" items="${keggs}">
 																<br /> <a href="<spring:message code="resources.banklink.kegg" text="http://www.genome.jp/dbget-bin/www_bget?cpd:" />${kegg}" target="_blank">${kegg}</a>
+															</c:forEach>
+														</td>
+													</tr>
+													</c:if>
+													<c:if test="${not empty networks}">
+													<tr>
+														<td><spring:message code="modal.show.inOtherDatabases.networkIds" text="Networks IDs" /></td>
+														<td>
+															<c:forEach var="network" items="${networks}">
+																<br /> ${network}
 															</c:forEach>
 														</td>
 													</tr>

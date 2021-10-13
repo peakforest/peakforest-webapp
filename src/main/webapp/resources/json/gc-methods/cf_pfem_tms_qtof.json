@@ -1,0 +1,63 @@
+{
+	"dumper_type": "gc-ms",
+	"gc_chromatography" : {
+		"method": "CF_PFEM_TMS_QTOF",
+		"column_constructor": "AGILENT",
+		"column_name": "HP5MS",
+		"column_length": 30,
+		"column_diameter": 0.25,
+		"particule_size": 0.25,
+		"injection_volume": null,
+		"injection_mode": "Split",
+		"split_ratio": null,
+		"carrier_gas": "He",
+		"gas_flow": 1,
+		"gas_opt": null,
+		"gas_pressure": null,
+		"GC_mode": "Gradient",
+		"liner_manufacturer": "Agilent",
+		"liner_type": "5183-4711 / wool / 1-taper",
+		"separation_temperature_programme" : [
+			{ "temp": 60, "rate": 0, "time": 2 },
+			{ "temp": 140, "rate": 10, "time": 10 },
+			{ "temp": 240, "rate": 4, "time": 35 },
+			{ "temp": 300, "rate": 10, "time": 49 }
+		]
+	},
+	"gcms_analyzer" : {
+		"ion_analyzer_type": "QTOF",
+		"brand": "Agilent"
+	},
+	"molecule_ionization" : {
+		"mode_pos": {
+			"ionisation_method": "electron impact (EI)",
+			"electron_energy": 70,
+			"emission_current": null,
+			"source_temperature": 230,
+			"ionization_gas": null,
+			"ionization_gas_flow": null,
+			"gc_interface_temperature": 260,
+			"repeller": null,
+			"extractor": 40,
+			"ion_focus": null
+		},
+		"mode_neg": {
+			"ionisation_method": null,
+			"electron_energy": null,
+			"emission_current": null,
+			"source_temperature": null,
+			"ionization_gas": null,
+			"ionization_gas_flow": null,
+			"gc_interface_temperature": null,
+			"repeller": null,
+			"extractor": null,
+			"ion_focus": null
+		}
+	},
+	"other": {
+		"data_authors": "PFEM",
+		"data_validator": "Carole Migné",
+		"acquisition_date": "",
+		"data_ownership": ""
+	}
+}

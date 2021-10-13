@@ -278,6 +278,10 @@
 		// check visible series
 		<% for (int i = 0; i < seriesShow.length; i++) { %>
 		if (serie<%=spectrumDivId %><%=(i) %>IsShow) {
+			// meta
+			var keyID = seriesNMRMetadata<%=spectrumDivId %><%=(i) %>['pforest_id'];
+			var keyPfemName = seriesNMRMetadata<%=spectrumDivId %><%=(i) %>['pfem_name'];
+			$(".pforest-spectra-name-" + keyID).html(keyPfemName);
 			// Names
 			var keyName = seriesNMRMetadata<%=spectrumDivId %><%=(i) %>['name'];
 			if(keyName in spectraName) {

@@ -22,8 +22,8 @@ import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.services.LicenseManager;
 import fr.metabohub.peakforest.utils.EncodeUtils;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
 
 @Controller
 @RequestMapping("/upload-license-file")
@@ -62,17 +62,18 @@ public class UploadLicenseController {
 
 		String tmpName = EncodeUtils.getMD5(System.currentTimeMillis() + originalFilename)
 				+ originalFilename.substring(originalFilename.lastIndexOf("."), originalFilename.length());
-				// String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL + requestID;
+		// String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL +
+		// requestID;
 
 		// create upload dir if empty
-		File uploadDir = new File(Utils.getBundleConfElement("uploadedFiles.folder"));
+		File uploadDir = new File(PeakForestUtils.getBundleConfElement("uploadedFiles.folder"));
 		if (!uploadDir.exists())
 			uploadDir.mkdirs();
 
 		// I - copy file
 		if (file.getSize() > 0) { // writing file to a directory
 			upLoadedfile = new File(
-					Utils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
+					PeakForestUtils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
 			upLoadedfile.createNewFile();
 			FileOutputStream fos = new FileOutputStream(upLoadedfile);
 			fos.write(file.getBytes());
@@ -84,7 +85,8 @@ public class UploadLicenseController {
 			model.addAttribute("tmpFileName", null);
 
 		String uploadedFileCheckExt = upLoadedfile.getName().toLowerCase();
-		// String ext = uploadedFileCheckExt.substring(uploadedFileCheckExt.lastIndexOf(".") + 1,
+		// String ext =
+		// uploadedFileCheckExt.substring(uploadedFileCheckExt.lastIndexOf(".") + 1,
 		// uploadedFileCheckExt.length());
 		if (uploadedFileCheckExt.endsWith("license")) {
 

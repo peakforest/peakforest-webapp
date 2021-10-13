@@ -1,5 +1,4 @@
 <%@page import="fr.metabohub.spectralibraries.mapper.PeakForestDataMapper"%>
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -10,13 +9,10 @@
 <script src="<c:url value="/resources/js/peakforest/template.min.js" />"></script>
 <script src="<c:url value="/resources/js/select2.min.js" />"></script>
 <link href="<c:url value="/resources/css/select2.min.css" />" rel="stylesheet">
-<% if (request.getParameter("page") !=null && request.getParameter("page").equalsIgnoreCase("template")) { %>
-		<div class="row">
-			<div class="col-lg-12">
-<% } else { %>
-		<div id="downloadTemplate" class="col-lg-12  panel panel-default" style="display: none;">
-			<div class="panel-body">
-<% } %>
+
+<div class="row">
+	<div class="col-lg-12">
+
 <!-- template zone:start -->
 <div class="col-lg-10">
 	<div class="col-lg-6">
@@ -52,7 +48,7 @@
 	<div class="radio">
 		<label>
 			<input id="dumpAllOntolgiesFWMatrix" name="matrixToDump" type="radio" value="allOntoFW" class="downloadTemplateForm">
-			Add all analytical matrix described through <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfemw3.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>.
+			Add all analytical matrix described through <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>.
 		</label>
 	</div>  
 	-->
@@ -63,7 +59,7 @@
 			<span class="input-group-addon">spectrum type</span> 
 			<select id="downloadTemplateSpectrumType" class="form-control downloadTemplateForm">
 				<option value="" selected="selected"></option>
-				<option value="gc-ms" disabled="disabled">GC-MS</option>
+				<option value="gc-ms">GC-MS</option>
 				<option value="lc-ms">LC-MS</option>
 				<option value="nmr">NMR</option>
 				<option value="lc-msms">LC-MSMS</option>
@@ -115,6 +111,20 @@
 	</div>
 	
 	<div class="col-lg-4 ">&nbsp;</div>	
+</div>
+<div class="col-lg-10 downloadTemplateUploadFile downloadTemplateUploadFile-gcms" style="display: none;">
+	<div class="col-lg-8 ">
+		<div id="uploadFileGCMS" class="form-group" style="">
+			<label>Autofield template with method: &nbsp;&nbsp;&nbsp;</label>
+			<label class="radio-inline">
+				<input type="radio" name="downloadTemplatePresfield-gcms" id="downloadTemplatePresfieldY-gcms" value="true" class="downloadTemplateForm"> Yes
+			</label>
+			<label class="radio-inline"> 
+				<input type="radio" name="downloadTemplatePresfield-gcms" id="downloadTemplatePresfieldN-gcms" value="false" checked="checked" class="downloadTemplateForm"> No 
+			</label>
+		</div>
+	</div>
+	<div class="col-lg-4 ">&nbsp;</div>
 </div>
 <div class="col-lg-10 downloadTemplateSelectUploadFile downloadTemplateSelectUploadFile-lcms" style="display: none;">
 	<div class="col-lg-8 ">
@@ -193,6 +203,19 @@
 <!-- 		</div> -->
 <!-- 	</div> -->
 </div>
+<div class="col-lg-10 downloadTemplateSelectUploadFile downloadTemplateSelectUploadFile-gcms" style="display: none;">
+	<div class="col-lg-8 ">
+		<div class="form-group input-group">
+			<span class="input-group-addon">GC-MS Method</span> 
+			<select id="generateFromGCMSmethod" class="form-control downloadTemplateForm">
+			</select>
+		</div>
+		<div id="generatingTemplate-gcms-file" class="generatingTemplate" style="display: none;">
+			<img src="<c:url value="/resources/img/ajax-loader.gif" />" title="please wait" />
+		</div>
+	</div>
+	<div class="col-lg-4 ">&nbsp;</div>
+</div>
 <div id="generatingTemplate-empty" class="col-lg-10 generatingTemplate" style="display: none;">
 	<img src="<c:url value="/resources/img/ajax-loader.gif" />" title="please wait" />
 </div>
@@ -208,13 +231,10 @@
 	<div class="col-lg-4 ">&nbsp;</div>
 </div>
 <!-- template zone:end -->
-<% if (request.getParameter("page") !=null && request.getParameter("page").equalsIgnoreCase("template")) { %>
-			</div>
-		</div>
-<% } else { %>
-			</div>
-		</div>
-<% } %>
+
+	</div>
+</div>
+
 <script type="text/javascript">
 var _alert_unablePresFieldData = '<div class="alert alert-danger alert-dismissible" role="alert">';
 _alert_unablePresFieldData += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';

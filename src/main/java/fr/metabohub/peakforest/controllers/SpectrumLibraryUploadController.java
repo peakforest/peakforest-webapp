@@ -28,8 +28,8 @@ import fr.metabohub.peakforest.services.spectrum.ImportService;
 import fr.metabohub.peakforest.utils.EncodeUtils;
 import fr.metabohub.peakforest.utils.IOUtils;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
 
 @Controller
 @RequestMapping("/upload-spectra-file")
@@ -65,14 +65,14 @@ public class SpectrumLibraryUploadController {
 		String clientID = ProcessProgressManager.XLSX_IMPORT_CHEMICAL_LIB_LABEL + requestID;
 
 		// create upload dir if empty
-		File uploadDir = new File(Utils.getBundleConfElement("uploadedFiles.folder"));
+		File uploadDir = new File(PeakForestUtils.getBundleConfElement("uploadedFiles.folder"));
 		if (!uploadDir.exists())
 			uploadDir.mkdirs();
 
 		// I - copy file
 		if (file.getSize() > 0) { // writing file to a directory
 			upLoadedfile = new File(
-					Utils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
+					PeakForestUtils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
 			upLoadedfile.createNewFile();
 			FileOutputStream fos = new FileOutputStream(upLoadedfile);
 			fos.write(file.getBytes());
@@ -119,13 +119,14 @@ public class SpectrumLibraryUploadController {
 		List<String> spectraLCMSfail = new ArrayList<String>();
 		List<String> spectraNMRfail = new ArrayList<String>();
 		List<String> spectraLCMSMSfail = new ArrayList<String>();
+		List<String> spectraGCMSfail = new ArrayList<String>();
 		List<Long> spectraLCMSsuccess = new ArrayList<Long>();
 		List<Long> spectraNMRsuccess = new ArrayList<Long>();
 		List<Long> spectraLCMSMSsuccess = new ArrayList<Long>();
+		List<Long> spectraGCMSsuccess = new ArrayList<Long>();
 
 		// I - unzip file
-		String filesDir = upLoadedfile.getAbsolutePath().substring(0,
-				upLoadedfile.getAbsolutePath().lastIndexOf("."));
+		String filesDir = upLoadedfile.getAbsolutePath().substring(0, upLoadedfile.getAbsolutePath().lastIndexOf("."));
 		File directoryOfFiles = new File(filesDir);
 		if (!IOUtils.unZip(upLoadedfile.getAbsolutePath(), directoryOfFiles.getAbsolutePath()))
 			return false;
@@ -154,9 +155,11 @@ public class SpectrumLibraryUploadController {
 					if (dataTmp.containsKey("success") && dataTmp.get("success") instanceof Boolean) {
 						if ((boolean) dataTmp.get("success")) {
 							spectraSuccess += (((List<Object>) dataTmp.get("spectra-lcms-success")).size()
-									+ ((List<Object>) dataTmp.get("spectra-nmr-success")).size());
+									+ ((List<Object>) dataTmp.get("spectra-nmr-success")).size()
+									+ ((List<Object>) dataTmp.get("spectra-gcms-success")).size());
 							spectraFail += (((List<Object>) dataTmp.get("spectra-lcms-fail")).size()
-									+ ((List<Object>) dataTmp.get("spectra-nmr-fail")).size());
+									+ ((List<Object>) dataTmp.get("spectra-nmr-fail")).size()
+									+ ((List<Object>) dataTmp.get("spectra-gcms-fail")).size());
 
 							if (!((List<String>) dataTmp.get("spectra-lcms-fail")).isEmpty())
 								for (String name : (List<String>) dataTmp.get("spectra-lcms-fail"))
@@ -167,6 +170,9 @@ public class SpectrumLibraryUploadController {
 							if (!((List<String>) dataTmp.get("spectra-lc-msms-fail")).isEmpty())
 								for (String name : (List<String>) dataTmp.get("spectra-lc-msms-fail"))
 									spectraLCMSMSfail.add(xlsmFile + "#" + name);
+							if (!((List<String>) dataTmp.get("spectra-gcms-fail")).isEmpty())
+								for (String name : (List<String>) dataTmp.get("spectra-gcms-fail"))
+									spectraGCMSfail.add(xlsmFile + "#" + name);
 
 							// ids spectrum LC-MS for "view" btn
 							if (!((List<Long>) dataTmp.get("spectra-lcms-success")).isEmpty())
@@ -174,20 +180,22 @@ public class SpectrumLibraryUploadController {
 
 							// ids spectrum LC-MSMS for "view" btn
 							if (!((List<Long>) dataTmp.get("spectra-lc-msms-success")).isEmpty())
-								spectraLCMSMSsuccess
-										.addAll((List<Long>) dataTmp.get("spectra-lc-msms-success"));
+								spectraLCMSMSsuccess.addAll((List<Long>) dataTmp.get("spectra-lc-msms-success"));
 
 							// ids spectrum NMR for "view" btn
 							if (!((List<Long>) dataTmp.get("spectra-nmr-success")).isEmpty())
 								spectraNMRsuccess.addAll((List<Long>) dataTmp.get("spectra-nmr-success"));
+
+							// ids spectrum GC-MS for "view" btn
+							if (!((List<Long>) dataTmp.get("spectra-gcms-success")).isEmpty())
+								spectraGCMSsuccess.addAll((List<Long>) dataTmp.get("spectra-gcms-success"));
 
 						} else
 							allSuccess = false;
 					} else {
 						allSuccess = false;
 					}
-					if (dataTmp.containsKey("parser-exception")
-							&& dataTmp.get("parser-exception") instanceof String) {
+					if (dataTmp.containsKey("parser-exception") && dataTmp.get("parser-exception") instanceof String) {
 						allIOerrors += dataTmp.get("parser-exception");
 						allSuccess = false;
 					}
@@ -254,6 +262,8 @@ public class SpectrumLibraryUploadController {
 			model.addAttribute("errorNames", spectraLCMSfail);
 		if (!spectraLCMSMSfail.isEmpty())
 			model.addAttribute("errorNames", spectraLCMSMSfail);
+		if (!spectraGCMSfail.isEmpty())
+			model.addAttribute("errorNames", spectraGCMSfail);
 
 		// ids spectrum LC-MS for "view" btn
 		if (!spectraLCMSsuccess.isEmpty())
@@ -266,10 +276,16 @@ public class SpectrumLibraryUploadController {
 		// ids spectrum NMR for "view" btn
 		if (!spectraNMRsuccess.isEmpty())
 			model.addAttribute("idsNMRspectra", spectraNMRsuccess);
+
+		// ids spectrum GC-MS for "view" btn
+		if (!spectraGCMSsuccess.isEmpty())
+			model.addAttribute("idsGCMSspectra", spectraGCMSsuccess);
+
 		//
 		List<Long> idsALLspectra = new ArrayList<Long>();
 		idsALLspectra.addAll(spectraLCMSsuccess);
 		idsALLspectra.addAll(spectraNMRsuccess);
+		idsALLspectra.addAll(spectraGCMSsuccess);
 		model.addAttribute("idsALLspectra",
 				idsALLspectra.toString().replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(", ", "-"));
 
@@ -286,10 +302,7 @@ public class SpectrumLibraryUploadController {
 		Map<String, Object> data = null;
 		try {
 			// model.addAttribute("success", true);
-			data = ImportService.importSpectraDataFile(upLoadedfile.getAbsolutePath(), Utils.XLSM_EXT, true,
-					clientID, Utils.getBundleConfElement("hibernate.connection.database.dbName"),
-					Utils.getBundleConfElement("hibernate.connection.database.username"),
-					Utils.getBundleConfElement("hibernate.connection.database.password"));
+			data = ImportService.importSpectraDataFile(upLoadedfile.getAbsolutePath(), clientID);
 
 			model.addAttribute("data", data);
 
@@ -297,8 +310,7 @@ public class SpectrumLibraryUploadController {
 				boolean isParserSuccess = (Boolean) data.get("success");
 				if (!isParserSuccess) {
 					model.addAttribute("success", false);
-					if (data.containsKey("parser-exception")
-							&& data.get("parser-exception") instanceof String)
+					if (data.containsKey("parser-exception") && data.get("parser-exception") instanceof String)
 						model.addAttribute("spectralIOerror", "" + data.get("parser-exception") + "");
 					if (data.containsKey("error") && data.get("error") instanceof String)
 						model.addAttribute("error", "" + data.get("error") + "");
@@ -308,10 +320,12 @@ public class SpectrumLibraryUploadController {
 					// nb spectrum success / fail / total
 					int spectraSuccess = ((List<Object>) data.get("spectra-lcms-success")).size()
 							+ ((List<Object>) data.get("spectra-nmr-success")).size()
-							+ ((List<Object>) data.get("spectra-lc-msms-success")).size();
+							+ ((List<Object>) data.get("spectra-lc-msms-success")).size()
+							+ ((List<Object>) data.get("spectra-gcms-success")).size();
 					int spectraFail = ((List<Object>) data.get("spectra-lcms-fail")).size()
 							+ ((List<Object>) data.get("spectra-nmr-fail")).size()
-							+ ((List<Object>) data.get("spectra-lc-msms-fail")).size();
+							+ ((List<Object>) data.get("spectra-lc-msms-fail")).size()
+							+ ((List<Object>) data.get("spectra-gcms-fail")).size();
 					int spectraTotal = spectraSuccess + spectraFail;
 
 					// nb spectrum success
@@ -335,6 +349,8 @@ public class SpectrumLibraryUploadController {
 						model.addAttribute("errorNames", (List<String>) data.get("spectra-lcms-fail"));
 					if (!((List<String>) data.get("spectra-lc-msms-fail")).isEmpty())
 						model.addAttribute("errorNames", (List<String>) data.get("spectra-lc-msms-fail"));
+					if (!((List<String>) data.get("spectra-gcms-fail")).isEmpty())
+						model.addAttribute("errorNames", (List<String>) data.get("spectra-gcms-fail"));
 
 					// ids spectrum LC-MS for "view" btn
 					// if (!((List<Long>) data.get("spectra-lcms-success")).isEmpty())
@@ -347,19 +363,24 @@ public class SpectrumLibraryUploadController {
 					// if (!((List<Long>) data.get("spectra-nmr-success")).isEmpty())
 					model.addAttribute("idsNMRspectra", (List<Long>) data.get("spectra-nmr-success"));
 
+					// ids spectrum GC-MS for "view" btn
+					model.addAttribute("idsGCMSspectra", (List<Long>) data.get("spectra-gcms-success"));
+
 					List<Long> idsALLspectra = new ArrayList<Long>();
 					idsALLspectra.addAll((List<Long>) data.get("spectra-lcms-success"));
 					idsALLspectra.addAll((List<Long>) data.get("spectra-nmr-success"));
 					idsALLspectra.addAll((List<Long>) data.get("spectra-lc-msms-success"));
-					model.addAttribute("idsALLspectra", idsALLspectra.toString().replaceAll("\\[", "")
-							.replaceAll("\\]", "").replaceAll(", ", "-"));
+					idsALLspectra.addAll((List<Long>) data.get("spectra-gcms-success"));
+					model.addAttribute("idsALLspectra",
+							idsALLspectra.toString().replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(", ", "-"));
 
 				}
 			} else {
 				model.addAttribute("success", false);
 				if (data.containsKey("error") && data.get("error") instanceof String)
 					model.addAttribute("error", "" + data.get("error") + "");
-				// if (data.containsKey("compound-inchikey") && data.get("compound-inchikey") instanceof
+				// if (data.containsKey("compound-inchikey") && data.get("compound-inchikey")
+				// instanceof
 				// String)
 				// model.addAttribute("inchikey", "" + data.get("compound-inchikey") + "");
 			}
@@ -372,8 +393,7 @@ public class SpectrumLibraryUploadController {
 				String message = e.getMessage();
 				if (message != null)
 					if (message.startsWith(PeakForestManagerException.COMPOUND_NOT_IN_DATABASE)) {
-						model.addAttribute("error",
-								"" + PeakForestManagerException.COMPOUND_NOT_IN_DATABASE + "");
+						model.addAttribute("error", "" + PeakForestManagerException.COMPOUND_NOT_IN_DATABASE + "");
 						// if (data.containsKey("compound-inchikey") && data.get("compound-inchikey")
 						// instanceof
 						// String)
@@ -394,10 +414,8 @@ public class SpectrumLibraryUploadController {
 	/**
 	 * Get a percentage
 	 * 
-	 * @param a
-	 *            number
-	 * @param b
-	 *            total
+	 * @param a number
+	 * @param b total
 	 * @return
 	 */
 	private static String getPerCentage(int a, int b) {

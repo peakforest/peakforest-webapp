@@ -2,58 +2,28 @@ package fr.metabohub.peakforest.utils;
 
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.security.services.UserManagementService;
-import junit.framework.Assert;
 
 public class UsersToolsTest {
 
-	@Rule
-	public TestName name = new TestName();
-
-	// logger
-	public Logger logger = Logger.getLogger("logger");
-
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		Utils.setBundleConf(ResourceBundle.getBundle("confTest"));
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
+	public static void setUpBeforeClass() {
+		PeakForestUtils.setBundleConf(ResourceBundle.getBundle("confTest"));
 	}
 
 	@Test
 	public void helpTest() {
-		// init
-		logger.info("[junit test] " + name.getMethodName() + " -> begin");
-		long beforeTime = System.currentTimeMillis();
 		String[] arvs = { "-h" };
 		try {
 			UsersTools.main(arvs);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		}
 
 		String[] arvs2 = { "--help" };
@@ -61,24 +31,17 @@ public class UsersToolsTest {
 			UsersTools.main(arvs2);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		}
 
-		// end
-		double checkDuration = (double) (System.currentTimeMillis() - beforeTime) / 1000;
-		logger.info("[junit test] " + name.getMethodName() + " -> end, tested in " + checkDuration + " sec.");
 	}
 
 	@Test
 	public void helpError() {
-		// init
-		logger.info("[junit test] " + name.getMethodName() + " -> begin");
-		long beforeTime = System.currentTimeMillis();
-
 		String[] arvs = { "-u" };
 		try {
 			UsersTools.main(arvs);
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -86,7 +49,7 @@ public class UsersToolsTest {
 		String[] arvs2 = { "--username" };
 		try {
 			UsersTools.main(arvs2);
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -94,7 +57,7 @@ public class UsersToolsTest {
 		String[] arvs3 = { "--username", "toto" };
 		try {
 			UsersTools.main(arvs3);
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -102,7 +65,7 @@ public class UsersToolsTest {
 		String[] arvs4 = { "--email" };
 		try {
 			UsersTools.main(arvs4);
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -110,28 +73,24 @@ public class UsersToolsTest {
 		String[] arvs5 = { "-e" };
 		try {
 			UsersTools.main(arvs5);
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
-		// end
-		double checkDuration = (double) (System.currentTimeMillis() - beforeTime) / 1000;
-		logger.info("[junit test] " + name.getMethodName() + " -> end, tested in " + checkDuration + " sec.");
 	}
 
 	@Test
 	public void addTest() throws Exception {
-		// init
-		logger.info("[junit test] " + name.getMethodName() + " -> begin");
-		long beforeTime = System.currentTimeMillis();
 
-		String[] arvs = { "-e", "user_" + beforeTime + "", "-p", "thisIsApassword", "-r", "USER" };
+		final long beforeTime = System.currentTimeMillis();
+
+		final String[] arvs = { "-e", "user_" + beforeTime + "", "-p", "thisIsApassword", "-r", "USER" };
 		try {
 			UsersTools.main(arvs);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled" + e.getMessage());
 		}
 		User u1 = UserManagementService.read("user_" + beforeTime);
 		Assert.assertNotNull("test failled", u1);
@@ -145,7 +104,7 @@ public class UsersToolsTest {
 			UsersTools.main(arvs2);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		}
 		User u2 = UserManagementService.read("user2_" + beforeTime);
 		Assert.assertNotNull("test failled", u2);
@@ -159,7 +118,7 @@ public class UsersToolsTest {
 			UsersTools.main(arvs3);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Assert.fail("[error] test class " + name.getMethodName() + " failled");
+			Assert.fail("[error] test class UserToolsTest failled");
 		}
 		User u3 = UserManagementService.read("user2_" + beforeTime);
 		Assert.assertNotNull("test failled", u3);
@@ -167,15 +126,12 @@ public class UsersToolsTest {
 		Assert.assertEquals("test failled", u3.isCurator(), true);
 		Assert.assertEquals("test failled", u3.isConfirmed(), true);
 
-		// end
-		double checkDuration = (double) (System.currentTimeMillis() - beforeTime) / 1000;
-		logger.info("[junit test] " + name.getMethodName() + " -> end, tested in " + checkDuration + " sec.");
 	}
 
 	// @Test
 	// public void manualTest() throws Exception {
 	// // init
-	// logger.info("[junit test] " + name.getMethodName() + " -> begin");
+	// logger.info("[junit test] UserToolsTest -> begin");
 	// long beforeTime = System.currentTimeMillis();
 	//
 	// String[] arvs = {};
@@ -183,12 +139,14 @@ public class UsersToolsTest {
 	// UsersTools.main(arvs);
 	// } catch (Exception e) {
 	// e.printStackTrace();
-	// Assert.fail("[error] test class " + name.getMethodName() + " failled");
+	// Assert.fail("[error] test class UserToolsTest failled");
 	// }
 	//
 	// // end
-	// double checkDuration = (double) (System.currentTimeMillis() - beforeTime) / 1000;
-	// logger.info("[junit test] " + name.getMethodName() + " -> end, tested in " + checkDuration + " sec.");
+	// double checkDuration = (double) (System.currentTimeMillis() - beforeTime) /
+	// 1000;
+	// logger.info("[junit test] UserToolsTest -> end, tested in " + checkDuration +
+	// " sec.");
 	// }
 
 }

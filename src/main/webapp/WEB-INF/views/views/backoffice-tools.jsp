@@ -4,14 +4,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@ page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%@ page import="fr.metabohub.peakforest.model.CurationMessage"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.text.DateFormat"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="org.apache.commons.lang.time.DateUtils"%>
 <%
-boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metexplore.ws.use"));
+	boolean useMEwebservice = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("metexplore.ws.use"));
 %>
 <script src="<c:url value="/resources/js/select2.min.js" />"></script>
 <link href="<c:url value="/resources/css/select2.min.css" />" rel="stylesheet">
@@ -244,7 +244,7 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 								<button class="btn btn-primary" onclick="addOntologyInDatabase ();"><i class="fa fa-plus-circle"></i></button>
 							</span> 
 						</div>
-						<div>To create a new ontologie, please go to <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfemw3.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>.</div>
+						<div>To create a new ontologie, please go to <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>.</div>
 					</td>
 				</tr>
 			</tfoot>
@@ -1035,7 +1035,7 @@ function deleteStdMatrix (id) { alert("TODO"); }
 
 $("#add-new-ontology").select2({
 	ajax: {
-		url: "https://pfemw3.clermont.inra.fr/elasticsearch-proxies/ontologies/_search",
+		url: '<spring:message code="peakforest.admin.ontologiesFWproxy" text="https://pfem.clermont.inra.fr/elasticsearch-proxies/ontologies/_search" />',
 		dataType: 'jsonp',
 		delay: 250,
 		data: function (params) {

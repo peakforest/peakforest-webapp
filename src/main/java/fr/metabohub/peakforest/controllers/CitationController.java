@@ -12,16 +12,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import fr.metabohub.peakforest.security.model.User;
+import fr.metabohub.peakforest.dao.compound.CitationDao;
 import fr.metabohub.peakforest.model.AbstractDatasetObject;
 import fr.metabohub.peakforest.model.compound.Citation;
 import fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound;
+import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.CitationManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
-import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestPruneUtils;
+import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 
 /**
  * @author Nils Paulhe
@@ -31,14 +32,6 @@ import fr.metabohub.peakforest.utils.Utils;
 @Secured("ROLE_CURATOR")
 public class CitationController {
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param id
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/list-citations/{limit}", method = RequestMethod.GET)
 	public @ResponseBody Object citationList(@PathVariable int limit) throws PeakForestManagerException {
 		return citationList(limit, null);
@@ -47,37 +40,28 @@ public class CitationController {
 	@RequestMapping(value = "/list-citations/{limit}/{query}", method = RequestMethod.GET)
 	public @ResponseBody Object citationList(@PathVariable int limit, @PathVariable String query)
 			throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// init data
 		List<Citation> data = null;
 
 		// load data
 
 		try {
-			data = CitationManagementService.list(query, limit, dbName, username, password);
+			data = CitationDao.list(query, limit);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		data = Utils.pruneCitation(data);
+		data = PeakForestPruneUtils.pruneCitation(data);
 
 		return data;
 	}
 
 	@RequestMapping(value = "/update-citation", method = RequestMethod.POST, params = { "id", "status" })
-	public @ResponseBody boolean updateCitation(@RequestParam("id") long id,
-			@RequestParam("status") int status) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public @ResponseBody boolean updateCitation(@RequestParam("id") long id, @RequestParam("status") int status)
+			throws PeakForestManagerException {
 		// delete
 		try {
-			CitationManagementService.updateStatus(id, status, dbName, username, password);
+			CitationManagementService.updateStatus(id, status);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -87,17 +71,12 @@ public class CitationController {
 	}
 
 	@RequestMapping(value = "/delete-citation", method = RequestMethod.POST, params = { "id" })
-	public @ResponseBody boolean deleteCitation(@RequestParam("id") long id)
-			throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public @ResponseBody boolean deleteCitation(@RequestParam("id") long id) throws PeakForestManagerException {
 		// delete
 		try {
 			List<Long> listOfCitationIds = new ArrayList<Long>();
 			listOfCitationIds.add(id);
-			CitationManagementService.delete(listOfCitationIds, dbName, username, password);
+			CitationManagementService.delete(listOfCitationIds);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -106,51 +85,18 @@ public class CitationController {
 		return true;
 	}
 
-	// /**
-	// * List all users in the database
-	// *
-	// * @return
-	// */
-	// @RequestMapping(value = "/list-all-users", method = RequestMethod.POST)
-	// public @ResponseBody
-	// Map<String, String> listUsers() {
-	// List<User> users = new ArrayList<User>();
-	// Map<String, String> usersMap = new HashMap<String, String>();
-	// try {
-	// users = UserManagementService.readAll();
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// for (User u : users)
-	// usersMap.put(u.getId() + "", u.getLogin());
-	//
-	// // RETURN
-	// return usersMap;
-	// }
-
-	///////////////////////////////////////////////////////////////////////////
-
 	@RequestMapping(value = "/list-cpd-names-to-convert/{limit}", method = RequestMethod.GET)
-	public @ResponseBody Object compoundsNameToConvertList(@PathVariable int limit)
-			throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
+	public @ResponseBody Object compoundsNameToConvertList(@PathVariable int limit) throws PeakForestManagerException {
 		// init data
 		List<ReferenceChemicalCompound> dataRawCC = new ArrayList<>();
 		List<Long> listCpdIdCC = new ArrayList<>();
 		List<ReferenceChemicalCompound> dataRawGC = new ArrayList<>();
 		List<Long> listCpdIdGC = new ArrayList<>();
-
 		List<AbstractDatasetObject> data = new ArrayList<>();
-
 		// load data
-
 		try {
-			dataRawGC.addAll(GenericCompoundManagementService.readAllWithNames(dbName, username, password));
-			dataRawCC.addAll(ChemicalCompoundManagementService.readAllWithNames(dbName, username, password));
+			dataRawGC.addAll(GenericCompoundManagementService.readAllWithNames());
+			dataRawCC.addAll(ChemicalCompoundManagementService.readAllWithNames());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -165,7 +111,7 @@ public class CitationController {
 					break;
 			}
 		}
-		if (count < limit)
+		if (count < limit) {
 			for (ReferenceChemicalCompound rcc : dataRawGC) {
 				if (rcc.containPotentialCasInCommonNames() || rcc.containPotentialIupacInCommonNames()) {
 					listCpdIdGC.add(rcc.getId());
@@ -174,29 +120,25 @@ public class CitationController {
 						break;
 				}
 			}
-
+		}
 		// load from DB
 		try {
 			if (!listCpdIdGC.isEmpty())
-				data.addAll(GenericCompoundManagementService.read(listCpdIdGC, dbName, username, password));
+				data.addAll(GenericCompoundManagementService.read(listCpdIdGC));
 			if (!listCpdIdCC.isEmpty())
-				data.addAll(ChemicalCompoundManagementService.read(listCpdIdCC, dbName, username, password));
+				data.addAll(ChemicalCompoundManagementService.read(listCpdIdCC));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		// prune
-		data = Utils.prune(data);
-
+		data = PeakForestPruneUtils.prune(data);
+		// reurn
 		return data;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
-	/**
-	 * @param logMessage
-	 */
-	private void citationLog(String logMessage) {
+	private void citationLog(final String logMessage) {
 		String username = "?";
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
 			User user = null;

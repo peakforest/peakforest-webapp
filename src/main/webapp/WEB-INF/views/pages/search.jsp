@@ -1,7 +1,7 @@
 <%@page import="org.jsoup.Jsoup"%>
 <%@page import="org.jsoup.safety.Whitelist"%>
 <%@page import="fr.metabohub.peakforest.services.SearchService"%>
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -32,8 +32,7 @@
 	<div id="search-results" class="col-lg-12">
 <!-- 	search results start -->
 	<%
-	// TODO ?
-	
+		// TODO ?
 	%>
 		<div class="table-responsive">
 			<div class="loadSearchResults" style="display:none;"><img src="<c:url value="/resources/img/ajax-loader-big.gif" />" title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" /></div>
@@ -134,6 +133,7 @@
 <!-- 			<li><a href="#">6</a></li> -->
 <!-- 			<li><a href="#">&raquo;</a></li> -->
 		</ul>
+		<span class="pull-right"><small id="searchExtraInfo"></small></span>
 	</div>
 	
 	<!-- MODAL - SHOW -->
@@ -208,12 +208,13 @@
 <div class="row">
 	<div class="col-lg-12">
 		<h1>
-			<img alt="PeakForest" style="margin-top: -35px;" src="<c:url value="/resources/img/logo_pfx200.png" />"> <small> <spring:message code="page.search.subtitle" text="the MetaboHUB's Spectral Database" /></small>
+			<img alt="PeakForest" style="margin-top: -35px;" src="<c:url value="/resources/img/logo_pfx200.png" />"> <small> <spring:message code="page.search.subtitle" text="a spectral data portal for Metabolomics community" /></small>
 		</h1>
 		<form method="get" action="home" id="searchForm" autocomplete="off">
 			<div class="form-group input-group"
 				style="padding-top: 112px; max-width: 600px; margin: auto;">
 				<input name="search" id="search" type="text" class="form-control" placeholder="<spring:message code="page.search.searchEG" text="e.g. Glucose" />">
+				<ul id="autoCompleteLoadingPanel" class="typeahead dropdown-menu" style="display: none;"><li><p style="margin-left: 10px;">Loading data...</p></li></ul>
 				<span class="input-group-btn">
 					<button id="advancedBtn" class="btn" type="button"><spring:message code="page.search.searchAdvancedButton" text="Advanced" /></button>
 					<button id="searchButton" class="btn btn-primary" type="button" title="<spring:message code="page.search.searchButton" text="search" />">
@@ -226,12 +227,12 @@
 </div>
 <!-- /.row -->
 	<%
-}
-%>
+		}
+	%>
 <script type="text/javascript">
-var Utils_SEARCH_COMPOUND_AVERAGE_MASS = "<%=Utils.SEARCH_COMPOUND_AVERAGE_MASS %>";
-var Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS = "<%=Utils.SEARCH_COMPOUND_MONOISOTOPIC_MASS %>";
-var Utils_SEARCH_COMPOUND_FORMULA = "<%=Utils.SEARCH_COMPOUND_FORMULA %>";
+var Utils_SEARCH_COMPOUND_AVERAGE_MASS = "<%=PeakForestUtils.SEARCH_COMPOUND_AVERAGE_MASS%>";
+var Utils_SEARCH_COMPOUND_MONOISOTOPIC_MASS = "<%=PeakForestUtils.SEARCH_COMPOUND_MONOISOTOPIC_MASS%>";
+var Utils_SEARCH_COMPOUND_FORMULA = "<%=PeakForestUtils.SEARCH_COMPOUND_FORMULA%>";
 var switchAdvSearch = "compounds";
 <%
 if (request.getParameter("spectra") != null)

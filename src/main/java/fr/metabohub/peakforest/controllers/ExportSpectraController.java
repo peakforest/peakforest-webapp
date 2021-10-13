@@ -27,14 +27,17 @@ import fr.metabohub.peakforest.model.compound.ChemicalCompound;
 import fr.metabohub.peakforest.model.compound.Compound;
 import fr.metabohub.peakforest.model.compound.GenericCompound;
 import fr.metabohub.peakforest.model.spectrum.FragmentationLCSpectrum;
+import fr.metabohub.peakforest.model.spectrum.FullScanGCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum;
 import fr.metabohub.peakforest.services.ProcessProgressManager;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.services.spectrum.ExportService;
 import fr.metabohub.peakforest.services.spectrum.FragmentationLCSpectrumManagementService;
+import fr.metabohub.peakforest.services.spectrum.FullScanGCSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.FullScanLCSpectrumManagementService;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestPruneUtils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 
 /**
  * @author Nils Paulhe
@@ -50,52 +53,38 @@ public class ExportSpectraController {
 	// @Autowired
 	// private ErrorMessageManager errorMessageManager;
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param idSpectrum
-	 * @param fileName
-	 * @return
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/spectrum-xlsm-export", method = RequestMethod.POST)
 	public @ResponseBody Object spectrumXlsmExport(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @RequestParam(value = "id") long idSpectrum,
-			@RequestParam(value = "name") String fileName) throws IOException {
+			Locale locale, @RequestParam(value = "id") long idSpectrum, @RequestParam(value = "name") String fileName)
+			throws IOException {
 
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		// String templateFileName =
+		// Utils.getBundleConfElement("spectralDataXlsmTemplate.file");
 
-		// String templateFileName = Utils.getBundleConfElement("spectralDataXlsmTemplate.file");
-
-		fileName = Utils.convertHtmlGreekCharToString(fileName);
+		fileName = PeakForestPruneUtils.convertHtmlGreekCharToString(fileName);
 		// fileName = fileName;
 
 		String appRoot = request.getSession().getServletContext().getRealPath("/");
-		String templateFileDir = appRoot + Utils.getBundleConfElement("spectralDataXlsmTemplate.folder");
-		String templateFileName = Utils.getBundleConfElement("spectralDataXlsmTemplate.file");
+		String templateFileDir = appRoot + PeakForestUtils.getBundleConfElement("spectralDataXlsmTemplate.folder");
+		String templateFileName = PeakForestUtils.getBundleConfElement("spectralDataXlsmTemplate.file");
 		File templateFile = new File(templateFileDir + File.separator + templateFileName);
 
 		try {
 			// creation of the directory containing the uploaded files
-			String clientSessionId = ProcessProgressManager.XLSM_DUMP_SPECTRAL_FILE
-					+ request.getSession().getId();
+			String clientSessionId = ProcessProgressManager.XLSM_DUMP_SPECTRAL_FILE + request.getSession().getId();
 
 			// put to 0% the process progression
 			ProcessProgressManager.getInstance().updateProcessProgress(clientSessionId, 0);
 
-			String folderPath = Utils.getBundleConfElement("generatedFiles.prefix") + File.separator
-					+ Utils.getBundleConfElement("generatedFiles.folder") + File.separator
-					+ Utils.getBundleConfElement("generatedXlsmExport.folder");
+			String folderPath = PeakForestUtils.getBundleConfElement("generatedFiles.prefix") + File.separator
+					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + File.separator
+					+ PeakForestUtils.getBundleConfElement("generatedXlsmExport.folder");
 			if (!new File(folderPath).exists())
 				new File(folderPath).mkdirs();
 
 			// file to create
-			String newFileName = fileName.replaceAll(" ", "_").replaceAll(";", "")
-					+ System.currentTimeMillis() + "." + Utils.XLSM_EXT;
+			String newFileName = fileName.replaceAll(" ", "_").replaceAll(";", "") + System.currentTimeMillis() + "."
+					+ PeakForestUtils.XLSM_EXT;
 			String newFilePath = folderPath + File.separator + newFileName;
 
 			// handed 9080 or other port
@@ -108,18 +97,19 @@ public class ExportSpectraController {
 
 			// url
 			String xlsmFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
-					+ Utils.getBundleConfElement("generatedFiles.folder") + "/"
-					+ Utils.getBundleConfElement("generatedXlsmExport.folder") + "/" + newFileName;
+					+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
+					+ PeakForestUtils.getBundleConfElement("generatedXlsmExport.folder") + "/" + newFileName;
 			xlsmFileUrl = xlsmFileUrl.replaceAll(";", "%3B");
 
 			// create file
 			// File zipFile = null;
 
-			Map<String, Object> exportAllData = ExportService.exportSpectrum(idSpectrum,
-					templateFile.getAbsolutePath(), newFilePath, dbName, username, password);
+			final Map<String, Object> exportAllData = ExportService.exportSpectrum(idSpectrum,
+					templateFile.getAbsolutePath(), newFilePath);
 			exportAllData.put("href", xlsmFileUrl);
 			// try {
-			// // zipFile = ExportService.exportChemicalLibraryErrors(newFilePath, userUploadedFile,
+			// // zipFile = ExportService.exportChemicalLibraryErrors(newFilePath,
+			// userUploadedFile,
 			// // clientData, clientSessionId);
 			//
 			// } catch (PeakForestManagerException e) {
@@ -146,27 +136,22 @@ public class ExportSpectraController {
 			throws IOException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-		String pfPublicURL = Utils.getBundleConfElement("peakforest.url");
+		String pfPublicURL = PeakForestUtils.getBundleConfElement("peakforest.url");
 		String fileName = "";
 		String massBankSheet = "";
 
 		try {
-			FullScanLCSpectrum lcms = FullScanLCSpectrumManagementService.read(id, dbName, username,
-					password);
+			FullScanLCSpectrum lcms = FullScanLCSpectrumManagementService.read(id);
 			//
 			if (lcms.getLabel() == FullScanLCSpectrum.SPECTRUM_LABEL_REFERENCE
 					&& lcms.getListOfCompounds().size() == 1) {
 				List<Compound> listRCC = new ArrayList<Compound>();
-				ChemicalCompound cc = ChemicalCompoundManagementService
-						.read(lcms.getListOfCompounds().get(0).getId(), dbName, username, password);
+				ChemicalCompound cc = ChemicalCompoundManagementService.read(lcms.getListOfCompounds().get(0).getId());
 				if (cc != null) {
 					listRCC.add(cc);
 				} else {
 					GenericCompound gc = GenericCompoundManagementService
-							.read(lcms.getListOfCompounds().get(0).getId(), dbName, username, password);
+							.read(lcms.getListOfCompounds().get(0).getId());
 					if (gc != null) {
 						listRCC.add(gc);
 					}
@@ -186,31 +171,26 @@ public class ExportSpectraController {
 	}
 
 	@RequestMapping(value = "/spectrum-msms-massbank-export/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public @ResponseBody String spectrumMSMSMassBankExport(HttpServletResponse response,
-			@PathVariable long id) throws IOException {
+	public @ResponseBody String spectrumMSMSMassBankExport(HttpServletResponse response, @PathVariable long id)
+			throws IOException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-		String pfPublicURL = Utils.getBundleConfElement("peakforest.url");
+		String pfPublicURL = PeakForestUtils.getBundleConfElement("peakforest.url");
 		String fileName = "";
 		String massBankSheet = "";
 
 		try {
-			FragmentationLCSpectrum lcms = FragmentationLCSpectrumManagementService.read(id, dbName, username,
-					password);
+			FragmentationLCSpectrum lcms = FragmentationLCSpectrumManagementService.read(id);
 			//
 			if (lcms.getLabel() == FullScanLCSpectrum.SPECTRUM_LABEL_REFERENCE
 					&& lcms.getListOfCompounds().size() == 1) {
 				List<Compound> listRCC = new ArrayList<Compound>();
-				ChemicalCompound cc = ChemicalCompoundManagementService
-						.read(lcms.getListOfCompounds().get(0).getId(), dbName, username, password);
+				ChemicalCompound cc = ChemicalCompoundManagementService.read(lcms.getListOfCompounds().get(0).getId());
 				if (cc != null) {
 					listRCC.add(cc);
 				} else {
 					GenericCompound gc = GenericCompoundManagementService
-							.read(lcms.getListOfCompounds().get(0).getId(), dbName, username, password);
+							.read(lcms.getListOfCompounds().get(0).getId());
 					if (gc != null) {
 						listRCC.add(gc);
 					}
@@ -219,6 +199,45 @@ public class ExportSpectraController {
 			}
 			massBankSheet = lcms.getMassBankSheet(pfPublicURL);
 			fileName = lcms.getMassBankName();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new IOException("error");
+		}
+
+		response.setContentType("application/force-download");
+		response.setHeader("Content-disposition", "attachment; filename=\"" + fileName + ".txt\"");
+		return massBankSheet;
+	}
+
+	@RequestMapping(value = "/spectrum-gcms-massbank-export/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public @ResponseBody String spectrumGCMassBankExport(HttpServletResponse response, @PathVariable long id)
+			throws IOException {
+
+		// init request
+		String pfPublicURL = PeakForestUtils.getBundleConfElement("peakforest.url");
+		String fileName = "";
+		String massBankSheet = "";
+
+		try {
+			FullScanGCSpectrum gcms = FullScanGCSpectrumManagementService.read(id);
+			//
+			if (gcms.getLabel() == FullScanLCSpectrum.SPECTRUM_LABEL_REFERENCE
+					&& gcms.getListOfCompounds().size() == 1) {
+				List<Compound> listRCC = new ArrayList<Compound>();
+				GenericCompound gc = GenericCompoundManagementService.read(gcms.getListOfCompounds().get(0).getId());
+				if (gc != null) {
+					listRCC.add(gc);
+				} else {
+					ChemicalCompound cc = ChemicalCompoundManagementService
+							.read(gcms.getListOfCompounds().get(0).getId());
+					if (cc != null) {
+						listRCC.add(cc);
+					}
+				}
+				gcms.setListOfCompounds(listRCC);
+			}
+			massBankSheet = gcms.getMassBankSheet(pfPublicURL);
+			fileName = gcms.getMassBankName();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new IOException("error");

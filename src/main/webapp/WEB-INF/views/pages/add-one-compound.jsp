@@ -1,4 +1,4 @@
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -22,23 +22,21 @@
 					<label>Select basic data type</label> 
 					<select id="add-one-cc-s1-type" class="form-control"
 						onchange="changeNextPlaceholder(this);">
-						<option value="<%= Utils.SEARCH_COMPOUND_INCHIKEY %>">InChIKey</option>
-						<option value="<%= Utils.SEARCH_COMPOUND_MONOISOTOPIC_MASS %>">Monoisotopic Mass</option>
-						<option value="<%= Utils.SEARCH_COMPOUND_AVERAGE_MASS %>">Average Mass</option>
-						<option value="<%= Utils.SEARCH_COMPOUND_FORMULA %>">Formula</option>
-						<option value="<%= Utils.SEARCH_COMPOUND_CHEMICAL_NAME %>">Chemical Name</option>
-						<option value="<%= Utils.SEARCH_COMPOUND_INCHI %>">InChI</option>
+						<option value="<%=PeakForestUtils.SEARCH_COMPOUND_INCHIKEY%>">InChIKey</option>
+<%-- 						<option value="<%= Utils.SEARCH_COMPOUND_MONOISOTOPIC_MASS %>">Monoisotopic Mass</option> --%>
+<%-- 						<option value="<%= Utils.SEARCH_COMPOUND_AVERAGE_MASS %>">Average Mass</option> --%>
+<%-- 						<option value="<%= Utils.SEARCH_COMPOUND_FORMULA %>">Formula</option> --%>
+						<option value="<%=PeakForestUtils.SEARCH_COMPOUND_CHEMICAL_NAME%>">Chemical Name</option>
+<%-- 						<option value="<%= Utils.SEARCH_COMPOUND_INCHI %>">InChI</option> --%>
 					</select>
 				</div>
 				<!-- Prepended text-->
 				<div class="form-group">
 					<label>Value of the data entered below</label>
 					<div class="form-group input-group">
-						<input id="add-one-cc-s1-value" class="form-control" placeholder="e.g. RYYVLZVUVIJVGH-UHFFFAOYSA-N" type="text" <% 
-								if (request.getParameter("inchikey") != null) {
+						<input id="add-one-cc-s1-value" class="form-control" placeholder="e.g. RYYVLZVUVIJVGH-UHFFFAOYSA-N" type="text" <%if (request.getParameter("inchikey") != null) {
 									out.print("value=\""+request.getParameter("inchikey")+"\"");
-								}
-						%>>
+								}%>>
 						<span class="input-group-btn">
 							<button class="btn btn-default" type="button"
 								onclick="searchLocalCompound();">
@@ -196,22 +194,22 @@ loadCompoundDetails = function(id, type) {
 		// form add chemical compound
 		changeNextPlaceholder = function(elem) {
 			switch ($(elem).val()) {
-			case "<%= Utils.SEARCH_COMPOUND_INCHIKEY %>":
+			case "<%=PeakForestUtils.SEARCH_COMPOUND_INCHIKEY%>":
 				$('#add-one-cc-s1-value').attr("placeholder", "e.g. RYYVLZVUVIJVGH-UHFFFAOYSA-N");
 				break;
-			case "<%= Utils.SEARCH_COMPOUND_MONOISOTOPIC_MASS %>":
+			case "<%=PeakForestUtils.SEARCH_COMPOUND_MONOISOTOPIC_MASS%>":
 				$('#add-one-cc-s1-value').attr("placeholder", "e.g. 194.0804");
 				break;
-			case "<%= Utils.SEARCH_COMPOUND_AVERAGE_MASS %>":
+			case "<%=PeakForestUtils.SEARCH_COMPOUND_AVERAGE_MASS%>":
 				$('#add-one-cc-s1-value').attr("placeholder", "e.g. 194.1906");
 				break;
-			case "<%= Utils.SEARCH_COMPOUND_FORMULA %>":
+			case "<%=PeakForestUtils.SEARCH_COMPOUND_FORMULA%>":
 				$('#add-one-cc-s1-value').attr("placeholder", "e.g. C8H10N4O2");
 				break;
-			case "<%= Utils.SEARCH_COMPOUND_CHEMICAL_NAME %>":
+			case "<%=PeakForestUtils.SEARCH_COMPOUND_CHEMICAL_NAME%>":
 				$('#add-one-cc-s1-value').attr("placeholder", "e.g. Caffeine");
 				break;
-			case "<%= Utils.SEARCH_COMPOUND_INCHI %>":
+			case "<%=PeakForestUtils.SEARCH_COMPOUND_INCHI%>":
 				$('#add-one-cc-s1-value').attr("placeholder", "e.g. InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3");
 				break;
 			default:

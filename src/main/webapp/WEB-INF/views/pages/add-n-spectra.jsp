@@ -9,7 +9,7 @@
 	<div class="panel-body">
 		<!--      SELECT SPECTRE FILE-->
 		<form id="fileUploadForm" action="upload-spectra-file" method="POST" enctype="multipart/form-data" class="cleanform" onsubmit="return checkUploadSpectraLibForm()">
-			<div class="col-lg-6">
+			<div class="col-lg-12">
 				<div class="input-group">
 					<span class="input-group-btn">
 						<span class="btn btn-primary btn-file btn-uploadAndImport"> Browse… 
@@ -22,15 +22,9 @@
 				</div>
 			</div>
 			
-			<div class="col-lg-6 ">
-				<a class="pull-right" onclick="hideShowDownloadTemplate();" href="#downloadTemplate">download template</a>
-			</div>
-			
 		</form>
 	</div>
 </div>
-
-<jsp:include page="template.jsp" />
 
 <div class="col-lg-12  panel panel-default">
 	<div id="uploadFileStatus" class="panel-body">
@@ -218,21 +212,6 @@ function submitRawNmrFile_addProcFile_file(file) {
 </div>
 
 <script type="text/javascript">
-// page JS
-var isDownloadTemplateDivHiden = true;
-
-/**
- * Hide / Show download template file panel
- */
-hideShowDownloadTemplate = function() {
-	$(".downloadTemplateSelectUploadFile").hide();
-	isDownloadTemplateDivHiden = !isDownloadTemplateDivHiden;
-	if (isDownloadTemplateDivHiden) {
-		$("#downloadTemplate").hide();
-	} else {
-		$("#downloadTemplate").show();
-	}
-};
 
 /**
  * Check if form ready to be submit
@@ -288,10 +267,6 @@ $(document).ready(function() {
 var uploadRuning = false;
 var uploadProgress = 0;
 runProcessProgress = function() {
-	// hide template div
-	isDownloadTemplateDivHiden = true;
-	$("#downloadTemplate").hide();
-	$(".downloadTemplateSelectUploadFile").hide();
 	// init
 	$("#importTabResults").replaceWith('<div id="importTabResults"></div>');
 	// block other upload

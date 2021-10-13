@@ -8,22 +8,16 @@ import fr.metabohub.peakforest.services.compound.ComputeCompoundsBioSmValueServi
 @Component
 public class ProcessBioSMvalues {
 
-	// private static final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+	// private static final SimpleDateFormat dateFormat = new
+	// SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
 
 	// each Saturdays 5 AM
 	@Scheduled(cron = "0 0 5 ? * SAT")
 	public static void fetchMoreValues() throws Exception {
 		SpectralDatabaseLogger.log("cron", "start update bioSM ", SpectralDatabaseLogger.LOG_INFO);
-
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
-		int maxBioSMservice = Integer.parseInt(Utils.getBundleConfElement("bioSM.maxBioSMservice"));
-
-		ComputeCompoundsBioSmValueService.fetchBioSM(maxBioSMservice, dbName, username, password);
-
+		final int maxBioSMservice = Integer.parseInt(PeakForestUtils.getBundleConfElement("bioSM.maxBioSMservice"));
+		ComputeCompoundsBioSmValueService.fetchBioSM(maxBioSMservice);
 		SpectralDatabaseLogger.log("cron", "end update bioSM ", SpectralDatabaseLogger.LOG_INFO);
 	}
 

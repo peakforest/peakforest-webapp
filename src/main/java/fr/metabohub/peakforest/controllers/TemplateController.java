@@ -19,54 +19,33 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import fr.metabohub.peakforest.dao.metadata.AnalyticalMatrixMetadataDao;
 import fr.metabohub.peakforest.model.metadata.AnalyticalMatrix;
 import fr.metabohub.peakforest.services.ProcessProgressManager;
-import fr.metabohub.peakforest.services.metadata.AnalyticalMatrixManagementService;
 import fr.metabohub.peakforest.utils.EncodeUtils;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.spectralibraries.dumper.SpectrumTemplateXLSMDumper;
 import fr.metabohub.spectralibraries.mapper.PeakForestDataMapper;
 import fr.metabohub.spectralibraries.utils.JsonTools;
 import fr.metabohub.spectralibraries.utils.SpectralIOException;
 
-/**
- * @author Nils Paulhe
- * 
- */
 @Controller
 public class TemplateController {
 
-	/**
-	 * @param httpServletResponse
-	 */
 	@RequestMapping(value = "/template", method = RequestMethod.GET)
 	public ModelAndView redirectFromTemplate(HttpServletResponse httpServletResponse) {
 		// httpServletResponse.setHeader("Location", "home?page=template");
 		return new ModelAndView("redirect:" + "home?page=template");
 	}
 
-	/**
-	 * @param type
-	 * @param id
-	 * @param jsonData
-	 * @param request
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/dumpTemplate", method = RequestMethod.POST, headers = {
-			"Content-type=application/json" })
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/dumpTemplate", method = RequestMethod.POST, headers = { "Content-type=application/json" })
 	@ResponseBody
-	public Object dumpTemplate(@RequestBody Map<String, Object> jsonData, HttpServletRequest request)
-			throws Exception {
+	public Object dumpTemplate(@RequestBody Map<String, Object> jsonData, HttpServletRequest request) throws Exception {
 
 		// init / db connect
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// process flag
-		String clientSessionId = ProcessProgressManager.XLSM_DUMP_SPECTRAL_TEMPLATE
-				+ request.getSession().getId();
+		String clientSessionId = ProcessProgressManager.XLSM_DUMP_SPECTRAL_TEMPLATE + request.getSession().getId();
 		boolean success = true;
 		String error = "";
 
@@ -74,41 +53,39 @@ public class TemplateController {
 		ProcessProgressManager.getInstance().updateProcessProgress(clientSessionId, 0);
 
 		// get template type;
-		// boolean isGCMS = false;
+		boolean isGCMS = false;
 		boolean isLCMS = false;
 		boolean isLCMSMS = false;
 		boolean isNMR = false;
 		// boolean isLCNMR = false;
 		String dumperKey = "all_";
-		String dumperVersion = Utils.getBundleConfElement("spectralDataXlsmTemplate.version") + "_";
+		String dumperVersion = PeakForestUtils.getBundleConfElement("spectralDataXlsmTemplate.version") + "_";
 		String dumperID = EncodeUtils.getSHA1(jsonData.toString()).substring(0, 8);
-		String dumperFileDir = Utils.getBundleConfElement("generatedFiles.prefix") + File.separator
-				+ Utils.getBundleConfElement("generatedFiles.folder") + File.separator
-				+ Utils.getBundleConfElement("generatedXlsmExport.folder");
+		String dumperFileDir = PeakForestUtils.getBundleConfElement("generatedFiles.prefix") + File.separator
+				+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + File.separator
+				+ PeakForestUtils.getBundleConfElement("generatedXlsmExport.folder");
 
 		// ORIGINE FILE
 		String appRoot = request.getSession().getServletContext().getRealPath("/");
-		String templateFileDir = appRoot + Utils.getBundleConfElement("spectralDataXlsmTemplate.folder");
-		String templateFileName = Utils.getBundleConfElement("spectralDataXlsmTemplate.file");
+		String templateFileDir = appRoot + PeakForestUtils.getBundleConfElement("spectralDataXlsmTemplate.folder");
+		String templateFileName = PeakForestUtils.getBundleConfElement("spectralDataXlsmTemplate.file");
 
 		// create dir if not exist
 		if (!new File(dumperFileDir).exists())
 			new File(dumperFileDir).mkdirs();
 
-		if (jsonData.containsKey("analytical_sample")
-				&& jsonData.get("analytical_sample").toString() != null) {
-			@SuppressWarnings("unchecked")
+		if (jsonData.containsKey("analytical_sample") && jsonData.get("analytical_sample").toString() != null) {
+
 			Map<String, Object> jsonDataSample = (Map<String, Object>) jsonData.get("analytical_sample");
-			if (jsonDataSample.containsKey("sample_type")
-					&& jsonDataSample.get("sample_type") instanceof String) {
+			if (jsonDataSample.containsKey("sample_type") && jsonDataSample.get("sample_type") instanceof String) {
 				switch (jsonDataSample.get("sample_type").toString()) {
 				case "analytical-matrix":
 					String filter = jsonDataSample.get("analytical-matrix-filter").toString();
 					List<AnalyticalMatrix> listRaw = new ArrayList<>();
 					if (filter.equalsIgnoreCase("allPF")) {
-						listRaw = AnalyticalMatrixManagementService.readAll(dbName, username, password);
+						listRaw = AnalyticalMatrixMetadataDao.readAll();
 					} else if (filter.equalsIgnoreCase("topPF")) {
-						listRaw = AnalyticalMatrixManagementService.listFavourtie(dbName, username, password);
+						listRaw = AnalyticalMatrixMetadataDao.listFavourtie();
 					} else if (filter.equalsIgnoreCase("allOntoFW")) {
 						// not scheduled... yet!
 					}
@@ -143,7 +120,11 @@ public class TemplateController {
 				isLCMSMS = true;
 				dumperKey = "LC-MSMS_";
 				break;
-			// reserved for gc-ms / lc-nmr / fia / ...
+			case "gc-ms":
+				isGCMS = true;
+				dumperKey = "GC-MS_";
+				break;
+			// reserved for lc-nmr / fia / ...
 			default:
 				// not supported
 				break;
@@ -151,7 +132,7 @@ public class TemplateController {
 		}
 
 		// get template file name
-		String dumperFileName = "template_" + dumperKey + dumperVersion + dumperID + "." + Utils.XLSM_EXT;
+		String dumperFileName = "template_" + dumperKey + dumperVersion + dumperID + "." + PeakForestUtils.XLSM_EXT;
 
 		File templateFile = new File(templateFileDir + File.separator + templateFileName);
 		File dumperFile = new File(dumperFileDir + File.separator + dumperFileName);
@@ -171,6 +152,8 @@ public class TemplateController {
 					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_LC_MSMS);
 				else if (isNMR)
 					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_NMR);
+				else if (isGCMS)
+					dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_GC_MS);
 				else
 					dataMapper = new PeakForestDataMapper();
 
@@ -183,9 +166,8 @@ public class TemplateController {
 				// dump DataMapper into XLSM file
 				if (success)
 					try {
-						SpectrumTemplateXLSMDumper.dumpXLSM(templateFile, dumperFile, dataMapper, true);
-					} catch (IOException | InvalidFormatException | SpectralIOException
-							| NullPointerException e) {
+						SpectrumTemplateXLSMDumper.dumpXLSM(templateFile, dumperFile, dataMapper);
+					} catch (IOException | InvalidFormatException | SpectralIOException | NullPointerException e) {
 						success = false;
 						if (dumperFile.exists())
 							dumperFile.delete();
@@ -222,8 +204,8 @@ public class TemplateController {
 
 		// url
 		String xlsmFileUrl = request.getScheme() + "://" + request.getServerName() + port + "/"
-				+ Utils.getBundleConfElement("generatedFiles.folder") + "/"
-				+ Utils.getBundleConfElement("generatedXlsmExport.folder") + "/" + dumperFileName;
+				+ PeakForestUtils.getBundleConfElement("generatedFiles.folder") + "/"
+				+ PeakForestUtils.getBundleConfElement("generatedXlsmExport.folder") + "/" + dumperFileName;
 
 		// object with boolean 'success' and string url
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -247,7 +229,8 @@ public class TemplateController {
 	// Matcher matcher = regexp.matcher("");
 	//
 	// Path path = Paths.get(sourceOntologyFile.getAbsolutePath());
-	// try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+	// try (BufferedReader reader = Files.newBufferedReader(path,
+	// StandardCharsets.UTF_8);
 	// LineNumberReader lineReader = new LineNumberReader(reader);) {
 	// String line = null;
 	// while ((line = lineReader.readLine()) != null) {

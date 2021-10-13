@@ -4,7 +4,7 @@
 <c:if test="${not ranking_data}">
 <title><spring:message code="home.title" text="Peak Forest" /></title>
 <meta name="keywords" content="spectral database, mass spectrometry, nmr, lc-ms, gc-ms, chemical, metabolomic, compound, library">
-<meta name="description" content="the MetaboHUB's Spectral Database.">
+<meta name="description" content="a spectral data portal for Metabolomics community.">
 </c:if>
 <c:if test="${ranking_data}">
 <title>${page_title}</title>

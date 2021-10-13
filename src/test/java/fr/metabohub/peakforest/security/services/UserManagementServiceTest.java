@@ -7,16 +7,14 @@ import static org.junit.Assert.fail;
 
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
+import fr.metabohub.peakforest.security.dao.UserDao;
 import fr.metabohub.peakforest.security.model.User;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 
 /**
  * Test class for {@link UserManagementService} service methods
@@ -26,35 +24,9 @@ import fr.metabohub.peakforest.utils.Utils;
  */
 public class UserManagementServiceTest {
 
-	private Logger logger = Logger.getRootLogger();
-
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		Utils.setBundleConf(ResourceBundle.getBundle("confTest"));
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
+	public static void setUpBeforeClass() {
+		PeakForestUtils.setBundleConf(ResourceBundle.getBundle("confTest"));
 	}
 
 	/**
@@ -65,10 +37,6 @@ public class UserManagementServiceTest {
 	@Test
 	public void userManagementServiceTest() throws Exception {
 
-		// display log
-		logger.info("[junit test] userManagementServiceTest -> begin");
-		long beforeTime = System.currentTimeMillis();
-
 		// if exist => delete
 		if (UserManagementService.exists("nils.paulhe@inra.fr"))
 			UserManagementService.delete("nils.paulhe@inra.fr");
@@ -76,7 +44,7 @@ public class UserManagementServiceTest {
 			UserManagementService.delete("franck.giacomoni@inra.fr");
 		if (UserManagementService.exists("niel.maccormack@hero-corp.com")) {
 			UserManagementService.delete("niel.maccormack@hero-corp.com");
-			logger.error("[warning] user not deleted in previous tests.");
+			Assert.fail("[warning] user not deleted in previous tests.");
 		}
 
 		// password generation
@@ -102,7 +70,7 @@ public class UserManagementServiceTest {
 		long idNiel = UserManagementService.create(niel);
 
 		// test update
-		User franckFromDB = UserManagementService.read(idFranck);
+		User franckFromDB = UserDao.read(idFranck);
 		franckFromDB.setLogin("franck_login");
 		franckFromDB.setAdmin(true);
 		if (!UserManagementService.update(franckFromDB))
@@ -115,7 +83,5 @@ public class UserManagementServiceTest {
 		if (!UserManagementService.delete(idNiel))
 			fail("[fail] could not delete user");
 
-		double checkDuration = (double) (System.currentTimeMillis() - beforeTime) / 1000;
-		logger.info("[junit test] userManagementServiceTest -> end, tested in " + checkDuration + " sec.");
 	}
 }

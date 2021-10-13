@@ -14,15 +14,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import fr.metabohub.peakforest.security.model.User;
-import fr.metabohub.peakforest.security.services.UserManagementService;
+import fr.metabohub.peakforest.dao.CurationMessageDao;
 import fr.metabohub.peakforest.model.CurationMessage;
 import fr.metabohub.peakforest.model.compound.Compound;
 import fr.metabohub.peakforest.model.spectrum.Spectrum;
+import fr.metabohub.peakforest.security.dao.UserDao;
+import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.services.CurationMessageManagementService;
-import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
-import fr.metabohub.peakforest.utils.Utils;
+import fr.metabohub.peakforest.utils.PeakForestPruneUtils;
+import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 
 /**
  * @author Nils Paulhe
@@ -32,72 +33,41 @@ import fr.metabohub.peakforest.utils.Utils;
 @Secured("ROLE_CURATOR")
 public class CurationMessagesController {
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param id
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/list-curation-messages/{filter}/{limit}", method = RequestMethod.GET)
-	public @ResponseBody
-	Object curationMessageList(@PathVariable String filter, @PathVariable int limit)
+	public @ResponseBody Object curationMessageList(@PathVariable String filter, @PathVariable int limit)
 			throws PeakForestManagerException {
 		return curationMessageList(filter, limit, null);
 	}
 
 	@RequestMapping(value = "/list-curation-messages/{filter}/{limit}/{query}", method = RequestMethod.GET)
-	public @ResponseBody
-	Object curationMessageList(@PathVariable String filter, @PathVariable int limit,
+	public @ResponseBody Object curationMessageList(@PathVariable String filter, @PathVariable int limit,
 			@PathVariable String query) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// init data
 		List<CurationMessage> data = null;
 
 		// load data
-		if (filter.equalsIgnoreCase("compound"))
-			try {
-				data = CurationMessageManagementService.list(query, (new Compound() {
-				}).getClass(), limit, dbName, username, password);
-			} catch (Exception e) {
-				e.printStackTrace();
+		try {
+			if (filter.equalsIgnoreCase("compound")) {
+				data = CurationMessageDao.list(query, Compound.class, limit);
+			} else if (filter.equalsIgnoreCase("spectrum")) {
+				data = CurationMessageDao.list(query, Spectrum.class, limit);
+			} else {
+				data = CurationMessageDao.list(query, null, limit);
 			}
-		else if (filter.equalsIgnoreCase("spectrum"))
-			try {
-				data = CurationMessageManagementService.list(query, (new Spectrum() {
-				}).getClass(), limit, dbName, username, password);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		else
-			try {
-				data = CurationMessageManagementService.list(query, null, limit, dbName, username, password);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		data = Utils.pruneCM(data);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		data = PeakForestPruneUtils.pruneCM(data);
 
 		return data;
 	}
 
-	@RequestMapping(value = "/update-curation-message", method = RequestMethod.POST, params = { "id",
-			"status" })
-	public @ResponseBody
-	boolean updateCurationMessage(@RequestParam("id") long id, @RequestParam("status") int status)
+	@RequestMapping(value = "/update-curation-message", method = RequestMethod.POST, params = { "id", "status" })
+	public @ResponseBody boolean updateCurationMessage(@RequestParam("id") long id, @RequestParam("status") int status)
 			throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// delete
 		try {
-			CurationMessageManagementService.updateStatus(id, status, dbName, username, password);
+			CurationMessageManagementService.updateStatus(id, status);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -110,17 +80,12 @@ public class CurationMessagesController {
 	}
 
 	@RequestMapping(value = "/delete-curation-message", method = RequestMethod.POST, params = { "id" })
-	public @ResponseBody
-	boolean deleteCurationMessage(@RequestParam("id") long id) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public @ResponseBody boolean deleteCurationMessage(@RequestParam("id") long id) throws PeakForestManagerException {
 		// delete
 		try {
 			List<Long> listOfCurationMessageIds = new ArrayList<Long>();
 			listOfCurationMessageIds.add(id);
-			CurationMessageManagementService.delete(listOfCurationMessageIds, dbName, username, password);
+			CurationMessageManagementService.delete(listOfCurationMessageIds);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -132,18 +97,12 @@ public class CurationMessagesController {
 		return true;
 	}
 
-	/**
-	 * List all users in the database
-	 * 
-	 * @return
-	 */
 	@RequestMapping(value = "/list-all-users", method = RequestMethod.POST)
-	public @ResponseBody
-	Map<String, String> listUsers() {
+	public @ResponseBody Map<String, String> listUsers() {
 		List<User> users = new ArrayList<User>();
 		Map<String, String> usersMap = new HashMap<String, String>();
 		try {
-			users = UserManagementService.readAll();
+			users = UserDao.readAll();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,9 +113,6 @@ public class CurationMessagesController {
 		return usersMap;
 	}
 
-	/**
-	 * @param logMessage
-	 */
 	private void citationLog(String logMessage) {
 		String username = "?";
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {

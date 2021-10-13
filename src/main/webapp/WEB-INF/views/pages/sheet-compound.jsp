@@ -11,8 +11,8 @@ int randomID = randomGenerator.nextInt(1000000);
 <script type='text/javascript'>
 	//<![CDATA[ 
 	
-	var glmol<%=randomID %>;
-	var glmol<%=randomID %>2;
+	var glmol<%=randomID %> = '';
+	var glmol<%=randomID %>2 = '';
 	///////////////////
 	function saveImage(glmolElem) {
 		glmolElem.show();
@@ -49,21 +49,26 @@ int randomID = randomGenerator.nextInt(1000000);
 		 } 
 	};
 	///////////////////
-	setTimeout(function() {
+	
+	initLoadGLmol1 = function() {
+		if (glmol<%=randomID %> !== '') { return false; }
 		try {
 			glmol<%=randomID %> = new GLmol('glmol<%=randomID %>');
-			setTimeout(function(){reload(glmol<%=randomID %>)},1000);
+			setTimeout(function(){reload(glmol<%=randomID %>)}, 1000);
 		} catch (e) {
 		}
-	}, 150);
+		return true;
+	};
 	
-	setTimeout(function() {
+	initLoadGLmol2 = function() {
+		if (glmol<%=randomID %>2 !== '') { return false; }
 		try {
 			glmol<%=randomID %>2 = new GLmol('glmol<%=randomID %>2');
-			setTimeout(function(){reload(glmol<%=randomID %>2)},1000);
+			setTimeout(function(){reload(glmol<%=randomID %>2)}, 1000);
 		} catch (e) {
 		}
-	}, 50);
+		return true;
+	};
 	//]]>
 </script>
 </c:if>
@@ -98,7 +103,7 @@ int randomID = randomGenerator.nextInt(1000000);
 							</a>
 						</li>
 						<li>
-							<a href="#showMol-3D2" data-toggle="tab">
+							<a href="#showMol-3D2" data-toggle="tab" onclick="initLoadGLmol2();">
 								<i class="fa fa-cube"></i> 3D
 							</a>
 						</li>
@@ -463,7 +468,7 @@ loadStarListener<%=randomID %>();
 													</li>
 <c:if test="${mol_ready}">
 													<li>
-														<a href="#showMol-3D" data-toggle="tab">
+														<a href="#showMol-3D" data-toggle="tab" onclick="initLoadGLmol1();">
 															<i class="fa fa-cube"></i> 3D
 														</a>
 													</li>
@@ -480,27 +485,34 @@ loadStarListener<%=randomID %>();
 														</a>
 														<ul class="dropdown-menu" aria-labelledby="myTabDrop1" id="myTabDrop1-contents" style="z-index: 1000000000;">
 <c:if test="${mol_nb_3D_exists}">
-															<li class="">
+															<li>
 																<a href="#showMol-3D-numbered" onclick="refreshJSmol();" role="tab" id="dropdown1-tab" data-toggle="tab" aria-controls="showMol-3D-numbered" aria-expanded="false">
 																	<i class="fa fa-cube"></i> Nb <i class="fa fa-sort-numeric-desc"></i>
 																</a>
 															</li>
 </c:if>
 <c:if test="${mol_nb_2D_exists}">
-															<li class="">
-																<a href="#showMol-2D-numbered" role="tab" id="dropdown2-tab" data-toggle="tab" aria-controls="showMol-2D-numbered" aria-expanded="true">
+															<li>
+																<a href="#showMol-2D-numbered" role="tab" data-toggle="tab" aria-controls="showMol-2D-numbered" aria-expanded="true">
 																	<i class="fa fa-square-o"></i> Nb <i class="fa fa-sort-numeric-desc"></i>
 																</a>
 															</li>
 </c:if>
 <c:if test="${editor}">
-															<li class="">
-																<a href="#showMol-upload-numbered" role="tab" id="dropdown2-tab" data-toggle="tab" aria-controls="showMol-upload-numbered" aria-expanded="true">
+															<li>
+																<a href="#showMol-upload-numbered" role="tab" data-toggle="tab" aria-controls="showMol-upload-numbered" aria-expanded="true">
 																	<i class="fa fa-upload"></i> Nb <i class="fa fa-sort-numeric-desc"></i>
 																</a>
 															</li>
 </c:if>
 														</ul>
+													</li>
+</c:if>
+<c:if test="${editor}">
+													<li>
+														<a href="#showMol-upload" role="tab"  data-toggle="tab" aria-controls="showMol-upload" aria-expanded="true">
+															<i class="fa fa-upload"></i> Update Structure
+														</a>
 													</li>
 </c:if>
 												</ul>
@@ -545,7 +557,7 @@ ${mol}</textarea>
 													</div>
 </c:if>
 <c:if test="${editor}">
-													<!-- upload new image -->
+													<!-- upload new image (numbered) -->
 													<div id="showMol-upload-numbered" class="tab-pane fade">
 														
 															<div class="col-lg-4">
@@ -562,7 +574,7 @@ ${mol}</textarea>
 																	</span> <input type="text" class="form-control" readonly>
 																</div>
 																<small>
-																	To know how to number molecules atoms (rules, softwares, ...) please contact your WP1a manager
+																	To know how to number molecules atoms (rules, softwares, ...) please contact a MetaboHUB WP1a manager
 																	or read the <a href="<c:url value="/resources/docs/PeakForest_mol_num.fr.pdf" />" target="_blank">online documentation</a>.
 																</small>
 																<br />
@@ -589,7 +601,7 @@ checkUploadChemFileForm=function() {
 	return true;
 };
 //file upload
-$(document).on('change', '.btn-file :file', function() {
+$(document).on('change', '#file', function() {
 	var input = $(this),
 	numFiles = input.get(0).files ? input.get(0).files.length : 1,
 	label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
@@ -654,6 +666,128 @@ function startUpload() {
 </script>
 													
 													</div>
+													
+													<!-- upload new image (all) -->
+													<div id="showMol-upload" class="tab-pane fade">
+															<div class="col-lg-6">
+																<br />
+																<div class="alert alert-info alert-dismissible" role="alert">
+																	<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>
+																	<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> check if the InChI / InChIKey of the molecule file you want to upload match current molecule in this sheet. 
+																</div>
+															</div>
+															<div class="col-lg-4">
+																<br />
+																<span id="fileUploadContainer2"></span>
+																<div id="addImageFormContent2" class="input-group">
+																	<span class="input-group-btn">
+																			<span class="btn btn-primary btn-file"> Browse&#133;
+																				<input id="file2" type="file" name="file" accept=".mol, .svg, .png">
+																			</span>
+														<!-- 					multiple="" -->
+																			<input type="hidden" name="ajaxUpload2" value="true">
+																			<input id="inchikey2" name="inchikey" type="hidden" value="${inchikey}" />
+																	</span> <input type="text" class="form-control" readonly>
+																</div>
+																<small>
+																	To know how to create MOL and SVG file for molecules (rules, softwares, ...) please contact a MetaboHUB WP1a manager.
+																	<br />The name of the uploaded file <b>must</b> be either 
+																	&quot;${inchikey}.mol&quot; for a MOL file or 
+																	&quot;${inchikey}.svg&quot; for a SVG file or
+																	&quot;${inchikey}.png&quot; for a PNG file.
+																</small>
+																<br />
+																<br />
+															</div>
+															<div class="col-lg-1">
+															</div>
+															<div id="imgUploading2" class="col-lg-4" style="display:none;" >
+																<br />
+																<br />
+																<img src="<c:url value="/resources/img/ajax-loader-big.gif" />" title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
+															</div>
+															<div id="imgUploadResults2" class="col-lg-1" style="display:none;" >
+															</div>
+															<div id="imgUploadError2" class="col-lg-6" style="" ></div>
+<%-- 															<script type="text/javascript" src="<c:url value="/resources/jqueryform/2.8/jquery.form.min.js" />"></script>      --%>
+<script type="text/javascript">
+
+//
+checkUploadChemFileForm2 = function() {
+	if ($("#file2").val()=='') {
+		return false;
+	}
+	return true;
+};
+//file upload
+$(document).on('change', '#file2', function() {
+	var input = $(this),
+	numFiles = input.get(0).files ? input.get(0).files.length : 1,
+	label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+	input.trigger('fileselect', [numFiles, label]);
+});
+$(document).ready( function() {
+	$('#file2').on('fileselect', function(event, numFiles, label) {
+		var input = $(this).parents('.input-group').find(':text'),
+		log = numFiles > 1 ? numFiles + ' files selected' : label;
+		if(input.length) {
+			input.val(log);
+			// startUpload();
+			$("#addImageFormContent2").appendTo("#fileUploadForm2");
+			$("#fileUploadForm2").submit();
+		} else {
+			if(log) alert(log);
+		}
+	});
+});
+$(document).ready(function() {
+	$("#fileUploadForm2").ajaxForm({
+		beforeSubmit: startUpload2,
+		success: function(data) {
+			// TODO reload
+			var data2 = data.trim();
+			if (data2 == "OK")
+				location.reload();
+			else {
+				var stringError = "";
+				if (data2 == "no_file_selected")
+					stringError = "no file selected!";
+				else if (data2 == "wrong_ext")
+					stringError = "wrong file extension";
+				else if (data2 == "wrong_name")
+					stringError = "wrong file name (must match InChIKey)";
+				var errorBox = '<br><br><div class="alert alert-info alert-dismissible" role="alert">';
+				errorBox += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+				errorBox += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> ' + stringError;
+				errorBox += ' </div>';
+				$("#imgUploadError2").html(errorBox);
+			}
+			$("#imgUploading2").hide();
+			$("#addImageFormContent2").appendTo("#fileUploadContainer2");
+		},
+		error: function() {
+			// TODO alert message
+			var errorBox = '<br><br><div class="alert alert-danger alert-dismissible" role="alert">';
+				errorBox += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+				errorBox += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not upload file';
+				errorBox += ' </div>';
+				$("#imgUploadError2").html(errorBox);
+			$("#imgUploading2").hide();
+			$("#addImageFormContent2").appendTo("#fileUploadContainer2");
+		}
+	});
+});
+
+function startUpload2() {
+	$("#imgUploadError2").html("");
+	$("#imgUploading2").show();
+	//
+}
+
+</script>
+													
+													</div>
+													
 </c:if>
 												</div>
 <!-- 											</div> -->
@@ -796,6 +930,90 @@ function startUpload() {
 									</div>
 								</div>
 								</c:if>
+								
+
+								<c:if test="${contains_gc_derivatives}">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<spring:message code="modal.show.GCDerivedCompound" text="GC-Derivatives" /> <i class="fa fa-puzzle-piece"></i>
+										</h4>
+									</div>
+									<div >
+										<table class="table">
+											<tr>
+												<td>
+													<!-- children -->
+													<ul class="list-group" id="cc_derivatives_listName_sheet" style="margin-bottom: 0px;">
+													</ul>
+												</td>
+											</tr>
+										</table>
+										<script type="text/javascript">
+
+										var currentIDCC_sheet = ${id};
+										/**
+										 *
+										 */
+										loadDerivativesCompoundNames_sheet=function(compoundID) {
+											$.ajax({
+												type: "post",
+												url: "load-gc-derivatives-names",
+												data: 'parentId=' + compoundID,
+												success: function(data) {
+													if(data.success) { 
+														var listChildren_sheet = '';
+														$.each(data.gcDerivedCompounds, function(key, value){
+															var classS = 'btn-info';
+															var hrefS = '';
+															// replace previous line by following line (to uncomment), when modal is ready
+															// var hrefS = 'href="show-compound-modal/chemical/'+value.id+'" data-toggle="modal" data-target="#modalShowCompound"';
+															listChildren_sheet += '<li id="cc_derivative_'+value.id+'" class="list-group-item">';
+															listChildren_sheet += '<a class="compoundzoom btn '+classS+'" '+hrefS+' style="text-align: left;">';
+															listChildren_sheet += '<i class="fa fa-info-circle"></i>'; 
+															listChildren_sheet += ' ' + value.names[0].name + '';
+															listChildren_sheet += '<br><i> ' + value.inChIKey + ' </i>';
+															listChildren_sheet += '<div style="display:none;"><img class="molStructSVGsmall" src="image/chemical/'+value.inChIKey+'.svg" alt="'+value.names[0].name+'"></div>';
+															listChildren_sheet += '</a>';
+															listChildren_sheet += '</li>';
+														});
+														$('#cc_derivatives_listName_sheet').append(listChildren_sheet);
+														$("a.compoundzoom").mouseover(function() {
+															$(this).find("div").show();
+														}).mouseout(function() {
+														    // $( this ).find( "i.inchikey" ).text( "mouse out " );
+															$(this).find("div").hide();
+														});;
+														// $("a[data-target=#modalShowCompound]").click(function(ev) {
+														// 	ev.preventDefault();
+														// 	$("#modalShowCompound").modal("hide");
+														// 	var target = $(this).attr("href");
+														// 	// load the url and show modal on success
+														// 	//$('#cc_children_listName_sheet').empty();
+														// 	$('#cc_children_listName').empty();
+														// 	$("#modalShowCompound .modal-dialog").html("");
+														// 	setTimeout(function() {  $("#modalShowCompound .modal-dialog ").load(target, function() { $("#modalShowCompound").modal("show"); }); } , 50);
+														// });
+														// $("#nameOfGC${alt_structure_parent.id}_sheet").html(data.parentName);
+													} else {
+														 $('#cc_derivatives_listName_sheet').append('<li class="list-group-item">ERROR</i>');
+													}
+												}, 
+												error : function(data) {
+													console.log(data);
+												}
+											});
+										};
+										loadDerivativesCompoundNames_sheet(currentIDCC_sheet);
+										
+										</script>
+<!-- 										// current -->
+<!-- 										// sub structures -->
+<!-- 										// current -->
+<!-- 										// putatives -->
+									</div>
+								</div>
+								</c:if>
 
 								<div class="panel panel-default">
 									<div class="panel-heading">
@@ -833,6 +1051,16 @@ function startUpload() {
 														<td>
 															<c:forEach var="kegg" items="${keggs}">
 																<br /><a href="<spring:message code="resources.banklink.kegg" text="http://www.genome.jp/dbget-bin/www_bget?cpd:" />${kegg}" target="_blank">${kegg}</a>
+															</c:forEach>
+														</td>
+													</tr>
+													</c:if>
+													<c:if test="${not empty networks}">
+													<tr>
+														<td><spring:message code="modal.show.inOtherDatabases.networkIds" text="Networks IDs" /></td>
+														<td>
+															<c:forEach var="network" items="${networks}">
+																<br />${network}
 															</c:forEach>
 														</td>
 													</tr>
@@ -1364,5 +1592,7 @@ $("#removeCpdFromCart").click(function(){removeCpdFromCart(Number('${id}'))});
 	</script>
 	<div style="display:none;">
 		<form id="fileUploadForm" action="upload-compound-numbered-file" method="POST" enctype="multipart/form-data" class="cleanform" onsubmit="return checkUploadChemFileForm()">
+		</form>
+		<form id="fileUploadForm2" action="upload-compound-image-file" method="POST" enctype="multipart/form-data" class="cleanform" onsubmit="return checkUploadChemFileForm2()">
 		</form>
 	</div>

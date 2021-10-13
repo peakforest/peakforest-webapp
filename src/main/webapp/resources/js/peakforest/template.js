@@ -21,7 +21,10 @@ defaultFileDownload = function(subid) {
 		dumpEmptyFile("nmr", sampleType);
 		//eTmp.attr('href', 'spectrum_NMR_template_v0.1.0.xlsm');
 		//eTmp.html('<i class="fa fa-cloud-download"></i> spectrum_NMR_template_v0.1.0.xlsm');
-	}
+	} else if (technology == 'gc-ms') {
+		$("#generatingTemplate-empty").show();
+		dumpEmptyFile("gcms", sampleType);
+	} 
 }
 
 function ontologies_load(filter) {
@@ -71,6 +74,7 @@ $(document).ready(function() {
 	// build form from JSON file
 	$("#generateFromLCMSmethod").append('<option value="" selected="selected" disabled="disabled"></option>');
 	$("#generateFromLCMSMSmethod").append('<option value="" selected="selected" disabled="disabled"></option>');
+	$("#generateFromGCMSmethod").append('<option value="" selected="selected" disabled="disabled"></option>');
 	$.getJSON("resources/json/list-lc-methods.json", function(data) {
 		// load data from json
 		$.each(data.methods,function(){
@@ -90,6 +94,17 @@ $(document).ready(function() {
 					$("#generateFromLCMSMSmethod").append('<option value="'+this.value+'">'+this.name+'</option>');
 				else
 					$("#generateFromLCMSMSmethod").append('<option disabled>'+this.name+'</option>');
+			}
+		});
+	});
+	$.getJSON("resources/json/list-gc-methods.json", function(data) {
+		// load data from json
+		$.each(data.methods,function(){
+			if (this.name !==undefined) {
+				if (this.value !==undefined)
+					$("#generateFromGCMSmethod").append('<option value="'+this.value+'">'+this.name+'</option>');
+				else
+					$("#generateFromGCMSmethod").append('<option disabled>'+this.name+'</option>');
 			}
 		});
 	});
@@ -125,11 +140,19 @@ $(document).ready(function() {
 			$(".downloadTemplateSelectUploadFile-lcmsms").show();
 			$(".downloadTemplateDownloadFile").hide();
 			break;
+		case 'downloadTemplatePresfieldY-gcms':
+			$("#generateFromGCMSmethod").val("");
+			$(".downloadTemplateSelectUploadFile-gcms").show();
+			$(".downloadTemplateDownloadFile").hide();
+			break;
 		case 'downloadTemplatePresfieldN-lcms':
 			defaultFileDownload('lcms');
 			break;
 		case 'downloadTemplatePresfieldN-lcmsms':
 			defaultFileDownload('lcmsms');
+			break;
+		case 'downloadTemplatePresfieldN-gcms':
+			defaultFileDownload('gcms');
 			break;
 		case 'downloadTemplatePresfieldY-nmr':
 			$(".downloadTemplateSelectUploadFile-nmr").show();
@@ -145,6 +168,9 @@ $(document).ready(function() {
 		case 'generateFromLCMSMSmethod':
 			dumpLCSpectralDataFromJson($(this).val());
 			break;
+		case 'generateFromGCMSmethod':
+			dumpGCSpectralDataFromJson($(this).val());
+			break;
 		}
 	});
 });
@@ -157,6 +183,7 @@ dumpEmptyTemplate = function() {
 //	$(".downloadTemplateSelectMatrix").hide();
 	$("#generateFromLCMSmethod").val("");
 	$("#generateFromLCMSMSmethod").val("");
+	$("#generateFromGCMSmethod").val("");
 	// lock
 	$("input[name='matrixToDump']").attr("disabled", true);
 	switch($("#downloadTemplateSpectrumType").val()) {
@@ -181,6 +208,13 @@ dumpEmptyTemplate = function() {
 		$("#downloadTemplatePresfieldN-nmr").prop('checked', true);
 		defaultFileDownload('nmr');
 		break;
+	case "gc-ms":
+		// choose to prefield
+		$(".downloadTemplateUploadFile-gcms").show();
+		$("#downloadTemplatePresfieldY-gcms").prop('checked', false);
+		$("#downloadTemplatePresfieldN-gcms").prop('checked', true);
+		defaultFileDownload('gcms');
+		break;
 	default:
 		// TODO other spec here or just before 
 		break;
@@ -195,6 +229,26 @@ dumpLCSpectralDataFromJson = function(jsonFileName) {
 	$("#generatingTemplate-lcms-file").show();
 	// get JSON data and dump them into XLSM file
 	$.getJSON("resources/json/lc-methods/"+jsonFileName+".json", function(json) {
+		// $.POST
+		dumpJsonDataInXLSMfile(json);
+	}).error(function(event, jqxhr, exception) {
+		if (event.status == 404) {
+			$(".generatingTemplate").hide();
+			$(".downloadTemplateDownloadFile").show();
+			cleanLinkDnlTemplate();
+			$("#alertBoxDumpTemplate").html(_alert_unablePresFieldData);
+		}
+	});
+}
+
+/**
+ * Dump JSON file data into a XLSM file for GC-MS methods.
+ */
+dumpGCSpectralDataFromJson = function(jsonFileName) { 
+	// start process progress
+	$("#generatingTemplate-gcms-file").show();
+	// get JSON data and dump them into XLSM file
+	$.getJSON("resources/json/gc-methods/"+jsonFileName+".json", function(json) {
 		// $.POST
 		dumpJsonDataInXLSMfile(json);
 	}).error(function(event, jqxhr, exception) {
@@ -224,6 +278,8 @@ dumpEmptyFile = function(method, sampleType) {
 		json["dumper_type"] = "lc-msms";
 	else if (method =="nmr")
 		json["dumper_type"] = "nmr";
+	else if (method =="gcms")
+		json["dumper_type"] = "gc-ms";
 	else
 		json["dumper_type"] = method;
 	if (sampleType!==null && sampleType!==undefined && sampleType!="") {
@@ -254,8 +310,8 @@ dumpEmptyFile = function(method, sampleType) {
 			json["analytical_sample"] = sampleObject;
 	}
 	// run
-	$("#generatingTemplate-emtpy").show();
-	dumpJsonDataInXLSMfile(json)
+	$("#generatingTemplate-empty").show();
+	dumpJsonDataInXLSMfile(json);
 }
 
 /**
@@ -282,6 +338,10 @@ dumpJsonDataInXLSMfile = function(json) {
 		jsonSampleD["sample_type"] = "analytical-matrix";
 		jsonSampleD["analytical-matrix-filter"] = $("input[name='matrixToDump']:checked").val();
 		break;
+	case "4":
+		// II.E - chemical lib. compound for GC
+		jsonSampleD["sample_type"] = "reference-chemical-compound-for-GC";
+		break;
 	default:
 		return false;
 	}
@@ -291,6 +351,7 @@ dumpJsonDataInXLSMfile = function(json) {
 	$("select.downloadTemplateForm").attr("disabled", true);
 	$("#generateFromLCMSmethod").attr("disabled", false);
 	$("#generateFromLCMSMSmethod").attr("disabled", false);
+	$("#generateFromGCMSmethod").attr("disabled", false);
 	$.ajax({
 		type: "post",
 		url: "dumpTemplate",

@@ -48,9 +48,6 @@ public class MapManager extends AbstractMapObject {
 		this(null);
 	}
 
-	/**
-	 * @param mapSource
-	 */
 	public MapManager(Short mapSource) {
 		super();
 		this.mapSource = mapSource;
@@ -59,55 +56,30 @@ public class MapManager extends AbstractMapObject {
 		mapEntities = new ArrayList<MapEntity>();
 	}
 
-	/**
-	 * @return the mapSource
-	 */
 	public Short getMapSource() {
 		return mapSource;
 	}
 
-	/**
-	 * @param mapSource
-	 *            the mapSource to set
-	 */
 	public void setMapSource(Short mapSource) {
 		this.mapSource = mapSource;
 	}
 
-	/**
-	 * @return the mapEntities
-	 */
 	public List<MapEntity> getMapEntities() {
 		return mapEntities;
 	}
 
-	/**
-	 * @param mapEntities
-	 *            the mapEntities to set
-	 */
 	public void setMapEntities(List<MapEntity> mapEntities) {
 		this.mapEntities = mapEntities;
 	}
 
-	/**
-	 * @param mapEntities
-	 *            the mapEntities to set
-	 */
 	public boolean addMapEntities(MapEntity mapEntity) {
 		return this.mapEntities.add(mapEntity);
 	}
 
-	/**
-	 * @return the defaultStrategy
-	 */
 	public short getDefaultStrategy() {
 		return defaultStrategy;
 	}
 
-	/**
-	 * @param defaultStrategy
-	 *            the defaultStrategy to set
-	 */
 	public void setDefaultStrategy(short defaultStrategy) {
 		this.defaultStrategy = defaultStrategy;
 	}

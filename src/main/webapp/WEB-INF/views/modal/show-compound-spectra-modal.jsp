@@ -10,7 +10,7 @@ int randomID = randomGenerator.nextInt(1000000);
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-		<title>Spectra - preview</title>
+		<title>Spectra - list</title>
 		<style type='text/css'>
 		</style>
 		<script type='text/javascript'>
@@ -25,7 +25,7 @@ int randomID = randomGenerator.nextInt(1000000);
 			<div class="modal-content " style="min-width: 750px">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" onclick="" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Spectra - preview</h4>
+					<h4 class="modal-title">Spectra - list</h4>
 				</div>
 				<div class="modal-body" id="" >
 					

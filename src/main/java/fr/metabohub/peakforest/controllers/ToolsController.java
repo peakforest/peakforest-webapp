@@ -1,9 +1,12 @@
 package fr.metabohub.peakforest.controllers;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,8 +35,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import fr.metabohub.externaltools.nmr.ImageGenerator;
 import fr.metabohub.externaltools.proxy.NMRpro;
+import fr.metabohub.peakforest.dao.compound.GCDerivedCompoundDao;
+import fr.metabohub.peakforest.dao.metadata.LiquidChromatographyMetadataDao;
 import fr.metabohub.peakforest.model.AbstractDatasetObject;
 import fr.metabohub.peakforest.model.compound.ChemicalCompound;
+import fr.metabohub.peakforest.model.compound.GCDerivedCompound;
 import fr.metabohub.peakforest.model.compound.GenericCompound;
 import fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound;
 import fr.metabohub.peakforest.model.compound.StructureChemicalCompound;
@@ -43,15 +50,15 @@ import fr.metabohub.peakforest.model.spectrum.NMR1DSpectrum;
 import fr.metabohub.peakforest.services.SearchService;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
-import fr.metabohub.peakforest.services.metadata.LiquidChromatographyMetadataManagementService;
 import fr.metabohub.peakforest.services.peakmatching.LCMSMSPeakMatchingService;
 import fr.metabohub.peakforest.services.peakmatching.LCMSPeakMatchingService;
 import fr.metabohub.peakforest.services.peakmatching.NMR1DPeakMatchingService;
 import fr.metabohub.peakforest.services.threads.CompoundsImagesAndMolFilesGeneratorThread;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestPruneUtils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SimpleFileReader;
-import fr.metabohub.peakforest.utils.Utils;
-import fr.metabohub.peakmatching.mapper.NMRCandidate;
+import fr.metabohub.peakmatching.nmr.mapper.NMRCandidate;
 
 /**
  * @author Nils Paulhe
@@ -60,11 +67,20 @@ import fr.metabohub.peakmatching.mapper.NMRCandidate;
 @Controller
 public class ToolsController {
 
+	// maximum number of results returned by a quick search
+	private static final int SEARCH_QUICK_RESULTS_SIZE_LIMIT = 10;
+
+	// maximum number of results returned by a normal search
+	private static final int SEARCH_NORMAL_RESULTS_SIZE_LIMIT = 50;
+
 	@RequestMapping(value = "/404", method = RequestMethod.GET)
 	public ModelAndView redirectFrom404(HttpServletResponse httpServletResponse, HttpServletRequest request) {
 		// httpServletResponse.setHeader("Location", "home?page=template");
-		if (!request.getHeader("Referer").endsWith("&try=1")) {
-			return new ModelAndView("redirect:" + request.getHeader("Referer") + "&try=1");
+		if (!request.getHeader("Referer").endsWith("try=1")) {
+			if (request.getHeader("Referer").contains("?"))
+				return new ModelAndView("redirect:" + request.getHeader("Referer") + "&try=1");
+			else
+				return new ModelAndView("redirect:" + request.getHeader("Referer") + "?try=1");
 		}
 		return new ModelAndView("redirect:" + "home?page=404");
 	}
@@ -87,81 +103,42 @@ public class ToolsController {
 		return new ModelAndView("redirect:" + "home?page=500");
 	}
 
-	// @SuppressWarnings("unchecked")
-	/**
-	 * @param query
-	 * @return
-	 */
 	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, params = "query")
 	public @ResponseBody Object search(@RequestParam("query") String query) {
-		// // init
-		// Map<String, Object> searchResults = new HashMap<String, Object>();
-		// String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		// String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		// String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-		// // search local
-		// try {
-		// searchResults = SearchService.search(query, 50, dbName, username, password);
-		// // prune
-		// searchResults.put("compounds",
-		// Utils.prune((List<AbstractDatasetObject>) searchResults.get("compounds")));
-		// searchResults.put("compoundNames",
-		// Utils.prune((List<AbstractDatasetObject>) searchResults.get("compoundNames")));
-		// // success
-		// searchResults.put("success", true);
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// searchResults.put("success", false);
-		// searchResults.put("error", "exception");
-		// searchResults.put("exceptionMessage", e.getMessage());
-		// }
-		// // TODO search via WS on other instance of spectral databases
-		// // return
-
-		return searchOpt(query, false);
+		return searchOpt(query, Boolean.FALSE);
 	}
 
-	/**
-	 * Classic search (support natural language)
-	 * 
-	 * @param query
-	 * @param quick
-	 * @return
-	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, params = {
 			"query", "quick" })
-	public @ResponseBody Object searchOpt(@RequestParam("query") String query,
-			@RequestParam("quick") boolean quick) {
+	public @ResponseBody Object searchOpt(@RequestParam("query") String query, @RequestParam("quick") boolean quick) {
 		// init
 		Map<String, Object> searchResults = new HashMap<String, Object>();
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		final int maxResults = (quick ? SEARCH_QUICK_RESULTS_SIZE_LIMIT : SEARCH_NORMAL_RESULTS_SIZE_LIMIT);
 		// search local
 		try {
-			searchResults = SearchService.search(query, quick, 50, dbName, username, password);
+			searchResults = SearchService.search(query, quick, maxResults);
 			// prune
 			searchResults.put("compounds",
-					Utils.prune((List<AbstractDatasetObject>) searchResults.get("compounds")));
+					PeakForestPruneUtils.prune((List<AbstractDatasetObject>) searchResults.get("compounds")));
 			searchResults.put("compoundNames",
-					Utils.prune((List<AbstractDatasetObject>) searchResults.get("compoundNames")));
+					PeakForestPruneUtils.prune((List<AbstractDatasetObject>) searchResults.get("compoundNames")));
 			if (searchResults.containsKey("lcmsSpectra")) {
-				List<AbstractDatasetObject> dataJson = Utils
+				List<AbstractDatasetObject> dataJson = PeakForestPruneUtils
 						.prune((List<AbstractDatasetObject>) searchResults.get("lcmsSpectra"));
 				if (dataJson.size() > 30)
 					dataJson = dataJson.subList(0, 30);
 				searchResults.put("lcmsSpectra", dataJson);
 			}
 			if (searchResults.containsKey("lcmsmsSpectra")) {
-				List<AbstractDatasetObject> dataJson = Utils
+				List<AbstractDatasetObject> dataJson = PeakForestPruneUtils
 						.prune((List<AbstractDatasetObject>) searchResults.get("lcmsmsSpectra"));
 				if (dataJson.size() > 30)
 					dataJson = dataJson.subList(0, 30);
 				searchResults.put("lcmsmsSpectra", dataJson);
 			}
 			if (searchResults.containsKey("nmrSpectra")) {
-				List<AbstractDatasetObject> dataJson = Utils
+				List<AbstractDatasetObject> dataJson = PeakForestPruneUtils
 						.prune((List<AbstractDatasetObject>) searchResults.get("nmrSpectra"));
 				if (dataJson.size() > 30)
 					dataJson = dataJson.subList(0, 30);
@@ -175,49 +152,49 @@ public class ToolsController {
 			searchResults.put("error", "exception");
 			searchResults.put("exceptionMessage", e.getMessage());
 		}
-		// TODO search via WS on other instance of spectral databases
-		// return
 
 		return searchResults;
 	}
 
-	// searchRequest = "query=" + $.trim(cleanQuery) + "&filterEntity="+ qFilterEntity + "&filerType="+
-	// qFilerType + "&filterVal=" + qFilterVal + "&filterVal2=" + qFilterVal2;
-	/**
-	 * LCMS / NMR peakmatching
-	 * 
-	 * @param query
-	 * @param entity
-	 * @param type
-	 * @param value
-	 * @param value2
-	 * @return
-	 */
+	@RequestMapping(value = "/search-count", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, params = {
+			"query" })
+	public @ResponseBody Long searchCount(@RequestParam("query") String query) {
+		// init
+		Long nbResults = null;
+		// search
+		try {
+			nbResults = SearchService.countMaxSearchResults(query);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// return
+		return nbResults;
+	}
+
 	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, params = {
 			"query", "filterEntity", "filerType", "filterVal", "filterVal2" })
+	@SuppressWarnings("unchecked")
 	public @ResponseBody Object searchAdvanced(@RequestParam("query") String query,
 			@RequestParam("filterEntity") String entity, @RequestParam("filerType") int type,
 			@RequestParam("filterVal") String value, @RequestParam("filterVal2") String value2,
 			@RequestParam("filterVal3") String value3) {
 		// init
 		Map<String, Object> searchResults = new HashMap<String, Object>();
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// search local
-
 		try {
 			if (entity.equalsIgnoreCase("compounds")) {
 				List<AbstractDatasetObject> primitiveData = new ArrayList<AbstractDatasetObject>();
-				for (ReferenceChemicalCompound rcc : SearchService.searchCompound(query, type, value, value2,
-						value3, 50, dbName, username, password)) {
+				for (ReferenceChemicalCompound rcc : SearchService.searchCompound(query, type, value, value2, value3,
+						SEARCH_NORMAL_RESULTS_SIZE_LIMIT)) {
 					primitiveData.add(rcc);
 				}
 				// prune
-				searchResults.put("compounds", Utils.prune(primitiveData));
+				searchResults.put("compounds", PeakForestPruneUtils.prune(primitiveData));
 				searchResults.put("compoundNames", new ArrayList<AbstractDatasetObject>());
+				searchResults.put("success", true);
 			} else if (entity.equalsIgnoreCase("nmr-spectra")) {
-				// List<AbstractDatasetObject> primitiveData = new ArrayList<AbstractDatasetObject>();
+				// List<AbstractDatasetObject> primitiveData = new
+				// ArrayList<AbstractDatasetObject>();
 
 				List<Double> listOfChemicalShift = new ArrayList<Double>();
 				for (String rawDouble : query.split(","))
@@ -250,11 +227,10 @@ public class ToolsController {
 				// filerType:-1
 				// filterVal:0.5
 				// filterVal2:one
-				Map<String, Object> rawNMRsearch = NMR1DPeakMatchingService.runPeakMatching(
-						listOfChemicalShift, tolerance, matchingMethod, pH, dbName, username, password);
+				Map<String, Object> rawNMRsearch = NMR1DPeakMatchingService.runPeakMatching(listOfChemicalShift,
+						tolerance, matchingMethod, pH);
 
 				if (rawNMRsearch.containsKey("candidates")) {
-					@SuppressWarnings("unchecked")
 					List<NMRCandidate> rawWSresults = (List<NMRCandidate>) rawNMRsearch.get("candidates");
 					for (NMRCandidate candidate : rawWSresults) {
 						candidate.setDistance(new ArrayList<Double>());
@@ -262,18 +238,19 @@ public class ToolsController {
 						candidate.setIntensity(null);
 					}
 					searchResults.put("nmrCandidates", rawWSresults);
+					searchResults.put("success", true);
 				} // candidats
 				if (rawNMRsearch.containsKey("naiveSearch")) {
-					@SuppressWarnings("unchecked")
 					List<NMR1DSpectrum> rawSpectra = (List<NMR1DSpectrum>) rawNMRsearch.get("naiveSearch");
 					// prune
-					rawSpectra = Utils.pruneNMR1Dspectra(rawSpectra);
+					rawSpectra = PeakForestPruneUtils.pruneNMR1Dspectra(rawSpectra);
 					// to map
 					Map<String, Object> nmrMap = new HashMap<String, Object>();
 					for (NMR1DSpectrum nmrS : rawSpectra) {
 						nmrMap.put("pf:" + nmrS.getId(), nmrS);
 					}
 					searchResults.put("nmrSpectra", rawSpectra);
+					searchResults.put("success", true);
 				} // naiveSearch
 			} else if (entity.equalsIgnoreCase("lcms-spectra")) {
 
@@ -384,28 +361,28 @@ public class ToolsController {
 				if (algo != null)
 					switch (algo.toUpperCase()) {
 					case "BIH":
-						results = LCMSPeakMatchingService.runPeakMatching(queryMass, null, null, deltaMass,
-								null, LCMSPeakMatchingService.PM_ALGO_BIH_MASS,
-								LCMSPeakMatchingService.PM_ALGO_BIH_SCORING_MATCH_SPECTRA, modeN, resolutionN,
-								dbName, username, password);
+						results = LCMSPeakMatchingService.runPeakMatching(queryMass, null, null, deltaMass, null,
+								LCMSPeakMatchingService.PM_ALGO_BIH_MASS,
+								LCMSPeakMatchingService.PM_ALGO_BIH_SCORING_MATCH_SPECTRA, modeN, resolutionN, null,
+								null, null);
 						break;
 					case "BIHRT":
-						results = LCMSPeakMatchingService.runPeakMatching(queryMass, queryRT, filterColumns,
-								deltaMass, deltaRT, LCMSPeakMatchingService.PM_ALGO_BIH_MASS_RT,
-								LCMSPeakMatchingService.PM_ALGO_BIH_SCORING_MATCH_SPECTRA, modeN, resolutionN,
-								dbName, username, password);
+						results = LCMSPeakMatchingService.runPeakMatching(queryMass, queryRT, filterColumns, deltaMass,
+								deltaRT, LCMSPeakMatchingService.PM_ALGO_BIH_MASS_RT,
+								LCMSPeakMatchingService.PM_ALGO_BIH_SCORING_MATCH_SPECTRA, modeN, resolutionN, null,
+								null, null);
 						break;
 					case "LCMSMATCHING":
-						results = LCMSPeakMatchingService.runPeakMatching(queryMass, null, null, deltaMass,
-								null, LCMSPeakMatchingService.PM_ALGO_SACLAY_MASS,
-								LCMSPeakMatchingService.PM_ALGO_SACLAY_SCORING_MATCH_SPECTRA, modeN,
-								resolutionN, dbName, username, password);
+						results = LCMSPeakMatchingService.runPeakMatching(queryMass, null, null, deltaMass, null,
+								LCMSPeakMatchingService.PM_ALGO_SACLAY_MASS,
+								LCMSPeakMatchingService.PM_ALGO_SACLAY_SCORING_MATCH_SPECTRA, modeN, resolutionN, null,
+								null, null);
 						break;
 					case "LCMSMATCHINGRT":
-						results = LCMSPeakMatchingService.runPeakMatching(queryMass, queryRT, filterColumns,
-								deltaMass, deltaRT, LCMSPeakMatchingService.PM_ALGO_SACLAY_MASS_RT,
-								LCMSPeakMatchingService.PM_ALGO_SACLAY_SCORING_MATCH_SPECTRA, modeN,
-								resolutionN, dbName, username, password);
+						results = LCMSPeakMatchingService.runPeakMatching(queryMass, queryRT, filterColumns, deltaMass,
+								deltaRT, LCMSPeakMatchingService.PM_ALGO_SACLAY_MASS_RT,
+								LCMSPeakMatchingService.PM_ALGO_SACLAY_SCORING_MATCH_SPECTRA, modeN, resolutionN, null,
+								null, null);
 						break;
 					default:
 						break;
@@ -424,11 +401,9 @@ public class ToolsController {
 						searchResults.put("success", true);
 
 						// get
-						@SuppressWarnings("unchecked")
-						List<FullScanLCSpectrum> listOfSpectra = (List<FullScanLCSpectrum>) results
-								.get("results");
+						List<FullScanLCSpectrum> listOfSpectra = (List<FullScanLCSpectrum>) results.get("results");
 						// prune
-						listOfSpectra = Utils.pruneFullScanLCMSspectra(listOfSpectra);
+						listOfSpectra = PeakForestPruneUtils.pruneFullScanLCMSspectra(listOfSpectra);
 						// map
 						searchResults.put("lcmsSpectra", listOfSpectra);
 					}
@@ -530,8 +505,8 @@ public class ToolsController {
 				}
 
 				// II.C - RUN B***, RUN!!!
-				results = LCMSMSPeakMatchingService.runPeakMatching(queryMZ, queryRI, precursorMZ,
-						precursorMZdelta, peaklistDeltaPPM, modeN, resolutionN, dbName, username, password);
+				results = LCMSMSPeakMatchingService.runPeakMatching(queryMZ, queryRI, precursorMZ, precursorMZdelta,
+						peaklistDeltaPPM, modeN, resolutionN, null, null, null);
 
 				// III - fetch/prune results
 
@@ -545,11 +520,10 @@ public class ToolsController {
 						// success
 						searchResults.put("success", true);
 						// get
-						@SuppressWarnings("unchecked")
 						List<FragmentationLCSpectrum> listOfSpectra = (List<FragmentationLCSpectrum>) results
 								.get("results");
 						// prune
-						listOfSpectra = Utils.pruneFragmentationLCMSspectra(listOfSpectra);
+						listOfSpectra = PeakForestPruneUtils.pruneFragmentationLCMSspectra(listOfSpectra);
 						// map
 						searchResults.put("lcmsmsSpectra", listOfSpectra);
 					}
@@ -569,114 +543,123 @@ public class ToolsController {
 		return searchResults;
 	}
 
-	@RequestMapping(value = "/image/{type}/{inchikey}")
-	public @ResponseBody String showImage(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable String type, @PathVariable String inchikey)
-			throws PeakForestManagerException {
-
-		// set response header
-		response.setContentType("image/svg+xml");
+	@RequestMapping(value = "/image/{type}/{inchikey}") // , produces =
+														// MediaType.APPLICATION_OCTET_STREAM_VALUE
+	public @ResponseBody void showImage(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable String type, @PathVariable String inchikey) throws PeakForestManagerException, IOException {
 
 		// get images path
-		String svgImagesPath = Utils.getBundleConfElement("compoundImagesSVG.folder");
+		String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
 		if (!(new File(svgImagesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
 
-		// init db
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+		// case 1 - return PNG image
+		File imgPNGPath = new File(svgImagesPath + File.separator + inchikey + ".png");
+		if (imgPNGPath.exists()) {
+			displayImage(imgPNGPath, "png", response);
+			return;
+		}
 
-		// get obabel bin
+		// case 2 - return SVG image
+		File imgSVGPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
 
-		File imgPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
-		if (!imgPath.exists()) {
-			// create id!
+		if (!imgSVGPath.exists()) {
+			// case 3 - image does not exists (yet!) -> create SVG image via open babel
 			try {
 				if (type.equalsIgnoreCase("chemical")) {
-					ChemicalCompound c = ChemicalCompoundManagementService.readByInChIKey(inchikey, dbName,
-							username, password);
+					ChemicalCompound c = ChemicalCompoundManagementService.readByInChIKey(inchikey);
 					if (c != null) {
-						// OBabelTower.convertFormat(c.getInChI(), OBabelTower.FORMAT_INCHI,
-						// OBabelTower.FORMAT_INCHIKEY);
-						// OBabelTower.writeFile(c.getInChI(), imgPath, OBabelTower.FORMAT_INCHI,
-						// OBabelTower.FORMAT_SVG, "");
 						ArrayList<StructureChemicalCompound> compoundsList = new ArrayList<>();
 						compoundsList.add(c);
 						CompoundsImagesAndMolFilesGeneratorThread ci = new CompoundsImagesAndMolFilesGeneratorThread(
 								compoundsList, svgImagesPath, null);
 						ExecutorService executor = Executors.newCachedThreadPool();
 						executor.submit(ci);
-					} else
-						return svgImageError(svgImagesPath);
+					} else {
+						displayErrorSvgImage(response);
+						return;
+					}
 				} else if (type.equalsIgnoreCase("generic")) {
-					GenericCompound c = GenericCompoundManagementService.readByInChIKey(inchikey, dbName,
-							username, password);
+					GenericCompound c = GenericCompoundManagementService.readByInChIKey(inchikey);
 					if (c != null) {
-						// OBabelTower.convertFormat(c.getInChI(), OBabelTower.FORMAT_INCHI,
-						// OBabelTower.FORMAT_INCHIKEY);
-						// OBabelTower.writeFile(c.getInChI(), imgPath, OBabelTower.FORMAT_INCHI,
-						// OBabelTower.FORMAT_SVG, "");
 						ArrayList<StructureChemicalCompound> compoundsList = new ArrayList<>();
 						compoundsList.add(c);
 						CompoundsImagesAndMolFilesGeneratorThread ci = new CompoundsImagesAndMolFilesGeneratorThread(
 								compoundsList, svgImagesPath, null);
 						ExecutorService executor = Executors.newCachedThreadPool();
 						executor.submit(ci);
-					} else
-						return svgImageError(svgImagesPath);
+					} else {
+						displayErrorSvgImage(response);
+						return;
+					}
+
+				} else if (type.equalsIgnoreCase("gc-derived")) {
+					GCDerivedCompound c = GCDerivedCompoundDao.read(inchikey, false, false, false, false, false, false);
+					if (c != null) {
+						ArrayList<StructureChemicalCompound> compoundsList = new ArrayList<>();
+						compoundsList.add(c);
+						CompoundsImagesAndMolFilesGeneratorThread ci = new CompoundsImagesAndMolFilesGeneratorThread(
+								compoundsList, svgImagesPath, null);
+						ExecutorService executor = Executors.newCachedThreadPool();
+						executor.submit(ci);
+					} else {
+						displayErrorSvgImage(response);
+						return;
+					}
 				} else {
-					// TODO elsif other ref
-					return svgImageError(svgImagesPath);
+					// elsif other ref
+					displayErrorSvgImage(response);
+					return;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				return svgImageError(svgImagesPath);
+				displayErrorSvgImage(response);
+				return;
 			}
 		}
 
 		try {
-			return SimpleFileReader.readFile(imgPath.getAbsolutePath(), StandardCharsets.UTF_8);
+			displayImage(imgSVGPath, "svg", response);
+			return;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return svgImageError(svgImagesPath);
+			displayErrorSvgImage(response);
+			return;
 		}
+
 	}
 
 	@RequestMapping(value = "/image/{inchikey}.svg")
-	public @ResponseBody String showImageQuick(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable String inchikey) throws PeakForestManagerException {
-
-		// set response header
-		response.setContentType("image/svg+xml");
+	public @ResponseBody void showImageQuick(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable String inchikey) throws PeakForestManagerException, IOException {
 
 		// get images path
-		String svgImagesPath = Utils.getBundleConfElement("compoundImagesSVG.folder");
+		String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
 		if (!(new File(svgImagesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
 
-		File imgPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
+		// set images files
+		File imgPNGPath = new File(svgImagesPath + File.separator + inchikey + ".png");
+		File imgSvgPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
+
+		if (imgPNGPath.exists()) {
+			displayImage(imgPNGPath, "png", response);
+			return;
+		} else if (imgSvgPath.exists()) {
+			displayImage(imgPNGPath, "svg", response);
+			return;
+		}
 		// TODO if do not exist create it
-		try {
-			return SimpleFileReader.readFile(imgPath.getAbsolutePath(), StandardCharsets.UTF_8);
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return svgImageError(svgImagesPath);
+		else {
+			displayErrorSvgImage(response);
+			return;
 		}
 	}
 
-	/**
-	 * @param imgPath
-	 * @return
-	 * @throws IOException
-	 */
 	private String svgImageError(String imgPath) {
 		try {
 			return SimpleFileReader.readFile(new File(getClass().getClassLoader()
-					.getResource(Utils.getBundleConfElement("compoundImagesSVG.notFound")).getFile())
+					.getResource(PeakForestUtils.getBundleConfElement("compoundImagesSVG.notFound")).getFile())
 							.getAbsolutePath(),
 					StandardCharsets.UTF_8);
 		} catch (IOException e) {
@@ -685,15 +668,43 @@ public class ToolsController {
 		return "";
 	}
 
+	private void displayErrorSvgImage(HttpServletResponse response) throws IOException, PeakForestManagerException {
+		File fileToDisplay = new File(getClass().getClassLoader()
+				.getResource(PeakForestUtils.getBundleConfElement("compoundImagesSVG.notFound")).getFile());
+		String ext = "svg";
+		displayImage(fileToDisplay, ext, response);
+	}
+
+	private void displayImage(File fileToDisplay, String ext, HttpServletResponse response)
+			throws IOException, PeakForestManagerException {
+		if (ext.equalsIgnoreCase("png") || ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("jpeg")) {
+			// get images path
+			BufferedImage bufferedImage = ImageIO.read(fileToDisplay);
+			response.setContentType("image/" + ext);
+			response.setHeader("Cache-control", "no-cache");
+			response.setHeader("Content-Disposition", "inline; filename=" + fileToDisplay.getName());
+			// response.setContentLength((int) bufferedImage.length());
+			ImageIO.write(bufferedImage, ext, response.getOutputStream());
+			response.getOutputStream().flush();
+			response.getOutputStream().close();
+		} else if (ext.equalsIgnoreCase("svg")) {
+			response.setContentType("image/svg+xml");
+			response.setHeader("Cache-control", "no-cache");
+			response.setHeader("Content-Disposition", "inline; filename=" + fileToDisplay.getName());
+			// get images path
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(fileToDisplay));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
+		}
+	}
+
 	@RequestMapping(value = "/mol/{inchikey}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public @ResponseBody String getMolFile(HttpServletResponse response, @PathVariable String inchikey)
 			throws PeakForestManagerException {
 
 		// get mol path
-		String molFileRepPath = Utils.getBundleConfElement("compoundMolFiles.folder");
+		String molFileRepPath = PeakForestUtils.getBundleConfElement("compoundMolFiles.folder");
 		if (!(new File(molFileRepPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
 
 		// response.setContentType("text/plain");
 
@@ -711,7 +722,8 @@ public class ToolsController {
 				// org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
 				// response.flushBuffer();
 			} catch (IOException ex) {
-				// log.info("Error writing file to output stream. Filename was '{}'", fileName, ex);
+				// log.info("Error writing file to output stream. Filename was '{}'", fileName,
+				// ex);
 				throw new RuntimeException("IOError writing file to output stream");
 			}
 		}
@@ -719,21 +731,21 @@ public class ToolsController {
 	}
 
 	@RequestMapping(value = "/json/{fileName}.json")
-	public @ResponseBody String showJson(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable String fileName) throws PeakForestManagerException {
+	public @ResponseBody String showJson(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable String fileName) throws PeakForestManagerException {
 
 		// set response header
 		response.setContentType("application/json");
 
 		String jsonFileName = fileName + ".json";
 		// String jsonMassVsLogP = Utils.getBundleConfElement("json.massVsLogP");
-		// String jsonPeakForestStats = Utils.getBundleConfElement("json.peakforestStats");
+		// String jsonPeakForestStats =
+		// Utils.getBundleConfElement("json.peakforestStats");
 
 		// get images path
-		String jsonFilesPath = Utils.getBundleConfElement("json.folder");
+		String jsonFilesPath = PeakForestUtils.getBundleConfElement("json.folder");
 		if (!(new File(jsonFilesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + jsonFilesPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + jsonFilesPath);
 
 		File jsonFile = new File(jsonFilesPath + File.separator + jsonFileName);
 		try {
@@ -745,14 +757,13 @@ public class ToolsController {
 	}
 
 	@RequestMapping(value = "/numbered/{inchikey}.mol", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public @ResponseBody String getMolNumberedFile(HttpServletResponse response,
-			@PathVariable String inchikey) throws PeakForestManagerException {
+	public @ResponseBody String getMolNumberedFile(HttpServletResponse response, @PathVariable String inchikey)
+			throws PeakForestManagerException {
 
 		// get mol path
-		String molFileRepPath = Utils.getBundleConfElement("compoundNumberedFiles.folder");
+		String molFileRepPath = PeakForestUtils.getBundleConfElement("compoundNumberedFiles.folder");
 		if (!(new File(molFileRepPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
 
 		// response.setContentType("text/plain");
 
@@ -770,7 +781,8 @@ public class ToolsController {
 				// org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
 				// response.flushBuffer();
 			} catch (IOException ex) {
-				// log.info("Error writing file to output stream. Filename was '{}'", fileName, ex);
+				// log.info("Error writing file to output stream. Filename was '{}'", fileName,
+				// ex);
 				throw new RuntimeException("IOError writing file to output stream");
 			}
 		}
@@ -784,10 +796,9 @@ public class ToolsController {
 		response.setContentType("image/svg+xml");
 
 		// get images path
-		String svgImagesPath = Utils.getBundleConfElement("compoundNumberedFiles.folder");
+		String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundNumberedFiles.folder");
 		if (!(new File(svgImagesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
 
 		File imgPath = new File(svgImagesPath + File.separator + inchikey + ".svg");
 		try {
@@ -813,17 +824,16 @@ public class ToolsController {
 	private void magicNils(String inchikey, String ext, HttpServletResponse response)
 			throws IOException, PeakForestManagerException {
 		// get images path
-		String uploadImagesPath = Utils.getBundleConfElement("compoundNumberedFiles.folder");
+		String uploadImagesPath = PeakForestUtils.getBundleConfElement("compoundNumberedFiles.folder");
 		if (!(new File(uploadImagesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + uploadImagesPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + uploadImagesPath);
 		File imgPath = new File(uploadImagesPath + File.separator + inchikey + "." + ext);
 		BufferedImage bufferedImage = ImageIO.read(imgPath);
 		response.setContentType("image/" + ext);
 		response.setHeader("Cache-control", "no-cache");
 		response.setHeader("Content-Disposition", "inline; filename=" + imgPath.getName());
 		// response.setContentLength((int) bufferedImage.length());
-		ImageIO.write(bufferedImage, "png", response.getOutputStream());
+		ImageIO.write(bufferedImage, ext, response.getOutputStream());
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
 	}
@@ -831,15 +841,10 @@ public class ToolsController {
 	@RequestMapping(value = "/metadata/lcms/list-code-columns", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Object getListLCcolumnsCode() {
 
-		// init
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String login = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// run
 		try {
 			// search
-			Map<String, Object> results = LiquidChromatographyMetadataManagementService
-					.readDistinctColumnByCode(dbName, login, password);
+			Map<String, Object> results = LiquidChromatographyMetadataDao.getDistinctColumn();
 			return results;
 		} catch (Exception e) {
 			Map<String, Object> error = new HashMap<String, Object>();
@@ -849,25 +854,18 @@ public class ToolsController {
 	}
 
 	///////////////////////////////////////////////////////////////////////////
-	/**
-	 * @param request
-	 * @param response
-	 * @param id
-	 * @throws IOException
-	 * @throws PeakForestManagerException
-	 */
+
 	@RequestMapping(value = "/spectra_img/{id}.png", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
 	public @ResponseBody void showImageSpectraPNG(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("id") String id) throws IOException, PeakForestManagerException {
 		// get images path
-		String spectraImagesPath = Utils.getBundleConfElement("imageFile.nmr.folder");
+		String spectraImagesPath = PeakForestUtils.getBundleConfElement("imageFile.nmr.folder");
 		if (!(new File(spectraImagesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + spectraImagesPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + spectraImagesPath);
 		File imgPath = new File(spectraImagesPath + File.separator + id + ".png");
 		if (!imgPath.exists()) {
-			String toolURL = Utils.getBundleConfElement("nmrspectrum.getpng.service.url");
-			String spectraImgDirectory = Utils.getBundleConfElement("imageFile.nmr.folder");
+			String toolURL = PeakForestUtils.getBundleConfElement("nmrspectrum.getpng.service.url");
+			String spectraImgDirectory = PeakForestUtils.getBundleConfElement("imageFile.nmr.folder");
 			ImageGenerator.getSpectrumPNGimage(toolURL, id, spectraImgDirectory);
 		}
 		BufferedImage bufferedImage = ImageIO.read(imgPath);
@@ -889,20 +887,10 @@ public class ToolsController {
 		return "module/nmrpro-light";
 	}
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param label
-	 * @param id
-	 * @param model
-	 * @return
-	 */
 	@RequestMapping(value = "/spectrum-json/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, params = {
 			"label", })
-	public @ResponseBody Object getNMRspectrumJsonData4NMRpro(HttpServletRequest request,
-			HttpServletResponse response, Locale locale, @RequestParam("label") String label,
-			@PathVariable String id, Model model) {
+	public @ResponseBody Object getNMRspectrumJsonData4NMRpro(HttpServletRequest request, HttpServletResponse response,
+			Locale locale, @RequestParam("label") String label, @PathVariable String id, Model model) {
 		return NMRpro.getFile(id, label);
 	}
 

@@ -1,12 +1,11 @@
 <%@page import="fr.metabohub.peakforest.model.maps.MapManager"%>
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page session="false"%>
-<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
 <%
-boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metexplore.ws.use"));
+	boolean useMEwebservice = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("metexplore.ws.use"));
 %>
 
 <div class="panel panel-default">
@@ -23,9 +22,13 @@ boolean useMEwebservice = Boolean.parseBoolean(Utils.getBundleConfElement("metex
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.nbLCMSMSspectra" text="Number of LC-MSMS spectrum:" /> <span id="nbLCMSMSspectra"><i class="fa fa-refresh fa-spin"></i></span></li>
 		  <li class="list-group-item"><spring:message code="page.tools.statPF.perCentRccOneSpectra" text="Percentage of Ref. Chemical Compound with at least one spectrum:" /> <span id="perCentRccOneSpectra"><i class="fa fa-refresh fa-spin"></i></span>%</li>
 		</ul>
-<% if (useMEwebservice) { %>
+<%
+	if (useMEwebservice) {
+%>
 		<small><spring:message code="page.tools.statPF.refMEtxt1" text="For Biological informations: please refer to" /> <a id="clickMetExploreStat" href="#"><spring:message code="page.tools.statPF.refMEtxt2" text="MetExplore statistics" /></a>.</small>
-<% } %>
+<%
+	}
+%>
 	</div>
 </div>
 <br />
@@ -51,9 +54,9 @@ $("#clickMetExploreStat").on( "click", function() {
 });
 
 $( document ).ready(function() {
-	$.getJSON('json/<%=Utils.getBundleConfElement("json.peakForestStatistics")%>', function(jsonData) {
+	$.getJSON('json/<%=PeakForestUtils.getBundleConfElement("json.peakForestStatistics")%>', function(jsonData) {
 		$("#nbCC").html(jsonData.number_chemical_compounds);
-		var nbRCC = jsonData.number_sub_structures+jsonData.number_generic_compounds+jsonData.number_chemical_compounds;
+		var nbRCC = jsonData.number_generic_compounds + jsonData.number_chemical_compounds;
 		$("#nbRCC").html(nbRCC);
 		$("#nbNMRspectra").html(jsonData.number_nmr_spectra);
 		$("#nbLCMSspectra").html(jsonData.number_lcms_spectra);

@@ -1,0 +1,2 @@
+this folder must contains the following file(s):
+	PeakForest_mol_num.fr.pdf

@@ -30,18 +30,40 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import fr.metabohub.peakforest.dao.CurationMessageDao;
+import fr.metabohub.peakforest.dao.metadata.ASampleMixMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.AnalyzerMassIonizationMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.AnalyzerMassSpectrometerDeviceMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.AnalyzerNMRSpectrometerDeviceMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.GazChromatographyMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.LiquidChromatographyMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.OtherMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.SampleNMRTubeConditionsDao;
+import fr.metabohub.peakforest.dao.spectrum.FragmentationLCSpectrumDao;
+import fr.metabohub.peakforest.dao.spectrum.FullScanLCSpectrumDao;
+import fr.metabohub.peakforest.dao.spectrum.NMR1DSpectrumDao;
+import fr.metabohub.peakforest.dao.spectrum.NMR2DSpectrumDao;
+import fr.metabohub.peakforest.dao.spectrum.PeakPatternDao;
 import fr.metabohub.peakforest.model.CurationMessage;
 import fr.metabohub.peakforest.model.compound.Compound;
+import fr.metabohub.peakforest.model.compound.GCDerivedCompound;
+import fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound;
 import fr.metabohub.peakforest.model.compound.StructureChemicalCompound;
+import fr.metabohub.peakforest.model.metadata.ASampleMix;
 import fr.metabohub.peakforest.model.metadata.AnalyticalMatrix;
+import fr.metabohub.peakforest.model.metadata.AnalyzerGasMassIonization;
+import fr.metabohub.peakforest.model.metadata.AnalyzerLiquidMassIonization;
 import fr.metabohub.peakforest.model.metadata.AnalyzerMassIonBeamMetadata;
 import fr.metabohub.peakforest.model.metadata.AnalyzerMassIonTrapMetadata;
 import fr.metabohub.peakforest.model.metadata.AnalyzerMassIonization;
 import fr.metabohub.peakforest.model.metadata.AnalyzerMassSpectrometerDevice;
 import fr.metabohub.peakforest.model.metadata.AnalyzerNMRSpectrometerDevice;
+import fr.metabohub.peakforest.model.metadata.GCDerivedCompoundMetadata;
+import fr.metabohub.peakforest.model.metadata.GasSampleMix;
+import fr.metabohub.peakforest.model.metadata.GazChromatography;
 import fr.metabohub.peakforest.model.metadata.LiquidChromatography;
+import fr.metabohub.peakforest.model.metadata.LiquidSampleMix;
 import fr.metabohub.peakforest.model.metadata.OtherMetadata;
-import fr.metabohub.peakforest.model.metadata.SampleMix;
 import fr.metabohub.peakforest.model.metadata.SampleNMRTubeConditions;
 import fr.metabohub.peakforest.model.metadata.StandardizedMatrix;
 import fr.metabohub.peakforest.model.spectrum.CompoundSpectrum;
@@ -49,6 +71,7 @@ import fr.metabohub.peakforest.model.spectrum.FragmentationLCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanGCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.FullScanLCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.IFragmentationSpectrum;
+import fr.metabohub.peakforest.model.spectrum.IGCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.ILCSpectrum;
 import fr.metabohub.peakforest.model.spectrum.ISampleSpectrum;
 import fr.metabohub.peakforest.model.spectrum.MassPeak;
@@ -67,26 +90,20 @@ import fr.metabohub.peakforest.services.CurationMessageManagementService;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.services.compound.StructuralCompoundManagementService;
-import fr.metabohub.peakforest.services.metadata.AnalyzerMassIonizationMetadataManagementService;
-import fr.metabohub.peakforest.services.metadata.AnalyzerMassSpectrometerDeviceMetadataManagementService;
-import fr.metabohub.peakforest.services.metadata.AnalyzerNMRSpectrometerDeviceManagementService;
-import fr.metabohub.peakforest.services.metadata.LiquidChromatographyMetadataManagementService;
-import fr.metabohub.peakforest.services.metadata.OtherMetadataManagementService;
-import fr.metabohub.peakforest.services.metadata.SampleMixMetadataManagementService;
-import fr.metabohub.peakforest.services.metadata.SampleNMRTubeConditionsManagementService;
 import fr.metabohub.peakforest.services.spectrum.FragmentationLCSpectrumManagementService;
+import fr.metabohub.peakforest.services.spectrum.FullScanGCSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.FullScanLCSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.ImportService;
 import fr.metabohub.peakforest.services.spectrum.NMR1DSpectrumManagementService;
 import fr.metabohub.peakforest.services.spectrum.NMR2DSpectrumManagementService;
-import fr.metabohub.peakforest.services.spectrum.PeakPatternManagementService;
 import fr.metabohub.peakforest.services.spectrum.SpectrumManagementService;
 import fr.metabohub.peakforest.utils.ChromatoUtils;
 import fr.metabohub.peakforest.utils.PeakComparator;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestPruneUtils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SimpleFileReader;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
 import fr.metabohub.spectralibraries.mapper.PeakForestDataMapper;
 import fr.metabohub.spectralibraries.utils.JsonTools;
 
@@ -101,33 +118,20 @@ import fr.metabohub.spectralibraries.utils.JsonTools;
 // @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpectraController {
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param id
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/compound-spectra-module/{type}/{id}", method = RequestMethod.GET)
-	public String showSpectraInCompoundSheet(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable String type, @PathVariable int id, Model model)
-			throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public String showSpectraInCompoundSheet(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable String type, @PathVariable int id, Model model) throws PeakForestManagerException {
 		// load data
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -143,38 +147,25 @@ public class SpectraController {
 		return "module/compound-spectra-module";
 	}
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param type
-	 * @param id
-	 * @param model
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/compound-spectra-carrousel-light-module/{type}/{id}", method = RequestMethod.GET)
-	public String showSpectraInCompoundModal(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable String type, @PathVariable int id, Model model,
-			@RequestParam("isExt") Boolean isExt) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public String showSpectraInCompoundModal(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable String type, @PathVariable int id, Model model, @RequestParam("isExt") Boolean isExt)
+			throws PeakForestManagerException {
 		// load data
 		StructureChemicalCompound refCompound = null;
-		if (type.equalsIgnoreCase("chemical"))
+		if (type.equalsIgnoreCase("chemical")) {
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		else if (type.equalsIgnoreCase("generic"))
+		} else if (type.equalsIgnoreCase("generic")) {
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
 		// TODO other
 
 		// init var
@@ -183,8 +174,9 @@ public class SpectraController {
 		model.addAttribute("spectrum_load_details_modalbox", false); // cpt-sheet (case 02)
 
 		// load data in model
-		if (refCompound != null)
+		if (refCompound != null) {
 			loadSpectraData(type, model, refCompound, request);
+		}
 
 		model.addAttribute("set_width", "");
 
@@ -198,35 +190,21 @@ public class SpectraController {
 		return "module/compound-spectra-carrousel-module";
 	}
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param type
-	 * @param id
-	 * @param model
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/compound-spectra-carrousel-full-module/{type}/{id}/{techFilter}", method = RequestMethod.GET)
 	public String showSpectraInCompoundSheetByTech(HttpServletRequest request, HttpServletResponse response,
 			Locale locale, @PathVariable String type, @PathVariable long id, @PathVariable String techFilter,
 			Model model, @RequestParam("isExt") Boolean isExt) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// load data
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -238,8 +216,9 @@ public class SpectraController {
 		model.addAttribute("spectrum_load_details_modalbox", false); // cpt-sheet (case 02)
 
 		// load data in model
-		if (refCompound != null)
+		if (refCompound != null) {
 			loadSpectraData(type, model, refCompound, request);
+		}
 
 		switch (techFilter) {
 		case "all":
@@ -283,28 +262,15 @@ public class SpectraController {
 		return "module/compound-spectra-carrousel-module";
 	}
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param fullscan
-	 * @param frag
-	 * @param model
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
-	@RequestMapping(value = "/load-lc-spetra", method = RequestMethod.POST, params = { "fullscan", "frag",
-			"name", "mode", "id" })
-	public String loadScriptLC(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			@RequestParam("fullscan") List<Long> fullscan, @RequestParam("frag") List<Long> frag,
-			@RequestParam("name") String name, @RequestParam("mode") String mode,
-			@RequestParam("id") String id, Model model) throws PeakForestManagerException {
+	@RequestMapping(value = "/load-ms-spectra", method = RequestMethod.POST, params = { "fullscan-lc", "frag-lc",
+			"fullscan-gc", "name", "mode", "id" })
+	public String loadScriptMS(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@RequestParam("fullscan-lc") List<Long> fullscanLC, @RequestParam("frag-lc") List<Long> frag,
+			@RequestParam("fullscan-gc") List<Long> fullscanGC, @RequestParam("name") String name,
+			@RequestParam("mode") String mode, @RequestParam("id") String id, Model model)
+			throws PeakForestManagerException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		if (mode.equalsIgnoreCase("light")) {
 			model.addAttribute("mode_light", true);
 			model.addAttribute("spectrum_div_id", id);
@@ -325,23 +291,29 @@ public class SpectraController {
 		// load FullScan and Frag. spectra data from DB
 		List<FullScanLCSpectrum> listFullScanLcSpectra = new ArrayList<>();
 		try {
-			listFullScanLcSpectra = FullScanLCSpectrumManagementService.read(fullscan, dbName, username,
-					password);
+			listFullScanLcSpectra = FullScanLCSpectrumManagementService.read(fullscanLC);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		List<FragmentationLCSpectrum> listFragLcSpectra = new ArrayList<>();
 		try {
-			listFragLcSpectra = FragmentationLCSpectrumManagementService.read(frag, dbName, username,
-					password);
+			listFragLcSpectra = FragmentationLCSpectrumManagementService.read(frag);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		List<FullScanGCSpectrum> listFullScanGcSpectra = new ArrayList<>();
+		try {
+			listFullScanGcSpectra = FullScanGCSpectrumManagementService.read(fullscanGC);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		// I - load series
-		int seriesCount = listFullScanLcSpectra.size() + listFragLcSpectra.size();
-		// HashMap<String, String>[] seriesShow = new HashMap<String, String>[seriesCount];
+		int seriesCount = listFullScanLcSpectra.size() + listFragLcSpectra.size() + listFullScanGcSpectra.size();
+		// HashMap<String, String>[] seriesShow = new HashMap<String,
+		// String>[seriesCount];
 
 		// I.A - series data (m/z vs RI)
 		Object[] seriesShowData = new Object[seriesCount];
@@ -353,15 +325,23 @@ public class SpectraController {
 		Object[] seriesNames = new Object[seriesCount];
 
 		// I.C - load spectrum basic data
-		Double minMass = 1000.0;
-		Double maxMass = 10.0;
+		Double minMass = 1000.0, minMassPeak = 1000.0;
+		Double maxMass = 10.0, maxMassPeak = 10.0;
 
 		// I.D - load metadata
 		Object[] seriesSpectrumMetadata = new Object[seriesCount];
 
+		// I.E - spectrum custom visualization
+		Boolean[] spectrumShowCompoAdducts = new Boolean[seriesCount];
+		Boolean[] spectrumLoadTopPeaksLabel = new Boolean[seriesCount];
+		Boolean[] spectrumShowTinySymbols = new Boolean[seriesCount];
+
 		List<MassSpectrum> listMassSpectra = new ArrayList<>();
 		listMassSpectra.addAll(listFullScanLcSpectra);
 		listMassSpectra.addAll(listFragLcSpectra);
+		listMassSpectra.addAll(listFullScanGcSpectra);
+
+		boolean hasGCSpectra = !listFullScanGcSpectra.isEmpty();
 
 		// II.A - load series
 		int cpt = 0;
@@ -402,7 +382,11 @@ public class SpectraController {
 					minMass -= (minMass * 0.1);
 				if (maxMass.equals(mp.getMassToChargeRatio()))
 					maxMass += (maxMass * 0.1);
-
+				// ...
+				if (minMassPeak > mp.getMassToChargeRatio())
+					minMassPeak = mp.getMassToChargeRatio();
+				if (maxMassPeak < mp.getMassToChargeRatio())
+					maxMassPeak = mp.getMassToChargeRatio();
 			}
 			seriesShowData[cpt] = peakList;
 			seriesHideData[cpt] = peakListH;
@@ -414,9 +398,8 @@ public class SpectraController {
 				for (Compound c : spectrum.getListOfCompounds()) {
 					if (c instanceof StructureChemicalCompound)
 						try {
-							listCC.add(StructuralCompoundManagementService.readByInChIKey(
-									((StructureChemicalCompound) c).getInChIKey(), dbName, username,
-									password));
+							listCC.add(StructuralCompoundManagementService
+									.readByInChIKey(((StructureChemicalCompound) c).getInChIKey()));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -427,9 +410,12 @@ public class SpectraController {
 			}
 			// name
 			String spectrumName = spectrum.getMassBankName().replaceAll("'", "\\'");
+			String spectrumPFEMName = spectrum.getMassBankNameViaPfemHTML().replaceAll("'", "\\'");
+			String spectrumPForestId = spectrum.getPeakForestID();
 			// if (spectrum.getPolarity() == MassSpectrum.MASS_SPECTRUM_POLARITY_POSITIVE)
 			// spectrumName += "MS-POS";
-			// else if (spectrum.getPolarity() == MassSpectrum.MASS_SPECTRUM_POLARITY_NEGATIVE)
+			// else if (spectrum.getPolarity() ==
+			// MassSpectrum.MASS_SPECTRUM_POLARITY_NEGATIVE)
 			// spectrumName += "MS-NEG";
 			String ionization = "";
 			if (spectrum.getAnalyzerMassIonization() == null)
@@ -440,8 +426,9 @@ public class SpectraController {
 			metadata.put("code", spectrumName);
 			// metadata basic
 			metadata.put("name", spectrumName);
-			metadata.put("RT",
-					"[" + spectrum.getRangeRetentionTimeFrom() + " - " + spectrum.getRangeMassTo() + "]");
+			metadata.put("pfem_name", spectrumPFEMName);
+			metadata.put("pforest_id", spectrumPForestId);
+			metadata.put("RT", "[" + spectrum.getRangeRetentionTimeFrom() + " - " + spectrum.getRangeMassTo() + "]");
 			switch (spectrum.getPolarity()) {
 			case MassSpectrum.MASS_SPECTRUM_POLARITY_POSITIVE:
 				metadata.put("polarity", "POS");
@@ -471,10 +458,16 @@ public class SpectraController {
 			metadata.put("license", spectrum.getOtherMetadata().getLicense() + "");
 			metadata.put("licenseOther", "");
 			if (spectrum.getOtherMetadata().getLicenseOther() != null)
-				metadata.put("licenseOther",
-						spectrum.getOtherMetadata().getLicenseOther().replaceAll("'", "\\'") + "");
+				metadata.put("licenseOther", spectrum.getOtherMetadata().getLicenseOther().replaceAll("'", "\\'") + "");
 
 			seriesSpectrumMetadata[cpt] = metadata;
+
+			// GC-related customization
+			boolean isGCSpectrum = spectrum instanceof FullScanGCSpectrum;
+			spectrumShowCompoAdducts[cpt] = !isGCSpectrum;
+			spectrumLoadTopPeaksLabel[cpt] = isGCSpectrum;
+			spectrumShowTinySymbols[cpt] = isGCSpectrum;
+
 			cpt++;
 
 			// only for light
@@ -484,6 +477,16 @@ public class SpectraController {
 		// spectrum basic data
 		model.addAttribute("spectrum_min_mass", minMass);
 		model.addAttribute("spectrum_max_mass", maxMass);
+		if (hasGCSpectra) {
+			model.addAttribute("spectrum_min_mass", Math.max(minMass, Math.floor(minMassPeak / 100d) * 100d)); // the
+																												// closest
+																												// lower
+																												// hundred
+			model.addAttribute("spectrum_max_mass", Math.min(maxMass, Math.ceil(maxMassPeak / 100d) * 100d)); // the
+																												// closest
+																												// higher
+																												// hundred
+		}
 
 		// spectrum series
 		model.addAttribute("spectrum_series_show", seriesShowData);
@@ -496,27 +499,21 @@ public class SpectraController {
 		// metadata
 		model.addAttribute("spectrum_series_metadata", seriesSpectrumMetadata);
 
+		// visualization customization
+		model.addAttribute("spectrum_show_compo_adducts", spectrumShowCompoAdducts);
+		model.addAttribute("spectrum_load_top_peaks_label", spectrumLoadTopPeaksLabel);
+		model.addAttribute("spectrum_show_tiny_symbols", spectrumShowTinySymbols);
+
 		// LOAD SPECTRUMS
-		return "module/load-lc-spectra-script";
+		return "module/load-ms-spectra-script";
 	}
 
-	/**
-	 * @param type
-	 * @param model
-	 * @param refCompound
-	 * @throws PeakForestManagerException
-	 */
-	private void loadSpectraData(String type, Model model, StructureChemicalCompound refCompound,
-			HttpServletRequest request) throws PeakForestManagerException {
+	private void loadSpectraData(final String type, final Model model, final StructureChemicalCompound refCompound,
+			final HttpServletRequest request) throws PeakForestManagerException {
 
 		// COMPOUND
-		// sort names
-		// List<CompoundName> listOfNames = refCompound.getListOfCompoundNames();
-		// Collections.sort(listOfNames, new CompoundNameComparator());
-		// for (CompoundName cn : listOfNames)
-		// cn.setScore(Utils.round(cn.getScore(), 1));
-		String cpdName = Jsoup.clean(refCompound.getMainName(), Whitelist.basic());
-		cpdName = Utils.convertGreekCharToHTML(cpdName);
+		final String cpdNameClean = Jsoup.clean(refCompound.getMainName(), Whitelist.basic());
+		final String cpdName = PeakForestPruneUtils.convertGreekCharToHTML(cpdNameClean);
 		model.addAttribute("compound_main_name", cpdName);
 		model.addAttribute("compound_type", refCompound.getTypeString());
 		model.addAttribute("compound_id", refCompound.getId());
@@ -524,30 +521,35 @@ public class SpectraController {
 		model.addAttribute("compound_pfID", refCompound.getPeakForestID());
 
 		// SPECTRUM
-		if (refCompound.getListOfSpectra().isEmpty())
+		if (refCompound.getListOfSpectra().isEmpty()) {
 			model.addAttribute("contains_spectrum", false);
-		else {
+		} else {
 			model.addAttribute("contains_spectrum", true);
-			List<FullScanLCSpectrum> fullscanLcMsSpectrumList = new ArrayList<>();
-			List<FullScanGCSpectrum> fullscanGcMsSpectrumList = new ArrayList<>();
-			List<FragmentationLCSpectrum> fragLcMsSpectrumList = new ArrayList<>();
-			List<NMRSpectrum> nmrSpectrumList = new ArrayList<>();
+			final List<FullScanLCSpectrum> fullscanLcMsSpectrumList = new ArrayList<>();
+			final List<FullScanGCSpectrum> fullscanGcMsSpectrumList = new ArrayList<>();
+			final List<FragmentationLCSpectrum> fragLcMsSpectrumList = new ArrayList<>();
+			final List<NMRSpectrum> nmrSpectrumList = new ArrayList<>();
 			for (Spectrum s : refCompound.getListOfSpectra()) {
-				if (s instanceof FullScanLCSpectrum)
+				if (s instanceof FullScanLCSpectrum) {
+					s = FullScanLCSpectrumManagementService.read(s.getId());
 					fullscanLcMsSpectrumList.add((FullScanLCSpectrum) s);
-				else if (s instanceof FullScanGCSpectrum)
+				} else if (s instanceof FullScanGCSpectrum) {
+					s = FullScanGCSpectrumManagementService.read(s.getId());
 					fullscanGcMsSpectrumList.add((FullScanGCSpectrum) s);
-				else if (s instanceof FragmentationLCSpectrum)
+				} else if (s instanceof FragmentationLCSpectrum) {
+					s = FragmentationLCSpectrumManagementService.read(s.getId());
 					fragLcMsSpectrumList.add((FragmentationLCSpectrum) s);
-				else if (s instanceof NMR1DSpectrum)
+				} else if (s instanceof NMR1DSpectrum) {
+					s = NMR1DSpectrumManagementService.read(s.getId());
 					nmrSpectrumList.add((NMR1DSpectrum) s);
-				else if (s instanceof NMR2DSpectrum)
+				} else if (s instanceof NMR2DSpectrum) {
+					s = NMR2DSpectrumManagementService.read(s.getId());
 					nmrSpectrumList.add((NMR2DSpectrum) s);
-				else {
+				} else {
 					// other (NMR / uv)
 				}
 				if (s instanceof CompoundSpectrum) {
-					List<Compound> cptList = new ArrayList<Compound>();
+					final List<Compound> cptList = new ArrayList<Compound>();
 					cptList.add(refCompound);
 					((CompoundSpectrum) s).setListOfCompounds(cptList);
 				}
@@ -579,37 +581,35 @@ public class SpectraController {
 	// */
 	// private void spectrumLog(String logMessage) {
 	// String username = "?";
-	// if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
+	// if (SecurityContextHolder.getContext().getAuthentication().getPrincipal()
+	// instanceof User) {
 	// User user = null;
-	// user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+	// user = ((User)
+	// SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 	// username = user.getLogin();
 	// }
-	// SpectralDatabaseLogger.log(username, logMessage, SpectralDatabaseLogger.LOG_INFO);
+	// SpectralDatabaseLogger.log(username, logMessage,
+	// SpectralDatabaseLogger.LOG_INFO);
 	// }
 
 	@RequestMapping(value = "/show-compound-spectra-modal/{type}/{id}", method = RequestMethod.GET)
-	public String compoundspectraModalShow(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable String type, @PathVariable int id, Model model)
-			throws PeakForestManagerException {
+	public String compoundspectraModalShow(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable String type, @PathVariable int id, Model model) throws PeakForestManagerException {
 
 		// model.addAttribute("id", id);
 		// model.addAttribute("type", type);
 
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// load data
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -639,11 +639,6 @@ public class SpectraController {
 	@RequestMapping(value = "/spectra-light-module/{ids}", method = RequestMethod.GET)
 	public String showSpectraInModal(HttpServletRequest request, HttpServletResponse response, Locale locale,
 			@PathVariable String ids, Model model) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// string to longs
 		List<Long> spectrumIDs = new ArrayList<Long>();
 		// String rawList = ids.replaceAll("\\[", "").replaceAll("\\]", "");
@@ -657,7 +652,7 @@ public class SpectraController {
 		// load data
 		List<Spectrum> listOfAllSpectrum = new ArrayList<Spectrum>();
 		try {
-			listOfAllSpectrum = SpectrumManagementService.read(spectrumIDs, dbName, username, password);
+			listOfAllSpectrum = SpectrumManagementService.read(spectrumIDs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -671,39 +666,34 @@ public class SpectraController {
 		return "module/spectra-light-module";
 	}
 
-	/**
-	 * @param model
-	 * @param spectrumIDs
-	 * @param request
-	 * @throws Exception
-	 */
-	private void loadSpectraData(Model model, List<Spectrum> spectra, HttpServletRequest request) {
-
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	private void loadSpectraData(final Model model, final List<Spectrum> spectra, final HttpServletRequest request) {
 
 		// SPECTRUM
-		if (spectra.isEmpty())
+		if (spectra.isEmpty()) {
 			model.addAttribute("contains_spectrum", false);
-		else {
+		} else {
 			model.addAttribute("contains_spectrum", true);
-			List<FullScanLCSpectrum> fullscanLcMsSpectrumList = new ArrayList<>();
-			List<FullScanGCSpectrum> fullscanGcMsSpectrumList = new ArrayList<>();
-			List<FragmentationLCSpectrum> fragLcMsSpectrumList = new ArrayList<>();
-			List<NMRSpectrum> nmrSpectrumList = new ArrayList<>();
+			final List<FullScanLCSpectrum> fullscanLcMsSpectrumList = new ArrayList<>();
+			final List<FullScanGCSpectrum> fullscanGcMsSpectrumList = new ArrayList<>();
+			final List<FragmentationLCSpectrum> fragLcMsSpectrumList = new ArrayList<>();
+			final List<NMRSpectrum> nmrSpectrumList = new ArrayList<>();
 			for (Spectrum s : spectra) {
-				if (s instanceof FullScanLCSpectrum)
+				if (s instanceof FullScanLCSpectrum) {
+					s = FullScanLCSpectrumManagementService.read(s.getId());
 					fullscanLcMsSpectrumList.add((FullScanLCSpectrum) s);
-				else if (s instanceof FullScanGCSpectrum)
+				} else if (s instanceof FullScanGCSpectrum) {
+					s = FullScanGCSpectrumManagementService.read(s.getId());
 					fullscanGcMsSpectrumList.add((FullScanGCSpectrum) s);
-				else if (s instanceof FragmentationLCSpectrum)
+				} else if (s instanceof FragmentationLCSpectrum) {
+					s = FragmentationLCSpectrumManagementService.read(s.getId());
 					fragLcMsSpectrumList.add((FragmentationLCSpectrum) s);
-				else if (s instanceof NMR1DSpectrum)
+				} else if (s instanceof NMR1DSpectrum) {
+					s = NMR1DSpectrumManagementService.read(s.getId());
 					nmrSpectrumList.add((NMR1DSpectrum) s);
-				else if (s instanceof NMR2DSpectrum)
+				} else if (s instanceof NMR2DSpectrum) {
+					s = NMR2DSpectrumManagementService.read(s.getId());
 					nmrSpectrumList.add((NMR2DSpectrum) s);
-				else {
+				} else {
 					// other (NMR / uv)
 				}
 				// cpd name
@@ -714,9 +704,8 @@ public class SpectraController {
 						Compound c = cs.getListOfCompounds().get(0);
 						if (c instanceof StructureChemicalCompound) {
 							try {
-								c = StructuralCompoundManagementService.readByInChIKey(
-										((StructureChemicalCompound) c).getInChIKey(), dbName, username,
-										password);
+								c = StructuralCompoundManagementService
+										.readByInChIKey(((StructureChemicalCompound) c).getInChIKey());
 								List<Compound> listC = new ArrayList<Compound>();
 								listC.add(c);
 								cs.setListOfCompounds(listC);
@@ -749,31 +738,13 @@ public class SpectraController {
 	// ///////////////////////
 	// NMR
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param nmr
-	 * @param name
-	 * @param mode
-	 *            light or full
-	 * @param id
-	 * @param model
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
-	@RequestMapping(value = "/load-nmr-1d-spectra", method = RequestMethod.POST, params = { "nmr", "name",
-			"mode", "id" })
+	@RequestMapping(value = "/load-nmr-1d-spectra", method = RequestMethod.POST, params = { "nmr", "name", "mode",
+			"id" })
 	public String loadScriptNMR1D(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			@RequestParam("nmr") List<Long> nmr, @RequestParam("name") String name,
-			@RequestParam("mode") String mode, @RequestParam("id") String id, Model model)
-			throws PeakForestManagerException {
+			@RequestParam("nmr") List<Long> nmr, @RequestParam("name") String name, @RequestParam("mode") String mode,
+			@RequestParam("id") String id, Model model) throws PeakForestManagerException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		if (mode.equalsIgnoreCase("light")) {
 			model.addAttribute("mode_light", true);
 			model.addAttribute("spectrum_div_id", id);
@@ -795,14 +766,15 @@ public class SpectraController {
 		List<NMR1DSpectrum> listNMRSpectra = new ArrayList<>();
 		// List<FullScanLCSpectrum> listFragLcSpectra = new ArrayList<>();
 		try {
-			listNMRSpectra = NMR1DSpectrumManagementService.read(nmr, dbName, username, password);
+			listNMRSpectra = NMR1DSpectrumManagementService.read(nmr);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		// I - load series
 		int seriesCount = listNMRSpectra.size();
-		// HashMap<String, String>[] seriesShow = new HashMap<String, String>[seriesCount];
+		// HashMap<String, String>[] seriesShow = new HashMap<String,
+		// String>[seriesCount];
 
 		// I.A - series data (m/z vs RI)
 		Object[] seriesShowData = new Object[seriesCount];
@@ -898,9 +870,8 @@ public class SpectraController {
 				for (Compound c : spectrum.getListOfCompounds()) {
 					if (c instanceof StructureChemicalCompound)
 						try {
-							listCC.add(StructuralCompoundManagementService.readByInChIKey(
-									((StructureChemicalCompound) c).getInChIKey(), dbName, username,
-									password));
+							listCC.add(StructuralCompoundManagementService
+									.readByInChIKey(((StructureChemicalCompound) c).getInChIKey()));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -911,6 +882,8 @@ public class SpectraController {
 			}
 			// name
 			String spectrumName = "" + spectrum.getMassBankLikeName().replaceAll("'", "\\'");
+			String spectrumPFEMName = spectrum.getMassBankNameHTML().replaceAll("'", "\\'");
+			String spectrumPForestId = spectrum.getPeakForestID();
 			// spectrumName += "[" + spectrum.getPulseSequence() + "]";
 			seriesNames[cpt] = spectrumName + " (" + (cpt + 1) + ")";
 			// metadata
@@ -918,7 +891,8 @@ public class SpectraController {
 			metadata.put("code", spectrumName);
 			// metadata basic
 			metadata.put("name", spectrumName);
-
+			metadata.put("pfem_name", spectrumPFEMName);
+			metadata.put("pforest_id", spectrumPForestId);
 			// switch (spectrum.getIonization()) {
 			// case MassSpectrum.MASS_SPECTRUM_IONIZATION_ESI:
 			// metadata.put("ionization", "ESI");
@@ -936,8 +910,7 @@ public class SpectraController {
 			metadata.put("license", spectrum.getOtherMetadata().getLicense() + "");
 			metadata.put("licenseOther", "");
 			if (spectrum.getOtherMetadata().getLicenseOther() != null)
-				metadata.put("licenseOther",
-						spectrum.getOtherMetadata().getLicenseOther().replaceAll("'", "\\'") + "");
+				metadata.put("licenseOther", spectrum.getOtherMetadata().getLicenseOther().replaceAll("'", "\\'") + "");
 			seriesSpectrumMetadata[cpt] = metadata;
 			cpt++;
 		}
@@ -971,7 +944,7 @@ public class SpectraController {
 			throws Exception {
 
 		// get template type;
-		// boolean isGCMS = false;
+		boolean isGCMS = false;
 		boolean isLCMS = false;
 		boolean isLCMSMS = false;
 		boolean isNMR = false;
@@ -991,6 +964,9 @@ public class SpectraController {
 			case "nmr":
 				isNMR = true;
 				break;
+			case "gc-ms":
+				isGCMS = true;
+				break;
 
 			// TODO gc-ms / lc-nmr / ...
 			default:
@@ -1007,6 +983,8 @@ public class SpectraController {
 			dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_LC_MSMS);
 		else if (isNMR)
 			dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_NMR);
+		else if (isGCMS)
+			dataMapper = new PeakForestDataMapper(PeakForestDataMapper.DATA_TYPE_GC_MS);
 		else
 			dataMapper = new PeakForestDataMapper();
 
@@ -1020,10 +998,7 @@ public class SpectraController {
 
 		if (success) {
 			// call API function from API and return the object itself
-			Map<String, Object> response = ImportService.importSpectraDataMapper(dataMapper, idMetadata,
-					Utils.getBundleConfElement("hibernate.connection.database.dbName"),
-					Utils.getBundleConfElement("hibernate.connection.database.username"),
-					Utils.getBundleConfElement("hibernate.connection.database.password"));
+			Map<String, Object> response = ImportService.importSpectraDataMapper(dataMapper, idMetadata);
 			// response.put("success", success);
 			return response;
 		} else {
@@ -1043,53 +1018,30 @@ public class SpectraController {
 	}
 
 	// @RequestMapping(value = "/pf:{query}", method = RequestMethod.GET)
-	// public ModelAndView method(HttpServletResponse httpServletResponse, @PathVariable("query") String
+	// public ModelAndView method(HttpServletResponse httpServletResponse,
+	// @PathVariable("query") String
 	// query) {
 	// return new ModelAndView("redirect:" + "/home?pf=" + query);
 	// }
 
 	@RequestMapping(value = "/PFs{query}", method = RequestMethod.GET)
-	public ModelAndView methodPFs(HttpServletResponse httpServletResponse,
-			@PathVariable("query") String query) {
+	public ModelAndView methodPFs(HttpServletResponse httpServletResponse, @PathVariable("query") String query) {
 		return new ModelAndView("redirect:" + "/home?PFs=" + query);
 	}
 
-	/**
-	 * Keep a support of old URI
-	 * 
-	 * @param httpServletResponse
-	 * @param query
-	 * @return
-	 */
 	@RequestMapping(value = "/pf:{query}", method = RequestMethod.GET)
-	public ModelAndView methodPF(HttpServletResponse httpServletResponse,
-			@PathVariable("query") String query) {
+	public ModelAndView methodPF(HttpServletResponse httpServletResponse, @PathVariable("query") String query) {
 		return new ModelAndView("redirect:" + "/home?PFs=" + query);
 	}
 
 	@RequestMapping(value = "/pf={query}", method = RequestMethod.GET)
-	public ModelAndView methodPF2(HttpServletResponse httpServletResponse,
-			@PathVariable("query") String query) {
+	public ModelAndView methodPF2(HttpServletResponse httpServletResponse, @PathVariable("query") String query) {
 		return new ModelAndView("redirect:" + "/home?PFs=" + query);
 	}
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param model
-	 * @param id
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/sheet-spectrum/{id}", method = RequestMethod.GET)
-	public String showSpectraSheet(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			Model model, @PathVariable("id") long id) throws PeakForestManagerException {
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public String showSpectraSheet(HttpServletRequest request, HttpServletResponse response, Locale locale, Model model,
+			@PathVariable("id") long id) throws PeakForestManagerException {
 
 		// load spectra data
 		// List<Long> spectrumIDs = new ArrayList<Long>();
@@ -1097,7 +1049,7 @@ public class SpectraController {
 		// spectrumIDs.add(id);
 		Spectrum spectrum = null;
 		try {
-			spectrum = SpectrumManagementService.read(id, dbName, username, password);
+			spectrum = SpectrumManagementService.read(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1108,8 +1060,8 @@ public class SpectraController {
 			for (Compound c : ((CompoundSpectrum) spectrum).getListOfCompounds()) {
 				if (c instanceof StructureChemicalCompound)
 					try {
-						listCC.add(StructuralCompoundManagementService.readByInChIKey(
-								((StructureChemicalCompound) c).getInChIKey(), dbName, username, password));
+						listCC.add(StructuralCompoundManagementService
+								.readByInChIKey(((StructureChemicalCompound) c).getInChIKey()));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -1122,7 +1074,7 @@ public class SpectraController {
 		// load data in model
 		if (spectrum != null) {
 			try {
-				loadSpectraMetadata(model, spectrum, request, dbName, username, password);
+				loadSpectraMetadata(model, spectrum, request);
 				model.addAttribute("contains_spectrum", true);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1160,13 +1112,8 @@ public class SpectraController {
 	}
 
 	@RequestMapping(value = "/data-ranking-spectrum/{id}", method = RequestMethod.GET)
-	public String showSpectraMeta(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			Model model, @PathVariable("id") long id) throws PeakForestManagerException {
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public String showSpectraMeta(HttpServletRequest request, HttpServletResponse response, Locale locale, Model model,
+			@PathVariable("id") long id) throws PeakForestManagerException {
 
 		// load spectra data
 		// List<Long> spectrumIDs = new ArrayList<Long>();
@@ -1174,7 +1121,7 @@ public class SpectraController {
 		// spectrumIDs.add(id);
 		Spectrum spectrum = null;
 		try {
-			spectrum = SpectrumManagementService.read(id, dbName, username, password);
+			spectrum = SpectrumManagementService.read(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1185,8 +1132,8 @@ public class SpectraController {
 			for (Compound c : ((CompoundSpectrum) spectrum).getListOfCompounds()) {
 				if (c instanceof StructureChemicalCompound)
 					try {
-						listCC.add(StructuralCompoundManagementService.readByInChIKey(
-								((StructureChemicalCompound) c).getInChIKey(), dbName, username, password));
+						listCC.add(StructuralCompoundManagementService
+								.readByInChIKey(((StructureChemicalCompound) c).getInChIKey()));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -1199,7 +1146,7 @@ public class SpectraController {
 		// load data in model
 		if (spectrum != null) {
 			try {
-				loadSpectraMeta(model, spectrum, request, dbName, username, password);
+				loadSpectraMeta(model, spectrum, request);
 				model.addAttribute("contains_spectrum", true);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1211,31 +1158,68 @@ public class SpectraController {
 		return "block/meta";
 	}
 
-	/**
-	 * @param model
-	 * @param spectrum
-	 * @param request
-	 * @throws Exception
-	 */
-	private void loadSpectraMetadata(Model model, Spectrum spectrum, HttpServletRequest request,
-			String dbName, String username, String password) throws Exception {
+	private void loadSpectraMetadata(Model model, Spectrum spectrum, HttpServletRequest request) throws Exception {
 
 		// BASIC DATA
 		model.addAttribute("spectrum_id", spectrum.getId());
-		model.addAttribute("spectrum_name", Utils.convertGreekCharToHTML(spectrum.getName()));
+		model.addAttribute("spectrum_name", PeakForestPruneUtils.convertGreekCharToHTML(spectrum.getName()));
 		model.addAttribute("spectrum_pfID", spectrum.getPeakForestID());
 		model.addAttribute("spectrum_splash", spectrum.getSplash());
 
+		// SPECIFIC GC-DERIVATIVE DATA
+		if (spectrum instanceof FullScanGCSpectrum) {
+			GCDerivedCompoundMetadata gcMetadata = ((FullScanGCSpectrum) spectrum).getDerivedCompoundMetadata();
+			if (gcMetadata != null) {
+				String derivativeTypes = "";
+				if (gcMetadata.getDerivativeTypes() != null && !gcMetadata.getDerivativeTypes().isEmpty()) {
+					for (Short derivativeType : gcMetadata.getDerivativeTypes())
+						derivativeTypes += GCDerivedCompoundMetadata.getStringDerivativeType(derivativeType) + " ; ";
+					// remove last comma:
+					derivativeTypes = derivativeTypes.substring(0, derivativeTypes.length() - " ; ".length());
+				}
+				model.addAttribute("spectrum_derivatization_types", derivativeTypes);
+
+				ReferenceChemicalCompound parentCompound = null;
+				try {
+					parentCompound = GenericCompoundManagementService.read(gcMetadata.getParentCompound().getId());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (parentCompound == null) {
+					try {
+						parentCompound = ChemicalCompoundManagementService.read(gcMetadata.getParentCompound().getId());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				// TODO: add built name with score 3.5 to derivative names, and take main name
+				// (higher score)!
+				model.addAttribute("spectrum_derivative_name",
+						parentCompound.getMainName() + " (" + derivativeTypes + ")");
+
+				GCDerivedCompound derivative = gcMetadata.getStructureDerivedCompound();
+				if (derivative != null) {
+					model.addAttribute("spectrum_derivative_inchikey", derivative.getInChIKey());
+					model.addAttribute("spectrum_derivative_inchi", derivative.getInChI());
+
+					model.addAttribute("spectrum_derivative_type", derivative.getTypeString());
+				}
+			}
+		}
+
 		// SAMPLE DATA
 		// boolean displaySampleMix = false;
-		SampleMix sampleMixData = null;
+		ASampleMix sampleMixData = null, spectrumSampleMix = null;
+		boolean isSampleMixLiquid;
 		switch (spectrum.getSample()) {
 		case Spectrum.SPECTRUM_SAMPLE_SINGLE_CHEMICAL_COMPOUND:
 			model.addAttribute("spectrum_sample_type", "single-cpd");
 			StructureChemicalCompound rcc = null;
 			if (((CompoundSpectrum) spectrum).getListOfCompounds().size() == 1) {
 				rcc = (StructureChemicalCompound) ((CompoundSpectrum) spectrum).getListOfCompounds().get(0);
-				// rcc = StructuralCompoundManagementService.readByInChIKey(rcc.getInChIKey(), dbName,
+				// rcc = StructuralCompoundManagementService.readByInChIKey(rcc.getInChIKey(),
+				// dbName,
 				// username,
 				// password);
 				model.addAttribute("spectrum_sample_compound_id", rcc.getId());
@@ -1250,7 +1234,7 @@ public class SpectraController {
 
 				if (spectrum instanceof NMRSpectrum) {
 					// get mol path
-					String molFileRepPath = Utils.getBundleConfElement("compoundMolFiles.folder");
+					String molFileRepPath = PeakForestUtils.getBundleConfElement("compoundMolFiles.folder");
 					if (!(new File(molFileRepPath)).exists())
 						throw new PeakForestManagerException(
 								PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
@@ -1266,43 +1250,69 @@ public class SpectraController {
 
 			}
 			model.addAttribute("spectrum_sample_compound_has_concentration", false);
-			if (spectrum.getSampleMixMetadata() != null) {
-				SampleMix mixData = SampleMixMetadataManagementService
-						.read(spectrum.getSampleMixMetadata().getId(), dbName, username, password);
+			spectrumSampleMix = spectrum.getSampleMixMetadata(LiquidSampleMix.class);
+			isSampleMixLiquid = true;
+			if (spectrumSampleMix == null) {
+				spectrumSampleMix = spectrum.getSampleMixMetadata(GasSampleMix.class);
+				isSampleMixLiquid = false;
+			}
+			if (spectrumSampleMix != null) {
+				ASampleMix mixData = ASampleMixMetadataDao.read(spectrumSampleMix.getId());
 				if (mixData.getCompoundConcentration(rcc.getInChIKey()) != null) {
 					model.addAttribute("spectrum_sample_compound_has_concentration", true);
 					model.addAttribute("spectrum_sample_compound_concentration",
 							mixData.getCompoundConcentration(rcc.getInChIKey()));
 				}
-				model.addAttribute("spectrum_sample_compound_mass_solvent", mixData.getMsSolventAsString());
+				if (isSampleMixLiquid)
+					model.addAttribute("spectrum_sample_compound_liquid_solvent",
+							((LiquidSampleMix) mixData).getLiquidSolventAsString());
+				else {
+					model.addAttribute("spectrum_sample_compound_gas_solvent",
+							((GasSampleMix) mixData).getGcmsSolventAsString());
+					model.addAttribute("spectrum_sample_compound_derivation_method",
+							((GasSampleMix) mixData).getDerivationMethodAsString());
+				}
 			}
 			break;
 		case Spectrum.SPECTRUM_SAMPLE_MIX_CHEMICAL_COMPOUND:
 			model.addAttribute("spectrum_sample_type", "mix-cpd");
-			if (spectrum.getSampleMixMetadata() != null) {
-				sampleMixData = SampleMixMetadataManagementService
-						.read(spectrum.getSampleMixMetadata().getId(), dbName, username, password);
+			spectrumSampleMix = spectrum.getSampleMixMetadata(LiquidSampleMix.class);
+			isSampleMixLiquid = true;
+			if (spectrumSampleMix == null) {
+				spectrumSampleMix = spectrum.getSampleMixMetadata(GasSampleMix.class);
+				isSampleMixLiquid = false;
+			}
+			if (spectrumSampleMix != null) {
+				sampleMixData = ASampleMixMetadataDao.read(spectrumSampleMix.getId());
 				// if (mixData.getCompoundConcentration(rcc.getInChIKey()) != null) {
 				// model.addAttribute("spectrum_sample_compound_has_concentration", true);
 				// model.addAttribute("spectrum_sample_compound_concentration",
 				// mixData.getCompoundConcentration(rcc.getInChIKey()));
 				// }
-				model.addAttribute("spectrum_sample_compound_mass_solvent",
-						sampleMixData.getMssolventMixAsString());
+				if (isSampleMixLiquid)
+					model.addAttribute("spectrum_sample_compound_liquid_solvent",
+							((LiquidSampleMix) sampleMixData).getLiquidSolventMixAsString());
+				else {
+					model.addAttribute("spectrum_sample_compound_gas_solvent",
+							((GasSampleMix) sampleMixData).getGcmsSolventAsString());
+					model.addAttribute("spectrum_sample_compound_derivation_method",
+							((GasSampleMix) sampleMixData).getDerivationMethodAsString());
+				}
 			}
 			break;
 		case Spectrum.SPECTRUM_SAMPLE_STANDARDIZED_MATRIX:
 			model.addAttribute("spectrum_sample_type", "std-matrix");
 			// if (spectrum.getSampleMixMetadata() != null)
 			// sampleMixData = SampleMixMetadataManagementService
-			// .read(spectrum.getSampleMixMetadata().getId(), dbName, username, password);
+			// .read(spectrum.getSampleMixMetadata().getId());
 			// AnalyticalMatrix analyticalMatrix = spectrum.getAnalyticalMatrixMetadata();
 			// if (analyticalMatrix != null) {
-			// model.addAttribute("spectrum_matrix_name", analyticalMatrix.getMatrixTypeAsString());
-			// model.addAttribute("spectrum_matrix_link", analyticalMatrix.getMatrixTypeOntology());
+			// model.addAttribute("spectrum_matrix_name",
+			// analyticalMatrix.getMatrixTypeAsString());
+			// model.addAttribute("spectrum_matrix_link",
+			// analyticalMatrix.getMatrixTypeOntology());
 			// }
-			StandardizedMatrix standardizedMatrix = ((ISampleSpectrum) spectrum)
-					.getStandardizedMatrixMetadata();
+			StandardizedMatrix standardizedMatrix = ((ISampleSpectrum) spectrum).getStandardizedMatrixMetadata();
 			model.addAttribute("standardized_matrix", standardizedMatrix);
 			break;
 		case Spectrum.SPECTRUM_SAMPLE_ANALYTICAL_MATRIX:
@@ -1317,11 +1327,10 @@ public class SpectraController {
 		if (sampleMixData != null) {
 			List<StructureChemicalCompound> listCpdMix = new ArrayList<StructureChemicalCompound>();
 			List<Long> idCpdToRead = new ArrayList<Long>();
-			for (StructureChemicalCompound scc : sampleMixData.getCompound2ConcentrationMap().keySet())
+			for (StructureChemicalCompound scc : sampleMixData.getStructuralChemicalCompounds().keySet())
 				idCpdToRead.add(scc.getId());
-			listCpdMix
-					.addAll(ChemicalCompoundManagementService.read(idCpdToRead, dbName, username, password));
-			listCpdMix.addAll(GenericCompoundManagementService.read(idCpdToRead, dbName, username, password));
+			listCpdMix.addAll(ChemicalCompoundManagementService.read(idCpdToRead));
+			listCpdMix.addAll(GenericCompoundManagementService.read(idCpdToRead));
 			model.addAttribute("spectrum_sample_mix_tab", listCpdMix);
 			model.addAttribute("spectrum_sample_mix_data", sampleMixData);
 			if (!listCpdMix.isEmpty())
@@ -1355,37 +1364,32 @@ public class SpectraController {
 			if (spectrum instanceof NMR1DSpectrum) {
 				// name display
 				model.addAttribute("spectrum_name",
-						Utils.convertGreekCharToHTML(((NMR1DSpectrum) spectrum).getMassBankLikeName()));
+						PeakForestPruneUtils.convertGreekCharToHTML(((NMR1DSpectrum) spectrum).getMassBankLikeName()));
 				// Acquisition
 				if (((NMR1DSpectrum) spectrum).getAcquisition() != null)
 					model.addAttribute("spectrum_nmr_analyzer_data_acquisition",
 							((NMR1DSpectrum) spectrum).getAcquisitionAsString());
 
 				// NMR ANALYZER + PEAKLIST TAB + PATTERN LIST TAB
-				model.addAttribute("spectrum_nmr_analyzer",
-						(abstractSpec).getAnalyzerNMRSpectrometerDevice());
-				NMR1DSpectrum nmrSpectrum = NMR1DSpectrumManagementService.read((abstractSpec).getId(),
-						dbName, username, password);
+				model.addAttribute("spectrum_nmr_analyzer", (abstractSpec).getAnalyzerNMRSpectrometerDevice());
+				NMR1DSpectrum nmrSpectrum = NMR1DSpectrumManagementService.read((abstractSpec).getId());
 				model.addAttribute("spectrum_nmr_analyzer_data", nmrSpectrum);
 				List<PeakPattern> peakpatterns = new ArrayList<PeakPattern>();
 				for (PeakPattern pp : nmrSpectrum.getListOfpeakPattern()) {
-					peakpatterns
-							.add(PeakPatternManagementService.read(pp.getId(), dbName, username, password));
+					peakpatterns.add(PeakPatternDao.read(pp.getId()));
 				}
 				model.addAttribute("spectrum_nmr_peakpatterns", peakpatterns);
 			} else if (spectrum instanceof NMR2DSpectrum) {
 				// name display
 				model.addAttribute("spectrum_name",
-						Utils.convertGreekCharToHTML(((NMR2DSpectrum) spectrum).getMassBankLikeName()));
+						PeakForestPruneUtils.convertGreekCharToHTML(((NMR2DSpectrum) spectrum).getMassBankLikeName()));
 				// Acquisition
 				if (((NMR2DSpectrum) spectrum).getAcquisition() != null)
 					model.addAttribute("spectrum_nmr_analyzer_data_acquisition",
 							((NMR2DSpectrum) spectrum).getAcquisitionAsString());
 				// NMR ANALYZER + PEAKLIST TAB + PATTERN LIST TAB
-				model.addAttribute("spectrum_nmr_analyzer",
-						(abstractSpec).getAnalyzerNMRSpectrometerDevice());
-				NMR2DSpectrum nmrSpectrum = NMR2DSpectrumManagementService.read((abstractSpec).getId(),
-						dbName, username, password);
+				model.addAttribute("spectrum_nmr_analyzer", (abstractSpec).getAnalyzerNMRSpectrometerDevice());
+				NMR2DSpectrum nmrSpectrum = NMR2DSpectrumManagementService.read((abstractSpec).getId());
 				model.addAttribute("spectrum_nmr_analyzer_data", nmrSpectrum);
 			}
 
@@ -1393,59 +1397,100 @@ public class SpectraController {
 			model.addAttribute("display_real_spectrum", abstractSpec.hasRawData());
 			model.addAttribute("real_spectrum_code", abstractSpec.getRawDataFolder());
 
-		} else if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FragmentationLCSpectrum) {
+		} else if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FragmentationLCSpectrum
+				|| spectrum instanceof FullScanGCSpectrum) {
 			// BASIC
 			model.addAttribute("spectrum_name",
-					Utils.convertGreekCharToHTML(((MassSpectrum) spectrum).getMassBankName()));
+					PeakForestPruneUtils.convertGreekCharToHTML(((MassSpectrum) spectrum).getMassBankName()));
 
 			if (spectrum instanceof FullScanLCSpectrum)
 				model.addAttribute("spectrum_type", "lc-fullscan");
 			else if (spectrum instanceof FragmentationLCSpectrum)
 				model.addAttribute("spectrum_type", "lc-fragmentation");
-			// LC DATA
-			model.addAttribute("spectrum_chromatography", "lc");
-			LiquidChromatography lcData = LiquidChromatographyMetadataManagementService.read(
-					((ILCSpectrum) spectrum).getLiquidChromatography().getId(), dbName, username, password);
-			model.addAttribute("spectrum_chromatography_method", lcData.getMethodProtocolAsString());
-			model.addAttribute("spectrum_chromatography_col_constructor",
-					lcData.getColumnConstructorAString());
-			model.addAttribute("spectrum_chromatography_col_name", lcData.getColumnName());
-			model.addAttribute("spectrum_chromatography_col_length", lcData.getColumnLength());
-			model.addAttribute("spectrum_chromatography_col_diameter", lcData.getColumnDiameter());
-			model.addAttribute("spectrum_chromatography_col_particule_size", lcData.getParticuleSize());
-			model.addAttribute("spectrum_chromatography_col_temperature", lcData.getColumnTemperature());
-			model.addAttribute("spectrum_chromatography_mode_lc", lcData.getLCModeAsString());
-			model.addAttribute("spectrum_chromatography_solventA", lcData.getSolventAAsString());
-			model.addAttribute("spectrum_chromatography_solventB", lcData.getSolventBAsString());
-			model.addAttribute("spectrum_chromatography_solventApH", lcData.getpHSolventA());
-			model.addAttribute("spectrum_chromatography_solventBpH", lcData.getpHSolventB());
-			model.addAttribute("spectrum_chromatography_separation_flow_rate",
-					lcData.getSeparationFlowRate());
-			// ..
-			// Separation flow grad
-			List<Double> sortedKeys = new ArrayList<Double>(lcData.getSeparationFlowGradient().keySet());
-			Collections.sort(sortedKeys);
-			Double[] time = new Double[sortedKeys.size()];
-			int i = 0;
-			for (Double k : sortedKeys) {
-				time[i] = k;
-				i++;
+			else if (spectrum instanceof FullScanGCSpectrum)
+				model.addAttribute("spectrum_type", "gc-fullscan");
+
+			if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FragmentationLCSpectrum) {
+				// LC DATA
+				model.addAttribute("spectrum_chromatography", "lc");
+				LiquidChromatography lcData = LiquidChromatographyMetadataDao
+						.read(((ILCSpectrum) spectrum).getLiquidChromatography().getId());
+				model.addAttribute("spectrum_chromatography_method", lcData.getMethodProtocolAsString());
+				model.addAttribute("spectrum_chromatography_col_constructor", lcData.getColumnConstructorAString());
+				model.addAttribute("spectrum_chromatography_col_name", lcData.getColumnName());
+				model.addAttribute("spectrum_chromatography_col_length", lcData.getColumnLength());
+				model.addAttribute("spectrum_chromatography_col_diameter", lcData.getColumnDiameter());
+				model.addAttribute("spectrum_chromatography_col_particule_size", lcData.getParticuleSize());
+				model.addAttribute("spectrum_chromatography_col_temperature", lcData.getColumnTemperature());
+				model.addAttribute("spectrum_chromatography_mode_lc", lcData.getLCModeAsString());
+				model.addAttribute("spectrum_chromatography_solventA", lcData.getSolventAAsString());
+				model.addAttribute("spectrum_chromatography_solventB", lcData.getSolventBAsString());
+				model.addAttribute("spectrum_chromatography_solventApH", lcData.getPHSolventA());
+				model.addAttribute("spectrum_chromatography_solventBpH", lcData.getPHSolventB());
+				model.addAttribute("spectrum_chromatography_separation_flow_rate", lcData.getSeparationFlowRate());
+				// ..
+				// Separation flow grad
+				List<Double> sortedKeys = new ArrayList<Double>(lcData.getSeparationFlowGradient().keySet());
+				Collections.sort(sortedKeys);
+				Double[] time = new Double[sortedKeys.size()];
+				int i = 0;
+				for (Double k : sortedKeys) {
+					time[i] = k;
+					i++;
+				}
+				model.addAttribute("spectrum_chromatography_sfg_time", time);
+				model.addAttribute("spectrum_chromatography_sfg", lcData.getSeparationFlowGradient());
+			} else if (spectrum instanceof FullScanGCSpectrum) {
+				// GC DATA
+				model.addAttribute("spectrum_chromatography", "gc");
+				GazChromatography gcData = GazChromatographyMetadataDao
+						.read(((IGCSpectrum) spectrum).getGazChromatography().getId());
+				model.addAttribute("spectrum_chromatography_method",
+						GazChromatography.getStringMethodProtocol(gcData.getMethodProtocol()));
+				model.addAttribute("spectrum_chromatography_col_constructor",
+						GazChromatography.getStringColumnConstructor(gcData.getColumnConstructor()));
+				model.addAttribute("spectrum_chromatography_col_name", gcData.getColumnName());
+				model.addAttribute("spectrum_chromatography_col_length", gcData.getColumnLength());
+				model.addAttribute("spectrum_chromatography_col_diameter", gcData.getColumnDiameter());
+				model.addAttribute("spectrum_chromatography_col_particule_size", gcData.getParticuleSize());
+				model.addAttribute("spectrum_chromatography_injection_volume", gcData.getInjectionVolume());
+				model.addAttribute("spectrum_chromatography_injection_mode", gcData.getInjectionMode());
+				model.addAttribute("spectrum_chromatography_split_ratio", gcData.getSplitRatio());
+				model.addAttribute("spectrum_chromatography_carrier_gas",
+						GazChromatography.getStringCarrierGas(gcData.getCarrierGas()));
+				model.addAttribute("spectrum_chromatography_gas_flow", gcData.getGasFlow());
+				model.addAttribute("spectrum_chromatography_gas_opt",
+						GazChromatography.getStringGasOpt(gcData.getGasOpt()));
+				model.addAttribute("spectrum_chromatography_gas_pressure", gcData.getGasPressure());
+				model.addAttribute("spectrum_chromatography_mode_gc", gcData.getGCModeAsString());
+				model.addAttribute("spectrum_chromatography_liner_manufacturer",
+						GazChromatography.getStringLinerManufacturer(gcData.getLinerManufacturer()));
+				model.addAttribute("spectrum_chromatography_liner_type",
+						GazChromatography.getStringLinerType(gcData.getLinerType()));
+				// ..
+				// Separation temperature programme
+				List<Double> sortedKeys = new ArrayList<Double>(gcData.getSeparationTemperatureProgram().keySet());
+				Collections.sort(sortedKeys);
+				Double[] temperature = new Double[sortedKeys.size()];
+				int i = 0;
+				for (Double k : sortedKeys) {
+					temperature[i] = k;
+					i++;
+				}
+				model.addAttribute("spectrum_chromatography_stp_temperature", temperature);
+				model.addAttribute("spectrum_chromatography_stp", gcData.getSeparationTemperatureProgram());
 			}
-			model.addAttribute("spectrum_chromatography_sfg_time", time);
-			model.addAttribute("spectrum_chromatography_sfg", lcData.getSeparationFlowGradient());
+
 			// IONIZATION
-			model.addAttribute("spectrum_ms_ionization",
-					((MassSpectrum) spectrum).getAnalyzerMassIonization());
+			model.addAttribute("spectrum_ms_ionization", ((MassSpectrum) spectrum).getAnalyzerMassIonization());
 
 			// MS ANALYZER
-			model.addAttribute("spectrum_ms_analyzer",
-					((MassSpectrum) spectrum).getAnalyzerMassSpectrometerDevice());
+			model.addAttribute("spectrum_ms_analyzer", ((MassSpectrum) spectrum).getAnalyzerMassSpectrometerDevice());
 
 			// MSMS
 			if (spectrum instanceof IFragmentationSpectrum) {
 				// MSMS ion beam
-				if (((IFragmentationSpectrum) spectrum)
-						.getAnalyzerMassIon() instanceof AnalyzerMassIonBeamMetadata) {
+				if (((IFragmentationSpectrum) spectrum).getAnalyzerMassIon() instanceof AnalyzerMassIonBeamMetadata) {
 					model.addAttribute("spectrum_msms_ionbeam",
 							((IFragmentationSpectrum) spectrum).getAnalyzerMassIon());
 				}
@@ -1484,47 +1529,61 @@ public class SpectraController {
 					break;
 				}
 			}
-			model.addAttribute("spectrum_ms_resolution_FWHM",
-					((MassSpectrum) spectrum).getInstrumentResolutionFWHM());
+			model.addAttribute("spectrum_ms_resolution_FWHM", ((MassSpectrum) spectrum).getInstrumentResolutionFWHM());
 
-			if (spectrum instanceof FullScanLCSpectrum)
+			if (spectrum instanceof FullScanLCSpectrum || spectrum instanceof FullScanGCSpectrum)
 				model.addAttribute("spectrum_ms_scan_type", "MS (fullscan)");
 			else if (spectrum instanceof FragmentationLCSpectrum) {
 				model.addAttribute("spectrum_ms_scan_type",
 						((FragmentationLCSpectrum) spectrum).getFragmentationLevelString());
+				// new 2.0
+				model.addAttribute("isolation_mode", ((FragmentationLCSpectrum) spectrum).getModeAsString());
+				model.addAttribute("qz_isolation", ((FragmentationLCSpectrum) spectrum).getQzIsolationActivation());
+				model.addAttribute("activation_time", ((FragmentationLCSpectrum) spectrum).getActivationTime());
+				model.addAttribute("isolation_window", ((FragmentationLCSpectrum) spectrum).getIsolationWindow());
+				model.addAttribute("center_isolation_window",
+						((FragmentationLCSpectrum) spectrum).getCenterIsolationWindow());
+				model.addAttribute("frag_energy", ((FragmentationLCSpectrum) spectrum).getFragEnery());
+
 			}
 			model.addAttribute("spectrum_ms_range_from", ((MassSpectrum) spectrum).getRangeMassFrom());
 			model.addAttribute("spectrum_ms_range_to", ((MassSpectrum) spectrum).getRangeMassTo());
 			model.addAttribute("spectrum_rt_min_from",
 					shortifyText(((MassSpectrum) spectrum).getRangeRetentionTimeFrom()));
-			model.addAttribute("spectrum_rt_min_to",
-					shortifyText(((MassSpectrum) spectrum).getRangeRetentionTimeTo()));
-			model.addAttribute("spectrum_rt_meoh_from",
-					shortifyText(((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom()));
-			model.addAttribute("spectrum_rt_meoh_to",
-					shortifyText(((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo()));
-			//
-			try {
-				model.addAttribute("spectrum_rt_acn_from",
-						shortifyText((((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom())
-								* ChromatoUtils.MEOH_TO_ACN_RATIO));
-			} catch (NullPointerException npe) {
-			}
-			try {
-				model.addAttribute("spectrum_rt_acn_to",
-						shortifyText((((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo())
-								* ChromatoUtils.MEOH_TO_ACN_RATIO));
-			} catch (NullPointerException npe) {
+			model.addAttribute("spectrum_rt_min_to", shortifyText(((MassSpectrum) spectrum).getRangeRetentionTimeTo()));
+
+			if (spectrum instanceof ILCSpectrum) {
+				model.addAttribute("spectrum_rt_meoh_from",
+						shortifyText(((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom()));
+				model.addAttribute("spectrum_rt_meoh_to",
+						shortifyText(((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo()));
+				//
+				try {
+					model.addAttribute("spectrum_rt_acn_from",
+							shortifyText((((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom())
+									* ChromatoUtils.MEOH_TO_ACN_RATIO));
+				} catch (NullPointerException npe) {
+				}
+				try {
+					model.addAttribute("spectrum_rt_acn_to",
+							shortifyText((((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo())
+									* ChromatoUtils.MEOH_TO_ACN_RATIO));
+				} catch (NullPointerException npe) {
+				}
+			} else if (spectrum instanceof IGCSpectrum) {
+				model.addAttribute("spectrum_ri_alkane_from",
+						shortifyText(((IGCSpectrum) spectrum).getRangeRetentionIndexAlkaneFrom()));
+				model.addAttribute("spectrum_ri_alkane_to",
+						shortifyText(((IGCSpectrum) spectrum).getRangeRetentionIndexAlkaneTo()));
 			}
 
 			// OTHER MSMS
 			if (spectrum instanceof FragmentationLCSpectrum) {
 				// is MSMS child
-				model.addAttribute("spectrum_msms_isMSMS", ((FragmentationLCSpectrum) spectrum)
-						.getMsLevel() > FragmentationLCSpectrum.FRAGMENTATION_MS);
+				model.addAttribute("spectrum_msms_isMSMS",
+						((FragmentationLCSpectrum) spectrum).getMsLevel() > FragmentationLCSpectrum.FRAGMENTATION_MS);
 
-				model.addAttribute("spectrum_msms_parentIonMZ",
-						((FragmentationLCSpectrum) spectrum).getParentIonMZ());
+				model.addAttribute("spectrum_msms_parentIonMZ", ((FragmentationLCSpectrum) spectrum).getParentIonMZ());
 
 				// model.addAttribute("spectrum_msms_parentIonMZ",
 				// ((FragmentationLCSpectrum) spectrum).getParentIonMZ());
@@ -1540,15 +1599,12 @@ public class SpectraController {
 			model.addAttribute("spectrum_ms_peaks", spectrum.getPeaks());
 
 			// peaklist curation lvl
-			model.addAttribute("spectrum_ms_peaks_curation_lvl",
-					((MassSpectrum) spectrum).getCurationLevelAsString());
-
+			model.addAttribute("spectrum_ms_peaks_curation_lvl", ((MassSpectrum) spectrum).getCurationLevelAsString());
 		}
 
 		// METADATA OTHER
 		OtherMetadata otherMetadata = spectrum.getOtherMetadata();
-		otherMetadata = OtherMetadataManagementService.read(otherMetadata.getId(), dbName, username,
-				password);
+		otherMetadata = OtherMetadataDao.read(otherMetadata.getId());
 		model.addAttribute("spectrum_othermetadata", otherMetadata);
 
 		// RELATED SPECTRA (same other metadata)
@@ -1556,12 +1612,11 @@ public class SpectraController {
 		List<Spectrum> spectraChildren = new ArrayList<>();
 		FragmentationLCSpectrum parent = null;
 
-		for (Spectrum s : otherMetadata.getListOfSpectrum()) {
+		for (Spectrum s : otherMetadata.getSpectra()) {
 			if (s instanceof CompoundSpectrum) {
 				//
 				if (s.getSample() == Spectrum.SPECTRUM_SAMPLE_SINGLE_CHEMICAL_COMPOUND) {
-					((CompoundSpectrum) s)
-							.setListOfCompounds(((CompoundSpectrum) spectrum).getListOfCompounds());
+					((CompoundSpectrum) s).setListOfCompounds(((CompoundSpectrum) spectrum).getListOfCompounds());
 				}
 			}
 			s.setMetadata(spectrum.getMetadata());
@@ -1599,11 +1654,10 @@ public class SpectraController {
 		// END
 	}
 
-	private void loadSpectraMeta(Model model, Spectrum spectrum, HttpServletRequest request, String dbName,
-			String username, String password) throws Exception {
+	private void loadSpectraMeta(Model model, Spectrum spectrum, HttpServletRequest request) throws Exception {
 
 		// BASIC DATA
-		String spectrumName = Utils.convertGreekCharToHTML(spectrum.getName());
+		String spectrumName = PeakForestPruneUtils.convertGreekCharToHTML(spectrum.getName());
 		String spectrumTechnique = "";
 		String spectrumOther = "";
 
@@ -1634,30 +1688,37 @@ public class SpectraController {
 		}
 
 		if (spectrum instanceof NMR1DSpectrum) {
-			spectrumName = Utils.convertGreekCharToHTML(((NMR1DSpectrum) spectrum).getMassBankLikeName());
+			spectrumName = PeakForestPruneUtils
+					.convertGreekCharToHTML(((NMR1DSpectrum) spectrum).getMassBankLikeName());
 			spectrumTechnique += ", NMR";
 			// BASIC
 			model.addAttribute("spectrum_name",
-					Utils.convertGreekCharToHTML(((NMR1DSpectrum) spectrum).getMassBankLikeName()));
+					PeakForestPruneUtils.convertGreekCharToHTML(((NMR1DSpectrum) spectrum).getMassBankLikeName()));
 			// Acquisition
 			if (((NMR1DSpectrum) spectrum).getAcquisition() != null)
 				spectrumTechnique += ", " + ((NMR1DSpectrum) spectrum).getAcquisitionAsString();
 		} else if (spectrum instanceof NMR2DSpectrum) {
-			spectrumName = Utils.convertGreekCharToHTML(((NMR2DSpectrum) spectrum).getMassBankLikeName());
+			spectrumName = PeakForestPruneUtils
+					.convertGreekCharToHTML(((NMR2DSpectrum) spectrum).getMassBankLikeName());
 			spectrumTechnique += ", NMR";
 			// BASIC
 			model.addAttribute("spectrum_name",
-					Utils.convertGreekCharToHTML(((NMR2DSpectrum) spectrum).getMassBankLikeName()));
+					PeakForestPruneUtils.convertGreekCharToHTML(((NMR2DSpectrum) spectrum).getMassBankLikeName()));
 			// Acquisition
 			if (((NMR2DSpectrum) spectrum).getAcquisition() != null)
 				spectrumTechnique += ", " + ((NMR2DSpectrum) spectrum).getAcquisitionAsString();
 		} else if (spectrum instanceof FullScanLCSpectrum) {
-			spectrumName = Utils.convertGreekCharToHTML(((FullScanLCSpectrum) spectrum).getMassBankName());
+			spectrumName = PeakForestPruneUtils
+					.convertGreekCharToHTML(((FullScanLCSpectrum) spectrum).getMassBankName());
 			spectrumTechnique += ", LCMS";
 		} else if (spectrum instanceof FragmentationLCSpectrum) {
-			spectrumName = Utils
+			spectrumName = PeakForestPruneUtils
 					.convertGreekCharToHTML(((FragmentationLCSpectrum) spectrum).getMassBankName());
 			spectrumTechnique += ", LCMSMS";
+		} else if (spectrum instanceof FullScanGCSpectrum) {
+			spectrumName = PeakForestPruneUtils
+					.convertGreekCharToHTML(((FullScanGCSpectrum) spectrum).getMassBankName());
+			spectrumTechnique += ", GCMS";
 		}
 
 		// ranking
@@ -1677,14 +1738,9 @@ public class SpectraController {
 	@ResponseBody
 	public boolean updateSpectrum(@PathVariable long id, @RequestBody Map<String, Object> data,
 			HttpServletRequest request) {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		Spectrum spectrum;
 		try {
-			spectrum = SpectrumManagementService.read(id, dbName, username, password);
+			spectrum = SpectrumManagementService.read(id);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			return false;
@@ -1699,8 +1755,7 @@ public class SpectraController {
 		List<String> curationMessages = (List<String>) data.get("curationMessages");
 		if (!curationMessages.isEmpty())
 			try {
-				CurationMessageManagementService.create(curationMessages, user.getId(), spectrum, dbName,
-						username, password);
+				CurationMessageManagementService.create(curationMessages, user.getId(), spectrum);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -1716,15 +1771,10 @@ public class SpectraController {
 	@RequestMapping(value = "/edit-spectrum-modal/{id}", method = RequestMethod.GET)
 	public String spectrumEdit(HttpServletRequest request, HttpServletResponse response, Locale locale,
 			@PathVariable int id, Model model) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// load data
-
 		Spectrum spectrum = null;
 		try {
-			spectrum = SpectrumManagementService.read(id, dbName, username, password);
+			spectrum = SpectrumManagementService.read(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1735,8 +1785,8 @@ public class SpectraController {
 			for (Compound c : ((CompoundSpectrum) spectrum).getListOfCompounds()) {
 				if (c instanceof StructureChemicalCompound)
 					try {
-						listCC.add(StructuralCompoundManagementService.readByInChIKey(
-								((StructureChemicalCompound) c).getInChIKey(), dbName, username, password));
+						listCC.add(StructuralCompoundManagementService
+								.readByInChIKey(((StructureChemicalCompound) c).getInChIKey()));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -1749,7 +1799,7 @@ public class SpectraController {
 		// load data in model
 		if (spectrum != null) {
 			try {
-				loadSpectraMetadata(model, spectrum, request, dbName, username, password);
+				loadSpectraMetadata(model, spectrum, request);
 				model.addAttribute("contains_spectrum", true);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1775,14 +1825,19 @@ public class SpectraController {
 		return "modal/edit-spectrum-modal";
 	}
 
-	// @RequestMapping(value = "/spectra-full-module/{ids}", method = RequestMethod.GET)
-	// public String showSpectraInSheet(HttpServletRequest request, HttpServletResponse response, Locale
+	// @RequestMapping(value = "/spectra-full-module/{ids}", method =
+	// RequestMethod.GET)
+	// public String showSpectraInSheet(HttpServletRequest request,
+	// HttpServletResponse response, Locale
 	// locale,
 	// @PathVariable String ids, Model model) throws PeakForestManagerException {
 	// // init request
-	// String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-	// String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-	// String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	// String dbName =
+	// Utils.getBundleConfElement("hibernate.connection.database.dbName");
+	// String username =
+	// Utils.getBundleConfElement("hibernate.connection.database.username");
+	// String password =
+	// Utils.getBundleConfElement("hibernate.connection.database.password");
 	//
 	// // string to longs
 	// List<Long> spectrumIDs = new ArrayList<Long>();
@@ -1797,7 +1852,8 @@ public class SpectraController {
 	// // load data
 	// List<Spectrum> listOfAllSpectrum = new ArrayList<Spectrum>();
 	// try {
-	// listOfAllSpectrum = SpectrumManagementService.read(spectrumIDs, dbName, username, password);
+	// listOfAllSpectrum = SpectrumManagementService.read(spectrumIDs, dbName,
+	// username, password);
 	// } catch (Exception e) {
 	// e.printStackTrace();
 	// }
@@ -1812,40 +1868,42 @@ public class SpectraController {
 	// }
 
 	@Secured("ROLE_CURATOR")
-	@RequestMapping(value = "/delete-spectrum/{type}/{id}", method = RequestMethod.POST)
+	@RequestMapping(//
+			value = "/delete-spectrum/{type}/{id}", //
+			method = RequestMethod.POST//
+	)
 	@ResponseBody
-	public Object spectrumDelete(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			@PathVariable long id, @PathVariable String type, Model model) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public Object spectrumDelete(//
+			// REST
+			final Model model, //
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			// PATH
+			final @PathVariable long id, //
+			final @PathVariable String type //
 
-		// load data
+	) throws PeakForestManagerException {
 		try {
-			// return SpectrumManagementService.delete(id, dbName, username, password);
-			// FullScanLCSpectrumManagementService.d
+			// delete action
 			switch (type) {
 			case "lc-fullscan":
-				return FullScanLCSpectrumManagementService.delete(id, dbName, username, password);
+				return FullScanLCSpectrumManagementService.delete(id);
+			case "lc-fragmentation":
+				return FragmentationLCSpectrumManagementService.delete(id);
 			case "nmr":
-				return NMR1DSpectrumManagementService.delete(id, dbName, username, password);
+				return NMR1DSpectrumManagementService.delete(id);
 			case "nmr-2d":
-				return NMR2DSpectrumManagementService.delete(id, dbName, username, password);
+				return NMR2DSpectrumManagementService.delete(id);
 			default:
-				return false;
+				return Boolean.FALSE;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
-			return false;
+			return Boolean.FALSE;
 		}
 	}
 
-	/**
-	 * @param id
-	 * @param data
-	 * @return
-	 */
 	@Secured("ROLE_EDITOR")
 	@RequestMapping(value = "/edit-spectrum/{id}", method = RequestMethod.POST, headers = {
 			"Content-type=application/json" })
@@ -1853,18 +1911,15 @@ public class SpectraController {
 	@SuppressWarnings("unchecked")
 	public boolean editSpectrum(@PathVariable long id, @RequestBody Map<String, Object> data) {
 
-		// TODO remove @Secured annotation and begin this function with check if user either a curator of the
+		// TODO remove @Secured annotation and begin this function with check if user
+		// either a curator of the
 		// owner of this spectrum
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		try {
 			// 0 - init
 			// fetch spectrum in db;
-			Spectrum spectrum = SpectrumManagementService.read(id, dbName, username, password);
+			Spectrum spectrum = SpectrumManagementService.read(id);
 			// ready to read json
 			Map<String, Object> spectrumDataToUpdate = (Map<String, Object>) data.get("newSpectrumData");
 
@@ -1873,27 +1928,29 @@ public class SpectraController {
 			boolean updateSampleMixRCCMap = false;
 
 			// I.A - fetch metadata in db
-			SampleMix sampleMixData = null;
+			ASampleMix sampleMixData = null, spectrumSampleMix = null;
 			Map<StructureChemicalCompound, Double> newMap = new HashMap<>();
 			switch (spectrum.getSample()) {
 			case Spectrum.SPECTRUM_SAMPLE_SINGLE_CHEMICAL_COMPOUND:
 				// TODO keep it in case of user can edit RCC related to a cpd
 				StructureChemicalCompound rcc = null;
 				if (((CompoundSpectrum) spectrum).getListOfCompounds().size() == 1) {
-					rcc = (StructureChemicalCompound) ((CompoundSpectrum) spectrum).getListOfCompounds()
-							.get(0);
+					rcc = (StructureChemicalCompound) ((CompoundSpectrum) spectrum).getListOfCompounds().get(0);
 					// model.addAttribute("spectrum_sample_compound_id", rcc.getId());
 				}
-				if (spectrum.getSampleMixMetadata() != null) {
-					sampleMixData = SampleMixMetadataManagementService
-							.read(spectrum.getSampleMixMetadata().getId(), dbName, username, password);
+
+				spectrumSampleMix = spectrum.getSampleMixMetadata(LiquidSampleMix.class);
+				if (spectrumSampleMix == null)
+					spectrumSampleMix = spectrum.getSampleMixMetadata(GasSampleMix.class);
+				if (spectrumSampleMix != null) {
+					sampleMixData = ASampleMixMetadataDao.read(spectrumSampleMix.getId());
 					// update Ref CC concentration
 					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_concentration")
 							&& spectrumDataToUpdate.get("spectrum_sample_compound_concentration") != null) {
 						Double newConcentration = null;
 						try {
-							newConcentration = Double.parseDouble(spectrumDataToUpdate
-									.get("spectrum_sample_compound_concentration").toString());
+							newConcentration = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_sample_compound_concentration").toString());
 							updateSampleMetadata = true;
 							updateSampleMixRCCMap = true;
 						} catch (NumberFormatException nfe) {
@@ -1906,38 +1963,57 @@ public class SpectraController {
 					}
 
 					// sample solvent
-					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_mass_solvent")
-							&& spectrumDataToUpdate.get("spectrum_sample_compound_mass_solvent") != null) {
-						sampleMixData.setMSsolvent(SampleMix.getStandardizedMSsolvent(
-								(String) spectrumDataToUpdate.get("spectrum_sample_compound_mass_solvent")));
+					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_liquid_solvent")
+							&& spectrumDataToUpdate.get("spectrum_sample_compound_liquid_solvent") != null) {
+						((LiquidSampleMix) sampleMixData).setLiquidSolvent(LiquidSampleMix.getStandardizedLiquidSolvent(
+								(String) spectrumDataToUpdate.get("spectrum_sample_compound_liquid_solvent")));
+						updateSampleMetadata = true;
+					}
+					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_gas_solvent")
+							&& spectrumDataToUpdate.get("spectrum_sample_compound_gas_solvent") != null) {
+						((GasSampleMix) sampleMixData).setGcmsSolvent(GasSampleMix.getStandardizedGCMSsolvent(
+								(String) spectrumDataToUpdate.get("spectrum_sample_compound_gas_solvent")));
+						updateSampleMetadata = true;
+					}
+
+					// derivation method
+					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_derivation_method")
+							&& spectrumDataToUpdate.get("spectrum_sample_compound_derivation_method") != null) {
+						((GasSampleMix) sampleMixData).setDerivationMethod(GasSampleMix.getStandardizedDerivationMethod(
+								(String) spectrumDataToUpdate.get("spectrum_sample_compound_derivation_method")));
 						updateSampleMetadata = true;
 					}
 				}
 				break;
 			case Spectrum.SPECTRUM_SAMPLE_MIX_CHEMICAL_COMPOUND:
-				if (spectrum.getSampleMixMetadata() != null) {
-					sampleMixData = SampleMixMetadataManagementService
-							.read(spectrum.getSampleMixMetadata().getId(), dbName, username, password);
+				spectrumSampleMix = spectrum.getSampleMixMetadata(LiquidSampleMix.class);
+				if (spectrumSampleMix == null)
+					spectrumSampleMix = spectrum.getSampleMixMetadata(GasSampleMix.class);
+				if (spectrumSampleMix != null) {
+					sampleMixData = ASampleMixMetadataDao.read(spectrumSampleMix.getId());
 
 					// sample mix solvent
-					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_mass_solvent_mix")
-							&& spectrumDataToUpdate
-									.get("spectrum_sample_compound_mass_solvent_mix") != null) {
-						sampleMixData.setMSsolvent(
-								SampleMix.getStandardizedMSsolventMix((String) spectrumDataToUpdate
-										.get("spectrum_sample_compound_mass_solvent_mix")));
+					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_liquid_solvent_mix")
+							&& spectrumDataToUpdate.get("spectrum_sample_compound_liquid_solvent_mix") != null) {
+						((LiquidSampleMix) sampleMixData).setLiquidSolvent(
+								LiquidSampleMix.getStandardizedLiquidSolventMix((String) spectrumDataToUpdate
+										.get("spectrum_sample_compound_liquid_solvent_mix")));
 						updateSampleMetadata = true;
 					}
 				}
 				break;
 			case Spectrum.SPECTRUM_SAMPLE_STANDARDIZED_MATRIX:
-				if (spectrum.getSampleMixMetadata() != null)
-					sampleMixData = SampleMixMetadataManagementService
-							.read(spectrum.getSampleMixMetadata().getId(), dbName, username, password);
+				spectrumSampleMix = spectrum.getSampleMixMetadata(LiquidSampleMix.class);
+				if (spectrumSampleMix == null)
+					spectrumSampleMix = spectrum.getSampleMixMetadata(GasSampleMix.class);
+				if (spectrumSampleMix != null)
+					sampleMixData = ASampleMixMetadataDao.read(spectrumSampleMix.getId());
 				AnalyticalMatrix analyticalMatrix = spectrum.getAnalyticalMatrixMetadata();
 				if (analyticalMatrix != null) {
-					// model.addAttribute("spectrum_matrix_name", analyticalMatrix.getMatrixTypeAsString());
-					// model.addAttribute("spectrum_matrix_link", analyticalMatrix.getStdMatrixLink());
+					// model.addAttribute("spectrum_matrix_name",
+					// analyticalMatrix.getMatrixTypeAsString());
+					// model.addAttribute("spectrum_matrix_link",
+					// analyticalMatrix.getStdMatrixLink());
 				}
 				break;
 			case Spectrum.SPECTRUM_SAMPLE_ANALYTICAL_MATRIX:
@@ -1963,10 +2039,9 @@ public class SpectraController {
 							String inChIKey = rawCpdMixData.get("inchikey").toString();
 							double coucentration = 0.0;
 							StructureChemicalCompound scc = StructuralCompoundManagementService
-									.readByInChIKey(inChIKey, dbName, username, password);
+									.readByInChIKey(inChIKey);
 							try {
-								coucentration = Double
-										.parseDouble(rawCpdMixData.get("concentration").toString());
+								coucentration = Double.parseDouble(rawCpdMixData.get("concentration").toString());
 							} catch (NumberFormatException nef) {
 							}
 							newMap.put(scc, coucentration);
@@ -1978,19 +2053,17 @@ public class SpectraController {
 			// I.B - update metadata in db
 			if (updateSampleMetadata) {
 				// sampleMixData.setCompound2ConcentrationMap(newMap);
-				if (!updateSampleMixRCCMap)
-					newMap = sampleMixData.getCompound2ConcentrationMap();
-				if (!SampleMixMetadataManagementService.update(sampleMixData.getId(),
-						sampleMixData.getMSsolvent(), newMap, dbName, username, password))
-					return false;
+				if (updateSampleMixRCCMap) {
+					sampleMixData.setStructuralChemicalCompounds(newMap);
+				}
+				ASampleMixMetadataDao.update(sampleMixData.getId(), sampleMixData);
 			}
 
 			// I.C - update NMR sample tube metadata
 			if (spectrum instanceof NMRSpectrum) {
 				boolean updateSampleNMRtube = false;
-				SampleNMRTubeConditions nmrTubeMetadata = SampleNMRTubeConditionsManagementService.read(
-						((NMRSpectrum) spectrum).getSampleNMRTubeConditionsMetadata().getId(), dbName,
-						username, password);
+				SampleNMRTubeConditions nmrTubeMetadata = SampleNMRTubeConditionsDao
+						.read(((NMRSpectrum) spectrum).getSampleNMRTubeConditionsMetadata().getId());
 
 				// spectrum_nmr_tube_prep_solvent
 				if (spectrumDataToUpdate.containsKey("spectrum_nmr_tube_prep_solvent")
@@ -2004,9 +2077,8 @@ public class SpectraController {
 				if (spectrumDataToUpdate.containsKey("spectrum_nmr_tube_prep_poentiaHydrogenii")
 						&& spectrumDataToUpdate.get("spectrum_nmr_tube_prep_poentiaHydrogenii") != null) {
 					try {
-						nmrTubeMetadata
-								.setPotentiaHydrogenii(Double.parseDouble(((String) spectrumDataToUpdate
-										.get("spectrum_nmr_tube_prep_poentiaHydrogenii"))));
+						nmrTubeMetadata.setPotentiaHydrogenii(Double.parseDouble(
+								((String) spectrumDataToUpdate.get("spectrum_nmr_tube_prep_poentiaHydrogenii"))));
 						updateSampleNMRtube = true;
 					} catch (NumberFormatException nfe) {
 					}
@@ -2014,8 +2086,7 @@ public class SpectraController {
 
 				// spectrum_nmr_tube_prep_ref_chemical_shift_indocator
 				if (spectrumDataToUpdate.containsKey("spectrum_nmr_tube_prep_ref_chemical_shift_indocator")
-						&& spectrumDataToUpdate
-								.get("spectrum_nmr_tube_prep_ref_chemical_shift_indocator") != null) {
+						&& spectrumDataToUpdate.get("spectrum_nmr_tube_prep_ref_chemical_shift_indocator") != null) {
 					nmrTubeMetadata.setReferenceChemicalShifIndicator(SampleNMRTubeConditions
 							.getStandardizedNMRreferenceChemicalShifIndicator((String) spectrumDataToUpdate
 									.get("spectrum_nmr_tube_prep_ref_chemical_shift_indocator")));
@@ -2023,8 +2094,7 @@ public class SpectraController {
 				}
 
 				// spectrum_nmr_tube_prep_ref_chemical_shift_indocator_other
-				if (spectrumDataToUpdate
-						.containsKey("spectrum_nmr_tube_prep_ref_chemical_shift_indocator_other")
+				if (spectrumDataToUpdate.containsKey("spectrum_nmr_tube_prep_ref_chemical_shift_indocator_other")
 						&& spectrumDataToUpdate
 								.get("spectrum_nmr_tube_prep_ref_chemical_shift_indocator_other") != null) {
 					nmrTubeMetadata.setReferenceChemicalShifIndicatorOther((String) spectrumDataToUpdate
@@ -2036,9 +2106,8 @@ public class SpectraController {
 				if (spectrumDataToUpdate.containsKey("spectrum_nmr_tube_prep_ref_concentration")
 						&& spectrumDataToUpdate.get("spectrum_nmr_tube_prep_ref_concentration") != null) {
 					try {
-						nmrTubeMetadata
-								.setReferenceConcentration(Double.parseDouble(((String) spectrumDataToUpdate
-										.get("spectrum_nmr_tube_prep_ref_concentration"))));
+						nmrTubeMetadata.setReferenceConcentration(Double.parseDouble(
+								((String) spectrumDataToUpdate.get("spectrum_nmr_tube_prep_ref_concentration"))));
 						updateSampleNMRtube = true;
 					} catch (NumberFormatException nfe) {
 					}
@@ -2053,13 +2122,12 @@ public class SpectraController {
 				}
 
 				// spectrum_nmr_tube_prep_lock_substance_vol_concentration
-				if (spectrumDataToUpdate
-						.containsKey("spectrum_nmr_tube_prep_lock_substance_vol_concentration")
+				if (spectrumDataToUpdate.containsKey("spectrum_nmr_tube_prep_lock_substance_vol_concentration")
 						&& spectrumDataToUpdate
 								.get("spectrum_nmr_tube_prep_lock_substance_vol_concentration") != null) {
 					try {
-						nmrTubeMetadata.setLockSubstanceVolumicConcentration(
-								Double.parseDouble(((String) spectrumDataToUpdate
+						nmrTubeMetadata
+								.setLockSubstanceVolumicConcentration(Double.parseDouble(((String) spectrumDataToUpdate
 										.get("spectrum_nmr_tube_prep_lock_substance_vol_concentration"))));
 						updateSampleNMRtube = true;
 					} catch (NumberFormatException nfe) {
@@ -2069,20 +2137,17 @@ public class SpectraController {
 				// spectrum_nmr_tube_prep_buffer_solution
 				if (spectrumDataToUpdate.containsKey("spectrum_nmr_tube_prep_lock_substance")
 						&& spectrumDataToUpdate.get("spectrum_nmr_tube_prep_lock_substance") != null) {
-					nmrTubeMetadata.setBufferSolution(SampleNMRTubeConditions
-							.getStandardizedNMRbufferSolution((String) spectrumDataToUpdate
-									.get("spectrum_nmr_tube_prep_lock_substance")));
+					nmrTubeMetadata.setBufferSolution(SampleNMRTubeConditions.getStandardizedNMRbufferSolution(
+							(String) spectrumDataToUpdate.get("spectrum_nmr_tube_prep_lock_substance")));
 					updateSampleNMRtube = true;
 				}
 
 				// spectrum_nmr_tube_prep_buffer_solution_concentration
 				if (spectrumDataToUpdate.containsKey("spectrum_nmr_tube_prep_buffer_solution_concentration")
-						&& spectrumDataToUpdate
-								.get("spectrum_nmr_tube_prep_buffer_solution_concentration") != null) {
+						&& spectrumDataToUpdate.get("spectrum_nmr_tube_prep_buffer_solution_concentration") != null) {
 					try {
-						nmrTubeMetadata.setBufferSolutionConcentration(
-								Double.parseDouble(((String) spectrumDataToUpdate
-										.get("spectrum_nmr_tube_prep_buffer_solution_concentration"))));
+						nmrTubeMetadata.setBufferSolutionConcentration(Double.parseDouble(((String) spectrumDataToUpdate
+								.get("spectrum_nmr_tube_prep_buffer_solution_concentration"))));
 						updateSampleNMRtube = true;
 					} catch (NumberFormatException nfe) {
 					}
@@ -2126,9 +2191,7 @@ public class SpectraController {
 
 				// mop mop
 				if (updateSampleNMRtube) {
-					if (!SampleNMRTubeConditionsManagementService.update(nmrTubeMetadata.getId(),
-							nmrTubeMetadata, dbName, username, password))
-						return false;
+					SampleNMRTubeConditionsDao.update(nmrTubeMetadata.getId(), nmrTubeMetadata);
 				}
 			}
 
@@ -2136,9 +2199,8 @@ public class SpectraController {
 			if (spectrum instanceof ILCSpectrum) {
 				// II.A - init var
 				boolean updateLCchromatoData = false;
-				LiquidChromatography lcMetadata = LiquidChromatographyMetadataManagementService.read(
-						((ILCSpectrum) spectrum).getLiquidChromatography().getId(), dbName, username,
-						password);
+				LiquidChromatography lcMetadata = LiquidChromatographyMetadataDao
+						.read(((ILCSpectrum) spectrum).getLiquidChromatography().getId());
 
 				// II.B - update object
 				// spectrum_chromatography_col_constructor: "Thermo"
@@ -2151,8 +2213,8 @@ public class SpectraController {
 				// spectrum_chromatography_col_constructor_other
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_constructor_other")) {
 					updateLCchromatoData = true;
-					lcMetadata.setColumnOther(spectrumDataToUpdate
-							.get("spectrum_chromatography_col_constructor_other").toString());
+					lcMetadata.setColumnOther(
+							spectrumDataToUpdate.get("spectrum_chromatography_col_constructor_other").toString());
 				}
 
 				// spectrum_chromatography_col_diameter: "2.1"
@@ -2172,8 +2234,8 @@ public class SpectraController {
 					updateLCchromatoData = true;
 					Double collength = null;
 					try {
-						collength = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_chromatography_col_length").toString());
+						collength = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_chromatography_col_length").toString());
 					} catch (NumberFormatException e) {
 					}
 					lcMetadata.setColumnLength(collength);
@@ -2182,8 +2244,7 @@ public class SpectraController {
 				// spectrum_chromatography_col_name: "Hypersil Gold C18"
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_name")) {
 					updateLCchromatoData = true;
-					lcMetadata.setColumnName(
-							spectrumDataToUpdate.get("spectrum_chromatography_col_name").toString());
+					lcMetadata.setColumnName(spectrumDataToUpdate.get("spectrum_chromatography_col_name").toString());
 				}
 
 				// spectrum_chromatography_col_particule_size: "1.9"
@@ -2191,8 +2252,8 @@ public class SpectraController {
 					updateLCchromatoData = true;
 					Double colPartiSize = null;
 					try {
-						colPartiSize = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_chromatography_col_particule_size").toString());
+						colPartiSize = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_col_particule_size").toString());
 					} catch (NumberFormatException e) {
 					}
 					lcMetadata.setParticuleSize(colPartiSize);
@@ -2203,8 +2264,8 @@ public class SpectraController {
 					updateLCchromatoData = true;
 					Double colTemp = null;
 					try {
-						colTemp = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_chromatography_col_temperature").toString());
+						colTemp = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_col_temperature").toString());
 					} catch (NumberFormatException e) {
 					}
 					lcMetadata.setColumnTemperature(colTemp);
@@ -2229,8 +2290,8 @@ public class SpectraController {
 					updateLCchromatoData = true;
 					Double sfgRate = null;
 					try {
-						sfgRate = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_chromatography_separation_flow_rate").toString());
+						sfgRate = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_separation_flow_rate").toString());
 					} catch (NumberFormatException e) {
 					}
 					lcMetadata.setSeparationFlowRate(sfgRate);
@@ -2248,11 +2309,11 @@ public class SpectraController {
 					updateLCchromatoData = true;
 					Double pH = null;
 					try {
-						pH = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_chromatography_solventApH").toString());
+						pH = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_chromatography_solventApH").toString());
 					} catch (NumberFormatException e) {
 					}
-					lcMetadata.setpHSolventA(pH);
+					lcMetadata.setPHSolventA(pH);
 				}
 
 				// spectrum_chromatography_solventB: "Methanol / CH3CO2H (100/0.1)"
@@ -2267,19 +2328,18 @@ public class SpectraController {
 					updateLCchromatoData = true;
 					Double pH = null;
 					try {
-						pH = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_chromatography_solventBpH").toString());
+						pH = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_chromatography_solventBpH").toString());
 					} catch (NumberFormatException e) {
 					}
-					lcMetadata.setpHSolventB(pH);
+					lcMetadata.setPHSolventB(pH);
 				}
 
 				// spectrum_chromatography_sfg_time
 				Map<Double, Double[]> newSFG = lcMetadata.getSeparationFlowGradient();
 				if (spectrumDataToUpdate.containsKey("spectrum_chromatography_sfg_time")
 						&& spectrumDataToUpdate.get("spectrum_chromatography_sfg_time") != null) {
-					if (spectrumDataToUpdate
-							.get("spectrum_chromatography_sfg_time") instanceof ArrayList<?>) {
+					if (spectrumDataToUpdate.get("spectrum_chromatography_sfg_time") instanceof ArrayList<?>) {
 						newSFG = new HashMap<>();
 						updateLCchromatoData = true;
 						ArrayList<Map<String, Object>> rawSFG = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
@@ -2309,8 +2369,7 @@ public class SpectraController {
 
 				// II.C - save object (if needed)
 				if (updateLCchromatoData) {
-					LiquidChromatographyMetadataManagementService.update(lcMetadata.getId(), lcMetadata,
-							newSFG, dbName, username, password);
+					LiquidChromatographyMetadataDao.update(lcMetadata.getId(), lcMetadata, newSFG);
 				}
 			}
 
@@ -2366,18 +2425,24 @@ public class SpectraController {
 					updateMSionization = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_ms_ionization_ion_transfer_temperature").toString());
+						newVal = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_ms_ionization_ion_transfer_temperature").toString());
 					} catch (NumberFormatException nfe) {
 					}
-					msIonizationMetatada.setIonTransferTemperature(newVal);
+					((AnalyzerLiquidMassIonization) msIonizationMetatada).setIonTransferTemperature(newVal);
 				}
 
 				// spectrum_ms_ionization_ionization_method: "ESI"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_ionization_method")) {
 					updateMSionization = true;
-					msIonizationMetatada.setIonization(AnalyzerMassIonization.getStandardizedIonization(
-							spectrumDataToUpdate.get("spectrum_ms_ionization_ionization_method").toString()));
+					if (msIonizationMetatada instanceof AnalyzerLiquidMassIonization)
+						((AnalyzerLiquidMassIonization) msIonizationMetatada).setIonization(
+								AnalyzerLiquidMassIonization.getStandardizedIonization(spectrumDataToUpdate
+										.get("spectrum_ms_ionization_ionization_method").toString()));
+					else
+						((AnalyzerGasMassIonization) msIonizationMetatada).setIonizationMethod(
+								AnalyzerGasMassIonization.getStandardizedGCIonization(spectrumDataToUpdate
+										.get("spectrum_ms_ionization_ionization_method").toString()));
 				}
 
 				// spectrum_ms_ionization_ionization_voltage: "4.0"
@@ -2385,11 +2450,11 @@ public class SpectraController {
 					updateMSionization = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_ms_ionization_ionization_voltage").toString());
+						newVal = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_ms_ionization_ionization_voltage").toString());
 					} catch (NumberFormatException nfe) {
 					}
-					msIonizationMetatada.setIonizationVoltage(newVal);
+					((AnalyzerLiquidMassIonization) msIonizationMetatada).setIonizationVoltage(newVal);
 				}
 
 				// spectrum_ms_ionization_source_gaz_flow: "0.0"
@@ -2397,11 +2462,11 @@ public class SpectraController {
 					updateMSionization = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_ms_ionization_source_gaz_flow").toString());
+						newVal = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_ms_ionization_source_gaz_flow").toString());
 					} catch (NumberFormatException nfe) {
 					}
-					msIonizationMetatada.setSourceGazFlow(newVal);
+					((AnalyzerLiquidMassIonization) msIonizationMetatada).setSourceGazFlow(newVal);
 				}
 
 				// spectrum_ms_ionization_spray_gaz_flow: "55.0"
@@ -2413,7 +2478,7 @@ public class SpectraController {
 								spectrumDataToUpdate.get("spectrum_ms_ionization_spray_gaz_flow").toString());
 					} catch (NumberFormatException nfe) {
 					}
-					msIonizationMetatada.setSprayGazFlow(newVal);
+					((AnalyzerLiquidMassIonization) msIonizationMetatada).setSprayGazFlow(newVal);
 				}
 
 				// spectrum_ms_ionization_vaporizer_gaz_flow: "10.0"
@@ -2421,11 +2486,11 @@ public class SpectraController {
 					updateMSionization = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_ms_ionization_vaporizer_gaz_flow").toString());
+						newVal = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_ms_ionization_vaporizer_gaz_flow").toString());
 					} catch (NumberFormatException nfe) {
 					}
-					msIonizationMetatada.setVaporizerGazFlow(newVal);
+					((AnalyzerLiquidMassIonization) msIonizationMetatada).setVaporizerGazFlow(newVal);
 				}
 
 				// spectrum_ms_ionization_vaporizer_tempertature: ""
@@ -2433,20 +2498,21 @@ public class SpectraController {
 					updateMSionization = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_ms_ionization_vaporizer_tempertature").toString());
+						newVal = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_ms_ionization_vaporizer_tempertature").toString());
 					} catch (NumberFormatException nfe) {
 					}
-					msIonizationMetatada.setVaporizerTemperature(newVal);
+					((AnalyzerLiquidMassIonization) msIonizationMetatada).setVaporizerTemperature(newVal);
 				}
+
+				// TODO GCMS gas
 
 				// get original data
 				msRangeMassFrom = ((MassSpectrum) spectrum).getRangeMassFrom();
 				msRangeMassTo = ((MassSpectrum) spectrum).getRangeMassTo();
 				msRangeRTminFrom = ((MassSpectrum) spectrum).getRangeRetentionTimeFrom();
 				msRangeRTminTo = ((MassSpectrum) spectrum).getRangeRetentionTimeTo();
-				msResolutionFWHMresolution = ((MassSpectrum) spectrum)
-						.getInstrumentResolutionFWHMresolution();
+				msResolutionFWHMresolution = ((MassSpectrum) spectrum).getInstrumentResolutionFWHMresolution();
 				msResolutionFWHMmass = ((MassSpectrum) spectrum).getInstrumentResolutionFWHMmass();
 				// new 2.0
 				msCurationLvl = ((MassSpectrum) spectrum).getCurationLevel();
@@ -2457,8 +2523,8 @@ public class SpectraController {
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_range_mass_from")) {
 					updateMSranges = true;
 					try {
-						msRangeMassFrom = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_ms_range_mass_from").toString());
+						msRangeMassFrom = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_range_mass_from").toString());
 					} catch (NumberFormatException e) {
 					}
 				}
@@ -2467,8 +2533,8 @@ public class SpectraController {
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_range_mass_to")) {
 					updateMSranges = true;
 					try {
-						msRangeMassTo = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_ms_range_mass_to").toString());
+						msRangeMassTo = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_range_mass_to").toString());
 					} catch (NumberFormatException e) {
 					}
 				}
@@ -2496,8 +2562,8 @@ public class SpectraController {
 				// // spectrum_ms_analyzer_resolution_fwhm: "30000@"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_analyzer_resolution_fwhm")) {
 					updateMSanalyzer = true;
-					String[] tabData = spectrumDataToUpdate.get("spectrum_ms_analyzer_resolution_fwhm")
-							.toString().split("@");
+					String[] tabData = spectrumDataToUpdate.get("spectrum_ms_analyzer_resolution_fwhm").toString()
+							.split("@");
 					try {
 						if (tabData.length == 0) {
 						} else if (tabData.length == 1) {
@@ -2556,27 +2622,23 @@ public class SpectraController {
 			// III.B - update object
 			// II.C - save object (if needed)
 			if (updateMSanalyzer) {
-				AnalyzerMassSpectrometerDeviceMetadataManagementService.update(msAnalyzerMetatada.getId(),
-						msAnalyzerMetatada, dbName, username, password);
+				AnalyzerMassSpectrometerDeviceMetadataDao.update(msAnalyzerMetatada.getId(), msAnalyzerMetatada);
 			}
 			if (updateMSionization) {
-				AnalyzerMassIonizationMetadataManagementService.update(msIonizationMetatada.getId(),
-						msIonizationMetatada, dbName, username, password);
+				AnalyzerMassIonizationMetadataDao.update(msIonizationMetatada.getId(), msIonizationMetatada);
 
 			}
 			if (updateMSranges) {
 				if (spectrum instanceof FullScanLCSpectrum) {
-					FullScanLCSpectrumManagementService.update(spectrum.getId(), msRangeMassFrom,
-							msRangeMassTo, msRangeRTminFrom, msRangeRTminTo, msRangeRTmeohFrom,
-							msRangeRTmeohTo, msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl,
-							dbName, username, password);
+					FullScanLCSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo, msRangeRTminFrom,
+							msRangeRTminTo, msRangeRTmeohFrom, msRangeRTmeohTo, msResolutionFWHMresolution,
+							msResolutionFWHMmass, msCurationLvl);
 				} // else if instance of FragLC / GC / ...
 				else if (spectrum instanceof FragmentationLCSpectrum) {
 					// TODO update other MSMS specific fields
-					FragmentationLCSpectrumManagementService.update(spectrum.getId(), msRangeMassFrom,
-							msRangeMassTo, msRangeRTminFrom, msRangeRTminTo, msRangeRTmeohFrom,
-							msRangeRTmeohTo, msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl,
-							dbName, username, password);
+					FragmentationLCSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo,
+							msRangeRTminFrom, msRangeRTminTo, msRangeRTmeohFrom, msRangeRTmeohTo,
+							msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl);
 				}
 			}
 
@@ -2624,8 +2686,8 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_angle").toString());
+						newVal = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_angle").toString());
 					} catch (NumberFormatException nfe) {
 					}
 					pulseAngle = newVal;
@@ -2636,8 +2698,8 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Integer newVal = null;
 					try {
-						newVal = Integer.parseInt(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_number_of_points").toString());
+						newVal = Integer.parseInt(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_number_of_points").toString());
 					} catch (NumberFormatException nfe) {
 					}
 					nbOfPoints = newVal;
@@ -2648,8 +2710,8 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Integer newVal = null;
 					try {
-						newVal = Integer.parseInt(
-								spectrumDataToUpdate.get("spectrum_nmr_analyzer_number_of_scans").toString());
+						newVal = Integer
+								.parseInt(spectrumDataToUpdate.get("spectrum_nmr_analyzer_number_of_scans").toString());
 					} catch (NumberFormatException nfe) {
 					}
 					nbOfScans = newVal;
@@ -2660,8 +2722,8 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_nmr_analyzer_temperature").toString());
+						newVal = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_temperature").toString());
 					} catch (NumberFormatException nfe) {
 					}
 					temperature = newVal;
@@ -2672,8 +2734,8 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_relaxationDelayD1").toString());
+						newVal = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_relaxationDelayD1").toString());
 					} catch (NumberFormatException nfe) {
 					}
 					relaxationDelayD1 = newVal;
@@ -2684,8 +2746,7 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Double newVal = null;
 					try {
-						newVal = Double
-								.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_sw").toString());
+						newVal = Double.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_sw").toString());
 					} catch (NumberFormatException nfe) {
 					}
 					sw = newVal;
@@ -2696,8 +2757,8 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Double newVal = null;
 					try {
-						newVal = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_nmr_analyzer_mixingTime").toString());
+						newVal = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_mixingTime").toString());
 					} catch (NumberFormatException nfe) {
 					}
 					mixingTime = newVal;
@@ -2720,8 +2781,8 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Integer newVal = null;
 					try {
-						newVal = Integer.parseInt(
-								spectrumDataToUpdate.get("spectrum_nmr_analyzer_numberOfLoops").toString());
+						newVal = Integer
+								.parseInt(spectrumDataToUpdate.get("spectrum_nmr_analyzer_numberOfLoops").toString());
 					} catch (NumberFormatException nfe) {
 					}
 					numberOfLoops = newVal;
@@ -2730,8 +2791,7 @@ public class SpectraController {
 				// spectrum_nmr_analyzer_decouplingType
 				if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_decouplingType")) {
 					updateNMRspectrumData = true;
-					decouplingType = spectrumDataToUpdate.get("spectrum_nmr_analyzer_decouplingType")
-							.toString();
+					decouplingType = spectrumDataToUpdate.get("spectrum_nmr_analyzer_decouplingType").toString();
 				}
 
 				// spectrum_nmr_analyzer_data_fourier_transform: undefined
@@ -2739,8 +2799,8 @@ public class SpectraController {
 					updateNMRspectrumData = true;
 					Boolean newVal = null;
 					try {
-						newVal = Boolean.parseBoolean(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_data_fourier_transform").toString());
+						newVal = Boolean.parseBoolean(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_fourier_transform").toString());
 					} catch (Exception e) {
 					}
 					fourierTransform = newVal;
@@ -2783,14 +2843,12 @@ public class SpectraController {
 
 				// IV.C - save object (if needed)
 				if (updateNMRspectrumData) {
-					NMR1DSpectrumManagementService.updateBasicAttributes(spectrum.getId(), pulseSeq,
-							pulseAngle, nbOfPoints, nbOfScans, temperature, relaxationDelayD1, sw, mixingTime,
-							spinEchoDelay, numberOfLoops, decouplingType, fourierTransform, si,
-							lineBroadening, dbName, username, password);
+					NMR1DSpectrumDao.updateBasicAttributes(spectrum.getId(), pulseSeq, pulseAngle, nbOfPoints,
+							nbOfScans, temperature, relaxationDelayD1, sw, mixingTime, spinEchoDelay, numberOfLoops,
+							decouplingType, fourierTransform, si, lineBroadening);
 				}
 				if (updateNMRanalyzerData) {
-					AnalyzerNMRSpectrometerDeviceManagementService.update(analyzerNMRdevice.getId(),
-							analyzerNMRdevice, dbName, username, password);
+					AnalyzerNMRSpectrometerDeviceMetadataDao.update(analyzerNMRdevice.getId(), analyzerNMRdevice);
 				}
 			} else if (spectrum instanceof NMR2DSpectrum) {
 
@@ -2808,8 +2866,8 @@ public class SpectraController {
 
 					// IV.B - update object
 
-					updateNMRanalyzerData = extractUpdatableAnalyzer(spectrumDataToUpdate,
-							updateNMRanalyzerData, analyzerNMRdevice);
+					updateNMRanalyzerData = extractUpdatableAnalyzer(spectrumDataToUpdate, updateNMRanalyzerData,
+							analyzerNMRdevice);
 
 					String pulseSequence = ((NMR2DSpectrum) spectrum).getPulseSequence();
 					// Double pulseAngle = ((NMR2DSpectrum) spectrum).getPulseAngle();
@@ -2842,13 +2900,13 @@ public class SpectraController {
 					String gbF2 = ((NMR2DSpectrum) spectrum).getGbF2();
 					char peakPicking = ((NMR2DSpectrum) spectrum).getPeakPicking();
 					Boolean symmetrize = ((NMR2DSpectrum) spectrum).getSymmetrize();
-					// String nusProcessingParameter = ((NMR2DSpectrum) spectrum).getNusProcessingParameter();
+					// String nusProcessingParameter = ((NMR2DSpectrum)
+					// spectrum).getNusProcessingParameter();
 
 					// spectrum_nmr_analyzer_pulse_seq
 					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_pulse_seq")) {
 						updateNMRspectrumData = true;
-						pulseSequence = spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_seq")
-								.toString();
+						pulseSequence = spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_seq").toString();
 					}
 
 					// spectrum_nmr_analyzer_size_of_fid_f1
@@ -2856,8 +2914,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_size_of_fid_f1").toString());
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_size_of_fid_f1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						sizeOfFIDF1 = newVal;
@@ -2868,8 +2926,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_size_of_fid_f2").toString());
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_size_of_fid_f2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						sizeOfFIDF2 = newVal;
@@ -2880,8 +2938,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_number_of_scans").toString());
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_number_of_scans").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						numberOfScansF2 = newVal;
@@ -2904,8 +2962,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_relaxationDelayD1").toString());
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_relaxationDelayD1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						relaxationDelayD1 = newVal;
@@ -2916,8 +2974,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF1").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						sw1d = newVal;
@@ -2928,8 +2986,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF2").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						sw13c = newVal;
@@ -2968,8 +3026,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF1").toString());
+							newVal = Integer
+									.parseInt(spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						siF1 = newVal;
@@ -2980,8 +3038,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF2").toString());
+							newVal = Integer
+									.parseInt(spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						siF2 = newVal;
@@ -2990,15 +3048,15 @@ public class SpectraController {
 					// spectrum_nmr_analyzer_data_windowFunctionF1 char
 					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_windowFunctionF1")) {
 						updateNMRspectrumData = true;
-						windowFunctionF1 = NMR2DSpectrum.getStandardizedWindowFunction(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_data_windowFunctionF1").toString());
+						windowFunctionF1 = NMR2DSpectrum.getStandardizedWindowFunction(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_windowFunctionF1").toString());
 					}
 
 					// spectrum_nmr_analyzer_data_windowFunctionF2 char
 					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_windowFunctionF2")) {
 						updateNMRspectrumData = true;
-						windowFunctionF2 = NMR2DSpectrum.getStandardizedWindowFunction(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_data_windowFunctionF2").toString());
+						windowFunctionF2 = NMR2DSpectrum.getStandardizedWindowFunction(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_windowFunctionF2").toString());
 					}
 
 					// spectrum_nmr_analyzer_lbF1 double
@@ -3006,8 +3064,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF1").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						lbF1 = newVal;
@@ -3018,8 +3076,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF2").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						lbF2 = newVal;
@@ -3030,8 +3088,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF1").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						ssbF1 = newVal;
@@ -3042,8 +3100,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF2").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						ssbF2 = newVal;
@@ -3064,8 +3122,8 @@ public class SpectraController {
 					// spectrum_nmr_analyzer_data_peak_peaking manu/auto/none
 					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_peak_peaking")) {
 						updateNMRspectrumData = true;
-						peakPicking = NMR2DSpectrum.getStandardizedPeakPeaking(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_data_peak_peaking").toString());
+						peakPicking = NMR2DSpectrum.getStandardizedPeakPeaking(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_peak_peaking").toString());
 					}
 
 					// spectrum_nmr_analyzer_symmetrize string
@@ -3077,15 +3135,13 @@ public class SpectraController {
 
 					// IV.C - save object (if needed)
 					if (updateNMRspectrumData || updateNMRprocessingData) {
-						NMR2DSpectrumManagementService.updateBasicAttributes(spectrum.getId(), pulseSequence,
-								sizeOfFIDF1, sizeOfFIDF2, numberOfScansF2, acquisitionModeFor2DF1,
-								temperature, relaxationDelayD1, sw1d, sw13c, fourierTransform, tilt, siF1,
-								siF2, windowFunctionF1, windowFunctionF2, lbF1, lbF2, ssbF1, ssbF2, gbF1,
-								gbF2, peakPicking, symmetrize, dbName, username, password);
+						NMR2DSpectrumDao.updateBasicAttributes(spectrum.getId(), pulseSequence, sizeOfFIDF1,
+								sizeOfFIDF2, numberOfScansF2, acquisitionModeFor2DF1, temperature, relaxationDelayD1,
+								sw1d, sw13c, fourierTransform, tilt, siF1, siF2, windowFunctionF1, windowFunctionF2,
+								lbF1, lbF2, ssbF1, ssbF2, gbF1, gbF2, peakPicking, symmetrize);
 					}
 					if (updateNMRanalyzerData) {
-						AnalyzerNMRSpectrometerDeviceManagementService.update(analyzerNMRdevice.getId(),
-								analyzerNMRdevice, dbName, username, password);
+						AnalyzerNMRSpectrometerDeviceMetadataDao.update(analyzerNMRdevice.getId(), analyzerNMRdevice);
 					}
 
 				} else {
@@ -3101,8 +3157,8 @@ public class SpectraController {
 
 					// IV.B - update object
 
-					updateNMRanalyzerData = extractUpdatableAnalyzer(spectrumDataToUpdate,
-							updateNMRanalyzerData, analyzerNMRdevice);
+					updateNMRanalyzerData = extractUpdatableAnalyzer(spectrumDataToUpdate, updateNMRanalyzerData,
+							analyzerNMRdevice);
 
 					String pulseSequence = ((NMR2DSpectrum) spectrum).getPulseSequence();
 					Double pulseAngle = ((NMR2DSpectrum) spectrum).getPulseAngle();
@@ -3138,8 +3194,7 @@ public class SpectraController {
 					// spectrum_nmr_analyzer_pulse_seq
 					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_pulse_seq")) {
 						updateNMRspectrumData = true;
-						pulseSequence = spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_seq")
-								.toString();
+						pulseSequence = spectrumDataToUpdate.get("spectrum_nmr_analyzer_pulse_seq").toString();
 					}
 
 					// spectrum_nmr_analyzer_pulse_angle
@@ -3159,8 +3214,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_size_of_fid_f1").toString());
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_size_of_fid_f1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						sizeOfFIDF1 = newVal;
@@ -3171,8 +3226,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_size_of_fid_f2").toString());
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_size_of_fid_f2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						sizeOfFIDF2 = newVal;
@@ -3183,8 +3238,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_number_of_scans").toString());
+							newVal = Integer.parseInt(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_number_of_scans").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						numberOfScansF2 = newVal;
@@ -3207,8 +3262,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(spectrumDataToUpdate
-									.get("spectrum_nmr_analyzer_relaxationDelayD1").toString());
+							newVal = Double.parseDouble(
+									spectrumDataToUpdate.get("spectrum_nmr_analyzer_relaxationDelayD1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						relaxationDelayD1 = newVal;
@@ -3231,8 +3286,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF1").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						sw1d = newVal;
@@ -3243,8 +3298,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF2").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_swF2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						sw13c = newVal;
@@ -3255,8 +3310,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_jxh").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_jxh").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						jxh = newVal;
@@ -3274,8 +3329,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_jxh").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_jxh").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						jxh = newVal;
@@ -3286,8 +3341,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Boolean newVal = null;
 						try {
-							newVal = Boolean.parseBoolean(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_nus").toString());
+							newVal = Boolean
+									.parseBoolean(spectrumDataToUpdate.get("spectrum_nmr_analyzer_nus").toString());
 						} catch (Exception e) {
 						}
 						nus = newVal;
@@ -3310,8 +3365,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_nus_points").toString());
+							newVal = Integer
+									.parseInt(spectrumDataToUpdate.get("spectrum_nmr_analyzer_nus_points").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						nusPoints = newVal;
@@ -3336,8 +3391,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF1").toString());
+							newVal = Integer
+									.parseInt(spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						siF1 = newVal;
@@ -3348,8 +3403,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Integer newVal = null;
 						try {
-							newVal = Integer.parseInt(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF2").toString());
+							newVal = Integer
+									.parseInt(spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_siF2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						siF2 = newVal;
@@ -3358,15 +3413,15 @@ public class SpectraController {
 					// spectrum_nmr_analyzer_data_windowFunctionF1 char
 					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_windowFunctionF1")) {
 						updateNMRspectrumData = true;
-						windowFunctionF1 = NMR2DSpectrum.getStandardizedWindowFunction(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_data_windowFunctionF1").toString());
+						windowFunctionF1 = NMR2DSpectrum.getStandardizedWindowFunction(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_windowFunctionF1").toString());
 					}
 
 					// spectrum_nmr_analyzer_data_windowFunctionF2 char
 					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_windowFunctionF2")) {
 						updateNMRspectrumData = true;
-						windowFunctionF2 = NMR2DSpectrum.getStandardizedWindowFunction(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_data_windowFunctionF2").toString());
+						windowFunctionF2 = NMR2DSpectrum.getStandardizedWindowFunction(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_windowFunctionF2").toString());
 					}
 
 					// spectrum_nmr_analyzer_lbF1 double
@@ -3374,8 +3429,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF1").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						lbF1 = newVal;
@@ -3386,8 +3441,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF2").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_lbF2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						lbF2 = newVal;
@@ -3398,8 +3453,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF1").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF1").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						ssbF1 = newVal;
@@ -3410,8 +3465,8 @@ public class SpectraController {
 						updateNMRspectrumData = true;
 						Double newVal = null;
 						try {
-							newVal = Double.parseDouble(
-									spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF2").toString());
+							newVal = Double
+									.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_ssbF2").toString());
 						} catch (NumberFormatException nfe) {
 						}
 						ssbF2 = newVal;
@@ -3432,8 +3487,8 @@ public class SpectraController {
 					// spectrum_nmr_analyzer_data_peak_peaking manu/auto/none
 					if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_data_peak_peaking")) {
 						updateNMRspectrumData = true;
-						peakPicking = NMR2DSpectrum.getStandardizedPeakPeaking(spectrumDataToUpdate
-								.get("spectrum_nmr_analyzer_data_peak_peaking").toString());
+						peakPicking = NMR2DSpectrum.getStandardizedPeakPeaking(
+								spectrumDataToUpdate.get("spectrum_nmr_analyzer_data_peak_peaking").toString());
 					}
 
 					// spectrum_nmr_analyzer_nusProcessingParameter string
@@ -3445,16 +3500,14 @@ public class SpectraController {
 
 					// IV.C - save object (if needed)
 					if (updateNMRspectrumData || updateNMRprocessingData) {
-						NMR2DSpectrumManagementService.updateBasicAttributes(spectrum.getId(), pulseSequence,
-								pulseAngle, sizeOfFIDF1, sizeOfFIDF2, numberOfScansF2, acquisitionModeFor2DF1,
-								temperature, relaxationDelayD1, sw1d, sw13c, mixingTime, jxh, nus, nusAmount,
-								nusPoints, fourierTransform, siF1, siF2, windowFunctionF1, windowFunctionF2,
-								lbF1, lbF2, ssbF1, ssbF2, gbF1, gbF2, peakPicking, nusProcessingParameter,
-								dbName, username, password);
+						NMR2DSpectrumDao.updateBasicAttributes(spectrum.getId(), pulseSequence, pulseAngle, sizeOfFIDF1,
+								sizeOfFIDF2, numberOfScansF2, acquisitionModeFor2DF1, temperature, relaxationDelayD1,
+								sw1d, sw13c, mixingTime, jxh, nus, nusAmount, nusPoints, fourierTransform, siF1, siF2,
+								windowFunctionF1, windowFunctionF2, lbF1, lbF2, ssbF1, ssbF2, gbF1, gbF2, peakPicking,
+								nusProcessingParameter);
 					}
 					if (updateNMRanalyzerData) {
-						AnalyzerNMRSpectrometerDeviceManagementService.update(analyzerNMRdevice.getId(),
-								analyzerNMRdevice, dbName, username, password);
+						AnalyzerNMRSpectrometerDeviceMetadataDao.update(analyzerNMRdevice.getId(), analyzerNMRdevice);
 					}
 					// if (updateNMRprocessingData) {
 					// NMR2DSpectrumManagementService.updateProcessingAttributes(spectrum.getId(),
@@ -3462,7 +3515,7 @@ public class SpectraController {
 					// fourierTransform, siF1, siF2, windowFunctionF1, windowFunctionF2, lbF1, lbF2,
 					// ssbF1, ssbF2, gbF1, gbF2, peakPicking, nusProcessingParameter,
 					// //
-					// dbName, username, password);
+					// null, null, null);
 					// }
 
 				} // all 2D NMR
@@ -3492,8 +3545,8 @@ public class SpectraController {
 						ArrayList<Map<String, Object>> rawPeakList = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
 								.get("spectrum_ms_peaks");
 						for (Map<String, Object> rawPeak : rawPeakList) {
-							if (rawPeak.containsKey("mz") && rawPeak.get("mz") != null
-									&& rawPeak.containsKey("ri") && rawPeak.get("ri") != null) {
+							if (rawPeak.containsKey("mz") && rawPeak.get("mz") != null && rawPeak.containsKey("ri")
+									&& rawPeak.get("ri") != null) {
 								// {mz=213.1241, ri=100, theoricalMass=213.1245, deltaMass=0.161,
 								// composition=C10H17N2O3, attribution=[M-H]-}
 								Double mz = null;
@@ -3503,16 +3556,14 @@ public class SpectraController {
 								try {
 									mz = Double.parseDouble(rawPeak.get("mz").toString());
 									ri = Double.parseDouble(rawPeak.get("ri").toString());
-									theoricalMass = Double
-											.parseDouble(rawPeak.get("theoricalMass").toString());
+									theoricalMass = Double.parseDouble(rawPeak.get("theoricalMass").toString());
 									deltaMass = Double.parseDouble(rawPeak.get("deltaMass").toString());
 								} catch (NumberFormatException nfe) {
 								}
 								String composition = rawPeak.get("composition").toString();
 								String attribution = rawPeak.get("attribution").toString();
 
-								MassPeak mp = new MassPeak((MassSpectrum) spectrum, mz, ri, theoricalMass,
-										deltaMass);
+								MassPeak mp = new MassPeak((MassSpectrum) spectrum, mz, ri, theoricalMass, deltaMass);
 								mp.setComposition(composition);
 								mp.setAttribution(attribution);
 								if (ri != 0.0 && mz != 0.0)
@@ -3526,12 +3577,10 @@ public class SpectraController {
 				// set newPeakList for spectrum
 				if (updatePeakList) {
 					if (spectrum instanceof FullScanLCSpectrum) {
-						FullScanLCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList,
-								dbName, username, password);
+						FullScanLCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
 					} // GCMS //MSMS
 					else if (spectrum instanceof FragmentationLCSpectrum) {
-						FragmentationLCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList,
-								dbName, username, password);
+						FragmentationLCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
 					}
 				}
 			}
@@ -3569,10 +3618,8 @@ public class SpectraController {
 								Double halfWidth = null;
 								Double halfWidthHz = null;
 								try {
-									chemicalShift = Double
-											.parseDouble(rawPeak.get("chemicalShift").toString());
-									relativeIntensity = Double
-											.parseDouble(rawPeak.get("relativeIntensity").toString());
+									chemicalShift = Double.parseDouble(rawPeak.get("chemicalShift").toString());
+									relativeIntensity = Double.parseDouble(rawPeak.get("relativeIntensity").toString());
 									halfWidth = Double.parseDouble(rawPeak.get("halfWidth").toString());
 									halfWidthHz = Double.parseDouble(rawPeak.get("halfWidthHz").toString());
 								} catch (NumberFormatException nfe) {
@@ -3594,8 +3641,7 @@ public class SpectraController {
 				// VI.C - save object (if needed)
 				// set newPeakList for spectrum
 				if (updatePeakList) {
-					NMR1DSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList, dbName,
-							username, password);
+					NMR1DSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
 				}
 
 				// VII - update NMR PEAK PATTERN LIST data
@@ -3620,8 +3666,7 @@ public class SpectraController {
 						ArrayList<Map<String, Object>> rawPeakList = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
 								.get("spectrum_nmr_peak_patterns");
 						for (Map<String, Object> rawPeak : rawPeakList) {
-							if (rawPeak.containsKey("chemicalShift")
-									&& rawPeak.get("chemicalShift") != null) {
+							if (rawPeak.containsKey("chemicalShift") && rawPeak.get("chemicalShift") != null) {
 								// {mz=213.1241, ri=100, theoricalMass=213.1245, deltaMass=0.161,
 								// composition=C10H17N2O3, attribution=[M-H]-}
 								Double chemicalShift = null;
@@ -3631,8 +3676,7 @@ public class SpectraController {
 								Double rangeFrom = null;
 								Double rangeTo = null;
 								try {
-									chemicalShift = Double
-											.parseDouble(rawPeak.get("chemicalShift").toString());
+									chemicalShift = Double.parseDouble(rawPeak.get("chemicalShift").toString());
 									rangeFrom = Double.parseDouble(rawPeak.get("rangeFrom").toString());
 									rangeTo = Double.parseDouble(rawPeak.get("rangeTo").toString());
 									hORc = Integer.parseInt(rawPeak.get("H_or_C").toString());
@@ -3660,8 +3704,7 @@ public class SpectraController {
 
 				// VII.C - save object (if needed)
 				if (updatePeakPatternList) {
-					NMR1DSpectrumManagementService.updatePeakPatternList(spectrum.getId(), newPeakPatternList,
-							dbName, username, password);
+					NMR1DSpectrumManagementService.updatePeakPatternList(spectrum.getId(), newPeakPatternList);
 				}
 
 			} else if (spectrum instanceof NMR2DSpectrum) {
@@ -3689,8 +3732,7 @@ public class SpectraController {
 							ArrayList<Map<String, Object>> rawPeakList = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
 									.get("spectrum_nmr_jres_peaks");
 							for (Map<String, Object> rawPeak : rawPeakList) {
-								if (rawPeak.containsKey("chemicalShiftF1")
-										&& rawPeak.get("chemicalShiftF1") != null
+								if (rawPeak.containsKey("chemicalShiftF1") && rawPeak.get("chemicalShiftF1") != null
 										&& rawPeak.containsKey("chemicalShiftF2")
 										&& rawPeak.get("chemicalShiftF2") != null) {
 									// {mz=213.1241, ri=100, theoricalMass=213.1245, deltaMass=0.161,
@@ -3699,16 +3741,13 @@ public class SpectraController {
 									Double chemicalShiftF2 = null;
 									Double intensity = null;
 									try {
-										chemicalShiftF1 = Double
-												.parseDouble(rawPeak.get("chemicalShiftF1").toString());
-										chemicalShiftF2 = Double
-												.parseDouble(rawPeak.get("chemicalShiftF2").toString());
+										chemicalShiftF1 = Double.parseDouble(rawPeak.get("chemicalShiftF1").toString());
+										chemicalShiftF2 = Double.parseDouble(rawPeak.get("chemicalShiftF2").toString());
 									} catch (NumberFormatException nfe) {
 									}
 									if (rawPeak.get("intensity") != null)
 										try {
-											intensity = Double
-													.parseDouble(rawPeak.get("intensity").toString());
+											intensity = Double.parseDouble(rawPeak.get("intensity").toString());
 										} catch (NumberFormatException nfe) {
 										}
 
@@ -3725,8 +3764,7 @@ public class SpectraController {
 									} catch (NumberFormatException e) {
 										nmrP.gatherCouplingConstants(j);
 									}
-									nmrP.setMultiplicity(
-											PeakPattern.getStandardizedPatternType(multiplicity));
+									nmrP.setMultiplicity(PeakPattern.getStandardizedPatternType(multiplicity));
 									nmrP.setAnnotation(annotation);
 									// if (relativeIntensity != 0.0 && chemicalShift != 0.0)
 									newPeakList.add(nmrP);
@@ -3738,8 +3776,7 @@ public class SpectraController {
 					// VI.C - save object (if needed)
 					// set newPeakList for spectrum
 					if (updatePeakList) {
-						NMR2DSpectrumManagementService.updatePeakListJRES(spectrum.getId(), newPeakList,
-								dbName, username, password);
+						NMR2DSpectrumManagementService.updatePeakListJRES(spectrum.getId(), newPeakList);
 					}
 
 				} else {
@@ -3764,8 +3801,7 @@ public class SpectraController {
 							ArrayList<Map<String, Object>> rawPeakList = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
 									.get("spectrum_nmr_2dpeaks");
 							for (Map<String, Object> rawPeak : rawPeakList) {
-								if (rawPeak.containsKey("chemicalShiftF1")
-										&& rawPeak.get("chemicalShiftF1") != null
+								if (rawPeak.containsKey("chemicalShiftF1") && rawPeak.get("chemicalShiftF1") != null
 										&& rawPeak.containsKey("chemicalShiftF2")
 										&& rawPeak.get("chemicalShiftF2") != null) {
 									// {mz=213.1241, ri=100, theoricalMass=213.1245, deltaMass=0.161,
@@ -3774,16 +3810,13 @@ public class SpectraController {
 									Double chemicalShiftF2 = null;
 									Double intensity = null;
 									try {
-										chemicalShiftF1 = Double
-												.parseDouble(rawPeak.get("chemicalShiftF1").toString());
-										chemicalShiftF2 = Double
-												.parseDouble(rawPeak.get("chemicalShiftF2").toString());
+										chemicalShiftF1 = Double.parseDouble(rawPeak.get("chemicalShiftF1").toString());
+										chemicalShiftF2 = Double.parseDouble(rawPeak.get("chemicalShiftF2").toString());
 									} catch (NumberFormatException nfe) {
 									}
 									if (rawPeak.get("intensity") != null)
 										try {
-											intensity = Double
-													.parseDouble(rawPeak.get("intensity").toString());
+											intensity = Double.parseDouble(rawPeak.get("intensity").toString());
 										} catch (NumberFormatException nfe) {
 										}
 									String annotation = rawPeak.get("annotation").toString();
@@ -3803,8 +3836,7 @@ public class SpectraController {
 					// VI.C - save object (if needed)
 					// set newPeakList for spectrum
 					if (updatePeakList) {
-						NMR2DSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList, dbName,
-								username, password);
+						NMR2DSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
 					}
 
 				} // else all kind of 2D
@@ -3814,8 +3846,7 @@ public class SpectraController {
 
 			// VIII.A - init var
 			boolean updateOtherMetadata = false;
-			OtherMetadata otherMetadata = OtherMetadataManagementService
-					.read((spectrum).getOtherMetadata().getId(), dbName, username, password);
+			OtherMetadata otherMetadata = OtherMetadataDao.read((spectrum).getOtherMetadata().getId());
 
 			// VIII.B - update object
 			// spectrum_othermetadata_aquisition_date: "2015-10-08"
@@ -3828,22 +3859,20 @@ public class SpectraController {
 			// spectrum_othermetadata_authors: "AXIOM/ MetaToul"
 			if (constainKey(spectrumDataToUpdate, "spectrum_othermetadata_authors")) {
 				updateOtherMetadata = true;
-				otherMetadata
-						.setAuthors(spectrumDataToUpdate.get("spectrum_othermetadata_authors").toString());
+				otherMetadata.setAuthors(spectrumDataToUpdate.get("spectrum_othermetadata_authors").toString());
 			}
 
 			// spectrum_othermetadata_ownership: "AXIOM/ MetaToul"
 			if (constainKey(spectrumDataToUpdate, "spectrum_othermetadata_ownership")) {
 				updateOtherMetadata = true;
-				otherMetadata.setOwnership(
-						spectrumDataToUpdate.get("spectrum_othermetadata_ownership").toString());
+				otherMetadata.setOwnership(spectrumDataToUpdate.get("spectrum_othermetadata_ownership").toString());
 			}
 
 			// spectrum_othermetadata_raw_file_name: "w"
 			if (constainKey(spectrumDataToUpdate, "spectrum_othermetadata_raw_file_name")) {
 				updateOtherMetadata = true;
-				otherMetadata.setRawFileName(
-						spectrumDataToUpdate.get("spectrum_othermetadata_raw_file_name").toString());
+				otherMetadata
+						.setRawFileName(spectrumDataToUpdate.get("spectrum_othermetadata_raw_file_name").toString());
 			}
 
 			// spectrum_othermetadata_raw_file_size: "10"
@@ -3851,8 +3880,8 @@ public class SpectraController {
 				updateOtherMetadata = true;
 				Double newFileSize = null;
 				try {
-					newFileSize = Double.parseDouble(
-							spectrumDataToUpdate.get("spectrum_othermetadata_raw_file_size").toString());
+					newFileSize = Double
+							.parseDouble(spectrumDataToUpdate.get("spectrum_othermetadata_raw_file_size").toString());
 				} catch (NumberFormatException e) {
 				}
 				otherMetadata.setRawFileSize(newFileSize);
@@ -3861,14 +3890,12 @@ public class SpectraController {
 			// spectrum_othermetadata_validator: "E. Jamin"
 			if (constainKey(spectrumDataToUpdate, "spectrum_othermetadata_validator")) {
 				updateOtherMetadata = true;
-				otherMetadata.setValidator(
-						spectrumDataToUpdate.get("spectrum_othermetadata_validator").toString());
+				otherMetadata.setValidator(spectrumDataToUpdate.get("spectrum_othermetadata_validator").toString());
 			}
 
 			// VIII.C - save object (if needed)
 			if (updateOtherMetadata) {
-				OtherMetadataManagementService.update(otherMetadata.getId(), otherMetadata, dbName, username,
-						password);
+				OtherMetadataDao.update(otherMetadata.getId(), otherMetadata);
 			}
 
 		} catch (Exception e1) {
@@ -3897,12 +3924,9 @@ public class SpectraController {
 		}
 		// delete / update curation messages in database
 		try {
-			CurationMessageManagementService.delete(listOfCurationMessageToDeleletIds, dbName, username,
-					password);
-			CurationMessageManagementService.updateStatus(listOfCurationMessageToAcceptIds,
-					CurationMessage.STATUS_ACCEPTED, dbName, username, password);
-			CurationMessageManagementService.updateStatus(listOfCurationMessageToRejectIds,
-					CurationMessage.STATUS_REJECTED, dbName, username, password);
+			CurationMessageManagementService.delete(listOfCurationMessageToDeleletIds);
+			CurationMessageDao.update(listOfCurationMessageToAcceptIds, CurationMessage.STATUS_ACCEPTED);
+			CurationMessageDao.update(listOfCurationMessageToRejectIds, CurationMessage.STATUS_REJECTED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -3914,28 +3938,21 @@ public class SpectraController {
 		return true;
 	}
 
-	/**
-	 * @param spectrumDataToUpdate
-	 * @param updateNMRanalyzerData
-	 * @param analyzerNMRdevice
-	 * @return
-	 */
-	private boolean extractUpdatableAnalyzer(Map<String, Object> spectrumDataToUpdate,
-			boolean updateNMRanalyzerData, AnalyzerNMRSpectrometerDevice analyzerNMRdevice) {
+	private boolean extractUpdatableAnalyzer(Map<String, Object> spectrumDataToUpdate, boolean updateNMRanalyzerData,
+			AnalyzerNMRSpectrometerDevice analyzerNMRdevice) {
 		// spectrum_nmr_analyzer_name
 		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_name")) {
 			updateNMRanalyzerData = true;
-			analyzerNMRdevice
-					.setInstrumentName(AnalyzerNMRSpectrometerDevice.getStandardizedNMRinstrumentName(
-							spectrumDataToUpdate.get("spectrum_nmr_analyzer_name").toString()));
+			analyzerNMRdevice.setInstrumentName(AnalyzerNMRSpectrometerDevice.getStandardizedNMRinstrumentName(
+					spectrumDataToUpdate.get("spectrum_nmr_analyzer_name").toString()));
 		}
 
 		// spectrum_nmr_analyzer_magneticFieldStrength
 		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_magneticFieldStrength")) {
 			updateNMRanalyzerData = true;
-			analyzerNMRdevice.setMagneticFieldStrenght(
-					AnalyzerNMRSpectrometerDevice.getStandardizedNMRmagneticFieldStength(spectrumDataToUpdate
-							.get("spectrum_nmr_analyzer_magneticFieldStrength").toString(), null));
+			analyzerNMRdevice
+					.setMagneticFieldStrenght(AnalyzerNMRSpectrometerDevice.getStandardizedNMRmagneticFieldStength(
+							spectrumDataToUpdate.get("spectrum_nmr_analyzer_magneticFieldStrength").toString(), null));
 		}
 
 		// spectrum_nmr_analyzer_software
@@ -3948,8 +3965,8 @@ public class SpectraController {
 		// spectrum_nmr_analyzer_probe
 		if (constainKey(spectrumDataToUpdate, "spectrum_nmr_analyzer_probe")) {
 			updateNMRanalyzerData = true;
-			analyzerNMRdevice.setProbe(AnalyzerNMRSpectrometerDevice.getStandardizedNMRprobe(
-					spectrumDataToUpdate.get("spectrum_nmr_analyzer_probe").toString()));
+			analyzerNMRdevice.setProbe(AnalyzerNMRSpectrometerDevice
+					.getStandardizedNMRprobe(spectrumDataToUpdate.get("spectrum_nmr_analyzer_probe").toString()));
 		}
 
 		// spectrum_nmr_analyzer_tube
@@ -3964,8 +3981,8 @@ public class SpectraController {
 			updateNMRanalyzerData = true;
 			Double newCellVol = null;
 			try {
-				newCellVol = Double.parseDouble(
-						spectrumDataToUpdate.get("spectrum_nmr_analyzer_flow_cell_vol").toString());
+				newCellVol = Double
+						.parseDouble(spectrumDataToUpdate.get("spectrum_nmr_analyzer_flow_cell_vol").toString());
 			} catch (NumberFormatException nfe) {
 			}
 			analyzerNMRdevice.setFlowCellVolume(newCellVol);
@@ -3977,10 +3994,6 @@ public class SpectraController {
 		return spectrumDataToUpdate.containsKey(string) && spectrumDataToUpdate.get(string) != null;
 	}
 
-	/**
-	 * @param time
-	 * @return
-	 */
 	private String shortifyText(Double time) {
 		if (time == null)
 			return "";
@@ -4000,7 +4013,8 @@ public class SpectraController {
 	// @RequestMapping(value = "/nmr-viewer-converter", headers = {
 	// "Content-type=application/json" }, method = RequestMethod.POST, produces =
 	// MediaType.APPLICATION_JSON_VALUE)
-	// public @ResponseBody Object getNMRspectrumJsonData(@RequestBody Map<String, Object> data) {
+	// public @ResponseBody Object getNMRspectrumJsonData(@RequestBody Map<String,
+	// Object> data) {
 	//
 	// // {"type":"single","id":"test","sample":1,"pdata":1}
 	// String rawFolder = Utils.getBundleConfElement("rawFile.nmr.folder");
@@ -4014,18 +4028,11 @@ public class SpectraController {
 	// return ViewerProcessing.getJsonData(id, sample, type, pdata);
 	// }
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param keyRawFile
-	 * @return
-	 */
 	@RequestMapping(value = "/show-raw-file-processing/{keyRawFile}")
 	public @ResponseBody String getRawFileProcessing(HttpServletRequest request, HttpServletResponse response,
 			Locale locale, @PathVariable("keyRawFile") String keyRawFile) {
 
-		String rawFileName = Utils.getBundleConfElement("rawFile.nmr.folder") + keyRawFile + File.separator
+		String rawFileName = PeakForestUtils.getBundleConfElement("rawFile.nmr.folder") + keyRawFile + File.separator
 				+ "_pdata_param.txt";
 		File logFile = new File(rawFileName);
 		try {
@@ -4036,13 +4043,10 @@ public class SpectraController {
 	}
 
 	@RequestMapping(value = "/js_sandbox/{id}", method = RequestMethod.GET)
-	public String showJSMolInCompoundSheet(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, Model model, @PathVariable("id") long id) throws PeakForestManagerException {
+	public String showJSMolInCompoundSheet(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			Model model, @PathVariable("id") long id) throws PeakForestManagerException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 
 		// load spectra data
 		// List<Long> spectrumIDs = new ArrayList<Long>();
@@ -4050,7 +4054,7 @@ public class SpectraController {
 		// spectrumIDs.add(id);
 		Spectrum spectrum = null;
 		try {
-			spectrum = SpectrumManagementService.read(id, dbName, username, password);
+			spectrum = SpectrumManagementService.read(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -4061,8 +4065,8 @@ public class SpectraController {
 			for (Compound c : ((CompoundSpectrum) spectrum).getListOfCompounds()) {
 				if (c instanceof StructureChemicalCompound)
 					try {
-						listCC.add(StructuralCompoundManagementService.readByInChIKey(
-								((StructureChemicalCompound) c).getInChIKey(), dbName, username, password));
+						listCC.add(StructuralCompoundManagementService
+								.readByInChIKey(((StructureChemicalCompound) c).getInChIKey()));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -4075,7 +4079,7 @@ public class SpectraController {
 		// load data in model
 		if (spectrum != null) {
 			try {
-				loadSpectraMetadata(model, spectrum, request, dbName, username, password);
+				loadSpectraMetadata(model, spectrum, request);
 				model.addAttribute("contains_spectrum", true);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -4088,10 +4092,6 @@ public class SpectraController {
 		return "module/jsmol_sandbox";
 	}
 
-	/**
-	 * @param booleanTF
-	 * @return
-	 */
 	public static Boolean getStandardizedTrueFalse(String booleanTF) {
 		if (booleanTF != null)
 			switch (booleanTF.trim().toLowerCase()) {
@@ -4112,9 +4112,6 @@ public class SpectraController {
 			return null;
 	}
 
-	/**
-	 * @param logMessage
-	 */
 	private void spectrumLog(String logMessage) {
 		String username = "?";
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {

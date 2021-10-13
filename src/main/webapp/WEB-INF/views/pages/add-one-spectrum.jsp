@@ -1,7 +1,7 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="java.text.DateFormat"%>
 <%@ page import="java.text.SimpleDateFormat"%>
-<%@ page import="fr.metabohub.peakforest.utils.Utils"%>
+<%@ page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%@ page import="fr.metabohub.peakforest.model.metadata.AnalyticalMatrix"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
@@ -196,7 +196,7 @@
 											<small></small>
 											<small>
 												<br />Note: To create a new ontologie, please go to 
-												<a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfemw3.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>, 
+												<a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>, 
 												then ask us to refer it into PeakForest.
 											</small>
 										</p>
@@ -1296,10 +1296,10 @@
 								<div class="form-group input-group ">
 									<span class="input-group-addon">acquisition date</span> 
 									<%
-									DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-									Date date = new Date();
-									%>
-									<input id="add1spectrum-other-date" data-date-format="yyyy-mm-dd"  type="text" class="form-control add1spectrum  add1spectrum-otherForm datepicker is-optional" value="" placeholder="<%=dateFormat.format(date) %>">
+ 										DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+ 																Date date = new Date();
+ 									%>
+									<input id="add1spectrum-other-date" data-date-format="yyyy-mm-dd"  type="text" class="form-control add1spectrum  add1spectrum-otherForm datepicker is-optional" value="" placeholder="<%=dateFormat.format(date)%>">
 								</div>								
 								<div class="form-group input-group ">
 									<span class="input-group-addon">data ownership</span> 
@@ -1353,40 +1353,9 @@
 		</div>
 	</div>
 </div><!-- /id="accordion" -->
-<!-- select chemical cpd - PREVIEW -->
-<div class="modal" id="modalPickCompound" tabindex="-1" role="dialog" aria-labelledby="modalPickCompoundLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="modalPickCompoundLabel">Pick a compound</h4>
-			</div>
-			<div class="modal-body">
-				<div class="form-group input-group">
-					<span class="input-group-addon">Compound Name</span>
-					<input id="add-one-cc-s1-value" class="form-control" placeholder="e.g. Caffeine" type="text">
-					<span class="input-group-btn">
-						<button class="btn btn-default" type="button" onclick="searchLocalCompound();">
-							<i class="fa fa-search"></i>
-						</button>
-					</span>
-				</div>
-				<div id="load-step-1" style="display: none;">
-					<img src="<c:url value="/resources/img/ajax-loader.gif" />" title="please wait">
-				</div>
-				<div id="ok-step-1" style="overflow: auto; max-height: 300px;"></div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-danger" data-dismiss="modal" onclick="clearLine()"><i class="fa fa-eraser"></i> Clear</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="modal.close" text="Close" /></button>
-				<!-- <button type="button" class="btn btn-primary"><spring:message code="modal.saveChanges" text="Save Changes" /></button>-->
-			</div>
-		</div>
-	</div>
-</div>
 <script src="<c:url value="/resources/handsontable/dist/handsontable.full.min.js" />"></script>
 <script type="text/javascript">
-var fitlerSearchLoadlCpd = <%= Utils.SEARCH_COMPOUND_CHEMICAL_NAME %>;
+var fitlerSearchLoadlCpd = <%=PeakForestUtils.SEARCH_COMPOUND_CHEMICAL_NAME%>;
 //<% if (request.getParameter("inchikey")!=null && !request.getParameter("inchikey").equals("")) { %>
 var inchikey = '<%=request.getParameter("inchikey") %>';
 //<% } else { %>

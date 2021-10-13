@@ -1,4 +1,3 @@
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -8,8 +7,8 @@
 <div id="demo-doc-ws" style="max-width: 700px;"></div>
 
 The PeakForest database is available through a REST webservice at the following address:
-<a style="fo" href="https://rest.peakforest.org/" target="_blank">https://rest.peakforest.org/</a>
-<br>Documentation and demo / sample code are available at <a href="https://doc-ws.peakforest.org/" target="_blank">doc-ws.peakforest.org</a>.
+<a style="fo" href="<spring:message code="peakforest.ws-rest.url" text="" />" target="_blank"><spring:message code="peakforest.ws-rest.show" text="" /></a>
+<br>Documentation and demo / sample code are available at <a href="<spring:message code="peakforest.ws-doc.url" text="" />" target="_blank"><spring:message code="peakforest.ws-doc.show" text="" /></a>.
 <br />
 <br />
 <img src="<c:url value="/resources/img/demo-ws.png" />" alt="webservice rest portal" title="REST WebServices" width="1000px;">

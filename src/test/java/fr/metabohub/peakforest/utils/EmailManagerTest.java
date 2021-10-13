@@ -22,7 +22,8 @@ public class EmailManagerTest {
 	public Logger logger = Logger.getRootLogger();
 
 	// not in the classpath
-	// public static ResourceBundle mailConf = ResourceBundle.getBundle("web-application-conf", Locale.ROOT);
+	// public static ResourceBundle mailConf =
+	// ResourceBundle.getBundle("web-application-conf", Locale.ROOT);
 
 	/**
 	 * @throws java.lang.Exception
@@ -61,21 +62,16 @@ public class EmailManagerTest {
 		// display log
 		logger.info("[junit test] sendEmailTest -> begin");
 		long beforeTime = System.currentTimeMillis();
-
-		EmailManager testEmailManager = new EmailManager("smtp.clermont.inra.fr", false, null, null);
+		final EmailManager testEmailManager = new EmailManager("smtp.clermont.inra.fr", false, null, null);
 		// testEmailManager.setFrom(mailConf.getString("email.from"));
-		testEmailManager.setFrom("no-reply@clermont.inra.fr");
-		testEmailManager
-				.sendEmail(
-						"nils.paulhe@clermont.inra.fr",
-						"junit test",
-						"<html><body>the <b>junit</b> test class <span style=\"color: green;\">works!</span></body></html>",
-						true);
-
-		// ApplicationContext context = new ClassPathXmlApplicationContext("email-confTest");
+		testEmailManager.setFrom("no-reply@clermont.inrae.fr");
+		testEmailManager.sendEmail("nils.paulhe@clermont.inra.fr", "junit test",
+				"<html><body>the <b>junit</b> test class <span style=\"color: green;\">works!</span></body></html>",
+				true);
+		// ApplicationContext context = new
+		// ClassPathXmlApplicationContext("email-confTest");
 		// EmailManager mm = (EmailManager) context.getBean("emailManager");
 		// mm.sendAccountCreationEmail(null, "nils.paulhe@clermont.inra.fr");
-
 		double checkDuration = (double) (System.currentTimeMillis() - beforeTime) / 1000;
 		logger.info("[junit test] sendEmailTest -> end, tested in " + checkDuration + " sec.");
 

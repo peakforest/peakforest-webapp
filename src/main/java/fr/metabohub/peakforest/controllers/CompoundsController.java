@@ -34,16 +34,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import fr.metabohub.chemicallibraries.mapper.ChemicalCompoundMapper;
+import fr.metabohub.externalbanks.mapper.ebipub.EbiPubResult;
+import fr.metabohub.externalbanks.mapper.ebipub.EbiPubResults;
 import fr.metabohub.externalbanks.rest.EbiPubClient;
+import fr.metabohub.peakforest.dao.CurationMessageDao;
+import fr.metabohub.peakforest.dao.compound.CitationDao;
+import fr.metabohub.peakforest.dao.compound.GCDerivedCompoundDao;
 import fr.metabohub.peakforest.model.CurationMessage;
 import fr.metabohub.peakforest.model.compound.CAS;
 import fr.metabohub.peakforest.model.compound.ChemicalCompound;
 import fr.metabohub.peakforest.model.compound.Citation;
 import fr.metabohub.peakforest.model.compound.Compound;
 import fr.metabohub.peakforest.model.compound.CompoundName;
+import fr.metabohub.peakforest.model.compound.GCDerivedCompound;
 import fr.metabohub.peakforest.model.compound.GenericCompound;
 import fr.metabohub.peakforest.model.compound.ReferenceChemicalCompound;
 import fr.metabohub.peakforest.model.compound.StructureChemicalCompound;
+import fr.metabohub.peakforest.model.metadata.GCDerivedCompoundMetadata;
 import fr.metabohub.peakforest.security.model.User;
 import fr.metabohub.peakforest.services.CurationMessageManagementService;
 import fr.metabohub.peakforest.services.SearchService;
@@ -55,13 +62,10 @@ import fr.metabohub.peakforest.services.compound.StructuralCompoundManagementSer
 import fr.metabohub.peakforest.services.threads.CompoundsImagesAndMolFilesGeneratorThread;
 import fr.metabohub.peakforest.utils.CompoundNameComparator;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
+import fr.metabohub.peakforest.utils.PeakForestPruneUtils;
+import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
-import fr.metabohub.peakforest.utils.Utils;
 
-/**
- * @author Nils Paulhe
- * 
- */
 @Controller
 // @Configuration
 // @EnableWebSecurity
@@ -69,52 +73,31 @@ import fr.metabohub.peakforest.utils.Utils;
 // @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class CompoundsController {
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param id
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/print-compound-modal/{type}/{id}", method = RequestMethod.GET)
 	public String compoundPrint(HttpServletRequest request, HttpServletResponse response, Locale locale,
 			@PathVariable String type, @PathVariable int id, Model model) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// load data
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		// TODO other
-
+		// TODO_LTS other
 		// init var
-
 		// load data in model
 		loadCompoundData(type, model, refCompound, request);
-
 		// RETURN
 		return "modal/print-compound-modal";
 	}
 
-	/**
-	 * @param type
-	 * @param model
-	 * @param refCompound
-	 * @throws PeakForestManagerException
-	 */
 	private void loadCompoundData(String type, Model model, StructureChemicalCompound refCompound,
 			HttpServletRequest request) throws PeakForestManagerException {
 		String formula = refCompound.getFormula();
@@ -128,30 +111,24 @@ public class CompoundsController {
 		for (String num : listOfNumber)
 			formula = formula.replaceAll(num, "<sub>" + num + "</sub>");
 		formula = formula.replaceAll("</sub><sub>", "");
-
 		// sort names
 		// Sorting
 		List<CompoundName> listOfNames = refCompound.getListOfCompoundNames();
 		Collections.sort(listOfNames, new CompoundNameComparator());
-
 		// new 2.0: debug empty names
 		if (listOfNames.isEmpty())
 			listOfNames.add(new CompoundName("?", refCompound));
-
 		// prevent XSS
 		for (CompoundName cn : listOfNames) {
 			cn.setName(Jsoup.clean(cn.getName(), Whitelist.basic()));
-			cn.setName(cn.getName().replaceAll("α", "&alpha;").replaceAll("β", "&beta;")
-					.replaceAll("γ", "&gamma;").replaceAll("ω", "&omega;"));
+			cn.setName(cn.getName().replaceAll("α", "&alpha;").replaceAll("β", "&beta;").replaceAll("γ", "&gamma;")
+					.replaceAll("ω", "&omega;"));
 		}
-
 		for (CompoundName cn : listOfNames)
-			cn.setScore(Utils.round(cn.getScore(), 1));
-
+			cn.setScore(PeakForestPruneUtils.round(cn.getScore(), 1));
 		// BUILD MODEL
 		model.addAttribute("id", refCompound.getId());
 		model.addAttribute("compoundNames", listOfNames);
-
 		// new 2.0 IUPAC / CAS
 		model.addAttribute("cpdFullData", refCompound);
 		if (refCompound.getIupacName() != null)
@@ -180,8 +157,8 @@ public class CompoundsController {
 		}
 		if (refCompound instanceof StructureChemicalCompound)
 			model.addAttribute("inchi", refCompound.getInChI());
-		model.addAttribute("exactMass", Utils.round(refCompound.getExactMass(), 7));
-		model.addAttribute("molWeight", Utils.round(refCompound.getMolWeight(), 7));
+		model.addAttribute("exactMass", PeakForestPruneUtils.round(refCompound.getExactMass(), 7));
+		model.addAttribute("molWeight", PeakForestPruneUtils.round(refCompound.getMolWeight(), 7));
 		model.addAttribute("formula", formula);
 		model.addAttribute("pfID", refCompound.getPeakForestID());
 		model.addAttribute("smiles", refCompound.getCanSmiles());
@@ -190,10 +167,9 @@ public class CompoundsController {
 		// MOL
 		String inchikey = refCompound.getInChIKey();
 		// get mol path
-		String molFileRepPath = Utils.getBundleConfElement("compoundMolFiles.folder");
+		String molFileRepPath = PeakForestUtils.getBundleConfElement("compoundMolFiles.folder");
 		if (!(new File(molFileRepPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
 
 		// check exists
 		File molFilePath = new File(molFileRepPath + File.separator + inchikey + ".mol");
@@ -204,8 +180,8 @@ public class CompoundsController {
 			// create
 			ArrayList<StructureChemicalCompound> compoundsList = new ArrayList<>();
 			compoundsList.add(refCompound);
-			CompoundsImagesAndMolFilesGeneratorThread ci = new CompoundsImagesAndMolFilesGeneratorThread(
-					compoundsList, null, molFileRepPath, true);
+			CompoundsImagesAndMolFilesGeneratorThread ci = new CompoundsImagesAndMolFilesGeneratorThread(compoundsList,
+					null, molFileRepPath, true);
 			ExecutorService executor = Executors.newCachedThreadPool();
 			executor.submit(ci);
 		} else {
@@ -258,6 +234,15 @@ public class CompoundsController {
 			for (String rawKegg : keggs)
 				keggIDs.add(Jsoup.clean(rawKegg, Whitelist.basic()));
 			model.addAttribute("keggs", keggIDs);
+		}
+
+		List<String> networks = null;
+		if (refCompound.getNetworksIDs() != null && !refCompound.getNetworksIDs().isEmpty()) {
+			networks = refCompound.getNetworksIDs();
+			List<String> networkIDs = new ArrayList<>();
+			for (String rawNetwork : networks)
+				networkIDs.add(Jsoup.clean(rawNetwork, Whitelist.basic()));
+			model.addAttribute("networks", networkIDs);
 		}
 
 		// return also user mode (user / anonymous )
@@ -350,6 +335,13 @@ public class CompoundsController {
 
 		// TODO sub structures
 
+		// GC-derived compounds
+		model.addAttribute("contains_gc_derivatives", false);
+		for (GCDerivedCompoundMetadata derivativeMetadata : refCompound.getListOfGCDerivedCompoundMetadata()) {
+			if (derivativeMetadata.getStructureDerivedCompound() != null)
+				model.addAttribute("contains_gc_derivatives", true);
+		}
+
 		// END
 	}
 
@@ -398,9 +390,9 @@ public class CompoundsController {
 		model.addAttribute("mol_nb_3D_script", "");
 		model.addAttribute("mol_nb_2D_ext", "");
 		model.addAttribute("mol_nb_clean_name",
-				Utils.convertHtmlGreekCharToString(refCompound.getMainName()));
+				PeakForestPruneUtils.convertHtmlGreekCharToString(refCompound.getMainName()));
 		// model.addAttribute("mol_nb_upload", true);
-		String numberedFileRepPath = Utils.getBundleConfElement("compoundNumberedFiles.folder");
+		String numberedFileRepPath = PeakForestUtils.getBundleConfElement("compoundNumberedFiles.folder");
 		File molNumberedFilePath = new File(numberedFileRepPath + File.separator + inchikey + ".mol");
 		File svgNumberedFilePath = new File(numberedFileRepPath + File.separator + inchikey + ".svg");
 		File pngNumberedFilePath = new File(numberedFileRepPath + File.separator + inchikey + ".png");
@@ -434,8 +426,8 @@ public class CompoundsController {
 					Matcher m = Pattern.compile("M  V30 (\\d+).* ACDNUM=(.+)").matcher(line);
 					if (m.find()) {
 						// script += "atomno = '" + + "'";
-						scripts.add("select atomno = " + m.group(1)
-								+ "; color labels black; font labels 18; label \\\"" + m.group(2) + "\\\";");
+						scripts.add("select atomno = " + m.group(1) + "; color labels black; font labels 18; label \\\""
+								+ m.group(2) + "\\\";");
 					}
 				}
 				in.close();
@@ -483,34 +475,20 @@ public class CompoundsController {
 		}
 	}
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param type
-	 * @param id
-	 * @param model
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/show-compound-modal/{type}/{id}", method = RequestMethod.GET)
 	public String compoundShow(HttpServletRequest request, HttpServletResponse response, Locale locale,
 			@PathVariable String type, @PathVariable int id, Model model) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// load data
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -523,35 +501,21 @@ public class CompoundsController {
 		return "modal/show-compound-modal";
 	}
 
-	/**
-	 * @param request
-	 * @param response
-	 * @param locale
-	 * @param type
-	 * @param id
-	 * @param model
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@Secured("ROLE_CURATOR")
 	@RequestMapping(value = "/edit-compound-modal/{type}/{id}", method = RequestMethod.GET)
 	public String compoundEdit(HttpServletRequest request, HttpServletResponse response, Locale locale,
 			@PathVariable String type, @PathVariable int id, Model model) throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 		// load data
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -575,11 +539,6 @@ public class CompoundsController {
 	@ResponseBody
 	public boolean updateCompound(@PathVariable String type, @PathVariable long id,
 			@RequestBody Map<String, Object> data, HttpServletRequest request) {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// update score
 		Map<String, Integer> updateScores = (Map<String, Integer>) data.get("updateScores");
 		List<Long> listOfId = new ArrayList<Long>();
@@ -590,7 +549,7 @@ public class CompoundsController {
 		}
 		try {
 			if (!listOfId.isEmpty())
-				CompoundNameManagementService.updateScore(listOfId, listOfScore, dbName, username, password);
+				CompoundNameManagementService.updateScore(listOfId, listOfScore);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -600,14 +559,14 @@ public class CompoundsController {
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -621,7 +580,7 @@ public class CompoundsController {
 		}
 		if (!listOfNewNames.isEmpty())
 			try {
-				CompoundNameManagementService.create(listOfNewNames, refCompound, dbName, username, password);
+				CompoundNameManagementService.create(listOfNewNames, refCompound);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -636,8 +595,7 @@ public class CompoundsController {
 		List<String> curationMessages = (List<String>) data.get("curationMessages");
 		if (!curationMessages.isEmpty())
 			try {
-				CurationMessageManagementService.create(curationMessages, user.getId(), refCompound, dbName,
-						username, password);
+				CurationMessageManagementService.create(curationMessages, user.getId(), refCompound);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -662,7 +620,7 @@ public class CompoundsController {
 								user.getId(), refCompound));
 				}
 				// add new citations
-				CitationManagementService.create(listOfNewCitations, dbName, username, password);
+				CitationDao.create(listOfNewCitations);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -684,11 +642,6 @@ public class CompoundsController {
 	@ResponseBody
 	public boolean editCompound(@PathVariable String type, @PathVariable long id,
 			@RequestBody Map<String, Object> data) {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// update names and score
 		Map<String, String> editNames = (Map<String, String>) data.get("editNames");
 		Map<String, String> editScores = (Map<String, String>) data.get("editScores");
@@ -702,8 +655,7 @@ public class CompoundsController {
 		}
 		try {
 			if (!listOfId.isEmpty())
-				CompoundNameManagementService.editNames(listOfId, listOfNames, listOfScores, dbName, username,
-						password);
+				CompoundNameManagementService.editNames(listOfId, listOfNames, listOfScores);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -713,14 +665,14 @@ public class CompoundsController {
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -735,8 +687,7 @@ public class CompoundsController {
 		}
 		if (!mapOfNewNamesAndScores.isEmpty())
 			try {
-				CompoundNameManagementService.create(mapOfNewNamesAndScores, refCompound, dbName, username,
-						password);
+				CompoundNameManagementService.create(mapOfNewNamesAndScores, refCompound);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -749,7 +700,7 @@ public class CompoundsController {
 			namesToDelete.add(Long.parseLong(nameId + ""));
 		if (!deletedNames.isEmpty())
 			try {
-				CompoundNameManagementService.delete(namesToDelete, dbName, username, password);
+				CompoundNameManagementService.delete(namesToDelete);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -769,18 +720,20 @@ public class CompoundsController {
 
 		List<String> keggIDsToAdd = (List<String>) data.get("newKeggIDs");
 		List<String> keggIDsToRemove = (List<String>) data.get("deleteKeggIDs");
+		List<String> networkIDsToAdd = (List<String>) data.get("newNetworksIDs");
+		List<String> networkIDsToRemove = (List<String>) data.get("deleteNetworksIDs");
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				ChemicalCompoundManagementService.updateExternalIDs(id, pubchemID, chebiID, hmdbID,
-						keggIDsToAdd, keggIDsToRemove, dbName, username, password);
+				ChemicalCompoundManagementService.updateExternalIDs(id, pubchemID, chebiID, hmdbID, keggIDsToAdd,
+						keggIDsToRemove, networkIDsToAdd, networkIDsToRemove);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				GenericCompoundManagementService.updateExternalIDs(id, pubchemID, chebiID, hmdbID,
-						keggIDsToAdd, keggIDsToRemove, dbName, username, password);
+				GenericCompoundManagementService.updateExternalIDs(id, pubchemID, chebiID, hmdbID, keggIDsToAdd,
+						keggIDsToRemove, networkIDsToAdd, networkIDsToRemove);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -803,16 +756,14 @@ public class CompoundsController {
 		if (nameSwitchedToIUPAC != null || !nameSwitchedToCAS.isEmpty()) {
 			if (type.equalsIgnoreCase("chemical"))
 				try {
-					ChemicalCompoundManagementService.switchNames(id, nameSwitchedToIUPAC, nameSwitchedToCAS,
-							dbName, username, password);
+					ChemicalCompoundManagementService.switchNames(id, nameSwitchedToIUPAC, nameSwitchedToCAS);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return false;
 				}
 			else if (type.equalsIgnoreCase("generic"))
 				try {
-					GenericCompoundManagementService.switchNames(id, nameSwitchedToIUPAC, nameSwitchedToCAS,
-							dbName, username, password);
+					GenericCompoundManagementService.switchNames(id, nameSwitchedToIUPAC, nameSwitchedToCAS);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -821,21 +772,20 @@ public class CompoundsController {
 		// new 2.0: update IUPAC
 		if (data.get("newIupacName") != null) {
 			String newIupacName = data.get("newIupacName").toString();
-			if (type.equalsIgnoreCase("chemical"))
+			if (type.equalsIgnoreCase("chemical")) {
 				try {
-					ChemicalCompoundManagementService.updateIUPAC(id, newIupacName, dbName, username,
-							password);
+					ChemicalCompoundManagementService.updateIUPAC(id, newIupacName);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return false;
 				}
-			else if (type.equalsIgnoreCase("generic"))
+			} else if (type.equalsIgnoreCase("generic")) {
 				try {
-					GenericCompoundManagementService.updateIUPAC(id, newIupacName, dbName, username,
-							password);
+					GenericCompoundManagementService.updateIUPAC(id, newIupacName);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			}
 		}
 
 		// new 2.0: add / remove CAS
@@ -859,16 +809,14 @@ public class CompoundsController {
 		if (!newCasObjs.isEmpty() || !removeCasIds.isEmpty()) {
 			if (type.equalsIgnoreCase("chemical"))
 				try {
-					ChemicalCompoundManagementService.addRemoveCas(id, newCasObjs, removeCasIds, dbName,
-							username, password);
+					ChemicalCompoundManagementService.addRemoveCas(id, newCasObjs, removeCasIds);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return false;
 				}
 			else if (type.equalsIgnoreCase("generic"))
 				try {
-					GenericCompoundManagementService.addRemoveCas(id, newCasObjs, removeCasIds, dbName,
-							username, password);
+					GenericCompoundManagementService.addRemoveCas(id, newCasObjs, removeCasIds);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -888,14 +836,14 @@ public class CompoundsController {
 		if (flagAsManudalCurated) {
 			if (type.equalsIgnoreCase("chemical"))
 				try {
-					ChemicalCompoundManagementService.setCurationToManual(id, dbName, username, password);
+					ChemicalCompoundManagementService.setCurationToManual(id);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return false;
 				}
 			else if (type.equalsIgnoreCase("generic"))
 				try {
-					GenericCompoundManagementService.setCurationToManual(id, dbName, username, password);
+					GenericCompoundManagementService.setCurationToManual(id);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -904,14 +852,14 @@ public class CompoundsController {
 		if (doStructureCheck) {
 			if (type.equalsIgnoreCase("chemical"))
 				try {
-					ChemicalCompoundManagementService.doStructuralCuration(id, dbName, username, password);
+					ChemicalCompoundManagementService.doStructuralCuration(id);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return false;
 				}
 			else if (type.equalsIgnoreCase("generic"))
 				try {
-					GenericCompoundManagementService.doStructuralCuration(id, dbName, username, password);
+					GenericCompoundManagementService.doStructuralCuration(id);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -938,12 +886,9 @@ public class CompoundsController {
 		}
 		// delete / update curation messages in database
 		try {
-			CurationMessageManagementService.delete(listOfCurationMessageToDeleletIds, dbName, username,
-					password);
-			CurationMessageManagementService.updateStatus(listOfCurationMessageToAcceptIds,
-					CurationMessage.STATUS_ACCEPTED, dbName, username, password);
-			CurationMessageManagementService.updateStatus(listOfCurationMessageToRejectIds,
-					CurationMessage.STATUS_REJECTED, dbName, username, password);
+			CurationMessageManagementService.delete(listOfCurationMessageToDeleletIds);
+			CurationMessageDao.update(listOfCurationMessageToAcceptIds, CurationMessage.STATUS_ACCEPTED);
+			CurationMessageDao.update(listOfCurationMessageToRejectIds, CurationMessage.STATUS_REJECTED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -970,11 +915,9 @@ public class CompoundsController {
 		}
 		// remove / update biblio stuff: database part
 		try {
-			CitationManagementService.delete(listOfCitationToRemove, dbName, username, password);
-			CitationManagementService.updateStatus(listOfCitationToAccept, Citation.STATUS_ACCEPTED, dbName,
-					username, password);
-			CitationManagementService.updateStatus(listOfCitationToReject, Citation.STATUS_REJECTED, dbName,
-					username, password);
+			CitationManagementService.delete(listOfCitationToRemove);
+			CurationMessageDao.update(listOfCitationToAccept, Citation.STATUS_ACCEPTED);
+			CurationMessageDao.update(listOfCitationToReject, Citation.STATUS_REJECTED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -998,7 +941,7 @@ public class CompoundsController {
 						listOfNewCitations.add(c);
 					}
 				// add new citations
-				CitationManagementService.create(listOfNewCitations, dbName, username, password);
+				CitationDao.create(listOfNewCitations);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -1012,21 +955,14 @@ public class CompoundsController {
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/add-one-compound-search", method = RequestMethod.POST, params = { "query",
-			"filter" })
-	public String addCompoundViewSearchCompound(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, Model model, @RequestParam("query") String query,
-			@RequestParam("filter") int filter) {
-
-		List<ReferenceChemicalCompound> results = null;
+	@RequestMapping(value = "/add-one-compound-search", method = RequestMethod.POST, params = { "query", "filter" })
+	public String addCompoundViewSearchCompound(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			Model model, @RequestParam("query") String query, @RequestParam("filter") int filter) {
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
+		List<ReferenceChemicalCompound> results = null;
 		// search
 		try {
-			results = SearchService.searchCompound(query, filter, 10, dbName, username, password);
+			results = SearchService.searchCompound(query, filter, SearchService.MAX_CPD_NAME_PER_CPD);
 			model.addAttribute("compounds", results);
 		} catch (PeakForestManagerException e) {
 			e.printStackTrace();
@@ -1048,14 +984,9 @@ public class CompoundsController {
 
 	@Secured("ROLE_EDITOR")
 	@RequestMapping(value = "/add-one-compound-load", method = RequestMethod.POST, params = { "id", "type" })
-	public String addCompoundViewLoadCompound(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, Model model, @RequestParam("id") long id, @RequestParam("type") int type)
+	public String addCompoundViewLoadCompound(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			Model model, @RequestParam("id") long id, @RequestParam("type") int type)
 			throws PeakForestManagerException {
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
 
 		// load
 		// load data
@@ -1063,14 +994,14 @@ public class CompoundsController {
 		String typeS = null;
 		if (type == Compound.CHEMICAL_TYPE)
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 				typeS = "chemical";
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		else if (type == Compound.GENERIC_TYPE)
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 				typeS = "generic";
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1086,23 +1017,23 @@ public class CompoundsController {
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/add-one-compound-search-ext-db", method = RequestMethod.POST, params = {
-			"query", "filter" })
+	@RequestMapping(value = "/add-one-compound-search-ext-db", method = RequestMethod.POST, params = { "query",
+			"filter" })
 	public @ResponseBody List<ReferenceChemicalCompound> deepSearch(@RequestParam("query") String query,
 			@RequestParam("filter") int filter) throws Exception {
 		// get images path
-		String svgImagesPath = Utils.getBundleConfElement("compoundImagesSVG.folder");
+		String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
 		if (!(new File(svgImagesPath)).exists())
-			throw new PeakForestManagerException(
-					PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
 
 		List<ReferenceChemicalCompound> data = null;
 		data = SearchService.searchCompoundInExternalBank(query, filter, 20, svgImagesPath, null);
-		// Utils.prune(data);
+		// PeakForestUtils.prune(data);
 		for (ReferenceChemicalCompound rcc : data)
 			for (CompoundName cn : rcc.getListOfCompoundNames())
 				cn.setReferenceChemicalCompound(null);
-		// compoundLog("search chemical compound in ext. db; @query='" + query + "'; @filter=" + filter);
+		// compoundLog("search chemical compound in ext. db; @query='" + query + "';
+		// @filter=" + filter);
 		return data;
 	}
 
@@ -1110,14 +1041,10 @@ public class CompoundsController {
 	@Secured("ROLE_EDITOR")
 	@RequestMapping(value = "/add-one-compound-from-ext-db", method = RequestMethod.POST, headers = {
 			"Content-type=application/json" })
-	public @ResponseBody Map<String, Object> addCompoundFromExternalDatabase(
-			@RequestBody Map<String, Object> data) throws Exception {
+	public @ResponseBody Map<String, Object> addCompoundFromExternalDatabase(@RequestBody Map<String, Object> data)
+			throws Exception {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		String inChI = (String) data.get("inChI");
 		String inChIKey = (String) data.get("inChIKey");
 		// String canSmiles = (String) data.get("canSmiles");
@@ -1130,8 +1057,7 @@ public class CompoundsController {
 		// names: [Ethanol]
 
 		// check exist AS chemical compound OR generic compound
-		StructureChemicalCompound sccInBase = StructuralCompoundManagementService.readByInChIKey(inChIKey,
-				dbName, username, password);
+		final StructureChemicalCompound sccInBase = StructuralCompoundManagementService.readByInChIKey(inChIKey);
 		if (sccInBase != null) {
 			Map<String, Object> results = new HashMap<String, Object>();
 			results.put("id", sccInBase.getId());
@@ -1140,34 +1066,28 @@ public class CompoundsController {
 		}
 
 		// ADD NEW COMPOUND
-		ChemicalCompoundMapper mapper = new ChemicalCompoundMapper(names, inChIKey);
+		final ChemicalCompoundMapper mapper = new ChemicalCompoundMapper(names, inChIKey);
 		mapper.setInChI(inChI);
 		mapper.setChEBIId(chEBIID);
 		mapper.setHmdbId(hmdbID);
-		if (keggID != null && !keggID.isEmpty())
+		if (keggID != null && !keggID.isEmpty()) {
 			mapper.setKeggId(keggID.get(0));
+		}
 		mapper.setPubChemId(pubChemID);
-		StructureChemicalCompound compound = StructuralCompoundManagementService.addOrUpdateCompound(mapper,
-				dbName, username, password);
+		final StructureChemicalCompound compound = StructuralCompoundManagementService.addOrUpdateCompound(mapper);
 
-		if (compound == null)
+		if (compound == null) {
 			throw new PeakForestManagerException(PeakForestManagerException.COULD_NOT_ADD_COMPOUND);
-		else {
+		} else {
 			// log
 			compoundLog("add new compound @id=" + compound.getId() + "; @inchikey=" + compound.getInChIKey());
 			Map<String, Object> results = new HashMap<String, Object>();
 			results.put("id", compound.getId());
 			results.put("type", compound.getType());
 			return results;
-
 		}
 	}
 
-	/**
-	 * @param query
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@Secured("ROLE_EDITOR")
 	@RequestMapping(value = "/get-citation-data", method = RequestMethod.POST, params = { "query" })
 	public @ResponseBody Object loadCitationData(@RequestParam("query") String query)
@@ -1195,17 +1115,19 @@ public class CompoundsController {
 		if (query.contains("/"))
 			query = "" + query;
 
-		Map<String, Object> data = new HashMap<String, Object>();
-		boolean success = false;
-		EbiPubClient newRefClient = new EbiPubClient(query, true);
-		success = newRefClient.extractData();
-		if (success) {
-			data.put("doi", newRefClient.getDoi());
-			data.put("pmid", newRefClient.getPmid());
-			data.put("apa", newRefClient.getApa());
+		final Map<String, Object> data = new HashMap<String, Object>();
+		data.put("success", Boolean.FALSE);
+		EbiPubResults epubDataMapper = EbiPubClient.search(query);
+		if (epubDataMapper.getResultList() != null && !epubDataMapper.getResultList().getResult().isEmpty()) {
+			final EbiPubResult pubData = epubDataMapper.getResultList().getResult().get(0);
+			data.put("doi", pubData.getDoi());
+			data.put("pmid", pubData.getPmid());
+			data.put("apa", pubData.getApa());
+			data.put("success", Boolean.TRUE);
 		}
-		data.put("success", success);
-		// compoundLog("loaded citation @doi='" + newRefClient.getDoi() + "' @apa='" + newRefClient.getApa()
+
+		// compoundLog("loaded citation @doi='" + newRefClient.getDoi() + "' @apa='" +
+		// newRefClient.getApa()
 		// + "'");
 		return data;
 	}
@@ -1215,10 +1137,6 @@ public class CompoundsController {
 			throws PeakForestManagerException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		Map<String, Object> data = new HashMap<String, Object>();
 		boolean success = false;
 
@@ -1226,15 +1144,13 @@ public class CompoundsController {
 
 		StructureChemicalCompound refCompound = null;
 		try {
-			refCompound = ChemicalCompoundManagementService.readByInChIKey(inchikey, dbName, username,
-					password);
+			refCompound = ChemicalCompoundManagementService.readByInChIKey(inchikey);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if (refCompound == null)
 			try {
-				refCompound = GenericCompoundManagementService.readByInChIKey(inchikey, dbName, username,
-						password);
+				refCompound = GenericCompoundManagementService.readByInChIKey(inchikey);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1257,23 +1173,18 @@ public class CompoundsController {
 			Model model, @PathVariable("id") long id, @PathVariable("type") String type)
 			throws PeakForestManagerException {
 
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// load
 		// load data
 		StructureChemicalCompound refCompound = null;
 		if (type.equalsIgnoreCase("chemical"))
 			try {
-				refCompound = ChemicalCompoundManagementService.read(id, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		else if (type.equalsIgnoreCase("generic"))
 			try {
-				refCompound = GenericCompoundManagementService.read(id, dbName, username, password);
+				refCompound = GenericCompoundManagementService.read(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1290,11 +1201,6 @@ public class CompoundsController {
 	public String showCompoundSheet(HttpServletRequest request, HttpServletResponse response, Locale locale,
 			Model model, @PathVariable("id") String id) throws PeakForestManagerException {
 
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// load
 		// load data
 		StructureChemicalCompound refCompound = null;
@@ -1302,22 +1208,21 @@ public class CompoundsController {
 		try {
 			long idL = Long.parseLong(id);
 			try {
-				refCompound = ChemicalCompoundManagementService.read(idL, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(idL);
 				type = "chemical";
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			if (refCompound == null)
 				try {
-					refCompound = GenericCompoundManagementService.read(idL, dbName, username, password);
+					refCompound = GenericCompoundManagementService.read(idL);
 					type = "generic";
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 		} catch (NumberFormatException e) {
 			try {
-				refCompound = StructuralCompoundManagementService.readByInChIKey(id, dbName, username,
-						password);
+				refCompound = StructuralCompoundManagementService.readByInChIKey(id);
 				type = refCompound.getTypeString();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -1334,13 +1239,8 @@ public class CompoundsController {
 	}
 
 	@RequestMapping(value = "/data-ranking-compound/{id}", method = RequestMethod.GET)
-	public String showCompoundMeta(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			Model model, @PathVariable("id") String id) throws PeakForestManagerException {
-
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public String showCompoundMeta(HttpServletRequest request, HttpServletResponse response, Locale locale, Model model,
+			@PathVariable("id") String id) throws PeakForestManagerException {
 
 		// load
 		// load data
@@ -1349,22 +1249,21 @@ public class CompoundsController {
 		try {
 			long idL = Long.parseLong(id);
 			try {
-				refCompound = ChemicalCompoundManagementService.read(idL, dbName, username, password);
+				refCompound = ChemicalCompoundManagementService.read(idL);
 				type = "chemical";
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			if (refCompound == null)
 				try {
-					refCompound = GenericCompoundManagementService.read(idL, dbName, username, password);
+					refCompound = GenericCompoundManagementService.read(idL);
 					type = "generic";
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 		} catch (NumberFormatException e) {
 			try {
-				refCompound = StructuralCompoundManagementService.readByInChIKey(id, dbName, username,
-						password);
+				refCompound = StructuralCompoundManagementService.readByInChIKey(id);
 				type = refCompound.getTypeString();
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -1380,11 +1279,6 @@ public class CompoundsController {
 		return "block/meta";
 	}
 
-	/**
-	 * @param parentId
-	 * @return
-	 * @throws PeakForestManagerException
-	 */
 	@RequestMapping(value = "/load-children-chemical-compounds-names", method = RequestMethod.POST, params = {
 			"parentId" })
 	public @ResponseBody Object loadChildrenChemicalCompoundsData(@RequestParam("parentId") long parentId)
@@ -1393,13 +1287,9 @@ public class CompoundsController {
 		Map<String, Object> data = new HashMap<String, Object>();
 		boolean isSuccess = false;
 
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		GenericCompound parentCompound = null;
 		try {
-			parentCompound = GenericCompoundManagementService.read(parentId, dbName, username, password);
+			parentCompound = GenericCompoundManagementService.read(parentId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1410,10 +1300,9 @@ public class CompoundsController {
 				idChildrens.add(cc.getId());
 			try {
 				// childs
-				List<ChemicalCompound> children = ChemicalCompoundManagementService.read(idChildrens, dbName,
-						username, password);
+				List<ChemicalCompound> children = ChemicalCompoundManagementService.read(idChildrens);
 				for (ChemicalCompound cc : children) {
-					cc = (ChemicalCompound) Utils.prune(cc);
+					cc = (ChemicalCompound) PeakForestPruneUtils.prune(cc);
 					List<CompoundName> names = cc.getListOfCompoundNames();
 					Collections.sort(names, new CompoundNameComparator());
 					cc.setListOfCompoundNames(names);
@@ -1422,7 +1311,86 @@ public class CompoundsController {
 				// parent
 				List<CompoundName> names = parentCompound.getListOfCompoundNames();
 				Collections.sort(names, new CompoundNameComparator());
-				data.put("parentName", names.get(0).getName());
+				if (names.isEmpty())
+					data.put("parentName", "");
+				else
+					data.put("parentName", names.get(0).getName());
+				// success
+				isSuccess = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		data.put("success", isSuccess);
+		return data;
+	}
+
+	@RequestMapping(value = "/load-gc-derivatives-names", method = RequestMethod.POST, params = { "parentId" })
+	public @ResponseBody Object loadGCDerivativesData(@RequestParam("parentId") long parentId)
+			throws PeakForestManagerException {
+
+		Map<String, Object> data = new HashMap<String, Object>();
+		boolean isSuccess = false;
+
+		ReferenceChemicalCompound parentCompound = null;
+		try {
+			parentCompound = GenericCompoundManagementService.read(parentId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (parentCompound == null) {
+			try {
+				parentCompound = ChemicalCompoundManagementService.read(parentId);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (parentCompound != null) {
+			try {
+				List<GCDerivedCompound> derivatives = new ArrayList<GCDerivedCompound>();
+				for (GCDerivedCompoundMetadata derivativeMetadata : parentCompound
+						.getListOfGCDerivedCompoundMetadata()) {
+					Long idDerivative = null;
+					GCDerivedCompound derivative;
+					if (derivativeMetadata.getStructureDerivedCompound() != null) {
+						idDerivative = derivativeMetadata.getStructureDerivedCompound().getId();
+
+						// build name from parent (+ derivative types, like : "Citrulline 2-TMS")
+						String constructedName = parentCompound.getMainName();
+						if (derivativeMetadata.getDerivativeTypes() != null
+								&& !derivativeMetadata.getDerivativeTypes().isEmpty()) {
+							constructedName += " ";
+							for (Short derivativeType : derivativeMetadata.getDerivativeTypes())
+								constructedName += GCDerivedCompoundMetadata.getStringDerivativeType(derivativeType)
+										+ ", ";
+							constructedName = constructedName.substring(0, constructedName.lastIndexOf(", "));
+						}
+
+						derivative = GCDerivedCompoundDao.read(idDerivative, true, true, true, true, true, true);
+						CompoundName derivativeName = new CompoundName(constructedName, null);
+						derivativeName.setScore(3.5); // default score of built name from parent
+
+						derivative = (GCDerivedCompound) PeakForestPruneUtils.prune(derivative);
+						// TODO delete following line when prune for GCDerivedCompound is ready?
+						derivative.setListOfCompoundMetadata(new ArrayList<GCDerivedCompoundMetadata>());
+						List<CompoundName> names = derivative.getListOfCompoundNames();
+						names.add(derivativeName);
+						Collections.sort(names, new CompoundNameComparator());
+						derivative.setListOfCompoundNames(names);
+
+						derivatives.add(derivative);
+					}
+				}
+				data.put("gcDerivedCompounds", derivatives);
+				// parent
+				List<CompoundName> names = parentCompound.getListOfCompoundNames();
+				Collections.sort(names, new CompoundNameComparator());
+				if (names.isEmpty())
+					data.put("parentName", "");
+				else
+					data.put("parentName", names.get(0).getName());
 				// success
 				isSuccess = true;
 			} catch (Exception e) {
@@ -1435,25 +1403,18 @@ public class CompoundsController {
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/pick-one-compound-search", method = RequestMethod.POST, params = { "query",
-			"filter" })
+	@RequestMapping(value = "/pick-one-compound-search", method = RequestMethod.POST, params = { "query", "filter" })
 	public String pickCompoundViewSearchCompound(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, Model model, @RequestParam("query") String query,
-			@RequestParam("filter") int filter) {
-
+			Locale locale, Model model, @RequestParam("query") String query, @RequestParam("filter") int filter) {
+		// init request
 		List<ReferenceChemicalCompound> resultsRaw = null;
 		List<ReferenceChemicalCompound> resultsClean = new ArrayList<ReferenceChemicalCompound>();
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		// search
 		try {
-			resultsRaw = SearchService.searchCompound(query, filter, 10, dbName, username, password);
+			resultsRaw = SearchService.searchCompound(query, filter, SearchService.MAX_CPD_NAME_PER_CPD);
 			if (resultsRaw == null || resultsRaw.isEmpty()) {
-				resultsRaw = SearchService.searchCompound(query, Utils.SEARCH_COMPOUND_INCHIKEY, 10, dbName,
-						username, password);
+				resultsRaw = SearchService.searchCompound(query, PeakForestUtils.SEARCH_COMPOUND_INCHIKEY,
+						SearchService.MAX_CPD_NAME_PER_CPD);
 			}
 			// keep unic
 			List<Long> listOfUnicIds = new ArrayList<Long>();
@@ -1490,10 +1451,10 @@ public class CompoundsController {
 	}
 
 	@RequestMapping(value = "/PFc{query}", method = RequestMethod.GET)
-	public ModelAndView methodPFc(HttpServletResponse httpServletResponse,
-			@PathVariable("query") String query) {
+	public ModelAndView methodPFc(HttpServletResponse httpServletResponse, @PathVariable("query") String query) {
 		// try {
-		// return new ModelAndView("redirect:" + "/home?cpd=" + Integer.parseInt(query));
+		// return new ModelAndView("redirect:" + "/home?cpd=" +
+		// Integer.parseInt(query));
 		// } catch (NumberFormatException e) {
 		return new ModelAndView("redirect:" + "/home?PFc=" + query);
 		// }
@@ -1501,23 +1462,16 @@ public class CompoundsController {
 	}
 
 	@RequestMapping(value = "/js_cpd_sandbox/{inchikey}", method = RequestMethod.GET)
-	public String showJSMolInCompoundSheet(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, Model model, @PathVariable("inchikey") String inchikey)
-			throws PeakForestManagerException {
+	public String showJSMolInCompoundSheet(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			Model model, @PathVariable("inchikey") String inchikey) throws PeakForestManagerException {
 
 		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
-
 		StructureChemicalCompound refCompound = null;
 		// if (type.equalsIgnoreCase("chemical"))
 		try {
-			refCompound = ChemicalCompoundManagementService.readByInChIKey(inchikey, dbName, username,
-					password);
+			refCompound = ChemicalCompoundManagementService.readByInChIKey(inchikey);
 			if (refCompound == null)
-				refCompound = GenericCompoundManagementService.readByInChIKey(inchikey, dbName, username,
-						password);
+				refCompound = GenericCompoundManagementService.readByInChIKey(inchikey);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1528,14 +1482,6 @@ public class CompoundsController {
 		return "module/jsmol_cpd_sandbox";
 	}
 
-	// @RequestMapping(value = "/cpd/{query}", method = RequestMethod.GET)
-	// public void method(HttpServletResponse httpServletResponse, @PathVariable("query") int id) {
-	// httpServletResponse.setHeader("Location", "home?cpd=" + id);
-	// }
-
-	/**
-	 * @param logMessage
-	 */
 	private void compoundLog(String logMessage) {
 		String username = "?";
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
@@ -1547,27 +1493,20 @@ public class CompoundsController {
 	}
 
 	@RequestMapping(value = "/pf-compound-ext-div/{source}/{inchikey}", method = RequestMethod.GET)
-	public String compoundExternalShow(HttpServletRequest request, HttpServletResponse response,
-			Locale locale, @PathVariable String source, @PathVariable String inchikey, Model model)
-			throws PeakForestManagerException {
-		// init request
-		String dbName = Utils.getBundleConfElement("hibernate.connection.database.dbName");
-		String username = Utils.getBundleConfElement("hibernate.connection.database.username");
-		String password = Utils.getBundleConfElement("hibernate.connection.database.password");
+	public String compoundExternalShow(HttpServletRequest request, HttpServletResponse response, Locale locale,
+			@PathVariable String source, @PathVariable String inchikey, Model model) throws PeakForestManagerException {
 		// load data
 		StructureChemicalCompound refCompound = null;
 
 		try {
-			refCompound = ChemicalCompoundManagementService.readByInChIKey(inchikey, dbName, username,
-					password);
+			refCompound = ChemicalCompoundManagementService.readByInChIKey(inchikey);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if (refCompound == null)
 			try {
-				refCompound = GenericCompoundManagementService.readByInChIKey(inchikey, dbName, username,
-						password);
+				refCompound = GenericCompoundManagementService.readByInChIKey(inchikey);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

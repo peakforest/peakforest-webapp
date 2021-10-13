@@ -1,5 +1,4 @@
 <%@page import="java.util.Random"%>
-<%@page import="fr.metabohub.peakforest.utils.Utils"%>
 <%@page import="org.springframework.security.core.context.SecurityContextHolder"%>
 <%@page import="fr.metabohub.peakforest.security.model.User"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -33,17 +32,20 @@ int randomID = randomGenerator.nextInt(1000000);
 												<c:if test="${spectrum_type == 'lc-fragmentation'}">
 													<a href="spectrum-msms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
 												</c:if>
+												<c:if test="${spectrum_type == 'gc-fullscan'}">
+													<a href="spectrum-gcms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
+												</c:if>
 												<a id="linkDumpSpectrum" href="#" ><i class="fa fa-file-excel-o"></i></a>
 											</span>
 										</h4>
 									</div>
 									<div id="cardSheet1" class="">
 									
-									<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
+									<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'gc-fullscan'}">
 									<!--container-->
-									<div id="containerLCspectrum<%=randomID %>"
+									<div id="containerMSspectrum<%=randomID %>"
 										style="width: 100%; min-width: 650px; height: 500px; margin: 0 auto">
-										loading LC-MS spectra... <br />
+										loading MS spectra... <br />
 										<img src="<c:url value="/resources/img/ajax-loader-big.gif" />"
 											title="<spring:message code="page.search.results.pleaseWait" text="please wait" />" />
 									</div>
@@ -84,6 +86,36 @@ int randomID = randomGenerator.nextInt(1000000);
 									<br>
 									</div>
 								</div>
+<c:if test="${spectrum_type == 'gc-fullscan'}">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<spring:message code="page.spectrum.tag.gcDerivedCompound" text="GC-Derivative" /> <i class="fa fa-puzzle-piece"></i>
+										</h4>
+									</div>
+									<div id="cardSheet2" class="">
+			<table style="width:100%">					
+				<tr>
+					<td width="20%">
+					<img src="image/${spectrum_derivative_type}/${spectrum_derivative_inchikey}.svg" alt="${fn:escapeXml(spectrum_derivative_name)}">
+					</td>
+					<td width="80%">
+					<ul class="list-group" style="max-width: 600px;">
+						<li class="list-group-item">
+							Derivative Name:&nbsp;
+							<%-- when model ready, add: data-toggle="modal" data-target="#modalShowCompound" href="show-compound-modal/${spectrum_derivative_type}/${spectrum_derivative_id}" --%>
+							<a>${fn:escapeXml(spectrum_derivative_name)}</a>
+						</li>
+						<li class="list-group-item">Derived Type: ${spectrum_derivatization_types}</li>
+						<li class="list-group-item">Derivation Method: ${spectrum_sample_compound_derivation_method}</li>
+						<li class="list-group-item">InChI of Derivative: ${spectrum_derivative_inchi}</li>
+						<li class="list-group-item">InChIKey of Derivative: ${spectrum_derivative_inchikey}</li>
+					</ul>
+				</tr>
+			</table>
+									</div>
+								</div>
+</c:if>
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
@@ -94,7 +126,7 @@ int randomID = randomGenerator.nextInt(1000000);
 <ul class="nav nav-tabs" style="margin-bottom: 15px;">
 	<li class="active"><a href="#analytical_sample" data-toggle="tab"><i class="fa fa fa-flask"></i> <spring:message code="page.spectrum.tag.analyticalSample" text="Analytical Sample" /></a></li>
 	<!-- MS ONLY -->
-	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
+	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'gc-fullscan'}">
 	<li><a href="#chromatography" data-toggle="tab"><i class="fa fa-area-chart"></i> <spring:message code="page.spectrum.tag.chromatography" text="Chromatography" /></a></li>
 	<li><a href="#MS_analyzer" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.massAnalyze" text="Mass Analyzer" /></a></li>
 	<li><a href="#MS_peaks" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakList" text="Peak List" /></a></li>
@@ -128,14 +160,22 @@ int randomID = randomGenerator.nextInt(1000000);
 		<td width="40%">
 <ul class="list-group" style="max-width: 600px;">
 	<li class="list-group-item">
-		Compound Name:&nbsp;
+		<c:if test="${spectrum_type == 'gc-fullscan'}">Original </c:if>Compound Name:&nbsp;
 		<a href="show-compound-modal/${spectrum_sample_compound_type}/${spectrum_sample_compound_id}" data-toggle="modal" data-target="#modalShowCompound">${fn:escapeXml(spectrum_sample_compound_name)}</a>
 	</li>
 	<c:if test="${spectrum_sample_compound_has_concentration}">
-	<li class="list-group-item">Concentration: ${spectrum_sample_compound_concentration} mmol/L</li>
+		<c:if test="${spectrum_type != 'gc-fullscan'}">
+		<li class="list-group-item">Concentration: ${spectrum_sample_compound_concentration} mmol/L</li>
+		</c:if>
+		<c:if test="${spectrum_type == 'gc-fullscan'}">
+		<li class="list-group-item">Quantity: ${spectrum_sample_compound_concentration} nmol</li>
+		</c:if>
 	</c:if>
 	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
-	<li class="list-group-item">Solvent: ${spectrum_sample_compound_mass_solvent}</li>
+	<li class="list-group-item">Solvent: ${spectrum_sample_compound_liquid_solvent}</li>
+	</c:if>
+	<c:if test="${spectrum_type == 'gc-fullscan'}">
+	<li class="list-group-item">Solvent: ${spectrum_sample_compound_gas_solvent}</li>
 	</c:if>
 	<li class="list-group-item">InChI: ${spectrum_sample_compound_inchi}</li>
 	<li class="list-group-item">InChIKey: ${spectrum_sample_compound_inchikey}</li>
@@ -163,7 +203,7 @@ int randomID = randomGenerator.nextInt(1000000);
 					<tr>
 						<td width="" style="vertical-align: top; padding-top: 30px;">
 							<ul style="max-width:50%">
-								<li class="list-group-item">Solvent: ${spectrum_sample_compound_mass_solvent}</li>
+								<li class="list-group-item">Solvent: ${select_spectrum_sample_compound_liquid_solvent}</li>
 							</ul>
 						</td>
 						<td style="max-width:50%">
@@ -179,7 +219,7 @@ int randomID = randomGenerator.nextInt(1000000);
 										<tr>
 											<th class="header " style="white-space: nowrap;"></th>
 											<th class="header headerSortUp" style="white-space: nowrap;">Compound <i class="fa fa-sort"></i></th>
-											<th class="header headerSortUp" style="white-space: nowrap;">Concentration (µg/ml) <i class="fa fa-sort"></i></th>
+											<th class="header headerSortUp" style="white-space: nowrap;">Concentration (&micro;g/ml) <i class="fa fa-sort"></i></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -209,7 +249,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelStd" text="Sample type: Standardized Matrix" /></h3>
 			</div>
 			<div class="panel-body">
-				${(standardized_matrix.getHtmlDisplay())}
+				${standardized_matrix.getHtmlDisplay()}
 				<c:if test="${spectrum_has_main_compound}">
 					<br />
 					<br />
@@ -224,7 +264,7 @@ int randomID = randomGenerator.nextInt(1000000);
 							<tr>
 								<th class="header " style="white-space: nowrap;"></th>
 								<th class="header headerSortUp" style="white-space: nowrap;">Compound <i class="fa fa-sort"></i></th>
-								<th class="header headerSortUp" style="white-space: nowrap;">Concentration (µg/ml) <i class="fa fa-sort"></i></th>
+								<th class="header headerSortUp" style="white-space: nowrap;">Concentration (&micro;g/ml) <i class="fa fa-sort"></i></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -250,9 +290,9 @@ int randomID = randomGenerator.nextInt(1000000);
 			</div>
 			<div class="panel-body">
 				<% if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) { %>
-					${(analytical_matrix.getHtmlDisplay())}
+					${analytical_matrix.getHtmlDisplay()}
 				<% } else { %>
-					${(analytical_matrix.getNaturalLanguage())}
+					${analytical_matrix.getNaturalLanguage()}
 				<% }  %>
 			</div>
 	</c:when>
@@ -321,10 +361,10 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">Column name: ${fn:escapeXml(spectrum_chromatography_col_name)}</li>
 				<li class="list-group-item">Column length: ${spectrum_chromatography_col_length} (mm)</li>
 				<li class="list-group-item">Column diameter: ${spectrum_chromatography_col_diameter} (mm)</li>
-				<li class="list-group-item">Particule size: ${spectrum_chromatography_col_particule_size} (µm)</li>
-				<li class="list-group-item">Column temperature: ${spectrum_chromatography_col_temperature} (°C)</li>
+				<li class="list-group-item">Particule size: ${spectrum_chromatography_col_particule_size} (&micro;m)</li>
+				<li class="list-group-item">Column temperature: ${spectrum_chromatography_col_temperature} (&#8451;)</li>
 				<li class="list-group-item">LC mode: ${spectrum_chromatography_mode_lc}</li>
-				<li class="list-group-item">Separation flow rate: ${spectrum_chromatography_separation_flow_rate} (µL/min)</li>
+				<li class="list-group-item">Separation flow rate: ${spectrum_chromatography_separation_flow_rate} (&micro;L/min)</li>
 				<li class="list-group-item">Separation solvent A: ${spectrum_chromatography_solventA}</li>
 				<c:if test="${spectrum_chromatography_solventApH != null }">
 				<li class="list-group-item">pH solvent A: ${spectrum_chromatography_solventApH}</li>
@@ -366,7 +406,53 @@ int randomID = randomGenerator.nextInt(1000000);
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelGCChromato" text="GC Chromatography" /></h3>
 			</div>
 			<div class="panel-body">
-			...
+<table style="width:100%">
+	<tr> 
+		<td width="50%">
+			<ul class="list-group" style="max-width: 600px;">
+				<li class="list-group-item">Method: ${spectrum_chromatography_method}</li>
+				<li class="list-group-item">Column constructor: ${fn:escapeXml(spectrum_chromatography_col_constructor)}</li>
+<!-- 				<li class="list-group-item">Column constructor (other): xxx</li> -->
+				<li class="list-group-item">Column name: ${fn:escapeXml(spectrum_chromatography_col_name)}</li>
+				<li class="list-group-item">Column length: ${spectrum_chromatography_col_length} (m)</li>
+				<li class="list-group-item">Column diameter: ${spectrum_chromatography_col_diameter} (mm)</li>
+				<li class="list-group-item">Particule size: ${spectrum_chromatography_col_particule_size} (&micro;m)</li>
+				<li class="list-group-item">Injection volume: ${spectrum_chromatography_injection_volume} (&micro;L)</li>
+				<li class="list-group-item">Injection mode: ${spectrum_chromatography_injection_mode}</li>
+				<li class="list-group-item">Split ratio: ${spectrum_chromatography_split_ratio} (:1)</li>
+				<li class="list-group-item">Carrier gas: ${spectrum_chromatography_carrier_gas}</li>
+				<li class="list-group-item">Gas flow: ${spectrum_chromatography_gas_flow} (mL/min)</li>
+				<li class="list-group-item">Gas opt: ${spectrum_chromatography_gas_opt}</li>
+				<li class="list-group-item">Gas pressure: ${spectrum_chromatography_gas_pressure} (psi)</li>
+				<li class="list-group-item">GC mode: ${spectrum_chromatography_mode_gc}</li>
+				<li class="list-group-item">Liner Manufacturer: ${spectrum_chromatography_liner_manufacturer}</li>
+				<li class="list-group-item">Liner Type: ${spectrum_chromatography_liner_type}</li>
+			</ul>
+		</td>
+		<td width="50%">
+			<b>Separation flow gradient</b>
+			<br>
+			<table class="table" style="max-width: 300px;">
+				<thead>
+					<tr>
+						<td style="width: 100px;">Temp. (&#8451;)</td>
+						<td style="width: 100px;">Rate (&#8451;/min)</td>
+						<td style="width: 100px;">Time (min)</td>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="temp" items="${spectrum_chromatography_stp_temperature}">
+					<tr>
+						<td style="width: 100px;">${temp}</td>
+						<td>${spectrum_chromatography_stp.get(temp)[0]}</td>
+						<td>${spectrum_chromatography_stp.get(temp)[1]}</td>
+					</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</td>
+	</tr>
+</table>
 			</div>
 	</c:when>
 </c:choose>
@@ -379,15 +465,31 @@ int randomID = randomGenerator.nextInt(1000000);
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelIonization" text="Ionization" /></h3>
 			</div>
 			<div class="panel-body">
+				<c:if test="${spectrum_chromatography != 'gc'}">
 				<ul class="list-group" style="max-width: 600px;">
 					<li class="list-group-item">Ionization method: ${fn:escapeXml(spectrum_ms_ionization.getIonizationAsString())}</li>
-					<li class="list-group-item">Spray (needle) gaz flow: ${fn:escapeXml(spectrum_ms_ionization.sprayGazFlow)}</li>
-					<li class="list-group-item">Vaporizer gaz flow: ${fn:escapeXml(spectrum_ms_ionization.vaporizerGazFlow)}</li>
-					<li class="list-group-item">Vaporizer temperature: ${fn:escapeXml(spectrum_ms_ionization.vaporizerTemperature)} (°C)</li>
-					<li class="list-group-item">Source gaz flow: ${fn:escapeXml(spectrum_ms_ionization.sourceGazFlow)}</li>		
-					<li class="list-group-item">Ion transfer tube temperature /<br> Transfer capillary temperature: ${spectrum_ms_ionization.ionTransferTemperature} (°C)</li>
+					<li class="list-group-item">Spray (needle) gas flow: ${fn:escapeXml(spectrum_ms_ionization.sprayGazFlow)}</li>
+					<li class="list-group-item">Vaporizer gas flow: ${fn:escapeXml(spectrum_ms_ionization.vaporizerGazFlow)}</li>
+					<li class="list-group-item">Vaporizer temperature: ${fn:escapeXml(spectrum_ms_ionization.vaporizerTemperature)} (&#8451;)</li>
+					<li class="list-group-item">Source gas flow: ${fn:escapeXml(spectrum_ms_ionization.sourceGazFlow)}</li>		
+					<li class="list-group-item">Ion transfer tube temperature /<br> Transfer capillary temperature: ${spectrum_ms_ionization.ionTransferTemperature} (&#8451;)</li>
 					<li class="list-group-item">High voltage (ESI) /<br> Corona voltage (APCI): ${fn:escapeXml(spectrum_ms_ionization.ionizationVoltage)} (kV)</li>				
 				</ul>
+				</c:if>
+				<c:if test="${spectrum_chromatography == 'gc'}">
+				<ul class="list-group" style="max-width: 600px;">
+					<li class="list-group-item">Ionization method: ${fn:escapeXml(spectrum_ms_ionization.getIonizationAsString())}</li>
+					<li class="list-group-item">Electron energy: ${fn:escapeXml(spectrum_ms_ionization.electronEnergy)} (eV)</li>
+					<li class="list-group-item">Emission current: ${fn:escapeXml(spectrum_ms_ionization.emissionCurrent)} (&micro;A)</li>
+					<li class="list-group-item">Source temperature: ${fn:escapeXml(spectrum_ms_ionization.sourceTemperature)} (&#8451;)</li>
+					<li class="list-group-item">Ionization gas (CI): ${fn:escapeXml(spectrum_ms_ionization.getIonizationGasAsString())}</li>		
+					<li class="list-group-item">Ionization gas flow (CI): ${fn:escapeXml(spectrum_ms_ionization.ionizationGasFlow)}</li>		
+					<li class="list-group-item">Interface temperature: ${spectrum_ms_ionization.interfaceTemperature} (&#8451;)</li>
+					<li class="list-group-item">Repeller: ${fn:escapeXml(spectrum_ms_ionization.repeller)} (V)</li>				
+					<li class="list-group-item">Extractor: ${fn:escapeXml(spectrum_ms_ionization.extractor)} (V)</li>				
+					<li class="list-group-item">Ion focus: ${fn:escapeXml(spectrum_ms_ionization.ionFocus)} (V)</li>			
+				</ul>
+				</c:if>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -398,7 +500,12 @@ int randomID = randomGenerator.nextInt(1000000);
 				<ul class="list-group" style="max-width: 600px;">
 <%-- 					<li class="list-group-item">Instrument: ${fn:escapeXml(spectrum_ms_analyzer.instrumentName)}</li> --%>
 					<li class="list-group-item">Analyzer type: ${fn:escapeXml(spectrum_ms_analyzer.getIonAnalyzerType())}</li>
+					<c:if test="${spectrum_chromatography != 'gc'}">
 					<li class="list-group-item">Model: ${fn:escapeXml(spectrum_ms_analyzer.instrumentModel)}</li>
+					</c:if>
+					<c:if test="${spectrum_chromatography == 'gc'}">
+					<li class="list-group-item">Brand: ${fn:escapeXml(spectrum_ms_analyzer.instrumentBrand)}</li>
+					</c:if>
 <%-- 					<li class="list-group-item">Resolution FWHM: ${spectrum_ms_analyzer.instrumentResolutionFWHMresolution}@${spectrum_ms_analyzer.instrumentResolutionFWHMmass}</li> --%>
 <%-- 					<li class="list-group-item">Detector: ${fn:escapeXml(spectrum_ms_analyzer.instrumentDetector)}</li> --%>
 <%-- 					<li class="list-group-item">Detection protocol: ${fn:escapeXml(spectrum_ms_analyzer.instrumentDetectionProtocol)}</li>				 --%>
@@ -415,7 +522,7 @@ int randomID = randomGenerator.nextInt(1000000);
 					</div>
 					<div class="panel-body">
 						<ul class="list-group" style="max-width: 600px;">
-							<li class="list-group-item">Gas: ${(spectrum_msms_iontrap.getIonGasAsHTML())}</li>
+							<li class="list-group-item">Gas: ${spectrum_msms_iontrap.getIonGasAsHTML()}</li>
 							<li class="list-group-item">Gas pressure: ${spectrum_msms_iontrap.getIonGazPressure()} ${fn:escapeXml(spectrum_msms_iontrap.getIonGazPressureUnitAsString())} </li>
 							<li class="list-group-item">Frequency shift: ${fn:escapeXml(spectrum_msms_iontrap.getIonFrequencyShift())} KHz</li>
 							<li class="list-group-item">Ion number (AGC or ICC): ${fn:escapeXml(spectrum_msms_iontrap.getIonNumberAGC())} </li>
@@ -429,14 +536,14 @@ int randomID = randomGenerator.nextInt(1000000);
 					</div>
 					<div class="panel-body">
 						<ul class="list-group" style="max-width: 600px;">
-							<li class="list-group-item">Gas: ${(spectrum_msms_ionbeam.getIonGasAsHTML())}</li>
+							<li class="list-group-item">Gas: ${spectrum_msms_ionbeam.getIonGasAsHTML()}</li>
 							<li class="list-group-item">Gas pressure: ${spectrum_msms_ionbeam.getIonGazPressure()} ${fn:escapeXml(spectrum_msms_ionbeam.getIonGazPressureUnitAsString())} </li>
 						</ul>
 					</div>
 				</c:if>
 			</div>
 		</c:if>
-		<!-- end MSMS only -->
+		
 	</div>
 	
 	<div class="tab-pane " id="MS_peaks">
@@ -459,8 +566,13 @@ int randomID = randomGenerator.nextInt(1000000);
 							<ul class="list-group" style="max-width: 300px;">
 								<li class="list-group-item">Mass range: [${spectrum_ms_range_from} .. ${spectrum_ms_range_to}]</li>
 								<li class="list-group-item">Retention time <small>(min)</small>: [${spectrum_rt_min_from} .. ${spectrum_rt_min_to}]</li>
+								<c:if test="${spectrum_chromatography != 'gc'}">
 								<li class="list-group-item">Retention time <small>(MeOH)</small>: [${spectrum_rt_meoh_from} .. ${spectrum_rt_meoh_to}]</li>
 								<li class="list-group-item">Retention time<sup title="based on %MeOH = 1.28 %ACN ">*</sup> <small>(ACN)</small>: [${spectrum_rt_acn_from} .. ${spectrum_rt_acn_to}]</li>
+								</c:if>
+								<c:if test="${spectrum_chromatography == 'gc'}">
+								<li class="list-group-item">Retention index <small>(alkane)</small>: [${spectrum_ri_alkane_from} .. ${spectrum_ri_alkane_to}]</li>
+								</c:if>
 							</ul>
 						</td>
 						<td width="33%">
@@ -486,8 +598,32 @@ int randomID = randomGenerator.nextInt(1000000);
 						</td>
 					</tr>
 				</table>
+			
+				
 			</div>
 		</div>
+		
+		<!-- // MSMS data -->
+		<c:if test="${spectrum_msms_isMSMS}">
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">MSMS</h3>
+				</div>
+				<div class="panel-body">
+					<ul class="list-group" style="max-width: 600px;">
+						<li class="list-group-item">Isolation Mode: ${(isolation_mode)}</li>
+						<li class="list-group-item">QZ Isolation: ${qz_isolation} </li>
+						<li class="list-group-item">Activation Time: ${(activation_time)} ms</li>
+						<li class="list-group-item">Isolation Window: ${(isolation_window)} </li>
+						<li class="list-group-item">Center of Isolation Window: ${(center_isolation_window)} </li>
+						<li class="list-group-item">Frag. Energy: ${(frag_energy)} </li>
+					</ul>
+				</div>
+			</div>
+		</c:if>
+		<!-- end MSMS only -->
+		
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelPeakListMZ" text="Peak List" /></h3>
@@ -533,7 +669,7 @@ int randomID = randomGenerator.nextInt(1000000);
 					<li class="list-group-item">NMR tube diameter: ${fn:escapeXml(spectrum_nmr_analyzer.getNMRtubeDiameterAsString())} (mm)</li>
 					</c:if>
 					<c:if test="${spectrum_nmr_analyzer.isCell()}">
-					<li class="list-group-item">Flow cell volume: ${fn:escapeXml(spectrum_nmr_analyzer.flowCellVolume)} (µl)</li>
+					<li class="list-group-item">Flow cell volume: ${fn:escapeXml(spectrum_nmr_analyzer.flowCellVolume)} (&micro;l)</li>
 					</c:if>
 				</ul>
 			</div>
@@ -550,7 +686,7 @@ int randomID = randomGenerator.nextInt(1000000);
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'Proton-1D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</li>
 				<li class="list-group-item">Number of points: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfPoints)}</li>
 				<li class="list-group-item">Number of scans: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScans)}</li>
 				<li class="list-group-item">Temperature: ${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)} (K)</li>
@@ -561,7 +697,7 @@ int randomID = randomGenerator.nextInt(1000000);
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'NOESY-1D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</li>
 				<li class="list-group-item">Number of points: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfPoints)}</li>
 				<li class="list-group-item">Number of scans: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScans)}</li>
 				<li class="list-group-item">Temperature: ${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)} (K)</li>
@@ -573,20 +709,20 @@ int randomID = randomGenerator.nextInt(1000000);
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'CPMG-1D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</li>
 				<li class="list-group-item">Number of points: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfPoints)}</li>
 				<li class="list-group-item">Number of scans: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScans)}</li>
 				<li class="list-group-item">Temperature: ${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)} (K)</li>
 				<li class="list-group-item">Relaxation delay D1: ${fn:escapeXml(spectrum_nmr_analyzer_data.relaxationDelayD1)} (s)</li>
 				<li class="list-group-item">SW: ${fn:escapeXml(spectrum_nmr_analyzer_data.sw)} (ppm)</li>
-				<li class="list-group-item">Spin-echo delay: ${fn:escapeXml(spectrum_nmr_analyzer_data.spinEchoDelay)} (µs)</li>
+				<li class="list-group-item">Spin-echo delay: ${fn:escapeXml(spectrum_nmr_analyzer_data.spinEchoDelay)} (&micro;s)</li>
 				<li class="list-group-item">Number of loops: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfLoops)}</li>
 			</ul>
 	</c:when>
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'Carbon13-1D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} ((&deg;))</li>
 				<li class="list-group-item">Number of points: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfPoints)}</li>
 				<li class="list-group-item">Number of scans: ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScans)}</li>
 				<li class="list-group-item">Temperature: ${fn:escapeXml(spectrum_nmr_analyzer_data.temperature)} (K)</li>
@@ -611,7 +747,7 @@ int randomID = randomGenerator.nextInt(1000000);
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'COSY-2D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</li>
 				<li class="list-group-item">Size of FID (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}</li>
 				<li class="list-group-item">Size if FID (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}</li>
 				<li class="list-group-item">Number of Scans (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}</li>
@@ -627,7 +763,7 @@ int randomID = randomGenerator.nextInt(1000000);
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'TOCSY-2D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</li>
 				<li class="list-group-item">Size of FID (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}</li>
 				<li class="list-group-item">Size if FID (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}</li>
 				<li class="list-group-item">Number of Scans (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}</li>
@@ -644,7 +780,7 @@ int randomID = randomGenerator.nextInt(1000000);
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'NOESY-2D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</li>
 				<li class="list-group-item">Size of FID (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}</li>
 				<li class="list-group-item">Size if FID (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}</li>
 				<li class="list-group-item">Number of Scans (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}</li>
@@ -661,7 +797,7 @@ int randomID = randomGenerator.nextInt(1000000);
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'HMBC-2D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</li>
 				<li class="list-group-item">Size of FID (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}</li>
 				<li class="list-group-item">Size if FID (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}</li>
 				<li class="list-group-item">Number of Scans (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}</li>
@@ -680,7 +816,7 @@ int randomID = randomGenerator.nextInt(1000000);
 	<c:when test="${spectrum_nmr_analyzer_data_acquisition == 'HSQC-2D'}">
 			<ul class="list-group" style="max-width: 600px;">
 				<li class="list-group-item">Pulse sequence: ${fn:escapeXml(spectrum_nmr_analyzer_data.getPulseSequence())}</li>
-				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (°)</li>
+				<li class="list-group-item">Pulse angle: ${fn:escapeXml(spectrum_nmr_analyzer_data.pulseAngle)} (&deg;)</li>
 				<li class="list-group-item">Size of FID (F1): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF1)}</li>
 				<li class="list-group-item">Size if FID (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.sizeOfFIDF2)}</li>
 				<li class="list-group-item">Number of Scans (F2): ${fn:escapeXml(spectrum_nmr_analyzer_data.numberOfScansF2)}</li>
@@ -1532,8 +1668,7 @@ $.each($(".cpdFormula"), function(k,v) {
 	</div>
 	<!-- /.modal-dialog -->
 	
-	<div id="ajaxModuleLCSpectrum<%=randomID %>"></div>
-	<div id="ajaxModuleGCSpectrum<%=randomID %>"></div>
+	<div id="ajaxModuleMSSpectrum<%=randomID %>"></div>
 	<div id="ajaxModuleNMRSpectrum<%=randomID %>"></div>
 	
 	<script type="text/javascript">
@@ -1541,24 +1676,30 @@ $.each($(".cpdFormula"), function(k,v) {
 		// seek title
 		var rawSpectrumTitle = titleSpectrum;
 		titleSpectrum = encodeURIComponent(titleSpectrum);
-		if (typeSpectrum == 'lc-fullscan' || typeSpectrum == 'lc-fragmentation') {
+		if (typeSpectrum == 'lc-fullscan' || typeSpectrum == 'lc-fragmentation'
+				|| typeSpectrum == 'gc-fullscan') {
 			// set element to load
 			var spectrumFullScanLCToLoad = [];
 			var spectrumFragLCToLoad = [];
+			var spectrumFullScanGCToLoad = [];
 			if (typeSpectrum == 'lc-fullscan')
 				spectrumFullScanLCToLoad.push(idSpectrum);
 			else if ( typeSpectrum == 'lc-fragmentation')
 				spectrumFragLCToLoad.push(idSpectrum);
+			else if (typeSpectrum == 'gc-fullscan')
+				spectrumFullScanGCToLoad.push(idSpectrum);
 			// load ajax
 			$.ajax({
 				type: "post",
-				url: "load-lc-spetra",
-				data: "fullscan=" + spectrumFullScanLCToLoad + "&frag=" + spectrumFragLCToLoad+"&name="+ titleSpectrum+"&mode=single&id=<%=randomID %>",
+				url: "load-ms-spectra",
+				data: "fullscan-lc=" + spectrumFullScanLCToLoad + "&frag-lc=" + spectrumFragLCToLoad 
+						+ "&fullscan-gc=" + spectrumFullScanGCToLoad +"&name="+ titleSpectrum
+						+"&mode=single&id=<%=randomID %>",
 				// dataType: "script",
 				async: false,
 				success: function(data) {
-					$("#containerLCspectrum").html("");
-					$("#ajaxModuleLCSpectrum<%=randomID %>").html(data);
+					$("#containerMSspectrum").html("");
+					$("#ajaxModuleMSSpectrum<%=randomID %>").html(data);
 				}, 
 				error : function(data) {
 					console.log(data);
@@ -1623,12 +1764,12 @@ $.each($(".cpdFormula"), function(k,v) {
 						$("#linkDumpSpectrum").attr("href", data.href);
 						$("#linkDumpSpectrum").attr("target", "_blank");
 					} else 
-						alert("sorry; coulnd not export data into XLSM file");
+						alert("sorry; could not export data into XLSM file");
 // 					$('#linkDumpSpectrum').trigger('click');
 				}, 
 				error : function(data) {
 					console.log(data);
-					alert("sorry; coulnd not export data into XLSM file");
+					alert("sorry; could not export data into XLSM file");
 					// TODO display (nice) error message to user
 				}
 			}).always(function() {
