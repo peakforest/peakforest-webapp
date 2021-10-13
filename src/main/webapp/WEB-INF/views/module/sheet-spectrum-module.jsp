@@ -104,12 +104,56 @@ int randomID = randomGenerator.nextInt(1000000);
 						<li class="list-group-item">
 							Derivative Name:&nbsp;
 							<%-- when model ready, add: data-toggle="modal" data-target="#modalShowCompound" href="show-compound-modal/${spectrum_derivative_type}/${spectrum_derivative_id}" --%>
-							<a>${fn:escapeXml(spectrum_derivative_name)}</a>
+							<c:if test="${not empty spectrum_derivative_pubchem}">
+								<a href="<spring:message 
+									code="resources.banklink.pubchem" 
+									text="http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=" />${spectrum_derivative_pubchem}" 
+									target="_blank">${fn:escapeXml(spectrum_derivative_name)} | CID ${spectrum_derivative_pubchem}</a>
+							</c:if>
+							<c:if test="${empty spectrum_derivative_pubchem and not empty spectrum_derivative_inchikey}">
+								<a href="<spring:message 
+									code="resources.banklink.pubchem" 
+									text="http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=" />${spectrum_derivative_inchikey}" 
+									target="_blank">${fn:escapeXml(spectrum_derivative_name)}</a>
+							</c:if>
+							<c:if test="${empty spectrum_derivative_pubchem and empty spectrum_derivative_inchikey}">
+								${fn:escapeXml(spectrum_derivative_name)}
+							</c:if>
 						</li>
 						<li class="list-group-item">Derived Type: ${spectrum_derivatization_types}</li>
 						<li class="list-group-item">Derivation Method: ${spectrum_sample_compound_derivation_method}</li>
-						<li class="list-group-item">InChI of Derivative: ${spectrum_derivative_inchi}</li>
-						<li class="list-group-item">InChIKey of Derivative: ${spectrum_derivative_inchikey}</li>
+						<li class="list-group-item">
+							<div class="form-group input-group form-group-margin0">
+								<span class="input-group-addon" style="">InChI of Derivative</span>
+								<input
+									id="spectrum_derivative_inchi"
+								    type="text" 
+									class="form-control clipboad-me"
+									placeholder="${spectrum_derivative_inchi}"
+									value="${spectrum_derivative_inchi}">
+								<span class="input-group-btn">
+									<button onclick="copyToClipboad('spectrum_derivative_inchi')" class="btn btn-primary" type="button" title="copy">
+										<i class="fa fa-clipboard"></i>
+									</button>
+								</span>
+							</div>
+						<!-- </li> -->
+						<!-- <li class="list-group-item"> -->
+							<div class="form-group input-group form-group-margin0">
+								<span class="input-group-addon" style="">InChIKey of Derivative</span>
+								<input
+									id="spectrum_derivative_inchikey"
+								    type="text" 
+									class="form-control clipboad-me"
+									placeholder="${spectrum_derivative_inchikey}"
+									value="${spectrum_derivative_inchikey}">
+								<span class="input-group-btn">
+									<button onclick="copyToClipboad('spectrum_derivative_inchikey')" class="btn btn-primary" type="button" title="copy">
+										<i class="fa fa-clipboard"></i>
+									</button>
+								</span>
+							</div>
+						</li>
 					</ul>
 				</tr>
 			</table>

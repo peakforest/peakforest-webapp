@@ -1078,7 +1078,7 @@ function startUpload2() {
 												</table>
 									</div>
 								</div>
-								
+								<% /*
 								<div id="MEViz__module" class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
@@ -1133,6 +1133,7 @@ function startUpload2() {
 										</script>
 									</div>
 								</div>
+								*/  %>
 								
 								<div class="panel panel-default">
 									<div class="panel-heading">

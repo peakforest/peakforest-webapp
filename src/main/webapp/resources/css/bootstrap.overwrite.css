@@ -161,6 +161,10 @@ td.smiles {
 	width: 750px;
 }
 
+.modalLargeXL {
+	width: 1000px;
+}
+
 img.molStructSVG {
 	display: block;
 	height: 400px;
@@ -260,4 +264,14 @@ img.molStructSVGmedium {
 
 #compound-cart div.alert {
 	padding: 5px;
+}
+
+@media screen and (min-width: 900px) {
+	.modal-lg { width: 900px; }
+	.modal-lg .modal-dialog { width: 900px; }
+}
+
+.form-group-margin0 {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
 }

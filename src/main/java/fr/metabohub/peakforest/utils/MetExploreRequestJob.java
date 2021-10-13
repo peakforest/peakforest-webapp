@@ -1,7 +1,16 @@
 package fr.metabohub.peakforest.utils;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import fr.metabohub.externalbanks.mapper.metexplore.MetExBiosource;
+import fr.metabohub.externalbanks.rest.MetExploreClient;
 
 @Component
 public class MetExploreRequestJob {
@@ -210,33 +219,28 @@ public class MetExploreRequestJob {
 //		return mapEntity;
 //	}
 
-	// each weeks
-	@Scheduled(fixedRate = 604800000)
+	// each 1 and 15 of each months
+	@Scheduled(cron = "0 0 0 1,15 * *")
 	public static void updateMetExoloreBiosourcesList() throws Exception {
 		SpectralDatabaseLogger.log("cron", "start update metexplore-networks-list ", SpectralDatabaseLogger.LOG_INFO);
-//		// init request
-//		String fileNameAndPath = Utils.getBundleConfElement("json.metExploreBiosourcesList");
-//		String filePrefix = Utils.getBundleConfElement("json.folder");
-//		String filePathAndName = filePrefix + File.separator + fileNameAndPath;
-//		// I - call WS
-//		MetExploreClient client = new MetExploreClient(MetExploreClient.METEXPLORE_GET_LIST_BIOSOURCES);
-//		// for (MetExploreBiosource source : client.getListOfBiosources())
-//		// System.out.println(source);
-//		// II - update json
-//		// boolean success = false;
-//		ObjectMapper mapper = new ObjectMapper();
-//		String ret = mapper.writeValueAsString(client.getListOfBiosources());
-//		FileWriter file = new FileWriter(filePathAndName);
-//		try {
-//			file.write(ret);
-//			// success = true;
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			file.flush();
-//			file.close();
-//		}
+		// init request
+		final String fileNameAndPath = PeakForestUtils.getBundleConfElement("json.metExploreBiosourcesList");
+		final String filePrefix = PeakForestUtils.getBundleConfElement("json.folder");
+		final String filePathAndName = filePrefix + File.separator + fileNameAndPath;
+		// I - call WS
+		final MetExploreClient client = new MetExploreClient();
+		final List<MetExBiosource> biosources = client.getBiosources();
+		final ObjectMapper mapper = new ObjectMapper();
+		final String ret = mapper.writeValueAsString(biosources);
+		final FileWriter file = new FileWriter(filePathAndName);
+		try {
+			file.write(ret);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} finally {
+			file.flush();
+			file.close();
+		}
 		SpectralDatabaseLogger.log("cron", "end update metexplore-networks-list ", SpectralDatabaseLogger.LOG_INFO);
-		// return success;
 	}
 }

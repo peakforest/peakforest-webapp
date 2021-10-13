@@ -36,6 +36,7 @@
 	// data spectra 
 	<%for (int i = 0; i < seriesShow.length; i++) {%>
 		var seriesShow<%=spectrumDivId %><%=i%> = [];
+		var seriesHide<%=spectrumDivId %><%=i%> = []; 
 		var seriesCompo<%=spectrumDivId %><%=i%> = {};
 		var seriesAdducts<%=spectrumDivId %><%=i%> = {};
 		var seriesMetadata<%=spectrumDivId %><%=i%> = {};
@@ -43,8 +44,10 @@
 		<%
 		@SuppressWarnings("unchecked")
 		HashMap<Double, Double> dataS = (HashMap<Double, Double>) seriesShow[i];
+		
 		@SuppressWarnings("unchecked")
 		HashMap<Double, String> dataCompo = (HashMap<Double, String>) seriesComposition[i];
+		
 		@SuppressWarnings("unchecked")
 		HashMap<Double, Short> dataAdducts = (HashMap<Double, Short>) seriesAdducts[i];
 		for (Map.Entry<Double, Double> entry : dataS.entrySet()) {
@@ -57,31 +60,35 @@
 			out.print("seriesCompo" + spectrumDivId + "" + i + "[" + key + "]='" + dataCompo.get(key) + "';\n");
 			out.print("seriesAdducts" + spectrumDivId + "" + i + "[" + key + "]='" + dataAdducts.get(key) + "';\n");
 		}
+		
 		@SuppressWarnings("unchecked")
 		HashMap<String, String> metadata = (HashMap<String, String>) seriesMetadata[i];
 		for (Map.Entry<String, String> entry : metadata.entrySet()) {
 			String key = entry.getKey();
 			String value = entry.getValue();
 			out.print("seriesMetadata" + spectrumDivId + "" + i + "['" + key + "']='"+value+"';\n");
-		}%>
-		var seriesHide<%=spectrumDivId %><%=i%> = []; 
+		}
 		
-		<%
 		@SuppressWarnings("unchecked")
 		HashMap<Double, Double> dataH = (HashMap<Double, Double>) seriesHide[i];
 		for (Map.Entry<Double, Double> entry : dataH.entrySet()) {
 			Double key = entry.getKey();
 			Double value = entry.getValue();
 			out.print("seriesHide" + spectrumDivId + "" + i + ".push([" + key + "," + value + "]);");
-		}%>
-		<% out.print("seriesHide" + spectrumDivId + "" + i + ".sort(); \n seriesShow" + spectrumDivId + "" + i + ".sort();"); %>
-		// super data
+		}
+		
+		// sort series		
+		out.print("\n seriesHide" + spectrumDivId + "" + i + ".sort(function(a, b) { return a[0] - b[0]; }); ");
+		out.print("\n seriesShow" + spectrumDivId + "" + i + ".sort(function(a, b) { return a[0] - b[0]; }); ");
+		%>
+		
 
 		// sort data to get highest y-values
-		var sortedSeriesShow<%=spectrumDivId %><%=i%> = seriesShow<%=spectrumDivId %><%=i%>.map(
-				function(a) { return a[1]; }).sort(function(a, b) { return b-a; });
-	<%}%>
-	<% 
+		var sortedSeriesShow<%=spectrumDivId %><%=i%> = seriesShow<%=spectrumDivId %><%=i%>//
+				.map(function(a) { return a[1]; })//
+				.sort(function(a, b) { return b-a; });
+	<% }
+	// set max in graph
 	int maxInt = (int)(max * 1.2);
 	%>
 	var maxGraph = <%=maxInt %>;
@@ -173,16 +180,18 @@
 							},
 							
 							legend : {
-								<% if (loadLegend) {
+								<%
+								if (loadLegend) {
 									out.print(" layout : 'vertical',\n");
 									out.print(" align : 'right',\n");
 									out.print(" verticalAlign : 'middle',\n");
 									out.print(" borderWidth : 1,\n");
 									out.print(" backgroundColor : '#FFFFFF'\n");
-// 									out.print(" \n");
+ 									out.print(" \n");
 								 } else {
-									 out.print(" enabled: false \n");
-								 } %>
+								 	 out.print(" enabled: false \n");
+								 }
+								%>
 							},
 							plotOptions : {
 								scatter : {},
@@ -194,16 +203,17 @@
 											out.print("  if ("+loadTopPeaksLabel[i]+" && this.series.index == "+(seriesShow.length+i)+")\n");
 											out.print("    return ((sortedSeriesShow"+ spectrumDivId + i + 
 																".indexOf(this.y) >= 10) ? null : this.x);\n");
-										} %>
-										}
-									}
+										} // for
+										%>
+										} // formatter
+									}// datalabels
 								}
 
 							},
 							series : [
 									// ### LOOP
 									<% 
-									Random randomGenerator = new Random();
+									final Random randomGenerator = new Random();
 									int startColor = randomGenerator.nextInt(10);
 									int startSymb = randomGenerator.nextInt(3);
 									
@@ -270,6 +280,7 @@
 		$("g.highcharts-legend-item").bind('click', function(ev) {
 			var txt = $(this).text();
 			$.each(chart<%=spectrumDivId %>.series, function(k, v) {
+				// console.log("v", v)
 				if (v.name == txt + " - HIDE") {
 					<% for (int i = 0; i < seriesShow.length; i++) { %>
 					if (v.index == <%=(i) %> && serie<%=spectrumDivId %><%=(i) %>IsShow) {

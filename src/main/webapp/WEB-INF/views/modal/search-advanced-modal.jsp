@@ -168,18 +168,89 @@ searchAdvanceSwitchPanel = function (entities) {
 		setTimeout(function(){$("#nmr-cpd-name").focus();},200);
 		tryLoadNMRdata();
 		break;
+	case 'gcms-spectra':
+		setTimeout(function(){$("#gcms-cpd-name").focus();},200);
+		tryLoadGCMSdata();
+		break;
 	default:  
 		break;
 	}
 }
+
+var alreadyTryGCMSload = false;
+function tryLoadGCMSdata() {
+	alreadyTryGCMSload = true;
+	var rawQuery = $("#search").val();
+	var rawQueryTab = rawQuery.split(" ");
+	var query = "";
+	var openAdvSearch = false;
+	$.each(rawQueryTab, function(k, v) {
+		v = v.trim();
+		if (v != "") {
+			switch (v.toUpperCase()) {
+			case "GC-MS":
+			case "GCMS":
+				break;
+			default:
+				if ((!/~/i.test(v))) {
+					query += v + " ";
+				} else {
+					var gcmsField = v.split("~");
+					var linker = gcmsField[0];
+					var search = gcmsField[1];
+					var value = gcmsField[2];
+					switch (search) {
+					case "derivation":
+						$("#gcms-derivation-linker").val(linker);
+						$("#gcms-derivation-value").val(value); 
+						break;
+					case "derivated_type":
+						$("#gcms-derivated_type-linker").val(linker);
+						$("#gcms-derivated_type-value").val(value); 
+						break;
+					case "ionization":
+						$("#gcms-ionization-linker").val(linker);
+						$("#gcms-ionization-value").val(value); 
+						break;
+					case "analyzer":
+						$("#gcms-analyzer-linker").val(linker);
+						$("#gcms-analyzer-value").val(value); 
+						break;
+					default:
+						break;
+					}
+				}
+				break;
+			}
+		}
+	});
+	$("#gcms-cpd-name").val(query);
+}
+
+
+$( document ).ready(function() {
+	var rawQuery = $("#search").val().toUpperCase();
+	if (rawQuery.startsWith("LCMS ")) {
+		$("#link-searchAdvance-spectra-lcms").click();
+    } else if (rawQuery.startsWith("LCMSMS ")) {
+    	$("#link-searchAdvance-spectra-lcmsms").click();
+    } else if (rawQuery.startsWith("GCMS ")) {
+    	$("#link-searchAdvance-spectra-gcms").click();
+    } else if (rawQuery.startsWith("NMR ")) {
+    	$("#link-searchAdvance-spectra-nmr").click();
+    } else {
+    	$("#link-searchAdvance-compounds").click();
+    }
+});
+
 	//]]>
 	</script>
 
 
 </head>
 <body>
-	<div class="modal-dialog ">
-		<div class="modal-content modalLarge">
+	<div class="modal-dialog">
+		<div class="modal-content ">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title"><spring:message code="modal.advSearch.title" text="Advanced Search" /></h4>
@@ -206,6 +277,11 @@ searchAdvanceSwitchPanel = function (entities) {
 							<li>
 								<a id="link-searchAdvance-spectra-nmr" href="#searchAdvance-spectra-nmr-panel" data-toggle="tab" onclick="searchAdvanceSwitchPanel('nmr-spectra');">
 									<i class="fa fa-bar-chart-o fa-flip-horizontal"></i> <spring:message code="modal.advSearch.tabSpectrumsNMR" text="NMR Spectra" />
+								</a>
+							</li>
+							<li>
+								<a id="link-searchAdvance-spectra-gcms" href="#searchAdvance-spectra-gcms-panel" data-toggle="tab" onclick="searchAdvanceSwitchPanel('gcms-spectra');">
+									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsGCMS" text="GCMS Spectra" />
 								</a>
 							</li>
 						</ul>
@@ -492,6 +568,97 @@ searchAdvanceSwitchPanel = function (entities) {
 									</form>
 								</div><!-- ./avancedSearchNmrPanel -->
 							</div>
+							<!--
+							////////////////////////////////////////////////////// 
+							 -->
+							<div class="tab-pane fade" id="searchAdvance-spectra-gcms-panel">
+								<!-- compound name -->
+								<div class="form-group input-group" style="width: 350px;">
+									<span class="input-group-addon" 
+										style="width: 150px;">
+											<spring:message code="modal.advSearch.params.compoundLike" 
+												text="Compound like" />
+									</span>
+									<input id="gcms-cpd-name" 
+										style="width: 200px;" 
+										type="text" 
+										class="form-control advancedSearch" 
+										placeholder="<spring:message code="modal.advSearch.params.compoundLike.eg" text="e.g.: Gluc" />" 
+										value="" />
+								</div>
+								<!-- derivation -->
+								<div class="form-group input-group" style="width: 600px;">
+									<select id="gcms-derivation-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="OR"  selected>OR</option>
+										<option value="AND" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">derivation method</span>
+									<select id="gcms-derivation-value" class="form-control advancedSearch" style="width: 420px;">
+										<option value="na" selected></option>
+										<option value="oximation_and_sylilation">oximation and sylilation</option> 
+										<option value="sylilation">sylilation</option> 
+										<option value="acylation">acylation</option> 
+										<option value="esterification">esterification</option> 
+										<option value="none">none</option> 
+									</select>
+								</div>
+								<!-- derivated type -->
+								<div class="form-group input-group" style="width: 600px;">
+									<select id="gcms-derivated_type-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="OR"  selected>OR</option>
+										<option value="AND" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">derivated type</span>
+									<select id="gcms-derivated_type-value" class="form-control advancedSearch" style="width: 420px;">
+										<option value="na" selected></option>
+										<option value="None">None</option>
+										<option value="1_TMS">1 TMS</option>
+										<option value="2_TMS">2 TMS</option>
+										<option value="3_TMS">3 TMS</option>
+										<option value="4_TMS">4 TMS</option>
+										<option value="5_TMS">5 TMS</option>
+										<option value="6_TMS">6 TMS</option>
+										<option value="7_TMS">7 TMS</option>
+										<option value="8_TMS">8 TMS</option>
+										<option value="9_TMS">9 TMS</option>
+										<option value="10_TMS">10 TMS</option>
+										<option value="11_TMS">11 TMS</option>
+										<option value="12_TMS">12 TMS</option>
+										<option value="1_TBDMS">1 TBDMS</option>
+										<option value="2_TBDMS">2 TBDMS</option>
+										<option value="3_TBDMS">3 TBDMS</option>
+										<option value="4_TBDMS">4 TBDMS</option>
+										<option value="5_TBDMS">5 TBDMS</option>
+										<option value="1_MeOx">1 MeOx</option>
+										<option value="2_MeOx">2 MeOx</option>
+										<option value="3_MeOx">3 MeOx</option>
+										<option value="Unknown">Unknown</option>
+									</select>
+								</div>
+								<!-- ionization -->
+								<div class="form-group input-group" style="width: 600px;">
+									<select id="gcms-ionization-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="OR" selected>OR</option>
+										<option value="AND" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">ionization method</span>
+									<select id="gcms-ionization-value" class="form-control advancedSearch" style="width: 420px;">
+										<option value="na" selected></option>
+										<option value="EI">EI - Electron Impact</option> 
+										<option value="CI">CI - Chemical Ionization</option>  
+									</select>
+								</div>
+								<!-- analyzer type -->
+								<div class="form-group input-group" style="width: 600px;">
+									<select id="gcms-analyzer-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="OR"  selected>OR</option>
+										<option value="AND" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">analyzer type</span>
+									<input id="gcms-analyzer-value" type="text" class="form-control advancedSearch" placeholder="e.g.: TOF / QTOF / QQQ / ..." style="width: 420px;">
+								</div>
+								
+							</div><!-- #/searchAdvance-spectra-gcms-panel -->
 						</div>
 						<!-- /.row -->
 						<script type="text/javascript">
@@ -764,7 +931,28 @@ searchAdvanceSwitchPanel = function (entities) {
 										mainSearchQuery += " 15N";
 									mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
 									break;
+								case "gcms-spectra":
+									if (!($($("input#searchSpectraF")).length)) {
+										$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="gcms" />');
+									}
+									mainSearchQuery = 'GCMS ' + $("#gcms-cpd-name").val() 
+									if ($("#gcms-derivation-value").val() !== null && $("#gcms-derivation-value").val() != "na") {
+										mainSearchQuery += " " + $("#gcms-derivation-linker").val() + "~derivation~" + $("#gcms-derivation-value").val();
+									}
+									if ($("#gcms-derivated_type-value").val() !== null && $("#gcms-derivated_type-value").val() != "na") {
+										mainSearchQuery += " " + $("#gcms-derivated_type-linker").val()
+											+ "~derivated_type~" + $("#gcms-derivated_type-value").val();
+									}
+									if ($("#gcms-ionization-value").val() !== null && $("#gcms-ionization-value").val() != "na") {
+										mainSearchQuery += " " + $("#gcms-ionization-linker").val() + "~ionization~" + $("#gcms-ionization-value").val();
+									}
+									if ($("#gcms-analyzer-value").val() !== "") {
+										mainSearchQuery += " " + $("#gcms-analyzer-linker").val() + "~analyzer~" + $("#gcms-analyzer-value").val();
+									}
+									mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
+									break;
 								}
+								
 								if (mainSearchQuery != "") {
 									$("#search").val(mainSearchQuery);
 								}

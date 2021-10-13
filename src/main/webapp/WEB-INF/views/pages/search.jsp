@@ -250,7 +250,7 @@ var _txt_btn_showMode = '<spring:message code="page.search.btn.showMore" text="S
 
 <!-- Modal adv search -->
 <div class="modal " id="advancedModal" tabindex="-1" role="dialog" aria-labelledby="advancedModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                  <h4 class="modal-title" id="advancedModalLabel">Modal title</h4>

@@ -97,27 +97,50 @@ public class ToolsController {
 		return new ModelAndView("redirect:" + "home?page=stats#stats-metexplore");
 	}
 
+	/**
+	 * Get the "pforest-webapp.war" query and avoid to return the resource itself
+	 * 
+	 * @param httpServletResponse the response to the client
+	 * @return the 500 error view
+	 */
 	@RequestMapping(value = "/.war", method = RequestMethod.GET)
-	public ModelAndView redirectWar(HttpServletResponse httpServletResponse) {
-		// httpServletResponse.setHeader("Location", "home?page=template");
+	public ModelAndView redirectWar(final HttpServletResponse httpServletResponse) {
 		return new ModelAndView("redirect:" + "home?page=500");
 	}
 
-	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, params = "query")
-	public @ResponseBody Object search(@RequestParam("query") String query) {
+	/**
+	 * Run a search query
+	 * 
+	 * @param query the query to process
+	 * @return a json response
+	 */
+	@RequestMapping(//
+			value = "/search", //
+			method = RequestMethod.POST, //
+			produces = MediaType.APPLICATION_JSON_VALUE, //
+			params = "query")
+	public @ResponseBody Object search(//
+			final @RequestParam("query") String query//
+	) {
 		return searchOpt(query, Boolean.FALSE);
 	}
 
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, params = {
-			"query", "quick" })
-	public @ResponseBody Object searchOpt(@RequestParam("query") String query, @RequestParam("quick") boolean quick) {
+	@RequestMapping(//
+			value = "/search", //
+			method = RequestMethod.POST, //
+			produces = MediaType.APPLICATION_JSON_VALUE, //
+			params = { "query", "quick" }//
+	)
+	public @ResponseBody Object searchOpt(//
+			final @RequestParam("query") String query, //
+			final @RequestParam("quick") boolean quick) {
 		// init
-		Map<String, Object> searchResults = new HashMap<String, Object>();
+		final Map<String, Object> searchResults = new HashMap<String, Object>();
 		final int maxResults = (quick ? SEARCH_QUICK_RESULTS_SIZE_LIMIT : SEARCH_NORMAL_RESULTS_SIZE_LIMIT);
 		// search local
 		try {
-			searchResults = SearchService.search(query, quick, maxResults);
+			searchResults.putAll(SearchService.search(query, quick, maxResults));
 			// prune
 			searchResults.put("compounds",
 					PeakForestPruneUtils.prune((List<AbstractDatasetObject>) searchResults.get("compounds")));
@@ -144,11 +167,18 @@ public class ToolsController {
 					dataJson = dataJson.subList(0, 30);
 				searchResults.put("nmrSpectra", dataJson);
 			}
+			if (searchResults.containsKey("gcmsSpectra")) {
+				List<AbstractDatasetObject> dataJson = PeakForestPruneUtils
+						.prune((List<AbstractDatasetObject>) searchResults.get("gcmsSpectra"));
+				if (dataJson.size() > 30)
+					dataJson = dataJson.subList(0, 30);
+				searchResults.put("gcmsSpectra", dataJson);
+			}
 			// success
-			searchResults.put("success", true);
-		} catch (Exception e) {
+			searchResults.put("success", Boolean.TRUE);
+		} catch (final Exception e) {
 			e.printStackTrace();
-			searchResults.put("success", false);
+			searchResults.put("success", Boolean.FALSE);
 			searchResults.put("error", "exception");
 			searchResults.put("exceptionMessage", e.getMessage());
 		}
@@ -156,27 +186,38 @@ public class ToolsController {
 		return searchResults;
 	}
 
-	@RequestMapping(value = "/search-count", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, params = {
-			"query" })
+	@RequestMapping(//
+			value = "/search-count", //
+			method = RequestMethod.POST, //
+			produces = MediaType.APPLICATION_JSON_VALUE, //
+			params = { "query" }//
+	)
 	public @ResponseBody Long searchCount(@RequestParam("query") String query) {
 		// init
 		Long nbResults = null;
 		// search
 		try {
 			nbResults = SearchService.countMaxSearchResults(query);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		// return
 		return nbResults;
 	}
 
-	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, params = {
-			"query", "filterEntity", "filerType", "filterVal", "filterVal2" })
+	@RequestMapping(//
+			value = "/search", //
+			method = RequestMethod.POST, //
+			produces = MediaType.APPLICATION_JSON_VALUE, //
+			params = { "query", "filterEntity", "filerType", "filterVal", "filterVal2" }//
+	)
 	@SuppressWarnings("unchecked")
-	public @ResponseBody Object searchAdvanced(@RequestParam("query") String query,
-			@RequestParam("filterEntity") String entity, @RequestParam("filerType") int type,
-			@RequestParam("filterVal") String value, @RequestParam("filterVal2") String value2,
+	public @ResponseBody Object searchAdvanced(//
+			@RequestParam("query") String query, //
+			@RequestParam("filterEntity") String entity, //
+			@RequestParam("filerType") int type, //
+			@RequestParam("filterVal") String value, //
+			@RequestParam("filterVal2") String value2, //
 			@RequestParam("filterVal3") String value3) {
 		// init
 		Map<String, Object> searchResults = new HashMap<String, Object>();

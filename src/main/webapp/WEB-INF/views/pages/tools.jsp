@@ -13,7 +13,6 @@
 					MetExplore Viz
 				</a>
 			</li>
-			<%--<li><a href="#mass-vs-logp" data-toggle="tab"><i class="fa fa-area-chart"></i> <spring:message code="page.tools.tag.massVSlogP" text="Mass Vs LogP" /></a></li> --%>
 		</ul>
 		<div id="div-tools" class="tab-content">
 			<div class="tab-pane fade active in" id="cart">

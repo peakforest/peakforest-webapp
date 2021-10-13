@@ -3170,6 +3170,7 @@ module.exports = function () {
     dispatcher = SpecContainer.dispatcher();
     
     focus = source(slide)
+      .attr("id", "focus-main")
       .attr("pointer-events", "all")
       .attr('clip-path', "url(#" + slide.clipId() + ")")
       .attr("width", SpecContainer.width())
@@ -4043,6 +4044,16 @@ var events = {
 };
 
 var shortcuts = [];
+
+events.toggle_controls = function(app) {
+  events.controls = !events.controls;
+  if (events.controls) {
+    app.select(".controls").style("display", "none")
+  } else {
+    app.select(".controls").style("display", null)
+  }
+};
+
 events.crosshairToggle = function (app) {
   events.crosshair = !events.crosshair;
   app.slideDispatcher().crosshairEnable(events.crosshair);
@@ -4122,6 +4133,7 @@ events.display_shortcuts = function(app) {
 events.registerKeyboard = function(app){
   add_kbd_shortcut('?', events.display_shortcuts, 'Display help and keyboard shortcuts');
   add_kbd_shortcut('c', events.crosshairToggle, 'Toggle crosshair');
+  add_kbd_shortcut('l', events.toggle_controls, 'Show/hide controls buttons');
   add_kbd_shortcut('z', events.zoomToggle, 'Toggle zoom');
   add_kbd_shortcut('f', function(app){app.slideDispatcher().regionfull(app)}, 'View full spectrum');
   add_kbd_shortcut('shift', null, 'Move cursor to nearest peak maximum');
@@ -4480,6 +4492,69 @@ inp.popover = function (title) {
 module.exports = inp;
 },{"./d1/threshold":18,"./utils/event":46}],26:[function(require,module,exports){
 module.exports = function (app) {
+  var margin_right = 75;
+  var margin_top = 50;
+  var controls = app.append("div")
+    .attr("class", "controls")
+    .style("position", "absolute")
+    .style("right", `${margin_right}px`)
+    .style("top", `${margin_top}px`)
+  ;
+  var control_manager_generator = function(delta) {
+    return (function() {
+      var event;
+      var control_manager_get_target;
+      var target ;
+
+      if (delta === undefined) {
+        event = new MouseEvent("dblclick", {
+          "view": window,
+          "bubbles": true,
+          "cancelable": true
+        });
+      } else {
+        event = new WheelEvent("wheel", {
+          "view": window,
+          "bubbles": true,
+          "cancelable": true,
+          deltaY: app.currentSlide().nd() == 2 ? delta / 5. : delta
+        });
+      }
+      if (app.currentSlide().nd() == 1) {
+        target = app.select(".spec-slide.active * .main-focus > rect")[0][0] ;
+      } else {
+        target = app.select(".spec-slide.active * .main-focus * rect")[0][0] ;
+      }
+      if (target !== null) {
+        target.dispatchEvent(event) ;
+      } else {
+        console.warn(`Target for event mocking the user's scroll behaviour is null. Cannot dispatch it.`);
+      }
+    }) ;
+  }
+  controls.append("input")
+    .attr("value", "+")
+    .attr("type", "button")
+    .attr("id", "button_zoom_more")
+    .on("click", control_manager_generator(-360)
+    )
+  ;
+  controls.append("input")
+    .attr("value", "-")
+    .attr("type", "button")
+    .attr("id", "button_zoom_less")
+    .on("click", control_manager_generator(360)
+    )
+  ;
+  if (app.currentSlide().nd() == 1) {
+      controls.append("input")
+        .attr("value", "o")
+        .attr("type", "button")
+        .attr("id", "button_zoom_reinit")
+        .on("click", control_manager_generator()
+        )
+      ;
+    }
   app.append('div').classed('logo', true)
     .text('SpecdrawJS')
     .on('click', function () {
@@ -4796,6 +4871,9 @@ module.exports = function (app){
   });
   elem.select('.kbd').on('click', function(){
     events.display_shortcuts(app);
+  });
+  elem.select('.controls').on('click', function(){
+    events.toggle_controls(app);
   });
   
   var app_dispatcher = app.dispatcher();

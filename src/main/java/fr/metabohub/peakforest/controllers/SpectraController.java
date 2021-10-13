@@ -1197,14 +1197,19 @@ public class SpectraController {
 				// (higher score)!
 				model.addAttribute("spectrum_derivative_name",
 						parentCompound.getMainName() + " (" + derivativeTypes + ")");
-
-				GCDerivedCompound derivative = gcMetadata.getStructureDerivedCompound();
+				
+				final GCDerivedCompound derivative = gcMetadata.getStructureDerivedCompound();
 				if (derivative != null) {
 					model.addAttribute("spectrum_derivative_inchikey", derivative.getInChIKey());
 					model.addAttribute("spectrum_derivative_inchi", derivative.getInChI());
-
 					model.addAttribute("spectrum_derivative_type", derivative.getTypeString());
+					String pubchemID = null;
+					if (derivative.getPubChemID() != null && !derivative.getPubChemID().equals("")) {
+						pubchemID = derivative.getPubChemID(); 
+						model.addAttribute("spectrum_derivative_pubchem", Jsoup.clean(pubchemID, Whitelist.basic()));
+					}
 				}
+				
 			}
 		}
 
@@ -1441,6 +1446,9 @@ public class SpectraController {
 				model.addAttribute("spectrum_chromatography_sfg_time", time);
 				model.addAttribute("spectrum_chromatography_sfg", lcData.getSeparationFlowGradient());
 			} else if (spectrum instanceof FullScanGCSpectrum) {
+				// generic
+				model.addAttribute("spectrum_name",
+						PeakForestPruneUtils.convertGreekCharToHTML(((MassSpectrum) spectrum).getMassBankName()));
 				// GC DATA
 				model.addAttribute("spectrum_chromatography", "gc");
 				GazChromatography gcData = GazChromatographyMetadataDao
@@ -1471,9 +1479,9 @@ public class SpectraController {
 				// Separation temperature programme
 				List<Double> sortedKeys = new ArrayList<Double>(gcData.getSeparationTemperatureProgram().keySet());
 				Collections.sort(sortedKeys);
-				Double[] temperature = new Double[sortedKeys.size()];
+				final Double[] temperature = new Double[sortedKeys.size()];
 				int i = 0;
-				for (Double k : sortedKeys) {
+				for (final Double k : sortedKeys) {
 					temperature[i] = k;
 					i++;
 				}

@@ -27,7 +27,7 @@
 			<tbody>
 				<tr>
 					<td>
-						<a class="btn btn-info" href="#" onclick="updatePeakforestStats(this);"> <i class="fa fa-refresh"></i> Update PeakForest stats </a>
+						<a class="btn btn-info" href="#" onclick="flushSessions(this);"> <i class="fa fa-refresh"></i> Flush Sessions </a>
 					</td>
 					<td>
 <% if (useMEwebservice) { %>
@@ -54,7 +54,7 @@
 						<a class="btn btn-info" href="#" onclick="updateBioSM(this);"> <i class="fa fa-refresh"></i> Process BioSM </a>
 					</td>
 					<td>
-						<a class="btn btn-info" href="#" onclick="flushSessions(this);"> <i class="fa fa-refresh"></i> Flush Sessions </a>
+						<a class="btn btn-info" href="#" onclick="recomputeChromatographyCodes(this);"> <i class="fa fa-refresh"></i> Recompute Chromato codes </a>
 					</td>
 				</tr>
 			</tbody>
@@ -740,6 +740,43 @@ updateSplash = function(btn, force) {
  	});
 }
 
+recomputeChromatographyCodes = function(btn) {
+// 	$(btn).addClass("btn-disabled");
+	$(btn).attr("disabled", true);
+	$(btn).children("i").addClass("fa-spin");
+ 	$.ajax({ 
+ 		type: "post",
+ 		url: "admin/update-chromatography-codes",
+ 		async: true,
+// 		data: "query=" + $('#search').val(),
+ 		success: function(ret) {
+			$(btn).children("i").removeClass("fa-spin");
+ 			if (ret) {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
+ 			} else {
+ 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not recompute columns codes.';
+ 				alert += ' </div>';
+ 				$("#backOfficeToolsAltert").html(alert);
+ 			}
+
+ 		},
+ 		error : function(xhr) {
+			$(btn).children("i").removeClass("fa-spin");
+			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
+ 			// TODO alert error xhr.responseText
+ 			console.log(xhr);
+ 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
+ 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
+ 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not recompute columns codes.';
+ 			alert += ' </div>';
+ 			$("#backOfficeToolsAltert").html(alert);
+ 		}
+ 	});
+}
+
 flushSessions = function(btn) {
 	$(btn).attr("disabled", true);
 	$(btn).children("i").addClass("fa-spin");
@@ -804,43 +841,6 @@ curateCompoundStructures = function(btn, force) {
  			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
  			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
  			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not curate structures';
- 			alert += ' </div>';
- 			$("#backOfficeToolsAltert").html(alert);
- 		}
- 	});
-}
-
-updatePeakforestStats = function(btn) {
-// 	$(btn).addClass("btn-disabled");
-	$(btn).attr("disabled", true);
-	$(btn).children("i").addClass("fa-spin");
- 	$.ajax({ 
- 		type: "post",
- 		url: "admin/update-peakforest-stats-data",
- 		async: true,
-// 		data: "query=" + $('#search').val(),
- 		success: function(ret) {
-			$(btn).children("i").removeClass("fa-spin");
- 			if (ret) {
- 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-check-circle");
- 			} else {
- 				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
- 				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
- 				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
- 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update PeakForest stats.';
- 				alert += ' </div>';
- 				$("#backOfficeToolsAltert").html(alert);
- 			}
-
- 		},
- 		error : function(xhr) {
-			$(btn).children("i").removeClass("fa-spin");
-			$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
- 			// TODO alert error xhr.responseText
- 			console.log(xhr);
- 			var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
- 			alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
- 			alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not update PeakForest stats.';
  			alert += ' </div>';
  			$("#backOfficeToolsAltert").html(alert);
  		}

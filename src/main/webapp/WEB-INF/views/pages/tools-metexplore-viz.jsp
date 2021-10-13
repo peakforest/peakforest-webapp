@@ -9,9 +9,15 @@
 	</div>
 	<div class="panel-body col-lg-12">
 		<form id="MEViz__module" class="form-horizontal" onsubmit="return false;" autocomplete="off">
+			<!-- 
 			<small>
 				<i class="fa fa-question-circle" aria-hidden="true"></i> Map a PeakForest metabolite or a metabolite list (from the PeakForest Cart) in a selection of biosources and theirs networks from MetExplore. For each selected network, PeakForest will filter and propose pathways where more than one of your compound is found. 
 				<br />If none pathway is shown in the menu, it means that's no compound is mapped in any pathway.
+				<br />
+			</small>
+			-->
+			<small>
+				<i class="fa fa-question-circle" aria-hidden="true"></i> Powered by <a href="https://metexplore.toulouse.inra.fr/metexploreViz/doc/index.php" targer="_blank">MetExploreViz</a>!
 				<br />
 			</small>
 			<br />

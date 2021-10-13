@@ -183,7 +183,6 @@ function loadSpectrumNMRPro (div, id, label, scriptsURL, jsonURL) {
 		jQuery('#'+div).empty();
 		var spec_app = specdraw.App().data(jsonURL + '/'+id+'?label=' + label); // 
 		d3.select('#'+div).call(spec_app);
-	    delete Array.prototype.subset;
 	    delete Array.prototype.rotate;
 	    delete Array.prototype.rotateTo;
 	    delete Array.prototype.whichMax;
@@ -412,8 +411,8 @@ $(document).ready(function(){
 			$("#MEViz__biosource").empty();
 			$("#MEViz__biosource").append('<option disabled selected ></option>');
 			$.each(data, function() {
-				if (this.name !== undefined) {
-					$("#MEViz__biosource").append('<option value="' + this.id + '">'+ this.name + '</option>');
+				if (this.NomComplet !== undefined) {
+					$("#MEViz__biosource").append('<option value="' + this.id + '">'+ this.NomComplet + ' ('+ this.type + ')</option>');
 				}
 			});
 			$("#MEViz__biosource").combobox();
@@ -606,4 +605,25 @@ function initSelectPathways(idBiosource, pathways, inchikeys) {
 	});
 	$(".multiselect-container.dropdown-menu").css("overflow-x","scroll")
 	$(".multiselect-container.dropdown-menu").css("max-height","200px")
+}
+// process field for copy readonly by focusable
+$(document).ready(function(){
+	$(".clipboad-me").click(function () {
+		$(this).select();
+	}).keypress(function(e) {
+	    e.preventDefault();
+	}).bind("input", function(e) {
+		var prev = $(this).data('val');
+		$(this).val(prev);
+	});
+});
+// copy field to clipboad
+function copyToClipboad(ref) {
+	/* Get the text field */
+	var copyText = document.getElementById(ref);
+	/* Select the text field */
+	copyText.select(); 
+	copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+	/* Copy the text inside the text field */
+	document.execCommand("copy");
 }

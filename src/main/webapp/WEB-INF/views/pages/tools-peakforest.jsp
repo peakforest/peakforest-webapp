@@ -54,7 +54,7 @@ $("#clickMetExploreStat").on( "click", function() {
 });
 
 $( document ).ready(function() {
-	$.getJSON('json/<%=PeakForestUtils.getBundleConfElement("json.peakForestStatistics")%>', function(jsonData) {
+	$.getJSON('json/pforest-statistics.json', function(jsonData) {
 		$("#nbCC").html(jsonData.number_chemical_compounds);
 		var nbRCC = jsonData.number_generic_compounds + jsonData.number_chemical_compounds;
 		$("#nbRCC").html(nbRCC);

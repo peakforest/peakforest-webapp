@@ -16,7 +16,44 @@
   - pforest#xx - short description
 -->
 
-## latest: `2.1.0 - add GCMS spectra management`
+## latest: `2.1.2 - improve GCMS spectra management`
+
+- **@tag**: v2.1.2
+- **@version**: 2.1.2
+- **@notes**:
+  - pforest#98 - epic GCMS
+  - pforest#267 - update MexExplore webservices
+- **@new**:
+  - pforest#260 - add backoffice method to recompute LC chromatography columns codes
+- **@bug fixed**:
+  - pforest#248 - fix infos / links for "derivated compounds" in GCMS spectra sheets
+  - pforest#250 - fix "update peakforest stat." mechanism: compute stat. on-the-fly
+  - pforest#258 - improve GCMS "derivated type" data management (display, query)
+  - pforest#271 - fix tests after remove webservice database update - peakforest-api@4f15ad33
+  - pforest#274 - fix CI docker image build
+- **@other**:
+  - pforest#264 - improve CI and releases pipelines
+  - pforest#270 - improve CI and `Dockerfile` files
+  - pforest#272 - add OpenAPI projects in nightly CI
+  - pforest#273 - add OpenAPI projects in release manager
+
+## previous releases
+
+### `2020-08-24`
+
+- **@tag**: v2.1.1
+- **@version**: 2.1.1
+- **@notes**:
+  - pforest#98 - epic GCMS
+- **@new**:
+  - pforest#236 - add buttons to zoom in, out and reset zoom for nmrpro
+  - pforest#232 - basic GCMS spectra search 
+- **@bug fixed**:
+  - pforest#244 - fix nmrpro zoom for 1D and 2D spectra -  peakforest-webapp@c06c7faa
+  - pforest#205 - fix GCMS spectra viewer zoom - peakforest-webapp@adfa710c
+  - pforest#240 - fix images generation -  peakforest-api@d934168c
+
+### `2020-07-22`
 
 - **@tag**: v2.1.0
 - **@version**: 2.1.0
@@ -30,12 +67,8 @@
 - **@other**:
   - pforest#130 - improve code quality (epic pforest#98)
   - pforest#227 - fix stats web-gui reporting - peakforest-webapp@6c5357fc
-- **@known bugs**:
-  - pforest#xx - short description - short_sha or merge_request
 
-## previous releases
-
-### 2020-05-11
+### `2020-05-11`
 
 - **@tag**: v2.0.4
 - **@version**: 2.0.4
@@ -57,7 +90,7 @@
   - pforest#77 - some MetExplore's webservies are down
   - pforest#175 - CTS webserice is down (could not add compound using web GUI)
 
-### 2019-12-02
+### `2019-12-02`
 
 - **@tag**: v2.0.3
 - **@version**: 2.0.3
@@ -92,7 +125,7 @@
   - pforest#77 - some MetExplore's webservies are down
   - pforest#104 - bug in 3D mol. viewer
 
-### 2018-03-07
+### `2018-03-07`
 
 - **@tag**: v2.0.1
 - **@version**: 2.0.1
@@ -113,7 +146,7 @@
    - compute number of relevant query for a search - [3744dc06](peakforest-webapp@3744dc06) (issue peakforest-webapp#135)
    - change home page default message - [3d3b43b0](peakforest-webapp@3d3b43b0) (issue peakforest-webapp#137)
 
-### 2017-09-27
+### `2017-09-27`
 
 - **@tag**: v2.0.0
 - **@version**: 2.0.0
@@ -131,7 +164,7 @@
    - cleanup and performance improvement.
    - improve numbered compound loading.
 
-### 2017-03-16
+### `2017-03-16`
 
 - **@tag**: v1.8.0
 - **@version**: 1.8.0
@@ -150,7 +183,7 @@
 - **@other**:
    - SEO, JS debug, ...
 
-### 2016-07-12
+### `2016-07-12`
 
 - **@tag**: v1.5
 - **@version**: 1.5
@@ -170,7 +203,7 @@
    - spectra ZIP file import process progress - [3b35aec6](peakforest-webapp@3b35aec6)
    - NMR "light" "real" viewer: display correct name - [4884e85e](peakforest-webapp@4884e85e)
 
-### 2016-02-18 
+### `2016-02-18`
 
 - **@tag**: v1.1
 - **@version**: 1.1
@@ -188,7 +221,7 @@
    - add missing "how to" for numbered compounds - [80846468](peakforest-webapp@80846468)
    - several other bug (special character in numbered compounds, logs rotation, close spectra modal if compound modal open after, ...)
 
-### 2015-12-15 
+### `2015-12-15`
 
 - **@tag**: v1.0
 - **@version**: 1.0

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fr.metabohub.peakforest.dao.metadata.AnalyticalMatrixMetadataDao;
+import fr.metabohub.peakforest.dao.metadata.LiquidChromatographyMetadataDao;
 import fr.metabohub.peakforest.dao.metadata.StandardizedMatrixMetadataDao;
 import fr.metabohub.peakforest.model.metadata.AnalyticalMatrix;
 import fr.metabohub.peakforest.model.metadata.StandardizedMatrix;
@@ -44,7 +45,6 @@ import fr.metabohub.peakforest.utils.ProcessBioSMvalues;
 import fr.metabohub.peakforest.utils.ProcessStructuralCuration;
 import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 import fr.metabohub.peakforest.utils.UpdateMassVsLogPStats;
-import fr.metabohub.peakforest.utils.UpdatePeakforestStats;
 import fr.metabohub.peakforest.utils.UpdateSplash;
 
 /**
@@ -267,6 +267,18 @@ public class AdminController {
 		}
 	}
 
+	@RequestMapping(value = "/update-chromatography-codes", method = RequestMethod.POST)
+	@ResponseBody
+	public boolean updateChromatographyCodes() {
+		try {
+			LiquidChromatographyMetadataDao.recomputeColumnsCodes();
+			return Boolean.TRUE;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return Boolean.FALSE;
+		}
+	}
+
 	@RequestMapping(value = "/process-structural-curation", method = RequestMethod.POST)
 	@ResponseBody
 	public boolean structuralDataCuration() {
@@ -296,18 +308,6 @@ public class AdminController {
 //			return false;
 //		}
 		return Boolean.FALSE;
-	}
-
-	@RequestMapping(value = "/update-peakforest-stats-data", method = RequestMethod.POST)
-	@ResponseBody
-	public boolean updatePeakForestStats() {
-		try {
-			UpdatePeakforestStats.updateStats();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 
 	// ////////////////////////////////////////////////////////////////////////

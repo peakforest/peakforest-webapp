@@ -14,16 +14,20 @@
 		<li>
 			<a href="#generate-template-file" data-toggle="tab"><i class="fa fa-download"></i> Generate XLSM template file</a>
 		</li>
+		<!-- 
 		<li>
 			<a href="#import-spectra-from-raw-file" data-toggle="tab"><i class="fa fa-file-o"></i> Import Spectra from raw file</a>
-		</li>
+		</li> 
+		-->
 	</ul>
 
 	<div id="add-spectrum" class="tab-content">
 		<div class="tab-pane fade" id="import-spectra-from-file" style="max-width: 1000px;"><jsp:include page="add-n-spectra.jsp" /></div>
 		<div class="tab-pane fade  active in" id="add-one-spectrum"><jsp:include page="add-one-spectrum.jsp" /></div>
 		<div class="tab-pane fade" id="generate-template-file" style="max-width: 1000px;"><jsp:include page="template.jsp" /></div>
-		<div class="tab-pane fade" id="import-spectra-from-raw-file" style="max-width: 1000px;"><jsp:include page="import-raw-spectra.jsp" /></div>
+		<%
+		// <div class="tab-pane fade" id="import-spectra-from-raw-file" style="max-width: 1000px;"><jsp:include page="import-raw-spectra.jsp" /></div> 
+		%>
 	</div>
 </div>
 <script type="text/javascript" src="<c:url value="/resources/jqueryform/2.8/jquery.form.min.js" />"></script>      

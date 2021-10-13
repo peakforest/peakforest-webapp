@@ -102,6 +102,58 @@ if (($(inputSearchLCMSMS).length)&&($("#searchLCMSMS").val() != "")) {
 }
 
 
+function getSpectrumCpd(rawSpectra) {
+	var cpd = {};
+	if (rawSpectra.label=="reference" && rawSpectra.listOfCompounds.length == 1) {
+		var cpdInChIKey = rawSpectra.listOfCompounds[0].inChIKey;
+		var cpdID = rawSpectra.listOfCompounds[0].id;
+		var cpdType = "?";
+		if (rawSpectra.listOfCompounds[0].type == 101) 
+			cpdType = "chemical";
+		if (rawSpectra.listOfCompounds[0].type == 100)
+			cpdType = "generic";
+		cpd = {
+			id: cpdID,
+			inchikey: cpdInChIKey,
+			type: cpdType
+		};
+	} 
+	return cpd;
+}
+
+function getGCSpectrumCpd(rawSpectra) {
+	var cpd = getSpectrumCpd(rawSpectra);
+	if (rawSpectra.derivedCompoundMetadata != null && rawSpectra.derivedCompoundMetadata.structureDerivedCompound !=null ) {
+		var rawCpd =  rawSpectra.derivedCompoundMetadata.structureDerivedCompound;
+		var cpdInChIKey = rawCpd.inChIKey;
+		var cpdID = rawCpd.id;
+		var cpdType = "?";
+		if (rawCpd.type == 101) {
+			cpdType = "chemical"; 
+		} else if (rawCpd.type == 100) {
+			cpdType = "generic";
+		} else if (rawCpd.type == 200) {
+			cpdType = "gc-derived";
+		}
+		cpd = {
+			id: cpdID,
+			inchikey: cpdInChIKey,
+			type: cpdType
+		};
+	} 
+	return cpd;
+}
+
+function getSpectrumImage( rawSpectra ) {
+	spectraImg = "lcms-light";
+	var nbPeak = rawSpectra.peaks.length;
+	if (nbPeak > 10)
+		spectraImg = "lcms-avg";
+	if (nbPeak > 20)
+		spectraImg = "lcms-big";
+	return spectraImg;
+}
+
 // 	var numberTotalResults = 0;
 var totalElementFound = 0;
 function loadSearchResults() {
@@ -236,25 +288,7 @@ function loadSearchResults() {
 									spectraImg = "nmr-avg";
 								if (nbPeak > 20)
 									spectraImg = "nmr-big";
-								var cpd = {
-									
-								};
-								if (rawSpectra.label=="reference" && rawSpectra.listOfCompounds.length == 1) {
-									var cpdInChIKey = rawSpectra.listOfCompounds[0].inChIKey;
-									var cpdID = rawSpectra.listOfCompounds[0].id;
-									var cpdType = "?";
-									if (rawSpectra.listOfCompounds[0].type == 101) 
-										cpdType = "chemical";
-									if (rawSpectra.listOfCompounds[0].type == 100)
-										cpdType = "generic";
-									cpd = {
-										id: cpdID,
-										inchikey: cpdInChIKey,
-										type: cpdType
-									};
-								}
-// 									if (rawSpectra.)
-// 										listOfCompounds 	inChIKey type
+								var cpd = getSpectrumCpd(rawSpectra);
 								var object = { 
 									id: rawSpectra.id,
 									name: rawSpectra.massBankLikeName,
@@ -274,7 +308,7 @@ function loadSearchResults() {
 					var containsLCMSspectra = false;
 					var containsLCMSMSspectra = false;
 					
-					if(json.hasOwnProperty('nmrSpectra') && !json.hasOwnProperty('nmrCandidates'))
+					if(json.hasOwnProperty('nmrSpectra') && !json.hasOwnProperty('nmrCandidates')) {
 						$.each(json.nmrSpectra, function() {
 							containsNMRspectra = true;
 							var rawSpectra = this;
@@ -285,26 +319,7 @@ function loadSearchResults() {
 									spectraImg = "nmr-avg";
 								if (nbPeak > 20)
 									spectraImg = "nmr-big";
-								var cpd = {
-									
-								};
-								if (rawSpectra.label=="reference" && rawSpectra.listOfCompounds.length == 1) {
-									var cpdInChIKey = rawSpectra.listOfCompounds[0].inChIKey;
-									var cpdID = rawSpectra.listOfCompounds[0].id;
-									var cpdType = "?";
-									if (rawSpectra.listOfCompounds[0].type == 101) 
-										cpdType = "chemical";
-									if (rawSpectra.listOfCompounds[0].type == 100)
-										cpdType = "generic";
-									cpd = {
-										id: cpdID,
-										inchikey: cpdInChIKey,
-										type: cpdType
-									};
-								}
-								
-// 									if (rawSpectra.)
-// 										listOfCompounds 	inChIKey type
+								var cpd =  getSpectrumCpd(rawSpectra);
 								var object = { 
 									id: rawSpectra.id,
 									name: rawSpectra.massBankLikeName,
@@ -319,6 +334,7 @@ function loadSearchResults() {
 							spectrumCount++;
 							}
 						});
+					}
 					
 					if(json.hasOwnProperty('lcmsSpectra') || json.hasOwnProperty('lcmsmsSpectra')) {
 						var arrayMSspectra = [];
@@ -328,6 +344,33 @@ function loadSearchResults() {
 						} 
 						if (json.hasOwnProperty('lcmsmsSpectra')) {
 							arrayMSspectra = arrayMSspectra.concat(json.lcmsmsSpectra);
+						}
+						// add img
+						$.each(arrayMSspectra, function() {
+							containsLCMSspectra = true;
+							var rawSpectra = this;
+							if (rawSpectra !== undefined) {
+								var spectraImg = getSpectrumImage( rawSpectra );
+								var cpd = getSpectrumCpd( rawSpectra );
+								var object = { 
+									id: rawSpectra.id,
+									name: rawSpectra.massBankName,
+									score: roundNumber(this.matchingScore, 3),
+									type: "lcms",
+									img: spectraImg,
+									compound: cpd,
+									pfID: rawSpectra.pfID
+								};
+								spectraDataTmp.push(object);
+								spectrumCount++;
+							}
+						});
+					}
+					if(json.hasOwnProperty('gcmsSpectra')) {
+						var arrayMSspectra = [];
+						// concat
+						if (json.hasOwnProperty('gcmsSpectra')) {
+							arrayMSspectra = arrayMSspectra.concat(json.gcmsSpectra);
 						} 
 						// add img
 						$.each(arrayMSspectra, function() {
@@ -340,36 +383,18 @@ function loadSearchResults() {
 									spectraImg = "lcms-avg";
 								if (nbPeak > 20)
 									spectraImg = "lcms-big";
-								var cpd = {
-									
-								};
-								if (rawSpectra.label=="reference" && rawSpectra.listOfCompounds.length == 1) {
-									var cpdInChIKey = rawSpectra.listOfCompounds[0].inChIKey;
-									var cpdID = rawSpectra.listOfCompounds[0].id;
-									var cpdType = "?";
-									if (rawSpectra.listOfCompounds[0].type == 101) 
-										cpdType = "chemical";
-									if (rawSpectra.listOfCompounds[0].type == 100)
-										cpdType = "generic";
-									cpd = {
-										id: cpdID,
-										inchikey: cpdInChIKey,
-										type: cpdType
-									};
-								}
-// 									if (rawSpectra.)
-// 										listOfCompounds 	inChIKey type
+								var cpd = getGCSpectrumCpd(rawSpectra);
 								var object = { 
 									id: rawSpectra.id,
 									name: rawSpectra.massBankName,
 									score: roundNumber(this.matchingScore, 3),
-									type: "lcms",
+									type: "gcms",
 									img: spectraImg,
 									compound: cpd,
 									pfID: rawSpectra.pfID
 								};
-							spectraDataTmp.push(object);
-							spectrumCount++;
+								spectraDataTmp.push(object);
+								spectrumCount++;
 							}
 						});
 					}
@@ -1376,9 +1401,9 @@ function getSearchRequestFormated(searchRequest, rawSearchRequestQuery) {
 			}
 			//console.log(v);
 		});
-		if ($.trim(cleanQuery) == "" && !specialQuery)
+		if ($.trim(cleanQuery) == "" && !specialQuery) {
 			searchRequest = "query=" + $.trim(rawSearchRequestQuery);
-		else {
+		} else {
 			try {
 				searchRequest = "query=" + $.trim(cleanQuery) + "&filterEntity="+ qFilterEntity + "&filerType="+ qFilterType + "&filterVal=" + qFilterVal + "&filterVal2=" + qFilterVal2 + "&filterVal3=" + qFilterVal3 ;
 			} catch(e) {

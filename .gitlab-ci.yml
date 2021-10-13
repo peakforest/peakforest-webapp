@@ -37,7 +37,6 @@ stages:
   - get_libs
   - build
   - tests
-  - package
   - code_report
   - artifacts
 
@@ -68,6 +67,10 @@ tests:
   services:
     - name: mysql:5.7
       alias: mysql-test-server
+  except:
+    refs:
+      - master
+      - tags
   before_script:
     - mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=$MYSQL_HOSTNAME --execute="DROP DATABASE IF EXISTS $MYSQL_DATABASE;  CREATE DATABASE $MYSQL_DATABASE CHARACTER SET utf8; "
     - mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=$MYSQL_HOSTNAME --execute="DROP USER IF EXISTS $MYSQL_USERNAME;          CREATE USER $MYSQL_USERNAME IDENTIFIED BY '$MYSQL_USERPASSW'; "
@@ -82,19 +85,16 @@ tests:
     - echo "[info] check code coverage";
     - cat target/site/jacoco/jacoco.csv | awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }'
 
-package:
-  stage: package
-  tags:
-    - docker
-  script:
-    - mvn $MAVEN_CLI_OPTS -Dmaven.test.skip=true package
-
 # post code reports on dev. server (code cov. + javadoc)
 code report:
   stage: code_report
   tags:
     - docker
   image: "pfem/ssh-utils"
+  except:
+    refs:
+      - master
+      - tags
   before_script:
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
