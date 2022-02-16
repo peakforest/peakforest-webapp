@@ -22,7 +22,7 @@
 			{ "time": 12.1, "solvA": 100, "solvB": 0 },
 			{ "time": 17, "solvA": 100, "solvB": 0 },
 			{ "time": 17.1, "solvA": 20, "solvB": 80 },
-			{ "time": 32, "solvA": 20, "solvB": 80 }			
+			{ "time": 42, "solvA": 20, "solvB": 80 }			
 		]
 	},
 	"ms_analyzer" : {

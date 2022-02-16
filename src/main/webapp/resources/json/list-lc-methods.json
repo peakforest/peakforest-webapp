@@ -36,6 +36,7 @@
 		{ "name": "IDF (API-MS procedures_RPC18neg_IDF)", "value": "api-ms_rpc18-neg__idf-cea"},
 		{ "name": "IDF (API-MS procedures_RPC8pos_IDF)",  "value": "api-ms_rpc8-pos__idf-cea"},
 		{ "name": "IDF (API-MS procedures_RPC8neg_IDF)",  "value": "api-ms_rpc8-neg__idf-cea"},
+		{ "name": "IDF (API-MS procedures_FIA_IDF)", "value": "api-ms-fia__idf-cea"},
 		{ "name": "Toulouse - MetaToul", "separator": "==================================================="},
 		{ "name": "MetaToul Tissue ESI (API-MS procedures_Toulouse-MetaToul)", "value": "tissue_esi_api-ms__toulouse-metatoul"},
 		{ "name": "MetaToul Cells ESI (API-MS procedures_Toulouse-MetaToul)", "value": "cells_esi_api-ms__toulouse-metatoul"},

@@ -13,15 +13,122 @@
   - pforest#xx - short description - short_sha or merge_request
 - **@known bugs**:
   - pforest#xx - short description
--->
-<!--
-2.3
+--> 
 
+## latest: 
 
--->
+- **@version**: 2.4.0
+- **@notes**:
+  - update LogP tools, debug 'add one compound' pipeline
+- **@new**:
+  - pforest#446 - support new options for LogP computing (choose tool and its path)
+  - pforest#459 - 'add one compound' pipeline code refactoring from scratch: use PubChem webservice
+- **@bugs fixed**:
+  - pforest#457 - fix bug in upload compound image (PNG format)
+- **@other**:
+  - pforest#460 - support new option to hide/show peakmatching view
 
-## latest: `2.3.0 - new ICMS support`
+```sql
+# run this query to reset LogP values for existing instances
+UPDATE reference_chemical_compound SET LogP = NULL WHERE (1)
+```
 
+## previous releases
+
+### `2022-01-27`
+
+- **@version**: 2.3.6
+- **@notes**:
+  - add/update CEA methods in templates
+- **@new**:
+  - pforest#443 - spectra import: add two new methods / templates (API FIA, MS and MSMS, for CEA)
+- **@bugs fixed**:
+  - pforest#441 - update tests in externalbanks-api (non-mock version)
+  - pforest#442 - formula display in search view: fix formatting
+  - pforest#443 - spectra import: edit/update two methods / templates (for CEA)
+
+### `2021-12-15`
+
+- **@version**: 2.3.5
+- **@notes**:
+  - add MGF and mzML spectra export
+- **@new**:
+  - pforest#364 - add MGF mass spectra export (beta)
+  - pforest#365 - add mzML mass spectra export (beta)
+- **@bugs fixed**:
+  - pforest#425 - fix bug: std-matrix LCMS/LCMSMS spectra import from XLSM file 
+  - pforest#437 - fix bug: Log4j vulnerability
+- **@other**:
+  - pforest#433 - update email sender parameters (SMTP config.)
+  - pforest#434 - new URL for "How to create numbered compound"
+
+### `2021-11-04`
+
+- **@version**: 2.3.4
+- **@notes**:
+  - add MSP spectra export
+- **@new**:
+  - pforest#402 pforest#409 - MSP export for mass spectra
+- **@bugs fixed**:
+  - pforest#407 - update CTS webservice client after server update
+  - pforest#416 - improvements NMR coupling constant parsing from string
+  - pforest#417 - update NMR peakmatching webservice URL
+  - pforest#421 - show more than 50 rows in peaklist edition
+  - pforest#423 - fix GCMS peaklist edition (add new peak)
+  - pforest#426 - fix MetExplore SSL certificate error
+  - pforest#427 - fix OChem mapping error
+- **@other**:
+  - pforest#406 - customize main search placeholder content for each instances
+  - pforest#408 - minor improvements in OpenAPI clients generation (abstract entities deserialization)
+
+### `2021-09-03`
+
+- **@version**: 2.3.3
+- **@notes**:
+  - bugs fix
+- **@bugs fixed**:
+  - pforest#381 - fix bug in `Curation Messages` pruning
+  - pforest#393 - fix bug: links to ICMS / ICMSMS spectra in `compound sheet` and `compounds search results' spectra modal preview`
+  - pforest#394 - fix bug: remove "dead end" in WebApp's modals (add link to sheets from modals)
+  - pforest#400 - fix bug: impossible to save updates on a NMR spectra's peaklist
+  - pforest#401 - fix bug: CSS z-index for NMR numbered compound viewer (modal / header / footer)
+- **@known bugs**:
+  - pforest#407 - all services based on CTS are down - this webservice has been updated; an update of the client is required
+
+### `2021-07-27`
+
+- **@version**: 2.3.2
+- **@notes**:
+  - improve NMR support (search /export) and bugs fixes
+- **@new**:
+  - pforest#366 - add NMR spectra nmrML export
+  - pforest#386 - improve NMR spectra search (with AND/OR linkers)
+- **@bugs fixed**:
+  - pforest#381 - list last 500 curation messages in `lifo` mode (instead of last 250 in `fifo` mode)
+  - pforest#392 - fix GCMS spectra data dumping from template
+- **@other**:
+  - pforest#396 - improve scoring matching results
+
+### `2021-07-01`
+
+- **@version**: 2.3.1
+- **@notes**:
+  - SDF export and GUI to edit GCMS/ICMS spectra
+- **@new**:
+  - pforest#363 - add compounds SDF export
+  - pforest#378 - add GUI to edit GCMS spectra
+  - pforest#379 - add GUI to edit ICMS spectra
+- **@bugs fixed**:
+  - pforest#344 - update `CF_PFEM_plasma_method1_TIMSTOF` method
+  - pforest#382 - fix some URL still in `inra.fr` (instead of `inraE.fr`) - db server, ontologies framework, metexplore, ...
+  - pforest#383 - fix NMR raw spectra viewer (based on NMRPro)
+  - pforest#385 - fix 1D-NMR peakmatching error 
+  - pforest#388 - fix 'flush sessions' feature
+- **@other**:
+  - pforest#349 - add documentation about cart for compounds
+  - pforest#387 - update webapp link to REST API and REST API Doc (v1 → v2)
+
+### `2021-06-07`
 
 - **@version**: 2.3.0
 - **@notes**:
@@ -44,10 +151,6 @@
   - pforest#369 - fix Monoisotopic Mass search (with ± proton mass)
 - **@other**:
   - pforest#344 - remove LCMS method `CF_UBP_PLASMA_TOF`, add `CF_PFEM_plasma_method1_TIMSTOF`
-- **@known bugs**:
-  - pforest#xx - short description
-
-## previous releases
 
 ### `2021-04-12`
 

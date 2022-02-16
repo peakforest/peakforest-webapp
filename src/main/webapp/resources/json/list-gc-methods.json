@@ -1,7 +1,7 @@
 { 
 	"methods": [ 
-		{ "name": "NA", "value": "na"},
+		{ "name": "NA", "value": "NA"},
 		{ "name": "Clermont Ferrand - INRAE-Theix", "separator": "========================================="},
-		{ "name": "CF_PFEM_TMS_QTOF", "value": "cf_pfem_tms_qtof"}
+		{ "name": "CF_PFEM_TMS_QTOF", "value": "CF_PFEM_TMS_QTOF"}
 	]
 }

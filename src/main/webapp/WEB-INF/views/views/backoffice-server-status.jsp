@@ -25,7 +25,7 @@
 			<li class="list-group-item"><button id="cleanUploadFiles" class="btn btn-primary" onclick="deleteUploadedFiles();" type="button" style=""><i class="fa fa-eraser"></i> Clean uploaded files</button></li>
 			<li class="list-group-item"><button id="cleanDownloadFiles" class="btn btn-primary" onclick="deleteGeneratedFiles();" type="button" style=""><i class="fa fa-eraser"></i> Clean generated files</button></li>
 			<li class="list-group-item"><button id="showLogFiles" class="btn btn-primary" onclick="showLogModal();" type="button" style=""><i class="fa fa-eye"></i> Show PeakForest log</button></li>
-			<li class="list-group-item"><a id="openPhpMyAdmin" class="btn btn-primary" target="_blank" href="<spring:message code="peakforest.admin.phpmyadmin" text="https://managers.pfem.clermont.inra.fr/phpmyadmin/index.php?server=3" />" type="button" style=""><i class="fa fa-database"></i> Open phpMyAdmin</a></li>
+			<li class="list-group-item"><a id="openPhpMyAdmin" class="btn btn-primary" target="_blank" href="<spring:message code="peakforest.admin.phpmyadmin" text="https://managers.pfem.clermont.inrae.fr/phpmyadmin/index.php?server=3" />" type="button" style=""><i class="fa fa-database"></i> Open phpMyAdmin</a></li>
 		</ul>
 		<div id="containerDiskUsage" style="height: 300px; margin: 0 auto; width: 100%; min-width: 250px;"></div>
 		<br />

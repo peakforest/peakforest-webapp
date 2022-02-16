@@ -90,14 +90,10 @@ public class UserDao { // extends ADatasetDao<User>
 	}
 
 	public static User read(String email) throws HibernateException {
-		Transaction transaction = null;
 		User user = null;
 		try (final Session session = PeakForestApiHibernateUtils.getSessionFactory().openSession()) {
-			transaction = session.beginTransaction();
 			user = read(session, email);
-			transaction.commit();
-		} catch (HibernateException e) {
-			transaction.rollback();
+		} catch (final HibernateException e) {
 			e.printStackTrace();
 			throw e;
 		}

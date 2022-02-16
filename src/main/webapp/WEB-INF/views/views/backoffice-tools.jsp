@@ -13,8 +13,8 @@
 <%
 	boolean useMEwebservice = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("metexplore.ws.use"));
 %>
-<script src="<c:url value="/resources/js/select2.min.js" />"></script>
 <link href="<c:url value="/resources/css/select2.min.css" />" rel="stylesheet">
+<script src="<c:url value="/resources/js/select2.min.js" />"></script>
 <div class="col-lg-12">
 	<div id="backOfficeToolsAltert" style="max-width: 500px;"></div>
 	<div class="table-responsive">
@@ -60,7 +60,7 @@
 			</tbody>
 		</table>
 		<% if (useMEwebservice) { %>
-			<small><i class="fa fa-question-circle"></i> About MetExplore: you must request a <a href="http://metexplore.toulouse.inra.fr/metexploreTokenProvider/" target="_blank">token</a>!</small>
+			<small><i class="fa fa-question-circle"></i> You are using <a href="https://metexplore.toulouse.inrae.fr/" target="_blank">MetExplore</a> webservices!</small>
 		<% } %>
 	</div> 
 	<br>
@@ -244,7 +244,7 @@
 								<button class="btn btn-primary" onclick="addOntologyInDatabase ();"><i class="fa fa-plus-circle"></i></button>
 							</span> 
 						</div>
-						<div>To create a new ontologie, please go to <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>.</div>
+						<div>To create a new ontologie, please go to <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inrae.fr/ontologies-framework/" />">ontologies framework online tool</a>.</div>
 					</td>
 				</tr>
 			</tfoot>
@@ -792,7 +792,7 @@ flushSessions = function(btn) {
  				$(btn).children("i").removeClass("fa-refresh").addClass("fa-times-circle");
  				var alert = '<div class="alert alert-danger alert-dismissible" role="alert">';
  				alert += '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only"><spring:message code="alert.close" text="Close" /></span></button>';
- 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not fush Sessions';
+ 				alert += '<strong><spring:message code="alert.strong.warning" text="Warning!" /></strong> could not flush Sessions';
  				alert += ' </div>';
  				$("#backOfficeToolsAltert").html(alert);
  			}
@@ -1041,7 +1041,7 @@ function deleteStdMatrix (id) { alert("TODO"); }
 function loadMatrixPicker() {
 	$("#add-new-ontology").select2({
 		ajax: {
-			url: '<spring:message code="peakforest.admin.ontologiesFWproxy" text="https://pfem.clermont.inra.fr/elasticsearch-proxies/ontologies/_search" />',
+			url: '<spring:message code="peakforest.admin.ontologiesFWproxy" text="https://pfem.clermont.inrae.fr/elasticsearch-proxies/ontologies/_search" />',
 			dataType: 'jsonp',
 			delay: 250,
 			data: function (params) {

@@ -133,7 +133,7 @@ public class ExportSpectraController {
 			mapCompounds(lcms);
 			massBankSheet = lcms.getMassBankSheet(pfPublicURL);
 			fileName = lcms.getMassBankName();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			throw new IOException("error");
 		}

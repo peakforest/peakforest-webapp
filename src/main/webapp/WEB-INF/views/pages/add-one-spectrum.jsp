@@ -196,7 +196,7 @@
 											<small></small>
 											<small>
 												<br />Note: To create a new ontologie, please go to 
-												<a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>, 
+												<a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inrae.fr/ontologies-framework/" />">ontologies framework online tool</a>, 
 												then ask us to refer it into PeakForest.
 											</small>
 										</p>
@@ -276,7 +276,7 @@
 									<select id="add1spectrum-chromatoLC-LCMode" class="form-control add1spectrum add1spectrum-chromatoLCForm is-mandatory">
 										<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
 										<option value="gradient">Gradient</option>
-										<option value="isocratique">Isocratique</option>
+										<option value="isocratic">Isocratic</option>
 									</select>
 								</div>
 								<div class="form-group input-group ">
@@ -829,7 +829,7 @@
 									<p class="help-block">
 										<small>
 											Ion analyzer types are "B", "E", "FT" (include other types using FT like FTICR or Orbitrap), "IT", "Q", "TOF" (e.g.: "QTOF", "QQQ", "EB", "ITFT"); 
-											for further informations please refer to <a target="_BLANK" href="http://www.massbank.jp/manuals/MassBankRecord_en.pdf">MassBank Record documentation</a>.
+											for further informations please refer to <a target="_BLANK" href="<spring:message code="link.site.massbankdoc" text="https://github.com/MassBank/MassBank-web/blob/main/Documentation/MassBankRecordFormat.md#212-record_title" />">MassBank Record documentation</a>.
 										</small>
 									</p>
 								</div>

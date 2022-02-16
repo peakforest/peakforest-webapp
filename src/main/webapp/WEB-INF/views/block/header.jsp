@@ -1,5 +1,6 @@
 <%@page import="org.springframework.security.core.context.SecurityContextHolder"%>
 <%@page import="fr.metabohub.peakforest.security.model.User"%>
+<%@page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
@@ -14,24 +15,37 @@
 		<a class="navbar-brand" href="<c:url value="/home" />"><spring:message code="block.header.home" text="PeakForest" /></a>
 	</div>
 
-	<%
-		User user = null;
-		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
-			user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		}
-	%>
+<%
+	// read peakforest instance options
+	boolean showPagePeakMatching = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("peakforest.gui.option.peakmatching"));
+	// read current user informations 
+	User user = null;
+	if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
+		user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+	}
+%>
 
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse navbar-ex1-collapse">
 		<ul class="nav navbar-nav side-nav">
-			<li id="navmenulink-search"><a href="<c:url value="/home" />"><i
-					class="fa fa-search"></i> <spring:message code="block.header.search" text="Search" /></a></li>
+			<li id="navmenulink-search">
+				<a href="<c:url value="/home" />">
+					<i class="fa fa-search"></i> <spring:message code="block.header.search" text="Search" />
+				</a>
+			</li>
+			<% if (showPagePeakMatching) { %>
 			<li id="navmenulink-peakmatching">
-				<a href="<c:url value="/home" />?page=peakmatching"><i class="fa fa-eye"></i> <spring:message code="block.header.peakmatching" text="Peak Matching" /></a></li>
+				<a href="<c:url value="/home" />?page=peakmatching">
+					<i class="fa fa-eye"></i> <spring:message code="block.header.peakmatching" text="Peak Matching" />
+				</a>
+			</li>
+			<% } %>
 			<% if(user != null && user.isConfirmed()){ %>
-			<li class="dropdown"><a href="#" class="dropdown-toggle"
-				data-toggle="dropdown"><i class="fa fa-plus"></i> <spring:message code="block.header.add" text="Add ..." /> <b
-					class="caret"></b></a>
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+					<i class="fa fa-plus"></i> <spring:message code="block.header.add" text="Add ..." /> 
+					<b class="caret"></b>
+				</a>
 				<ul class="dropdown-menu">
 					<li id="navmenulink-add-compounds">
 						<a href="<c:url value="/home" />?page=add-compounds">
@@ -40,7 +54,9 @@
 					</li>
 					<li id="navmenulink-add-spectrum">
 						<a href="<c:url value="/home" />?page=add-spectrum">
-							<i class="fa fa-plus-circle"></i> <spring:message code="block.header.addSpectrum" text="Spectrum" /></a></li>
+							<i class="fa fa-plus-circle"></i> <spring:message code="block.header.addSpectrum" text="Spectrum" />
+						</a>
+					</li>
 				</ul>
 			</li>
 			
@@ -50,13 +66,18 @@
 			<% if(user != null && user.isCurator()){ %>
 <%-- 			<li id="navmenulink-annotate"><a href="<c:url value="/home" />?page=annotate"><i --%>
 <%-- 					class="fa fa-cogs"></i> <spring:message code="block.header.annotate" text="Annotage" /></a></li> --%>
-			<li id="navmenulink-curation"><a href="<c:url value="/home" />?page=curation">
-				<i class="fa fa-university"></i> <spring:message code="block.header.curation" text="Curation" /></a></li>
+			<li id="navmenulink-curation">
+				<a href="<c:url value="/home" />?page=curation">
+					<i class="fa fa-university"></i> <spring:message code="block.header.curation" text="Curation" />
+				</a>
+			</li>
 			<% }
 			if(user != null && user.isAdmin()){ %>
-			<li id="navmenulink-backoffice"><a
-				href="<c:url value="/home" />?page=backoffice"><i class="fa fa-cog"></i>
-					Backoffice</a></li>
+			<li id="navmenulink-backoffice">
+				<a href="<c:url value="/home" />?page=backoffice">
+					<i class="fa fa-cog"></i> Backoffice
+				</a>
+			</li>
 			<% } %>
 		</ul>
 

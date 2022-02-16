@@ -6,5 +6,9 @@
 		{ "name": "ESI", "value": "ESI"},
 		{ "name": "FAB", "value": "FAB"},
 		{ "name": "MALDI", "value": "MALDI"}
+	],
+    "gc_ionization_methods": [ 
+		{ "name": "electron impact (EI)", "value": "electron impact (EI)"},
+		{ "name": "chemical ionization (CI)", "value": "chemical ionization (CI)"} 
 	]
 }

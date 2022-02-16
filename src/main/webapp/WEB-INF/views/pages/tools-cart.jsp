@@ -10,12 +10,10 @@
 		<h3 class="panel-title">Compounds</h3>
 	</div>
 	<div class="panel-body">
-		<div class="well">
-			Tip: to add / remove compound from your cart, use the right-top button <img  src="<c:url value="/resources/img/tools/btn-add-cart.png" />" alt="btn add cart" title="btn add cart"> on compounds sheets!
-		</div>
 		<div id="noCpdInCart" style="display: none;">
 			Sorry, no compound in your cart right now! 
 			Otherwise try to <button onclick="updateCart()" class="btn btn-info btn-xs"><i class="fa fa-refresh"></i> update</button> this page or <button onclick="$('#jsonFileCpdCart').click()" class="btn btn-success btn-xs"><i class="fa fa-upload"></i> upload</button> a file.
+			<br />&nbsp;
 		</div>
 		<div id="cpdInCart" style="display: none;">
 			<table id="compoundCartTable" class="table table-hover tablesorter tablesearch">
@@ -45,6 +43,21 @@
 					</tr>
 				</tfoot>
 			</table>
+		</div>
+		<!-- help -->
+		<div class="well">
+			<h5><i class="fa fa-question-circle"></i> Help</h5>
+			<small>
+				Use the <img style="max-height: 30px;" src="<c:url value="/resources/img/tools/btn-add-cart.png" />" alt="btn add cart" title="btn add cart"> 
+				from compounds sheets/rows search results to add them into your cart.
+				<br />You can visualize your cart content on this page, and either save/load you cart into/from a file to save on your computer.
+				<br />
+				<br />You can map the compounds listed in your cart onto a 
+				<a href="#" onclick="$('#link-me-viz').click();">
+					<img style="max-width: 13px;" class="" alt="logo ME Viz" src="<c:url value="/resources/img/metexplore_icon.png" />">
+					MetExplore Viz graph
+				</a>.
+			</small>
 		</div>
 	</div>
 </div>

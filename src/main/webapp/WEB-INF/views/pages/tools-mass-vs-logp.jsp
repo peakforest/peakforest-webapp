@@ -1,8 +1,14 @@
 <%@page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
+<%@page import="fr.metabohub.peakforest.services.compound.LogPComputingService.ComputingTool"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page session="false"%>
+
+<!-- OPTIONS -->
+<%
+final String computLogPTool = PeakForestUtils.getBundleConfElement("config.logp.computingTool");
+%>
 
 <!--JS-->
 <script src="<c:url value="/resources/highcharts/js/highcharts.alt.min.js" />"></script>
@@ -14,8 +20,31 @@
 
 <spring:message code="page.tools.massVsLogp.line1" text="This chart shows a representation of the PeakForest chemical library content repartition in two major biofluids (Human blood or urine). " />
 <spring:message code="page.tools.massVsLogp.line2" text="This biological distribution is based on the use of the solubility property of each metabolite. " />
-<br /><em><spring:message code="page.tools.massVsLogp.thxObabel1" text="The logP values are computed thanks to" /> <a href="http://openbabel.org/" target="_blank">Open Babel</a></em>
-<spring:message code="page.tools.massVsLogp.thxObabel2" text="software" /> [<a target="_blank" href="http://www.jcheminf.com/content/3/1/33">J. Cheminf. 2011, 3:33</a>].
+<br />
+
+
+<!-- CASE OBABEL -->
+<% if (computLogPTool.equals(ComputingTool.OBABEL_BINARY.toString())) { %>
+	<em>
+		<spring:message code="page.tools.massVsLogp.thx1" text="The logP values are computed thanks to" /> <a href="http://openbabel.org/" target="_blank">Open Babel</a>
+	</em>
+	<spring:message code="page.tools.massVsLogp.thx2.software" text="software" /> [<a target="_blank" href="http://www.jcheminf.com/content/3/1/33">J. Cheminf. 2011, 3:33</a>].
+<% } %>
+<!-- CASE OCHEM WEBSERVICE -->
+<% if (computLogPTool.equals(ComputingTool.OCHEM_WEBSERVICES.toString())) { %>
+	<em>
+		<spring:message code="page.tools.massVsLogp.thx1" text="The logP values are computed thanks to" /> <a href="https://ochem.eu/home/show.do" target="_blank">OChem</a>
+	</em>
+	<spring:message code="page.tools.massVsLogp.thx2.webservice" text="webservice" /> [<a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/21660515/">J Comput Aided Mol Des. 2011; 25(6):533-54</a>].
+<% } %>
+<!-- CASE OCHEM BINARY ALogPS -->
+<% if (computLogPTool.equals(ComputingTool.OCHEM_BINARY.toString())) { %>
+	<em>
+		<spring:message code="page.tools.massVsLogp.thx1" text="The logP values are computed thanks to" /> <a href="http://www.vcclab.org/lab/alogps/" target="_blank">ALogPS</a>
+	</em>
+	<spring:message code="page.tools.massVsLogp.thx2.software" text="software" /> [<a target="_blank" href="http://dx.doi.org/10.1016/S1359-6446(05)03584-1">Tetko, I. V. Computing chemistry on the web, Drug Discov. Today, 2005, 10, 1497-50</a>].
+<% } %>
+
 <br />
 <div id="container-mass-vs-logp" style="width: 80%; height: 75%; max-height: 750px; max-width: 750px; margin: 0 auto"></div>
 

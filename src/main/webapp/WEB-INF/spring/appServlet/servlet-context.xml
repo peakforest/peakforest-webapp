@@ -86,6 +86,7 @@
 		<beans:property name="from" value="${email.from}" />
 		<beans:property name="messageBCC1" value="${email.bcc1}" />
 		<beans:property name="messageBCC2" value="${email.bcc2}" />
+		<beans:property name="replyTo" value="${email.replyTo}" />
 		<beans:property name="messageSource" ref="messageSource" />
 	</beans:bean>
 

@@ -105,11 +105,14 @@
 							MetExploreViz is a tool to visualize metabolic network. 
 							It allows to map "omics" data and to interact with metabolic networks. 
 							It is usable as a javascript library via the MetExplore web server or within your website. 
-							For further information please refer to <a href="http://metexplore.toulouse.inra.fr/metexploreViz/doc/documentation.php" target="_blank">MetExploreViz documentation</a> 
+							For further information please refer to <a href="http://metexplore.toulouse.inrae.fr/metexploreViz/doc/documentation.php" target="_blank">MetExploreViz documentation</a> 
 							and the <a href="https://doi.org/10.1093/bioinformatics/btx588" target="_blank">Bioinformatics publication</a>.
-						<br />Powered by the <!-- amazing --> <a href="http://metexplore.toulouse.inra.fr/metexploreViz/doc/team.php" target="_blank">MetExplore Team</a>.
+						<br />Powered by the <!-- amazing --> <a href="http://metexplore.toulouse.inrae.fr/metexploreViz/doc/team.php" target="_blank">MetExplore Team</a>.
 						<hr style="margin-top: 5px; margin-bottom: 5px;" />
 						We use <a href="https://github.com/p2m2/Discovery" target="_blank">Discovery</a> tool to recover <a href="https://www.ebi.ac.uk/metabolights/" target="_blank">Metabolights'</a> publications from a compound's ChEBI ID.
+						<hr style="margin-top: 5px; margin-bottom: 5px;" />
+						The nmrML spectra export is powered thanks <a href="https://github.com/nmrML/nmrML/tree/master/tools/Parser_and_Converters/Java/converter" target="_blank">nmrML java converter</a> by Daniel Jacob for the COSMOS project - 2019.
+						We are grateful to the <a href="http://cosmos-fp7.eu/" target="_blank">FP7 COSMOS consortium</a>!
 					</div>
 				</div>
 				

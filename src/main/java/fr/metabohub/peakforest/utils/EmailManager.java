@@ -24,15 +24,26 @@ public class EmailManager {
 	private String from = null;
 	private String messageBCC1 = null;
 	private String messageBCC2 = null;
+	private String replyTo = null;
 	private JavaMailSenderImpl sender = null;
 
-	public EmailManager(String host, boolean authenticate, String username, String password) {
+	public EmailManager(//
+			final String host, //
+			final boolean authenticate, //
+			final String username, //
+			final String password//
+	) {
 		super();
-		JavaMailSenderImpl sender = new JavaMailSenderImpl();
+		final JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		sender.setHost(host);
 		if (authenticate) {
 			sender.setUsername(username);
 			sender.setPassword(password);
+			sender.setPort(465);
+			sender.getJavaMailProperties().put("mail.smtp.starttls.enable", "true");
+//			final Properties props = sender.getJavaMailProperties();
+//			props.put("mail.smtp.starttls.enable", "true");
+//			sender.setJavaMailProperties(props);
 		}
 		this.sender = sender;
 	}
@@ -41,7 +52,7 @@ public class EmailManager {
 		return messageSource;
 	}
 
-	public void setMessageSource(MessageSource messageSource) {
+	public void setMessageSource(final MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
@@ -49,7 +60,7 @@ public class EmailManager {
 		return sender;
 	}
 
-	public void setSender(JavaMailSenderImpl sender) {
+	public void setSender(final JavaMailSenderImpl sender) {
 		this.sender = sender;
 	}
 
@@ -57,88 +68,79 @@ public class EmailManager {
 		return from;
 	}
 
-	public void setFrom(String from) {
+	public void setFrom(final String from) {
 		this.from = from;
 	}
 
-	public boolean sendAccountCreationEmail(Locale locale, String userEmail)
+	public boolean sendAccountCreationEmail(//
+			final Locale locale, //
+			final String userEmail//
+	)//
 			throws AddressException, MessagingException {
-
-		String emailTitle = messageSource.getMessage("email.register.title", null, locale);
-		String emailPart1 = messageSource.getMessage("email.register.part1", null, locale);
-		String emailPart2 = messageSource.getMessage("email.register.part2", null, locale);
-		String emailPart3 = messageSource.getMessage("email.register.part3", null, locale);
-
-		MimeMessage message = sender.createMimeMessage();
+		final String emailTitle = messageSource.getMessage("email.register.title", null, locale);
+		final String emailPart1 = messageSource.getMessage("email.register.part1", null, locale)//
+				.replaceAll("%INSTANCE%", PeakForestUtils.getBundleConfElement("peakforest.webapp.url"));
+		final String emailPart2 = messageSource.getMessage("email.register.part2", null, locale);
+		final String emailPart3 = messageSource.getMessage("email.register.part3", null, locale);
+		final InternetAddress replyToArray[] = new InternetAddress[] { new InternetAddress(replyTo) };
+		final MimeMessage message = sender.createMimeMessage();
 		message.setFrom(new InternetAddress(from));
 		message.addRecipient(RecipientType.BCC, new InternetAddress(messageBCC1));
 		message.addRecipient(RecipientType.BCC, new InternetAddress(messageBCC2));
-		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-		helper.setFrom(from);
+		message.setReplyTo(replyToArray);
+		final MimeMessageHelper helper = new MimeMessageHelper(message, Boolean.TRUE, "UTF-8");
+		helper.setFrom(this.from);
 		helper.setTo(userEmail);
 		helper.setSubject(emailTitle);
 		helper.setText("<html><body>" + emailPart1 + "\n<br />\n<br />" + emailPart2 + " " + userEmail + "\n<br />"
-				+ emailPart3 + "</body></html>", true);
-
-		// message.setText("my text <img src='cid:myLogo'>", true);
-		// message.addInline("myLogo", new ClassPathResource("img/mylogo.gif"));
-		// message.addAttachment("myDocument.pdf", new
-		// ClassPathResource("doc/myDocument.pdf"));
-		// let's include the infamous windows Sample file (this time copied to c:/)
-		// message.setText("<html><body><img src='cid:identifier1234'></body></html>");
-		// FileSystemResource res = new FileSystemResource(new File("c:/Sample.jpg"));
-		// helper.addInline("identifier1234", res);
-
+				+ emailPart3 + "</body></html>", Boolean.TRUE);
 		sender.send(message);
-		return true;
+		return Boolean.TRUE;
 	}
 
-	/**
-	 * @param userEmail
-	 * @param newPassword
-	 * @throws AddressException
-	 * @throws MessagingException
-	 */
-	public boolean sendPasswordResetEmail(Locale locale, String userEmail, String newPassword)
-			throws AddressException, MessagingException {
-		String subject = messageSource.getMessage("email.resetpassword.title", null, locale);
-		String emailPart1 = messageSource.getMessage("email.resetpassword.part1", null, locale);
-		String emailPart2 = messageSource.getMessage("email.resetpassword.part2", null, locale);
-		String emailPart3 = messageSource.getMessage("email.resetpassword.part3", null, locale);
-		MimeMessage message = sender.createMimeMessage();
+	public boolean sendPasswordResetEmail(//
+			final Locale locale, //
+			final String userEmail, //
+			final String newPassword//
+	) throws AddressException, MessagingException {
+		final String subject = messageSource.getMessage("email.resetpassword.title", null, locale);
+		final String emailPart1 = messageSource.getMessage("email.resetpassword.part1", null, locale);
+		final String emailPart2 = messageSource.getMessage("email.resetpassword.part2", null, locale);
+		final String emailPart3 = messageSource.getMessage("email.resetpassword.part3", null, locale);
+		final MimeMessage message = sender.createMimeMessage();
 		message.setFrom(new InternetAddress(from));
-		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+		final MimeMessageHelper helper = new MimeMessageHelper(message, Boolean.TRUE, "UTF-8");
 		helper.setFrom(from);
 		helper.setTo(userEmail);
 		helper.setSubject(subject);
 		helper.setText("<html><body>" + emailPart1 + " \n<br />" + "\n<br />" + emailPart2 + "<br />" + "\n<br />"
 				+ emailPart3 + " \n<br />" + newPassword + "</body></html>", true);
-
 		sender.send(message);
-		return true;
+		return Boolean.TRUE;
 	}
 
-	public boolean sendEmail(String userEmail, String messageSubject, String messageConent, boolean html)
-			throws AddressException, MessagingException {
-
-		MimeMessage message = sender.createMimeMessage();
+	public boolean sendEmail(//
+			final String userEmail, //
+			final String messageSubject, //
+			final String messageConent, //
+			final boolean isHTML//
+	) throws AddressException, MessagingException {
+		final MimeMessage message = sender.createMimeMessage();
 		message.setFrom(new InternetAddress(from));
-
-		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+		final MimeMessageHelper helper = new MimeMessageHelper(message, Boolean.TRUE, "UTF-8");
 		helper.setFrom(from);
 		helper.setTo(userEmail);
 		helper.setSubject(messageSubject);
-		helper.setText(messageConent, html);
-
+		helper.setText(messageConent, isHTML);
 		sender.send(message);
-		return true;
+		return Boolean.TRUE;
 	}
 
 	public String getMessageBCC1() {
 		return messageBCC1;
 	}
 
-	public void setMessageBCC1(String messageBCC) {
+	public void setMessageBCC1(final String messageBCC) {
 		this.messageBCC1 = messageBCC;
 	}
 
@@ -146,8 +148,16 @@ public class EmailManager {
 		return messageBCC2;
 	}
 
-	public void setMessageBCC2(String messageBCC) {
+	public void setMessageBCC2(final String messageBCC) {
 		this.messageBCC2 = messageBCC;
+	}
+
+	public String getReplyTo() {
+		return this.replyTo;
+	}
+
+	public void setReplyTo(final String replyTo) {
+		this.replyTo = replyTo;
 	}
 
 }

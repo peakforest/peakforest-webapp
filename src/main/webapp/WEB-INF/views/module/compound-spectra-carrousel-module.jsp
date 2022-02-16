@@ -44,6 +44,45 @@ int randomID = randomGenerator.nextInt(1000000);
 			</ul>
 		</li>
 	</c:if>
+	
+	<!-- ICMS -->
+	<c:if test="${not empty spectrum_mass_fullscan_ic}">
+		<!-- fullscan LC -->
+		<li class="list-group-item"> <spring:message code="module.spectra.tag.icms" text="IC-MS" /> </li>
+		<li class="list-group-item">
+			<ul class="list-group">
+				<c:forEach var="spectrum" items="${spectrum_mass_fullscan_ic}">
+					<li class="list-group-item">
+						<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}">${spectrum.getPeakForestID()}</a>
+						/
+						<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}" class="pforest-spectra-name-${spectrum.getPeakForestID()}">
+							${fn:escapeXml((spectrum.getMassBankNameHTML()))}
+						</a>
+					</li>
+				</c:forEach>
+			</ul>
+		</li>
+	</c:if>
+	
+	<!-- IC-MSMS -->
+	<c:if test="${not empty spectrum_mass_fragmt_ic}">
+		<!-- fragmentation LC -->
+		<li class="list-group-item"> <spring:message code="module.spectra.tag.icmsms" text="IC-MSMS" /> </li>
+		<li class="list-group-item">
+			<ul class="list-group">
+				<c:forEach var="spectrum" items="${spectrum_mass_fragmt_ic}">
+					<li class="list-group-item">
+						<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}">${spectrum.getPeakForestID()}</a>
+						/
+						<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}" class="pforest-spectra-name-${spectrum.getPeakForestID()}">
+							${fn:escapeXml((spectrum.getMassBankNameHTML()))}
+						</a>
+					</li>
+				</c:forEach>
+			</ul>
+		</li>
+	</c:if>
+	
 	<c:if test="${not empty spectrum_nmr}">
 		<!-- NMR -->
 		<li class="list-group-item"> <spring:message code="module.spectra.tag.nmr" text="NMR" /> </li>

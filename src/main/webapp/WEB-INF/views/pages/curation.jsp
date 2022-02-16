@@ -439,7 +439,7 @@
 	// load curation messages
 	function initLoadCurationMessage() {
 		listOfAllCurationMessages = [];
-		$.get("list-curation-messages/all/250", function(data) {
+		$.get("list-curation-messages/all/500", function(data) {
 // 		console.log(data);
 			$.each(data, function(k,v){
 				var cm = new Object();

@@ -235,7 +235,7 @@ var tabRawSpectrumName = [];
 				</table>
 				<div class="carousel-caption"></div>
 				<script type="text/javascript">
-				tabTypeSpectrum[<%=cptSpectrumDisplayed %>]='nmr';
+				tabTypeSpectrum[<%=cptSpectrumDisplayed %>]='nmr';// spectrum_type
 				tabIdSpectrum[<%=cptSpectrumDisplayed %>]=${spectrum.id};
 				tabNameSpectrum[<%=cptSpectrumDisplayed %>]='${fn:escapeXml((spectrum.getMassBankNameHTML()))}';
 				// <c:if test="${spectrum.getAcquisitionAsString() == 'Proton-1D' || spectrum.getAcquisitionAsString() == 'NOESY-1D' || spectrum.getAcquisitionAsString() == 'CPMG-1D'}">
@@ -377,7 +377,7 @@ var tabRawSpectrumName = [];
 					// TODO display (nice) error message to user
 				}
 			});
-		} else if (typeSpectrum == 'nmr' ) {
+		} else if (typeSpectrum == 'nmr' || typeSpectrum == 'nmr-1d' || typeSpectrum == 'nmr-2d' ) {
 			if (tabHasRawSpectrum[cpt]) {
 			} else {
 				// display "dumy" spectra

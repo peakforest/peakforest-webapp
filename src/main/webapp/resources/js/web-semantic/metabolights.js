@@ -1,11 +1,12 @@
 function listMetabolightsStudies(chebiid) {
 	// init
 	const config = SWDiscoveryConfiguration.setConfigString(`
-	          {
-	          "sources" : [{
-	          "id"  : "metabolights",
-	          "url" : "https://metabolights.semantic-metabolomics.fr/sparql"
-	           }]}
+{
+    "sources" : [{
+        "id"  : "metabolights",
+        "url" : "https://metabolights.semantic-metabolomics.fr/sparql"
+    }]
+}
 	`);
 	let query = new SWDiscovery(config);
 	// let chebiid = "CHEBI:4167";

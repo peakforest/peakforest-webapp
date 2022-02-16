@@ -48,7 +48,7 @@
 	<div class="radio">
 		<label>
 			<input id="dumpAllOntolgiesFWMatrix" name="matrixToDump" type="radio" value="allOntoFW" class="downloadTemplateForm">
-			Add all analytical matrix described through <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inra.fr/ontologies-framework/" />">ontologies framework online tool</a>.
+			Add all analytical matrix described through <a target="_blank" href="<spring:message code="link.site.ontologiesframework" text="https://pfem.clermont.inrae.fr/ontologies-framework/" />">ontologies framework online tool</a>.
 		</label>
 	</div>  
 	-->

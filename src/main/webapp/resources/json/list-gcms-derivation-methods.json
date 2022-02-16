@@ -1,0 +1,29 @@
+{
+	"methods": [
+		{
+			"name": "none",
+			"value": "none",
+			"classD": ""
+		},
+		{
+			"name": "oximation and sylilation",
+			"value": "oximation and sylilation",
+			"classD": ""
+		},
+		{
+			"name": "sylilation",
+			"value": "sylilation",
+			"classD": ""
+		},
+		{
+			"name": "acylation",
+			"value": "acylation",
+			"classD": ""
+		},
+		{
+			"name": "esterification",
+			"value": "esterification",
+			"classD": ""
+		}
+	]
+}

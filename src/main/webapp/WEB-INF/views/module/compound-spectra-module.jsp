@@ -39,8 +39,19 @@
 			</c:if>
 		</c:if>
 		
+		<!-- IC-MS --> 
+		<li ${first_tab_open =='ic-ms' ? 'class="active"' : ''} ${empty spectrum_mass_fullscan_ic ? 'class="disabled"' : ''}>
+			<a ${not empty spectrum_mass_fullscan_ic ? 'href="#spectrum-mod-ic" data-toggle="tab"' : ''}> <spring:message code="module.spectra.tag.icms" text="IC-MS" /> </a>
+		</li> 
+		
+		<!-- IC-MSMS --> 
+		<li ${first_tab_open =='ic-msms' ? 'class="active"' : ''} ${empty spectrum_mass_fragmt_ic ? 'class="disabled"' : ''}>
+			<a ${not empty spectrum_mass_fragmt_ic ? 'href="#spectrum-mod-icmsms" data-toggle="tab"' : ''}> <spring:message code="module.spectra.tag.icmsms" text="IC-MSMS" /> </a>
+		</li>
+		
+		<!-- NMR -->
 		<c:if test="${not empty spectrum_nmr}">
-			<li<c:if test="${first_tab_open =='nmr'}"> class="active"</c:if>>
+			<li <c:if test="${first_tab_open =='nmr'}">class="active"</c:if>>
 				<a href="#spectrum-mod-nmr" data-toggle="tab"> <spring:message code="module.spectra.tag.nmr" text="NMR" /> </a>
 			</li>
 		</c:if>
@@ -56,7 +67,7 @@
 		<c:if test="${empty spectrum_mass_fullscan_gc}">
 			<li class="disabled"><a><spring:message code="module.spectra.tag.gcms" text="GC-MS" /></a></li>
 		</c:if>
-		<c:if test="${not empty spectrum_mass_fullscan_lc || not empty spectrum_mass_fragmt_lc || not empty spectrum_nmr || not empty spectrum_mass_fullscan_gc}">
+		<c:if test="${not empty spectrum_mass_fullscan_lc || not empty spectrum_mass_fragmt_lc || not empty spectrum_nmr || not empty spectrum_mass_fullscan_gc || not empty spectrum_mass_fullscan_ic || not empty spectrum_mass_fragmt_ic}">
 			<li>
 				<a href="#spectrum-all" data-toggle="tab"> <spring:message code="module.spectra.tag.all" text="All" /> </a>
 			</li>
@@ -113,6 +124,61 @@
 				</tr>
 			</table>
 		</div>
+		
+		<!-- IC-MS -->
+		<div class="tab-pane fade <c:if test="${first_tab_open =='ic-ms'}">active in</c:if>" id="spectrum-mod-ic">
+			<!-- display -->
+			<table class="table">
+				<tr>
+					<td>
+						<!--container-->
+						<c:if test="${not empty spectrum_mass_fullscan_ic}">
+							<!-- fullscan IC -->
+							<ul class="list-group">
+								<c:forEach var="spectrum" items="${spectrum_mass_fullscan_ic}">
+									<li class="list-group-item">
+										<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}">${spectrum.getPeakForestID()}</a>
+										/
+										<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}" class="pforest-spectra-name-${spectrum.getPeakForestID()}">
+											${fn:escapeXml((spectrum.getMassBankNameHTML()))}
+										</a>
+										<a href="show-spectra-modal/${spectrum.getId()}" data-toggle="modal" data-target="#modalShowSpectra"><i class="fa fa-bar-chart-o pull-right"></i></a>
+									</li>
+								</c:forEach>
+							</ul>
+						</c:if>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<!-- IC-MSMS -->
+		<div class="tab-pane fade <c:if test="${first_tab_open =='ic-msms'}">active in</c:if>" id="spectrum-mod-icmsms">
+			<!-- display -->
+			<table class="table">
+				<tr>
+					<td>
+						<!--container-->
+						<c:if test="${not empty spectrum_mass_fragmt_ic}">
+							<!-- fragmentation IC -->
+							<ul class="list-group">
+								<c:forEach var="spectrum" items="${spectrum_mass_fragmt_lc}">
+									<li class="list-group-item">
+										<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}">${spectrum.getPeakForestID()}</a>
+										/
+										<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum.getPeakForestID()}" class="pforest-spectra-name-${spectrum.getPeakForestID()}">
+											${fn:escapeXml((spectrum.getMassBankNameHTML()))}
+										</a>
+										<a href="show-spectra-modal/${spectrum.getId()}" data-toggle="modal" data-target="#modalShowSpectra"><i class="fa fa-bar-chart-o pull-right"></i></a>
+									</li>
+								</c:forEach>
+							</ul>
+						</c:if>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
 		<div class="tab-pane fade <c:if test="${first_tab_open =='nmr'}">active in</c:if>" id="spectrum-mod-nmr">
 			<!-- display -->
 			<table class="table">

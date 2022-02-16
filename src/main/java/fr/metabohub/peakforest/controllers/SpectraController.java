@@ -42,6 +42,7 @@ import fr.metabohub.peakforest.dao.metadata.OtherMetadataDao;
 import fr.metabohub.peakforest.dao.metadata.SampleNMRTubeConditionsDao;
 import fr.metabohub.peakforest.dao.spectrum.FragmentationICSpectrumDao;
 import fr.metabohub.peakforest.dao.spectrum.FragmentationLCSpectrumDao;
+import fr.metabohub.peakforest.dao.spectrum.FullScanGCSpectrumDao;
 import fr.metabohub.peakforest.dao.spectrum.FullScanICSpectrumDao;
 import fr.metabohub.peakforest.dao.spectrum.FullScanLCSpectrumDao;
 import fr.metabohub.peakforest.dao.spectrum.NMR1DSpectrumDao;
@@ -1383,10 +1384,10 @@ public class SpectraController {
 					model.addAttribute("spectrum_sample_compound_concentration",
 							mixData.getCompoundConcentration(rcc.getInChIKey()));
 				}
-				if (isSampleMixLiquid)
+				if (isSampleMixLiquid) {
 					model.addAttribute("spectrum_sample_compound_liquid_solvent",
 							((LiquidSampleMix) mixData).getLiquidSolventAsString());
-				else {
+				} else {
 					model.addAttribute("spectrum_sample_compound_gas_solvent",
 							((GasSampleMix) mixData).getGcmsSolventAsString());
 					model.addAttribute("spectrum_sample_compound_derivation_method",
@@ -1409,10 +1410,10 @@ public class SpectraController {
 				// model.addAttribute("spectrum_sample_compound_concentration",
 				// mixData.getCompoundConcentration(rcc.getInChIKey()));
 				// }
-				if (isSampleMixLiquid)
+				if (isSampleMixLiquid) {
 					model.addAttribute("spectrum_sample_compound_liquid_solvent",
 							((LiquidSampleMix) sampleMixData).getLiquidSolventMixAsString());
-				else {
+				} else {
 					model.addAttribute("spectrum_sample_compound_gas_solvent",
 							((GasSampleMix) sampleMixData).getGcmsSolventAsString());
 					model.addAttribute("spectrum_sample_compound_derivation_method",
@@ -1591,6 +1592,7 @@ public class SpectraController {
 				model.addAttribute("spectrum_chromatography_col_diameter", gcData.getColumnDiameter());
 				model.addAttribute("spectrum_chromatography_col_particule_size", gcData.getParticuleSize());
 				model.addAttribute("spectrum_chromatography_injection_volume", gcData.getInjectionVolume());
+				model.addAttribute("spectrum_chromatography_injection_mode_string", gcData.getInjectionModeAsString());
 				model.addAttribute("spectrum_chromatography_injection_mode", gcData.getInjectionMode());
 				model.addAttribute("spectrum_chromatography_split_ratio", gcData.getSplitRatio());
 				model.addAttribute("spectrum_chromatography_carrier_gas",
@@ -2017,52 +2019,47 @@ public class SpectraController {
 		Spectrum spectrum = null;
 		try {
 			spectrum = SpectrumManagementService.read(id);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-
 		// init var
-		List<Compound> listCC = new ArrayList<Compound>();
+		final List<Compound> listCC = new ArrayList<Compound>();
 		if (spectrum instanceof CompoundSpectrum) {
-			for (Compound c : ((CompoundSpectrum) spectrum).getListOfCompounds()) {
-				if (c instanceof StructureChemicalCompound)
+			for (final Compound c : ((CompoundSpectrum) spectrum).getListOfCompounds()) {
+				if (c instanceof StructureChemicalCompound) {
 					try {
 						listCC.add(StructuralCompoundManagementService
 								.readByInChIKey(((StructureChemicalCompound) c).getInChIKey()));
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						e.printStackTrace();
 					}
-				else
+				} else {
 					listCC.add(c);
+				}
 			}
 			((CompoundSpectrum) spectrum).setListOfCompounds(listCC);
 		}
-
 		// load data in model
 		if (spectrum != null) {
 			try {
 				loadSpectraMetadata(model, spectrum, request);
 				model.addAttribute("contains_spectrum", true);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
-
-		} else
+		} else {
 			model.addAttribute("contains_spectrum", false);
-
+		}
 		User user = null;
-		// long userId = -1;
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
 			user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-			// userId = user.getId();
 		}
-
 		if (user != null && user.isCurator()) {
 			model.addAttribute("curator", true);
 			model.addAttribute("curationMessages", spectrum.getCurationMessages());
-		} else
+		} else {
 			model.addAttribute("curator", false);
-
+		}
 		// RETURN
 		return "modal/edit-spectrum-modal";
 	}
@@ -2095,6 +2092,9 @@ public class SpectraController {
 				return NMR1DSpectrumManagementService.delete(id);
 			case "nmr-2d":
 				return NMR2DSpectrumManagementService.delete(id);
+			// new 2.1
+			case "gc-fullscan":
+				return FullScanGCSpectrumManagementService.delete(id);
 			// new 2.3
 			case "ic-fullscan":
 				return FullScanICSpectrumManagementService.delete(id);
@@ -2173,7 +2173,6 @@ public class SpectraController {
 						} else
 							sampleMixData.removeCompound(rcc);
 					}
-
 					// sample solvent
 					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_liquid_solvent")
 							&& spectrumDataToUpdate.get("spectrum_sample_compound_liquid_solvent") != null) {
@@ -2187,7 +2186,6 @@ public class SpectraController {
 								(String) spectrumDataToUpdate.get("spectrum_sample_compound_gas_solvent")));
 						updateSampleMetadata = true;
 					}
-
 					// derivation method
 					if (spectrumDataToUpdate.containsKey("spectrum_sample_compound_derivation_method")
 							&& spectrumDataToUpdate.get("spectrum_sample_compound_derivation_method") != null) {
@@ -2490,7 +2488,7 @@ public class SpectraController {
 							spectrumDataToUpdate.get("spectrum_chromatography_method").toString()));
 				}
 
-				// spectrum_chromatography_mode_lc: "Isocratique"
+				// spectrum_chromatography_mode_lc: "Isocratic"
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_mode_lc")) {
 					updateLCchromatoData = true;
 					lcMetadata.setLcMode(LiquidChromatography.getStandardizedLCMode(
@@ -2546,7 +2544,6 @@ public class SpectraController {
 					}
 					lcMetadata.setPHSolventB(pH);
 				}
-
 				// spectrum_chromatography_sfg_time
 				Map<Double, Double[]> newSFG = lcMetadata.getSeparationFlowGradient();
 				if (spectrumDataToUpdate.containsKey("spectrum_chromatography_sfg_time")
@@ -2584,129 +2581,321 @@ public class SpectraController {
 					LiquidChromatographyMetadataDao.update(lcMetadata.getId(), lcMetadata, newSFG);
 				}
 			}
-			// TODO missing GCMS
+			// GC data
+			else if (spectrum instanceof IGCSpectrum) {
+				// II.A - init var
+				boolean updateGCchromatoData = false;
+				GazChromatography gcMetadata = GazChromatographyMetadataDao
+						.read(((IGCSpectrum) spectrum).getGazChromatography().getId());
+				// II.B - update object
+				// spectrum_gas_chromatography_method: undefined
+				if (constainKey(spectrumDataToUpdate, "spectrum_gas_chromatography_method")) {
+					updateGCchromatoData = Boolean.TRUE;
+					gcMetadata.setMethodProtocol(GazChromatography.getStandardizedMethodProtocol(
+							spectrumDataToUpdate.get("spectrum_gas_chromatography_method").toString()));
+				}
+				// spectrum_chromatography_col_constructor: "Thermo"
+				if (constainKey(spectrumDataToUpdate, "spectrum_gas_chromatography_col_constructor")) {
+					updateGCchromatoData = Boolean.TRUE;
+					gcMetadata.setColumnConstructor(GazChromatography.getStandardizedColumnConstructor(
+							spectrumDataToUpdate.get("spectrum_gas_chromatography_col_constructor").toString()));
+				}
+//				// spectrum_chromatography_col_constructor_other
+//				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_constructor_other")) {
+//					updateGCchromatoData = Boolean.TRUE;
+//					gcMetadata.setColumnOther(
+//							spectrumDataToUpdate.get("spectrum_chromatography_col_constructor_other").toString());
+//				}
+				// spectrum_chromatography_col_diameter: "2.1"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_diameter")) {
+					updateGCchromatoData = true;
+					Double colDiam = null;
+					try {
+						colDiam = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_col_diameter").toString());
+					} catch (NumberFormatException e) {
+					}
+					gcMetadata.setColumnDiameter(colDiam);
+				}
+				// spectrum_chromatography_col_length: "100.0"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_length")) {
+					updateGCchromatoData = true;
+					Double collength = null;
+					try {
+						collength = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_chromatography_col_length").toString());
+					} catch (NumberFormatException e) {
+					}
+					gcMetadata.setColumnLength(collength);
+				}
+				// spectrum_chromatography_col_name: "Hypersil Gold C18"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_name")) {
+					updateGCchromatoData = Boolean.TRUE;
+					gcMetadata.setColumnName(spectrumDataToUpdate.get("spectrum_chromatography_col_name").toString());
+				}
+				// spectrum_chromatography_col_particule_size: "1.9"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_particule_size")) {
+					updateGCchromatoData = Boolean.TRUE;
+					Double colPartiSize = null;
+					try {
+						colPartiSize = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_col_particule_size").toString());
+					} catch (NumberFormatException e) {
+					}
+					gcMetadata.setParticuleSize(colPartiSize);
+				}
+				// spectrum_chromatography_injection_volume
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_injection_volume")) {
+					updateGCchromatoData = Boolean.TRUE;
+					Double injectionVol = null;
+					try {
+						injectionVol = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_injection_volume").toString());
+					} catch (final NumberFormatException e) {
+					}
+					gcMetadata.setInjectionVolume(injectionVol);
+				}
+				// Injection mode
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_injection_mode")) {
+					updateGCchromatoData = Boolean.TRUE;
+					gcMetadata.setInjectionMode(GazChromatography.getStandardizedInjectionMode(//
+							spectrumDataToUpdate.get("spectrum_chromatography_injection_mode").toString()));
+				}
+				// Split ratio
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_split_ratio")) {
+					updateGCchromatoData = Boolean.TRUE;
+					Integer splitRatio = null;
+					try {
+						splitRatio = Integer
+								.parseInt(spectrumDataToUpdate.get("spectrum_chromatography_split_ratio").toString());
+					} catch (final NumberFormatException e) {
+					}
+					gcMetadata.setSplitRatio(splitRatio);
+				}
+				// carrier gas
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_carrier_gas")) {
+					updateGCchromatoData = Boolean.TRUE;
+					gcMetadata.setCarrierGas(//
+							GazChromatography.getStandardizedCarrierGas(//
+									spectrumDataToUpdate.get("spectrum_chromatography_carrier_gas").toString()));
+				}
+				// gas flow
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_gas_flow")) {
+					updateGCchromatoData = Boolean.TRUE;
+					Double gasFlow = null;
+					try {
+						gasFlow = Double
+								.parseDouble(spectrumDataToUpdate.get("spectrum_chromatography_gas_flow").toString());
+					} catch (final NumberFormatException e) {
+					}
+					gcMetadata.setGasFlow(//
+							gasFlow);
+				}
+				// spectrum_chromatography_gas_opt
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_gas_opt")) {
+					updateGCchromatoData = Boolean.TRUE;
+					gcMetadata.setGasOpt(//
+							GazChromatography.getStandardizedGasOpt(//
+									spectrumDataToUpdate.get("spectrum_chromatography_gas_opt").toString()));
+				}
+				// spectrum_chromatography_gas_pressure
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_gas_pressure")) {
+					updateGCchromatoData = Boolean.TRUE;
+					Double gasPressur = null;
+					try {
+						gasPressur = Double.parseDouble(
+								spectrumDataToUpdate.get("spectrum_chromatography_gas_pressure").toString());
+					} catch (final NumberFormatException e) {
+					}
+					gcMetadata.setGasPressure(//
+							gasPressur);
+				}
+				// spectrum_chromatography_mode_gc: "Isocratic"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_mode_gc")) {
+					updateGCchromatoData = true;
+					gcMetadata.setGcMode(GazChromatography.getStandardizedGCMode(
+							spectrumDataToUpdate.get("spectrum_chromatography_mode_gc").toString()));
+				}
+				// spectrum_chromatography_liner_manufacturer
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_liner_manufacturer")) {
+					updateGCchromatoData = true;
+					gcMetadata.setLinerManufacturer(//
+							GazChromatography.getStandardizedLinerManufacturer(//
+									spectrumDataToUpdate.get("spectrum_chromatography_liner_manufacturer").toString()));
+				}
+				// spectrum_chromatography_liner_type
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_liner_type")) {
+					updateGCchromatoData = true;
+					gcMetadata.setLinerType(//
+							GazChromatography.getStandardizedLinerType(
+									spectrumDataToUpdate.get("spectrum_chromatography_liner_type").toString()));
+				}
+				// spectrum_chromatography_sfg_time
+				final Map<Double, Double[]> newSFG = gcMetadata.getSeparationTemperatureProgram();
+				if (spectrumDataToUpdate.containsKey("spectrum_chromatography_stp_temperature")
+						&& spectrumDataToUpdate.get("spectrum_chromatography_stp_temperature") != null) {
+					if (spectrumDataToUpdate.get("spectrum_chromatography_stp_temperature") instanceof ArrayList<?>) {
+						newSFG.clear();
+						updateGCchromatoData = Boolean.TRUE;
+						final ArrayList<Map<String, Object>> rawSFG = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
+								.get("spectrum_chromatography_stp_temperature");
+						for (final Map<String, Object> rawCpdMixData : rawSFG) {
+							if (rawCpdMixData.containsKey("temp") && rawCpdMixData.get("temp") != null
+									&& rawCpdMixData.containsKey("r") && rawCpdMixData.get("r") != null
+									&& rawCpdMixData.containsKey("t") && rawCpdMixData.get("t") != null) {
+								final String timeS = rawCpdMixData.get("temp").toString();
+								final String aS = rawCpdMixData.get("r").toString();
+								final String bS = rawCpdMixData.get("t").toString();
+								try {
+									final double time = Double.parseDouble(timeS);
+									final double a = Double.parseDouble(aS);
+									final double b = Double.parseDouble(bS);
+									final Double[] tabSFG = new Double[2];
+									tabSFG[0] = a;
+									tabSFG[1] = b;
+									newSFG.put(time, tabSFG);
+								} catch (final NumberFormatException nfe) {
+								}
+							}
+						}
+					}
+				}
+				// II.C - save object (if needed)
+				if (updateGCchromatoData) {
+					GazChromatographyMetadataDao.update(gcMetadata.getId(), gcMetadata, newSFG);
+				}
+			}
+			// IC data
 			else if (spectrum instanceof IICSpectrum) {
 				// II.A - init var
 				boolean updateICchromatoData = Boolean.FALSE;
 				IonChromatography icMetadata = IonChromatographyMetadataDao
 						.read(((IICSpectrum) spectrum).getIonChromatography().getId());
-
 				// II.B - update object
+				// spectrum_ion_chromatography_method: undefined
+				if (constainKey(spectrumDataToUpdate, "spectrum_ion_chromatography_method")) {
+					updateICchromatoData = true;
+					icMetadata.setMethodProtocol(IonChromatography.getStandardizedMethodProtocol(
+							spectrumDataToUpdate.get("spectrum_ion_chromatography_method").toString()));
+				}
 				// spectrum_chromatography_col_constructor: "Thermo"
-				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_constructor")) {
+				if (constainKey(spectrumDataToUpdate, "spectrum_ion_chromatography_col_constructor")) {
 					updateICchromatoData = true;
 					icMetadata.setColumnConstructor(IonChromatography.getStandardizedColumnConstructor(
-							spectrumDataToUpdate.get("spectrum_chromatography_col_constructor").toString()));
+							spectrumDataToUpdate.get("spectrum_ion_chromatography_col_constructor").toString()));
 				}
-
 				// spectrum_chromatography_col_constructor_other
-				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_constructor_other")) {
+				if (constainKey(spectrumDataToUpdate, "spectrum_ion_chromatography_col_constructor_other")) {
 					updateICchromatoData = true;
 					icMetadata.setColumnOther(
-							spectrumDataToUpdate.get("spectrum_chromatography_col_constructor_other").toString());
+							spectrumDataToUpdate.get("spectrum_ion_chromatography_col_constructor_other").toString());
 				}
-
-				// spectrum_chromatography_col_diameter: "2.1"
-				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_diameter")) {
-					updateICchromatoData = true;
-					Double colDiam = null;
-					try {
-						colDiam = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_chromatography_col_diameter").toString());
-					} catch (final NumberFormatException e) {
-					}
-					icMetadata.setColumnDiameter(colDiam);
-				}
-
-				// spectrum_chromatography_col_length: "100.0"
-				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_length")) {
-					updateICchromatoData = true;
-					Double collength = null;
-					try {
-						collength = Double
-								.parseDouble(spectrumDataToUpdate.get("spectrum_chromatography_col_length").toString());
-					} catch (final NumberFormatException e) {
-					}
-					icMetadata.setColumnLength(collength);
-				}
-
 				// spectrum_chromatography_col_name: "Hypersil Gold C18"
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_name")) {
 					updateICchromatoData = true;
 					icMetadata.setColumnName(spectrumDataToUpdate.get("spectrum_chromatography_col_name").toString());
 				}
+				// spectrum_chromatography_col_ionic_config
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_ionic_config")) {
+					updateICchromatoData = true;
+					icMetadata.setColumnIonicConfig(//
+							IonChromatography.getStdColumnIonicConfig(//
+									spectrumDataToUpdate.get("spectrum_chromatography_col_ionic_config").toString()//
+							));
+				}
+				// spectrum_chromatography_col_suppressor_constructor
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_suppressor_constructor")) {
+					updateICchromatoData = true;
+					icMetadata.setColumnSuppressorConstructor(//
+							IonChromatography.getStdColumnSuppressorConstructor(//
+									spectrumDataToUpdate.get("spectrum_chromatography_col_suppressor_constructor")
+											.toString()//
+							));
+				}
+				// spectrum_chromatography_col_suppressor_name
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_suppressor_name")) {
+					updateICchromatoData = true;
+					icMetadata.setColumnSuppressorName(//
+							IonChromatography.getStdColumnSuppressorName(//
+									spectrumDataToUpdate.get("spectrum_chromatography_col_suppressor_name").toString()//
+							));
+				}
+				// spectrum_chromatography_col_makeup
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_makeup")) {
+					updateICchromatoData = true;
+					icMetadata.setColumnMakeup(//
+							IonChromatography.getStdColumnMakeup(//
+									spectrumDataToUpdate.get("spectrum_chromatography_col_makeup").toString()//
+							));
+				}
+				// spectrum_chromatography_col_makeup_flow_rate
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_makeup_flow_rate")) {
+					updateICchromatoData = true;
+					icMetadata.setColumnMakeupFlowRate(//
+							getDoubleVal(spectrumDataToUpdate, "spectrum_chromatography_col_makeup_flow_rate")//
+					);
+
+				}
+				// spectrum_chromatography_col_length: "100.0"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_length")) {
+					updateICchromatoData = Boolean.TRUE;
+					final Double collength = getDoubleVal(spectrumDataToUpdate, "spectrum_chromatography_col_length");
+					icMetadata.setColumnLength(collength);
+				}
+				// spectrum_chromatography_col_diameter: "2.1"
+				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_diameter")) {
+					updateICchromatoData = Boolean.TRUE;
+					final Double colDiam = getDoubleVal(spectrumDataToUpdate, "spectrum_chromatography_col_diameter");
+					icMetadata.setColumnDiameter(colDiam);
+				}
 
 				// spectrum_chromatography_col_particule_size: "1.9"
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_particule_size")) {
-					updateICchromatoData = true;
-					Double colPartiSize = null;
-					try {
-						colPartiSize = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_chromatography_col_particule_size").toString());
-					} catch (final NumberFormatException e) {
-					}
+					updateICchromatoData = Boolean.TRUE;
+					final Double colPartiSize = getDoubleVal(spectrumDataToUpdate,
+							"spectrum_chromatography_col_particule_size");
 					icMetadata.setParticuleSize(colPartiSize);
 				}
-
 				// spectrum_chromatography_col_temperature: "40.0"
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_col_temperature")) {
-					updateICchromatoData = true;
-					Double colTemp = null;
-					try {
-						colTemp = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_chromatography_col_temperature").toString());
-					} catch (final NumberFormatException e) {
-					}
+					updateICchromatoData = Boolean.TRUE;
+					final Double colTemp = getDoubleVal(spectrumDataToUpdate,
+							"spectrum_chromatography_col_temperature");
 					icMetadata.setColumnTemperature(colTemp);
 				}
-
-				// spectrum_chromatography_method: undefined
-				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_method")) {
-					updateICchromatoData = true;
-					icMetadata.setMethodProtocol(IonChromatography.getStandardizedMethodProtocol(
-							spectrumDataToUpdate.get("spectrum_chromatography_method").toString()));
-				}
-
-				// spectrum_chromatography_mode_lc: "Isocratique"
+				// spectrum_chromatography_mode_ic: "Isocratic"
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_mode_ic")) {
-					updateICchromatoData = true;
+					updateICchromatoData = Boolean.TRUE;
 					icMetadata.setIcMode(IonChromatography.getStandardizedICMode(
 							spectrumDataToUpdate.get("spectrum_chromatography_mode_ic").toString()));
 				}
-
 				// spectrum_chromatography_separation_flow_rate: "300.0"
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_separation_flow_rate")) {
-					updateICchromatoData = true;
-					Double sfgRate = null;
-					try {
-						sfgRate = Double.parseDouble(
-								spectrumDataToUpdate.get("spectrum_chromatography_separation_flow_rate").toString());
-					} catch (final NumberFormatException e) {
-					}
+					updateICchromatoData = Boolean.TRUE;
+					final Double sfgRate = getDoubleVal(spectrumDataToUpdate,
+							"spectrum_chromatography_separation_flow_rate");
 					icMetadata.setSeparationFlowRate(sfgRate);
 				}
-
 				// spectrum_chromatography_solventA: "H2O / CH3OH / CH3CO2H (95/5/0.1)"
 				if (constainKey(spectrumDataToUpdate, "spectrum_chromatography_solvent")) {
-					updateICchromatoData = true;
+					updateICchromatoData = Boolean.TRUE;
 					icMetadata.setSeparationSolvent(IonChromatography.getStandardizedSolventName(
 							spectrumDataToUpdate.get("spectrum_chromatography_solvent").toString()));
 				}
-
-				// spectrum_chromatography_sfg_time
-				Map<Double, Double> newSFG = icMetadata.getSeparationFlowGradient();
-				if (spectrumDataToUpdate.containsKey("spectrum_chromatography_sfg_time")
-						&& spectrumDataToUpdate.get("spectrum_chromatography_sfg_time") != null) {
-					if (spectrumDataToUpdate.get("spectrum_chromatography_sfg_time") instanceof ArrayList<?>) {
-						newSFG = new HashMap<>();
-						updateICchromatoData = true;
+				// spectrum_chromatography_sfg_time_ic
+				final Map<Double, Double> newSFG = icMetadata.getSeparationFlowGradient();
+				if (spectrumDataToUpdate.containsKey("spectrum_chromatography_sfg_time_ic")
+						&& spectrumDataToUpdate.get("spectrum_chromatography_sfg_time_ic") != null) {
+					if (spectrumDataToUpdate.get("spectrum_chromatography_sfg_time_ic") instanceof ArrayList<?>) {
+						newSFG.clear();
+						updateICchromatoData = Boolean.TRUE;
 						ArrayList<Map<String, Object>> rawSFG = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
-								.get("spectrum_chromatography_sfg_time");
+								.get("spectrum_chromatography_sfg_time_ic");
 						for (final Map<String, Object> rawCpdMixData : rawSFG) {
 							if (rawCpdMixData.containsKey("time") && rawCpdMixData.get("time") != null
-									&& rawCpdMixData.containsKey("c") && rawCpdMixData.get("c") != null) {
-								String timeS = rawCpdMixData.get("time").toString();
-								String cS = rawCpdMixData.get("c").toString();
+									&& rawCpdMixData.containsKey("s") && rawCpdMixData.get("s") != null) {
+								final String timeS = rawCpdMixData.get("time").toString();
+								final String cS = rawCpdMixData.get("s").toString();
 								try {
 									final double time = Double.parseDouble(timeS);
 									final double c = Double.parseDouble(cS);
@@ -2750,9 +2939,7 @@ public class SpectraController {
 			if (spectrum instanceof MassSpectrum) {
 				msAnalyzerMetatada = ((MassSpectrum) spectrum).getAnalyzerMassSpectrometerDevice();
 				msIonizationMetatada = ((MassSpectrum) spectrum).getAnalyzerMassIonization();
-
 				// III.A.1 - analyzer
-
 				// spectrum_ms_analyzer_instrument_model: "XL"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_analyzer_instrument_model")) {
 					updateMSanalyzer = true;
@@ -2771,9 +2958,14 @@ public class SpectraController {
 					msAnalyzerMetatada.setIonAnalyzerType(
 							spectrumDataToUpdate.get("spectrum_ms_analyzer_ion_analyzer_type").toString());
 				}
+				// GCMS - BRAND
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_analyzer_instrument_brand")) {
+					updateMSanalyzer = Boolean.TRUE;
+					msAnalyzerMetatada.setInstrumentBrand(//
+							spectrumDataToUpdate.get("spectrum_ms_analyzer_instrument_brand").toString());
+				}
 
 				// III.A.2 - ionization
-
 				// spectrum_ms_ionization_ion_transfer_temperature: "300.0"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_ion_transfer_temperature")) {
 					updateMSionization = true;
@@ -2785,7 +2977,6 @@ public class SpectraController {
 					}
 					((AnalyzerLiquidMassIonization) msIonizationMetatada).setIonTransferTemperature(newVal);
 				}
-
 				// spectrum_ms_ionization_ionization_method: "ESI"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_ionization_method")) {
 					updateMSionization = true;
@@ -2798,7 +2989,6 @@ public class SpectraController {
 								AnalyzerGasMassIonization.getStandardizedGCIonization(spectrumDataToUpdate
 										.get("spectrum_ms_ionization_ionization_method").toString()));
 				}
-
 				// spectrum_ms_ionization_ionization_voltage: "4.0"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_ionization_voltage")) {
 					updateMSionization = true;
@@ -2810,7 +3000,6 @@ public class SpectraController {
 					}
 					((AnalyzerLiquidMassIonization) msIonizationMetatada).setIonizationVoltage(newVal);
 				}
-
 				// spectrum_ms_ionization_source_gaz_flow: "0.0"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_source_gaz_flow")) {
 					updateMSionization = true;
@@ -2822,7 +3011,6 @@ public class SpectraController {
 					}
 					((AnalyzerLiquidMassIonization) msIonizationMetatada).setSourceGazFlow(newVal);
 				}
-
 				// spectrum_ms_ionization_spray_gaz_flow: "55.0"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_spray_gaz_flow")) {
 					updateMSionization = true;
@@ -2834,7 +3022,6 @@ public class SpectraController {
 					}
 					((AnalyzerLiquidMassIonization) msIonizationMetatada).setSprayGazFlow(newVal);
 				}
-
 				// spectrum_ms_ionization_vaporizer_gaz_flow: "10.0"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_vaporizer_gaz_flow")) {
 					updateMSionization = true;
@@ -2846,7 +3033,6 @@ public class SpectraController {
 					}
 					((AnalyzerLiquidMassIonization) msIonizationMetatada).setVaporizerGazFlow(newVal);
 				}
-
 				// spectrum_ms_ionization_vaporizer_tempertature: ""
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_vaporizer_tempertature")) {
 					updateMSionization = true;
@@ -2858,7 +3044,90 @@ public class SpectraController {
 					}
 					((AnalyzerLiquidMassIonization) msIonizationMetatada).setVaporizerTemperature(newVal);
 				}
-
+				// GCMS IONIZATION
+				// spectrum_gcms_ionization_ionization_method: ""
+				if (constainKey(spectrumDataToUpdate, "spectrum_gcms_ionization_ionization_method")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setIonizationMethod(//
+								AnalyzerGasMassIonization.getStandardizedGCIonization(//
+										spectrumDataToUpdate.get("spectrum_gcms_ionization_ionization_method")
+												.toString()));
+					}
+				}
+				// spectrum_ms_ionization_emission_current: ""
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_electron_energy")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setElectronEnergy(//
+								getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ionization_electron_energy"));
+					}
+				}
+				// spectrum_ms_ionization_emission_current: ""
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_emission_current")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setEmissionCurrent(//
+								getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ionization_emission_current"));
+					}
+				}
+				// spectrum_ms_ionization_source_temperature
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_source_temperature")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setSourceTemperature(//
+								getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ionization_source_temperature"));
+					}
+				}
+				// spectrum_ms_ionization_ionization_gas
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_ionization_gas")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setIonizationGas(//
+								AnalyzerGasMassIonization.getStandardizedIonizationGas(//
+										spectrumDataToUpdate.get("spectrum_ms_ionization_ionization_gas").toString()));
+					}
+				}
+				// spectrum_ms_ionization_gas_flow
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_gas_flow")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setIonizationGasFlow(//
+								getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ionization_gas_flow"));
+					}
+				}
+				// spectrum_ms_ionization_interface_temperature
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_interface_temperature")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setInterfaceTemperature(//
+								getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ionization_interface_temperature"));
+					}
+				}
+				// spectrum_ms_ionization_repeller
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_repeller")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setRepeller(//
+								getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ionization_repeller"));
+					}
+				}
+				// spectrum_ms_ionization_extractor
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_extractor")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setExtractor(//
+								getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ionization_extractor"));
+					}
+				}
+				// spectrum_ms_ionization_ion_focus
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ionization_ion_focus")) {
+					updateMSionization = Boolean.TRUE;
+					if (msIonizationMetatada instanceof AnalyzerGasMassIonization) {
+						((AnalyzerGasMassIonization) msIonizationMetatada).setIonFocus(//
+								getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ionization_ion_focus"));
+					}
+				}
 				// TODO GCMS gas
 
 				// get original data
@@ -2936,13 +3205,9 @@ public class SpectraController {
 				// spectrum_ms_curation_lvl
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_curation_lvl")) {
 					updateMSranges = true;
-					try {
-						msCurationLvl = MassSpectrum.getStandardizedCurationLevel(
-								spectrumDataToUpdate.get("spectrum_ms_curation_lvl").toString());
-					} catch (NumberFormatException e) {
-					}
+					msCurationLvl = MassSpectrum.getStandardizedCurationLevel(
+							spectrumDataToUpdate.get("spectrum_ms_curation_lvl").toString());
 				}
-
 			}
 
 			// if instance of FRAG spectra update specific fields
@@ -2978,7 +3243,6 @@ public class SpectraController {
 				// get original data
 				msRangeRTmeSFrom = ((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentFrom();
 				msRangeRTmeSTo = ((ILCSpectrum) spectrum).getRangeRetentionTimeEqMethanolPercentTo();
-
 				// get updated data
 				// spectrum_ms_rt_meoh_from: "40.16"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_rt_meoh_from")) {
@@ -2989,7 +3253,6 @@ public class SpectraController {
 					} catch (NumberFormatException e) {
 					}
 				}
-
 				// spectrum_ms_rt_meoh_to: "40.83"
 				if (constainKey(spectrumDataToUpdate, "spectrum_ms_rt_meoh_to")) {
 					updateMSranges = true;
@@ -2998,6 +3261,23 @@ public class SpectraController {
 								.parseDouble(spectrumDataToUpdate.get("spectrum_ms_rt_meoh_to").toString());
 					} catch (NumberFormatException e) {
 					}
+				}
+			}
+			// bugfix 2.3.1 - #378
+			else if (spectrum instanceof IGCSpectrum) {
+				// get original data
+				msRangeRTmeSFrom = ((IGCSpectrum) spectrum).getRangeRetentionIndexAlkaneFrom();
+				msRangeRTmeSTo = ((IGCSpectrum) spectrum).getRangeRetentionIndexAlkaneTo();
+				// get updated data
+				// spectrum_ms_rt_alkane_from: "40.16"
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ri_alkane_from")) {
+					updateMSranges = Boolean.TRUE;
+					msRangeRTmeSFrom = getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ri_alkane_from");
+				}
+				// spectrum_ms_rt_meoh_to: "40.83"
+				if (constainKey(spectrumDataToUpdate, "spectrum_ms_ri_alkane_to")) {
+					updateMSranges = Boolean.TRUE;
+					msRangeRTmeSTo = getDoubleVal(spectrumDataToUpdate, "spectrum_ms_ri_alkane_to");
 				}
 			}
 			// new 2.3
@@ -3033,51 +3313,53 @@ public class SpectraController {
 			}
 			if (updateMSionization) {
 				AnalyzerMassIonizationMetadataDao.update(msIonizationMetatada.getId(), msIonizationMetatada);
-
 			}
 			if (updateMSranges) {
 				if (spectrum instanceof FullScanLCSpectrum) {
 					FullScanLCSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo, msRangeRTminFrom,
 							msRangeRTminTo, msRangeRTmeSFrom, msRangeRTmeSTo, msResolutionFWHMresolution,
 							msResolutionFWHMmass, msCurationLvl);
-				} // else if instance of FragLC / GC / ...
-				else if (spectrum instanceof FragmentationLCSpectrum) {
-					// TODO update other MSMS specific fields
+				} else if (spectrum instanceof FragmentationLCSpectrum) {
 					FragmentationLCSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo,
 							msRangeRTminFrom, msRangeRTminTo, msRangeRTmeSFrom, msRangeRTmeSTo,
 							msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl);
+				} else if (spectrum instanceof FullScanGCSpectrum) {
+					FullScanGCSpectrumDao.update(
+							// final long id, //
+							spectrum.getId(),
+							// final Double rangeMassFrom, final Double rangeMassTo, //
+							msRangeMassFrom, msRangeMassTo,
+							// final Double rangeRTminFrom, final Double rangeRTminTo, //
+							msRangeRTminFrom, msRangeRTminTo,
+							// final Double rangeRIalkaneFrom, final Double rangeRIalkaneTo, //
+							msRangeRTmeSFrom, msRangeRTmeSTo,
+							// final Integer curationLvl
+							msCurationLvl);
 				}
 				// new 2.3
 				else if (spectrum instanceof FullScanICSpectrum) {
 					FullScanICSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo, msRangeRTminFrom,
 							msRangeRTminTo, msRangeRTmeSFrom, msRangeRTmeSTo, msResolutionFWHMresolution,
 							msResolutionFWHMmass, msCurationLvl);
-				} // else if instance of FragLC / GC / ...
-				else if (spectrum instanceof FragmentationICSpectrum) {
-					// TODO update other MSMS specific fields
+				} else if (spectrum instanceof FragmentationICSpectrum) {
 					FragmentationICSpectrumDao.update(spectrum.getId(), msRangeMassFrom, msRangeMassTo,
 							msRangeRTminFrom, msRangeRTminTo, msRangeRTmeSFrom, msRangeRTmeSTo,
 							msResolutionFWHMresolution, msResolutionFWHMmass, msCurationLvl);
 				}
 			}
-
+			// update other MSMS specific fields
 			if (updateMSMSdata) {
 				FragmentationLCSpectrumDao.updateMS2Data(spectrum.getId(), msmsFragEnery);
 			}
 
 			// IV - update NMR analyzer data
-
 			if (spectrum instanceof NMR1DSpectrum) {
-
 				// IV.A - init var
 				boolean updateNMRspectrumData = false;
 				boolean updateNMRanalyzerData = false;
-
 				AnalyzerNMRSpectrometerDevice analyzerNMRdevice = ((NMR1DSpectrum) spectrum)
 						.getAnalyzerNMRSpectrometerDevice();
-
 				// IV.B - update object
-
 				updateNMRanalyzerData = extractUpdatableAnalyzer(spectrumDataToUpdate, updateNMRanalyzerData,
 						analyzerNMRdevice);
 
@@ -3947,27 +4229,24 @@ public class SpectraController {
 			// V - update MASS PEAK LIST data
 
 			if (spectrum instanceof MassSpectrum) {
-
 				// V.A - init var
 				boolean updatePeakList = false;
 				List<MassPeak> newPeakList = new ArrayList<MassPeak>();
-
 				// attribution: "[M+H]+"
 				// composition: "C10H19N2O3"
 				// deltaMass: -0.088
 				// mz: 215.1385
 				// ri: 100
 				// theoricalMass: 215.139
-
 				// V.B - update object
 				if (spectrumDataToUpdate.containsKey("spectrum_ms_peaks")
 						&& spectrumDataToUpdate.get("spectrum_ms_peaks") != null) {
 					if (spectrumDataToUpdate.get("spectrum_ms_peaks") instanceof ArrayList<?>) {
 						// newPeakList = new HashMap<>();
 						updatePeakList = true;
-						ArrayList<Map<String, Object>> rawPeakList = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
+						final ArrayList<Map<String, Object>> rawPeakList = (ArrayList<Map<String, Object>>) spectrumDataToUpdate
 								.get("spectrum_ms_peaks");
-						for (Map<String, Object> rawPeak : rawPeakList) {
+						for (final Map<String, Object> rawPeak : rawPeakList) {
 							if (rawPeak.containsKey("mz") && rawPeak.get("mz") != null && rawPeak.containsKey("ri")
 									&& rawPeak.get("ri") != null) {
 								// {mz=213.1241, ri=100, theoricalMass=213.1245, deltaMass=0.161,
@@ -3981,16 +4260,21 @@ public class SpectraController {
 									ri = Double.parseDouble(rawPeak.get("ri").toString());
 									theoricalMass = Double.parseDouble(rawPeak.get("theoricalMass").toString());
 									deltaMass = Double.parseDouble(rawPeak.get("deltaMass").toString());
-								} catch (NumberFormatException nfe) {
+								} catch (final NumberFormatException nfe) {
 								}
-								String composition = rawPeak.get("composition").toString();
-								String attribution = rawPeak.get("attribution").toString();
-
-								MassPeak mp = new MassPeak((MassSpectrum) spectrum, mz, ri, theoricalMass, deltaMass);
+								final String composition = rawPeak.containsKey("composition")
+										? rawPeak.get("composition").toString()
+										: null;
+								final String attribution = rawPeak.containsKey("attribution")
+										? rawPeak.get("attribution").toString()
+										: null;
+								final MassPeak mp = new MassPeak((MassSpectrum) spectrum, mz, ri, theoricalMass,
+										deltaMass);
 								mp.setComposition(composition);
 								mp.setAttribution(attribution);
-								if (ri != 0.0 && mz != 0.0)
+								if (ri != 0.0 && mz != 0.0) {
 									newPeakList.add(mp);
+								}
 							}
 						}
 					}
@@ -4001,9 +4285,18 @@ public class SpectraController {
 				if (updatePeakList) {
 					if (spectrum instanceof FullScanLCSpectrum) {
 						FullScanLCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
-					} // GCMS //MSMS
-					else if (spectrum instanceof FragmentationLCSpectrum) {
+					} else if (spectrum instanceof FragmentationLCSpectrum) {
 						FragmentationLCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
+					}
+					// #378
+					else if (spectrum instanceof FullScanGCSpectrum) {
+						FullScanGCSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
+					}
+					// #379
+					else if (spectrum instanceof FullScanICSpectrum) {
+						FullScanICSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
+					} else if (spectrum instanceof FragmentationICSpectrum) {
+						FragmentationICSpectrumManagementService.updatePeakList(spectrum.getId(), newPeakList);
 					}
 				}
 			}
@@ -4543,6 +4836,17 @@ public class SpectraController {
 			username = user.getLogin();
 		}
 		SpectralDatabaseLogger.log(username, logMessage, SpectralDatabaseLogger.LOG_INFO);
+	}
+
+	private Double getDoubleVal(//
+			final Map<String, Object> map, //
+			final String key) {
+		Double newVal = null;
+		try {
+			newVal = Double.parseDouble(map.get(key).toString());
+		} catch (final NumberFormatException nfe) {
+		}
+		return newVal;
 	}
 
 }

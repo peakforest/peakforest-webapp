@@ -195,9 +195,14 @@ ${mol}</textarea>
 													<c:if test="${mol_ready}">
 													<tr>
 														<td><spring:message code="modal.show.basicInfos.download" text="Download" /></td>
-														<td>
+														<td class="download-btns">
 															<a class="btn btn-primary" href="mol/${inchikey}.mol" title="${compoundNames.get(0).name}" target="_blank">
 																<spring:message code="modal.show.basicInfos.mol" text="Mol" /> <i class="fa fa-download"></i>
+															</a>
+															
+															<!-- issue #363 -->
+															<a class="btn btn-primary" href="sdf/${inchikey}.sdf" title="${compoundNames.get(0).name}" target="_blank">
+																<spring:message code="modal.show.basicInfos.sdf" text="SDF" /> <i class="fa fa-download"></i>
 															</a>
 														</td>
 													</tr>
@@ -575,7 +580,7 @@ ${mol}</textarea>
 																</div>
 																<small>
 																	To know how to number molecules atoms (rules, softwares, ...) please contact a MetaboHUB WP1a manager
-																	or read the <a href="<c:url value="/resources/docs/PeakForest_mol_num.fr.pdf" />" target="_blank">online documentation</a>.
+																	or read the <a href="https://doi.org/10.15454/6TJ8-HN72" target="_blank">online documentation</a>.
 																</small>
 																<br />
 																<br />
@@ -690,11 +695,15 @@ function startUpload() {
 																	</span> <input type="text" class="form-control" readonly>
 																</div>
 																<small>
-																	To know how to create MOL and SVG file for molecules (rules, softwares, ...) please contact a MetaboHUB WP1a manager.
-																	<br />The name of the uploaded file <b>must</b> be either 
-																	&quot;${inchikey}.mol&quot; for a MOL file or 
-																	&quot;${inchikey}.svg&quot; for a SVG file or
-																	&quot;${inchikey}.png&quot; for a PNG file.
+																	To know how to create MOL and SVG file for molecules (rules, softwares, ...) 
+																	please refer to <a href="https://peakforest.org/sop">PeakForest SOP</a>.
+																	<br />The name of the uploaded file <b>must</b> be either :
+																	<ul>
+																		<li>&quot;${inchikey}.mol&quot; for a MOL file or</li> 
+																		<li>&quot;${inchikey}.svg&quot; for a SVG file or</li>
+																		<li>&quot;${inchikey}.png&quot; for a PNG file.</li>
+																	</ul>
+																	&#9888; avoid PNG images, or please do not upload a pixelized one.
 																</small>
 																<br />
 																<br />
@@ -817,9 +826,14 @@ function startUpload2() {
 													<c:if test="${mol_ready}">
 													<tr>
 														<td><spring:message code="modal.show.basicInfos.download" text="Download" /></td>
-														<td>
+														<td class="download-btns">
 															<a class="btn btn-primary" href="mol/${inchikey}.mol" title="${compoundNames.get(0).name}" target="_blank">
 																<spring:message code="modal.show.basicInfos.mol" text="Mol" /> <i class="fa fa-download"></i>
+															</a>
+															
+															<!-- issue #363 -->
+															<a class="btn btn-primary" href="sdf/${inchikey}.sdf" title="${compoundNames.get(0).name}" target="_blank">
+																<spring:message code="modal.show.basicInfos.sdf" text="SDF" /> <i class="fa fa-download"></i>
 															</a>
 														</td>
 													</tr>

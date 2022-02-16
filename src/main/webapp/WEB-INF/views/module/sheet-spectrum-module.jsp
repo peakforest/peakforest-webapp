@@ -26,22 +26,7 @@ int randomID = randomGenerator.nextInt(1000000);
 										<h4 class="panel-title">
 											${(spectrum_name)} &nbsp;&nbsp;&nbsp; <small>${(spectrum_pfID)}</small> 
 											<span class="pull-right">
-												<c:if test="${spectrum_type == 'lc-fullscan'}">
-													<a href="spectrum-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
-												</c:if>
-												<c:if test="${spectrum_type == 'lc-fragmentation'}">
-													<a href="spectrum-msms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
-												</c:if>
-												<c:if test="${spectrum_type == 'gc-fullscan'}">
-													<a href="spectrum-gcms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
-												</c:if>
-												<c:if test="${spectrum_type == 'ic-fullscan'}">
-													<a href="spectrum-icms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
-												</c:if>
-												<c:if test="${spectrum_type == 'ic-fragmentation'}">
-													<a href="spectrum-icmsms-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i></a>
-												</c:if>
-												<a id="linkDumpSpectrum" href="#" ><i class="fa fa-file-excel-o"></i></a>
+												<a title="Download" href="javascript:void()" onclick="$('#modalExportSpectrum').modal('show');" ><i class="fa fa-cloud-download"></i></a>
 											</span>
 										</h4>
 									</div>
@@ -222,10 +207,11 @@ int randomID = randomGenerator.nextInt(1000000);
 		</c:if>
 	</c:if>
 	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
-	<li class="list-group-item">Solvent: ${spectrum_sample_compound_liquid_solvent}</li>
+		<li class="list-group-item">Solvent: ${spectrum_sample_compound_liquid_solvent}</li>
 	</c:if>
 	<c:if test="${spectrum_type == 'gc-fullscan'}">
-	<li class="list-group-item">Solvent: ${spectrum_sample_compound_gas_solvent}</li>
+		<li class="list-group-item">Solvent: ${spectrum_sample_compound_gas_solvent}</li>
+		<li class="list-group-item">Derivation method: ${spectrum_sample_compound_derivation_method}</li>
 	</c:if>
 	<li class="list-group-item">InChI: ${spectrum_sample_compound_inchi}</li>
 	<li class="list-group-item">InChIKey: ${spectrum_sample_compound_inchikey}</li>
@@ -468,7 +454,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<li class="list-group-item">Column diameter: ${spectrum_chromatography_col_diameter} (mm)</li>
 				<li class="list-group-item">Particle size: ${spectrum_chromatography_col_particule_size} (&micro;m)</li>
 				<li class="list-group-item">Injection volume: ${spectrum_chromatography_injection_volume} (&micro;L)</li>
-				<li class="list-group-item">Injection mode: ${spectrum_chromatography_injection_mode}</li>
+				<li class="list-group-item">Injection mode: ${spectrum_chromatography_injection_mode_string}</li>
 				<li class="list-group-item">Split ratio: ${spectrum_chromatography_split_ratio} (:1)</li>
 				<li class="list-group-item">Carrier gas: ${spectrum_chromatography_carrier_gas}</li>
 				<li class="list-group-item">Gas flow: ${spectrum_chromatography_gas_flow} (mL/min)</li>
@@ -542,7 +528,7 @@ int randomID = randomGenerator.nextInt(1000000);
 				<thead>
 					<tr>
 						<td style="width: 100px;">Time (min)</td>
-						<td style="width: 100px;">Solv. (mM)</td>
+						<td style="width: 100px;">Solvent (mM KOH)</td>
 					</tr>
 				</thead>
 				<tbody>
@@ -670,12 +656,15 @@ int randomID = randomGenerator.nextInt(1000000);
 							<ul class="list-group" style="max-width: 300px;">
 								<li class="list-group-item">Mass range: [${spectrum_ms_range_from} .. ${spectrum_ms_range_to}]</li>
 								<li class="list-group-item">Retention time <small>(min)</small>: [${spectrum_rt_min_from} .. ${spectrum_rt_min_to}]</li>
-								<c:if test="${spectrum_chromatography != 'gc'}">
+								<c:if test="${spectrum_chromatography == 'lc'}">
 								<li class="list-group-item">Retention time <small>(MeOH)</small>: [${spectrum_rt_meoh_from} .. ${spectrum_rt_meoh_to}]</li>
 								<li class="list-group-item">Retention time<sup title="based on %MeOH = 1.28 %ACN ">*</sup> <small>(ACN)</small>: [${spectrum_rt_acn_from} .. ${spectrum_rt_acn_to}]</li>
 								</c:if>
 								<c:if test="${spectrum_chromatography == 'gc'}">
 								<li class="list-group-item">Retention index <small>(alkane)</small>: [${spectrum_ri_alkane_from} .. ${spectrum_ri_alkane_to}]</li>
+								</c:if>
+								<c:if test="${spectrum_chromatography == 'ic'}">
+								<li class="list-group-item">Retention time <small>(KOH)</small>: [${spectrum_rt_koh_from} .. ${spectrum_rt_koh_to}]</li>
 								</c:if>
 							</ul>
 						</td>
@@ -1155,7 +1144,7 @@ int randomID = randomGenerator.nextInt(1000000);
 																</div>
 																<small>
 																	To know how to number molecules atoms (rules, softwares, ...) please contact your WP1a manager
-																	or read the <a href="<c:url value="/resources/docs/PeakForest_mol_num.fr.pdf" />" target="_blank">online documentation</a>.
+																	or read the <a href="https://doi.org/10.15454/6TJ8-HN72" target="_blank">online documentation</a>.
 																</small>
 																<br />
 																<br />
@@ -1822,7 +1811,7 @@ $.each($(".cpdFormula"), function(k,v) {
 					// TODO display (nice) error message to user
 				}
 			});
-		} else if (typeSpectrum == 'nmr' ) {
+		} else if (typeSpectrum == 'nmr' || typeSpectrum == 'nmr-1d' || typeSpectrum == 'nmr-2d' ) {
 			// <c:if test="${not display_real_spectrum}">
 			// set element to load
 			var spectrumNMRToLoad = [];
@@ -1862,7 +1851,7 @@ $.each($(".cpdFormula"), function(k,v) {
 	$(document).ready(function(){
 		var initialEvent = $('#linkDumpSpectrum')[0].onclick;
 		$('#linkDumpSpectrum').click(function(){
-			var id = Number(0${spectrum_id});
+			var id = Number("${spectrum_id}");
 			// get name
 			var name = "${fn:escapeXml(spectrum_name)}";
 			// load icon
@@ -1960,6 +1949,58 @@ $.each($(".cpdFormula"), function(k,v) {
 	<!-- /.modal-dialog -->
 </div>
 <!-- /.modal print -->
+
+<!-- MODAL - EXPORT SPECTRUM -->
+<div class="modal" id="modalExportSpectrum" tabindex="-1" role="dialog" aria-labelledby="modalExportSpectrumLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content modalLarge">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="modalExportSpectrumLabel">Export</h4>
+			</div>
+			<div class="modal-body">
+				<div class="te">
+					
+					
+					<ul class="list-group">
+						<!-- MASS -->
+						<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation' || spectrum_type == 'gc-fullscan' }">
+							<li class="list-group-item">
+								<a title="MassBank" href="spectrum-massbank-export/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i> MassBank</a> 
+							</li>
+							<li class="list-group-item">
+								<a title="MGF" href="spectrum-mgf-export/${spectrum_type}/${spectrum_id}" target="_blank" ><i class="fa fa-file-text-o"></i> MGF</a>
+							</li> 
+							<li class="list-group-item">
+								<a title="MSP - Full" href="spectrum-msp-export/${spectrum_type}/${spectrum_id}?mode=full" target="_blank" ><i class="fa fa-file"></i> MSP (with mol; with annotations) </a>
+							</li> 
+							<li class="list-group-item">
+								<a title="MSP - Light" href="spectrum-msp-export/${spectrum_type}/${spectrum_id}?mode=light" target="_blank" ><i class="fa fa-file-code-o"></i> MSP (no mol; no annotations)</a> 
+							</li> 
+						</c:if>
+						<!-- NMR -->
+						<c:if test="${(spectrum_type == 'nmr-1d') && display_real_spectrum}">
+							<li class="list-group-item">
+								<a title="nmrML" href="spectrum-nmrml-export/${spectrum_type}/${spectrum_id}" target="_blank" ><i class="fa fa-file-code-o"></i>nmrML</a>
+							</li>
+						</c:if>
+						<!-- all -->
+						<li class="list-group-item">
+							<a title="PeakForest XLSM" id="linkDumpSpectrum" href="#" ><i class="fa fa-file-excel-o"></i> XLSM</a>
+						</li>
+					</ul>
+					
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="modal.close" text="Close" /></button>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+
 <!-- MODAL - EDIT CPD-->
 <div class="modal " id="modalEditCompound" tabindex="-1" role="dialog" aria-labelledby="modalEditCompoundLabel" aria-hidden="true">
 	<div class="modal-dialog">

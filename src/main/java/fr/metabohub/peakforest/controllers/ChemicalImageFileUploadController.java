@@ -42,32 +42,34 @@ public class ChemicalImageFileUploadController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	@Secured("ROLE_EDITOR")
-	public String processUpload(HttpServletRequest request, @RequestParam MultipartFile file,
-			@RequestParam(value = "inchikey", required = true) String inchikey, Model model)
+	public String processUpload(//
+			final HttpServletRequest request, //
+			final @RequestParam MultipartFile file, //
+			final @RequestParam(value = "inchikey", required = true) String inchikey, //
+			final Model model)//
 			throws IOException, PeakForestManagerException {
 		// 0 - init
-		File upLoadedfile = null;
-		String originalFilename = file.getOriginalFilename();
+		File uploadedFile = null;
+		final String originalFilename = file.getOriginalFilename();
 		if (originalFilename.equals("")) {
 			model.addAttribute("success", false);
 			model.addAttribute("error", "no_file_selected");
 			return "/uploads/upload-compound-image-file";
 		}
-		String tmpName = EncodeUtils.getMD5(System.currentTimeMillis() + originalFilename)
+		final String tmpName = EncodeUtils.getMD5(System.currentTimeMillis() + originalFilename)
 				+ originalFilename.substring(originalFilename.lastIndexOf("."), originalFilename.length());
-		// String clientID = ProcessProgressManager.XLS_IMPORT_CHEMICAL_LIB_LABEL +
-		// requestID;
 		// create upload dir if empty
-		File uploadDir = new File(PeakForestUtils.getBundleConfElement("uploadedFiles.folder"));
+		final File uploadDir = new File(PeakForestUtils.getBundleConfElement("uploadedFiles.folder"));
 		if (!uploadDir.exists()) {
 			uploadDir.mkdirs();
 		}
 		// get images path
 		String uploadedImagesPath = null;
 		// check ext
-		if (originalFilename.trim().toLowerCase().endsWith(".svg")
-				|| originalFilename.trim().toLowerCase().endsWith(".png")) {
+		if (originalFilename.trim().toLowerCase().endsWith(".svg")) {
 			uploadedImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
+		} else if (originalFilename.trim().toLowerCase().endsWith(".png")) {
+			uploadedImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesPNG.folder");
 		} else if (originalFilename.trim().toLowerCase().endsWith(".mol")) {
 			uploadedImagesPath = PeakForestUtils.getBundleConfElement("compoundMolFiles.folder");
 		} else {
@@ -88,36 +90,37 @@ public class ChemicalImageFileUploadController {
 		}
 		// I - copy file
 		if (file.getSize() > 0) { // writing file to a directory
-			upLoadedfile = new File(
+			uploadedFile = new File(
 					PeakForestUtils.getBundleConfElement("uploadedFiles.folder") + File.separator + tmpName);
-			upLoadedfile.createNewFile();
-			FileOutputStream fos = new FileOutputStream(upLoadedfile);
+			uploadedFile.createNewFile();
+			FileOutputStream fos = new FileOutputStream(uploadedFile);
 			fos.write(file.getBytes());
 			fos.close(); // setting the value of fileUploaded variable
 		}
-		if (upLoadedfile != null) {
-			model.addAttribute("tmpFileName", upLoadedfile.getName());
+		if (uploadedFile != null) {
+			model.addAttribute("tmpFileName", uploadedFile.getName());
 		} else {
 			model.addAttribute("tmpFileName", null);
 		}
-		final String uploadedFileCheckExt = upLoadedfile.getName().toLowerCase();
+		final String uploadedFileCheckExt = uploadedFile.getName().toLowerCase();
 		final String ext = uploadedFileCheckExt.substring(uploadedFileCheckExt.lastIndexOf(".") + 1,
 				uploadedFileCheckExt.length());
-		if (uploadedFileCheckExt.endsWith("mol") || uploadedFileCheckExt.endsWith("svg")
+		if (uploadedFileCheckExt.endsWith("mol")//
+				|| uploadedFileCheckExt.endsWith("svg")//
 				|| uploadedFileCheckExt.endsWith("png")) {
 			// get name
-			File imgPath = new File(uploadedImagesPath + File.separator + inchikey + "." + ext);
+			final File imgPath = new File(uploadedImagesPath + File.separator + inchikey + "." + ext);
 			// avoid overwrite
 			if (imgPath.exists()) {
-				File newFileName2 = new File(
+				final File newFileName2 = new File(
 						uploadedImagesPath + File.separator + inchikey + "_" + System.currentTimeMillis() + "." + ext);
 				imgPath.renameTo(newFileName2);
 				chemicalLibraryLog(
 						"rename chemical file from '" + imgPath.getName() + "' to '" + newFileName2.getName() + "'");
 			}
-			// copy file
-			Files.copy(upLoadedfile.toPath(), imgPath.toPath());
-			chemicalLibraryLog("upload chemical file '" + upLoadedfile.getName() + "' for " + inchikey);
+			// copy file and log
+			Files.copy(uploadedFile.toPath(), imgPath.toPath());
+			chemicalLibraryLog("upload chemical file '" + uploadedFile.getName() + "' for " + inchikey);
 			// success!
 			model.addAttribute("success", true);
 			return "/uploads/upload-compound-image-file";
@@ -126,7 +129,6 @@ public class ChemicalImageFileUploadController {
 			model.addAttribute("error", "wrong_ext");
 			return "/uploads/upload-compound-image-file";
 		}
-
 	}
 
 	/**

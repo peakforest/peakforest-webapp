@@ -4,7 +4,7 @@
 <%@ page session="false"%>
 <%@ page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%
-	boolean useMEwebservice = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("metexplore.ws.use"));
+boolean useMEwebservice = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("metexplore.ws.use"));
 boolean useWS = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("use.peakforest.webservices"));
 %>
 <div class="row">

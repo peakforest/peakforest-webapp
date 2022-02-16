@@ -33,33 +33,38 @@ import fr.metabohub.peakforest.utils.SpectralDatabaseLogger;
 @Secured("ROLE_CURATOR")
 public class CurationMessagesController {
 
-	@RequestMapping(value = "/list-curation-messages/{filter}/{limit}", method = RequestMethod.GET)
-	public @ResponseBody Object curationMessageList(@PathVariable String filter, @PathVariable int limit)
-			throws PeakForestManagerException {
+	@RequestMapping(method = RequestMethod.GET, //
+			value = "/list-curation-messages/{filter}/{limit}")
+	public @ResponseBody Object curationMessageList(//
+			final @PathVariable String filter, //
+			final @PathVariable int limit) throws PeakForestManagerException {
 		return curationMessageList(filter, limit, null);
 	}
 
-	@RequestMapping(value = "/list-curation-messages/{filter}/{limit}/{query}", method = RequestMethod.GET)
-	public @ResponseBody Object curationMessageList(@PathVariable String filter, @PathVariable int limit,
-			@PathVariable String query) throws PeakForestManagerException {
+	@RequestMapping(method = RequestMethod.GET, //
+			value = "/list-curation-messages/{filter}/{limit}/{query}"//
+	)
+	public @ResponseBody Object curationMessageList(//
+			final @PathVariable String filter, //
+			final @PathVariable int limit, //
+			final @PathVariable String query)//
+			throws PeakForestManagerException {
 		// init data
-		List<CurationMessage> data = null;
-
+		final List<CurationMessage> data = new ArrayList<>();
 		// load data
 		try {
 			if (filter.equalsIgnoreCase("compound")) {
-				data = CurationMessageDao.list(query, Compound.class, limit);
+				data.addAll(CurationMessageDao.list(query, Compound.class, limit));
 			} else if (filter.equalsIgnoreCase("spectrum")) {
-				data = CurationMessageDao.list(query, Spectrum.class, limit);
+				data.addAll(CurationMessageDao.list(query, Spectrum.class, limit));
 			} else {
-				data = CurationMessageDao.list(query, null, limit);
+				data.addAll(CurationMessageDao.list(query, null, limit));
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-		data = PeakForestPruneUtils.pruneCM(data);
-
-		return data;
+		// return
+		return PeakForestPruneUtils.pruneCM(data);
 	}
 
 	@RequestMapping(value = "/update-curation-message", method = RequestMethod.POST, params = { "id", "status" })

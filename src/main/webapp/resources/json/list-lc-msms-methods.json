@@ -1,6 +1,8 @@
 { 
 	"methods": [ 
 		{ "name": "NA", "value": "NA"},
+		{ "name": "IDF / CEA - MSMS", "separator": "========================================================="},
+		{ "name": "IDF (API-MSMS procedures_FIA_IDF)", "value": "api-msms-fia__idf-cea"},
 		{ "name": "Test - MSMS", "separator": "========================================================="},
 		{ "name": "LC-MSMS test", "value": "lc-msms__test"}
 	]

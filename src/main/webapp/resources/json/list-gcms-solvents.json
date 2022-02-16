@@ -1,0 +1,29 @@
+{
+	"solvents": [
+		{
+			"name": "none",
+			"value": "none",
+			"classD": ""
+		},
+		{
+			"name": "hexane",
+			"value": "hexane",
+			"classD": ""
+		},
+		{
+			"name": "heptane",
+			"value": "heptane",
+			"classD": ""
+		},
+		{
+			"name": "ethyl acetate",
+			"value": "ethyl acetate",
+			"classD": ""
+		},
+		{
+			"name": "acetonitrile",
+			"value": "acetonitrile",
+			"classD": ""
+		}
+	]
+}

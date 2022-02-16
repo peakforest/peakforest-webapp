@@ -15,10 +15,14 @@
 <link rel="stylesheet" media="screen" href="<c:url value="/resources/handsontable/dist/handsontable.full.min.css" />">
 <link rel="stylesheet" media="screen" href="<c:url value="/resources/handsontable/bootstrap/handsontable.bootstrap.min.css" />">
 
+<script src="<c:url value="/resources/js/jquery.tmpl.min.js" />" type="text/javascript"></script>
+
 <style type='text/css'>
 </style>
 <script type='text/javascript'>
 	//<![CDATA[ 
+		//
+		$("#cardSheet2 li:first a").trigger("click");
 	//]]>
 </script>
 </head>
@@ -62,6 +66,8 @@
 						
 						var lcSFGOriData = [];
 // 						var updatedLC_SFGdata = {};
+						var gcSFPOriData = [];
+						var icSFGOriData = [];
 						
 						var msPeaksOrdiData = [];
 						
@@ -115,23 +121,35 @@
 						<!-- tab bar start ##################################################################################################### -->
 <ul class="nav nav-tabs" style="margin-bottom: 15px;">
 	<li class="active"><a href="#analytical_sample-modal" data-toggle="tab"><i class="fa fa fa-flask"></i> <spring:message code="page.spectrum.tag.analyticalSample" text="Analytical Sample" /></a></li>
-	<!-- MS ONLY -->
+	<!-- LC-MS ONLY -->
 	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
-	<li><a href="#chromatography-modal" data-toggle="tab"><i class="fa fa-area-chart"></i> <spring:message code="page.spectrum.tag.chromatography" text="Chromatography" /></a></li>
-	<li><a href="#MS_analyzer-modal" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.massAnalyze" text="Mass Analyzer" /></a></li>
-	<li><a href="#MS_peaks-modal" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakList" text="Peak List" /></a></li>
+		<li><a href="#chromatography-modal" data-toggle="tab"><i class="fa fa-area-chart"></i> <spring:message code="page.spectrum.tag.chromatography" text="Chromatography" /></a></li>
+		<li><a href="#MS_analyzer-modal" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.massAnalyze" text="Mass Analyzer" /></a></li>
+		<li><a href="#MS_peaks-modal" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakList" text="Peak List" /></a></li>
+	</c:if>
+	<!-- IC-MS ONLY -->
+	<c:if test="${spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation'}">
+		<li><a href="#chromatography-modal" data-toggle="tab"><i class="fa fa-area-chart"></i> <spring:message code="page.spectrum.tag.chromatography" text="Chromatography" /></a></li>
+		<li><a href="#MS_analyzer-modal" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.massAnalyze" text="Mass Analyzer" /></a></li>
+		<li><a href="#MS_peaks-modal" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakList" text="Peak List" /></a></li>
+	</c:if>
+	<!-- GC-MS ONLY -->
+	<c:if test="${spectrum_type == 'gc-fullscan'}">
+		<li><a href="#chromatography-modal" data-toggle="tab"><i class="fa fa-area-chart"></i> <spring:message code="page.spectrum.tag.chromatography" text="Chromatography" /></a></li>
+		<li><a href="#MS_analyzer-modal" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.massAnalyze" text="Mass Analyzer" /></a></li>
+		<li><a href="#MS_peaks-modal" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakList" text="Peak List" /></a></li>
 	</c:if>
 	<!-- NMR ONLY -->
 	<c:if test="${spectrum_type == 'nmr-1d' || spectrum_type == 'nmr-2d'}">
-	<li><a href="#NMR_analyzer-modal" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.nmrAnalyzer" text="NMR Analyzer" /></a></li>
-	<li><a href="#NMR_peaks-modal" onclick="try{refreshJSmol();}catch(e){}" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakListnmr" text="Peak List" /></a></li>
+		<li><a href="#NMR_analyzer-modal" data-toggle="tab"><i class="fa fa-tachometer"></i> <spring:message code="page.spectrum.tag.nmrAnalyzer" text="NMR Analyzer" /></a></li>
+		<li><a href="#NMR_peaks-modal" onclick="try{refreshJSmol();}catch(e){}" data-toggle="tab"><i class="fa fa-bar-chart"></i> <spring:message code="page.spectrum.tag.peakListnmr" text="Peak List" /></a></li>
 	</c:if>
 	<!-- all -->
 	<li><a href="#other_metadata-modal" data-toggle="tab"><i class="fa fa-info-circle"></i> <spring:message code="page.spectrum.tag.other" text="Other" /></a></li>
 </ul>
-						<!-- tab bar end   ##################################################################################################### -->
+<!-- tab bar end   ##################################################################################################### -->
 <div id="div-metadata-modal" class="tab-content">
-						<!-- #####################################################################################################        SAMPLE -->
+	<!-- #####################################################################################################        SAMPLE -->
 	<div class="tab-pane fade active in" id="analytical_sample-modal">
 		<div class="panel panel-default">
 <c:choose>
@@ -140,38 +158,76 @@
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelSingle" text="Sample type: Single Chemical Compound" /></h3>
 			</div>
 			<div class="panel-body">
-<!-- classic data -->
-
-<ul class="list-group" style="max-width: 600px;">
-	<li class="list-group-item">
-		Compound Name:&nbsp;
-		${fn:escapeXml(spectrum_sample_compound_name)} <small>(can not be changed!)</small>
-	</li>
-<%-- 	<c:if test="${spectrum_sample_compound_has_concentration}"> --%>
-	<li class="list-group-item">
-		Concentration: <span id="input_spectrum_sample_compound_concentration">${spectrum_sample_compound_concentration} mmol/L</span>
-		<div id="inputEdit_spectrum_sample_compound_concentration" class="form-group input-group" style="max-width: 400px; display: none;">
-			<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_sample_compound_concentration}" placeholder="${spectrum_sample_compound_concentration}">
-			<span class="input-group-btn">
-				<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_sample_compound_concentration', ' mmol/L');"><i class="fa fa-check-square-o"></i></button>
-			</span>
-		</div>
-		<a id="btn-edit_spectrum_sample_compound_concentration" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_sample_compound_concentration');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
-	</li>
-<%-- 	</c:if> --%>
-	<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
-	<li class="list-group-item">
-		Solvent: <span id="select_spectrum_sample_compound_liquid_solvent">${select_spectrum_sample_compound_liquid_solvent}</span>
-		<div id="selectEdit_select_spectrum_sample_compound_liquid_solvent" class="form-group  select-group" style="max-width: 400px; display: none;">
-			<select id="selectElem_select_spectrum_sample_compound_liquid_solvent" class="form-control col-xs-3" style="max-width: 340px;"></select>
-			<span class="input-group-btn" style="max-width: 50px;">
-				<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('select_spectrum_sample_compound_liquid_solvent');"><i class="fa fa-check-square-o"></i></button>
-			</span>
-		</div>
-		<a id="btn-edit_select_spectrum_sample_compound_liquid_solvent" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('select_spectrum_sample_compound_liquid_solvent');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
-	</li>
-	</c:if>
-</ul>
+				<!-- classic data -->
+				<ul class="list-group" style="max-width: 600px;">
+					<li class="list-group-item">
+						Compound Name:&nbsp;
+						${fn:escapeXml(spectrum_sample_compound_name)} <small>(can not be changed!)</small>
+					</li> 
+					<c:choose>	
+						<c:when test="${spectrum_type == 'gc-fullscan'}">
+							<li class="list-group-item">
+								Concentration: <span id="input_spectrum_sample_compound_concentration">${spectrum_sample_compound_concentration} nmol/L</span>
+								<div id="inputEdit_spectrum_sample_compound_concentration" class="form-group input-group" style="max-width: 400px; display: none;">
+									<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_sample_compound_concentration}" placeholder="${spectrum_sample_compound_concentration}">
+									<span class="input-group-btn">
+										<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_sample_compound_concentration', ' nmol/L');"><i class="fa fa-check-square-o"></i></button>
+									</span>
+								</div>
+								<a id="btn-edit_spectrum_sample_compound_concentration" class="btn btn-info btn-xs" onclick="editSpectrumLiveDataInput('spectrum_sample_compound_concentration');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+							</li>
+						</c:when>
+						<c:otherwise>
+							<li class="list-group-item">
+								Concentration: <span id="input_spectrum_sample_compound_concentration">${spectrum_sample_compound_concentration} mmol/L</span>
+								<div id="inputEdit_spectrum_sample_compound_concentration" class="form-group input-group" style="max-width: 400px; display: none;">
+									<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_sample_compound_concentration}" placeholder="${spectrum_sample_compound_concentration}">
+									<span class="input-group-btn">
+										<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_sample_compound_concentration', ' mmol/L');"><i class="fa fa-check-square-o"></i></button>
+									</span>
+								</div>
+								<a id="btn-edit_spectrum_sample_compound_concentration" class="btn btn-info btn-xs" onclick="editSpectrumLiveDataInput('spectrum_sample_compound_concentration');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+							</li>
+						</c:otherwise>
+					</c:choose> 
+					<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
+						<li class="list-group-item">
+							Solvent: <span id="select_spectrum_sample_compound_liquid_solvent">${spectrum_sample_compound_liquid_solvent}</span>
+							<div id="selectEdit_spectrum_sample_compound_liquid_solvent" class="form-group  select-group" style="max-width: 400px; display: none;">
+								<select id="selectElem_spectrum_sample_compound_liquid_solvent" class="form-control col-xs-3" style="max-width: 340px;"></select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_sample_compound_liquid_solvent');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_sample_compound_liquid_solvent" class="btn btn-info btn-xs" onclick="editSpectrumLiveDataSelect('spectrum_sample_compound_liquid_solvent');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+					</c:if>
+					<c:if test="${spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation'}">
+						<!-- no solvent for IC -->
+					</c:if>
+					<c:if test="${spectrum_type == 'gc-fullscan'}">
+						<li class="list-group-item">
+							Solvent: <span id="select_spectrum_sample_compound_gas_solvent">${spectrum_sample_compound_gas_solvent}</span>
+							<div id="selectEdit_spectrum_sample_compound_gas_solvent" class="form-group  select-group" style="max-width: 400px; display: none;">
+								<select id="selectElem_spectrum_sample_compound_gas_solvent" class="form-control col-xs-3" style="max-width: 340px;"></select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_sample_compound_gas_solvent');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_sample_compound_gas_solvent" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_sample_compound_gas_solvent');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+						<li class="list-group-item">
+							Solvent: <span id="select_spectrum_sample_compound_derivation_method">${spectrum_sample_compound_derivation_method}</span>
+							<div id="selectEdit_spectrum_sample_compound_derivation_method" class="form-group  select-group" style="max-width: 400px; display: none;">
+								<select id="selectElem_spectrum_sample_compound_derivation_method" class="form-control col-xs-3" style="max-width: 340px;"></select>
+								<span class="input-group-btn" style="max-width: 50px;">
+									<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_sample_compound_derivation_method');"><i class="fa fa-check-square-o"></i></button>
+								</span>
+							</div>
+							<a id="btn-edit_spectrum_sample_compound_derivation_method" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_sample_compound_derivation_method');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+						</li>
+					</c:if>
+				</ul>
 			</div>
 	</c:when>
 	<c:when test="${spectrum_sample_type == 'mix-cpd'}">	
@@ -181,17 +237,17 @@
 			<div class="panel-body">
 							<ul style="">
 									<li class="list-group-item">
-										Solvent: <span id="select_select_spectrum_sample_compound_liquid_solvent_mix">${select_spectrum_sample_compound_liquid_solvent}</span>
-										<div id="selectEdit_select_spectrum_sample_compound_liquid_solvent_mix" class="form-group  select-group" style="max-width: 400px; display: none;">
-											<select id="selectElem_select_spectrum_sample_compound_liquid_solvent_mix" class="form-control col-xs-3" style="max-width: 340px;">
+										Solvent: <span id="select_spectrum_sample_compound_liquid_solvent_mix">${spectrum_sample_compound_liquid_solvent}</span>
+										<div id="selectEdit_spectrum_sample_compound_liquid_solvent_mix" class="form-group  select-group" style="max-width: 400px; display: none;">
+											<select id="selectElem_spectrum_sample_compound_liquid_solvent_mix" class="form-control col-xs-3" style="max-width: 340px;">
 												<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
 												<option value="H2O/ethanol (75/25)">H2O/ethanol (75/25)</option>
 											</select>
 											<span class="input-group-btn" style="max-width: 50px;">
-												<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('select_spectrum_sample_compound_liquid_solvent_mix');"><i class="fa fa-check-square-o"></i></button>
+												<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_sample_compound_liquid_solvent_mix');"><i class="fa fa-check-square-o"></i></button>
 											</span>
 										</div>
-										<a id="btn-edit_select_spectrum_sample_compound_liquid_solvent_mix" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('select_spectrum_sample_compound_liquid_solvent_mix');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+										<a id="btn-edit_spectrum_sample_compound_liquid_solvent_mix" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_sample_compound_liquid_solvent_mix');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 									</li>
 							</ul>
 <%-- 							<c:if test="${spectrum_has_main_compound}"> --%>
@@ -451,7 +507,7 @@
 </c:if>
 		</div>
 	</div>
-						<!-- #####################################################################################################            LC -->
+	<!-- #####################################################################################################   CHROMATO  -->
 	<div class="tab-pane " id="chromatography-modal">
 		<div class="panel panel-default">
 <c:choose>	
@@ -559,7 +615,7 @@
 						<select id="selectElem_spectrum_chromatography_mode_lc" class="form-control col-xs-3" style="max-width: 200px;">
 							<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
 							<option value="gradient">Gradient</option>
-							<option value="isocratique">Isocratique</option>
+							<option value="isocratic">Isocratic</option>
 						</select>
 						<span class="input-group-btn" style="max-width: 50px;">
 							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_mode_lc');"><i class="fa fa-check-square-o"></i></button>
@@ -663,23 +719,536 @@
 			</div>
 	</c:when>
 	<c:when test="${spectrum_chromatography == 'gc'}">
+		<!-- #####################################################################################################  CHROMATO GC  -->
 			<div class="panel-heading">
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelGCChromato" text="GC Chromatography" /></h3>
 			</div>
 			<div class="panel-body">
-			...
+<table style="width:100%">
+	<tr> 
+		<td width="50%">
+			<ul class="list-group" style="max-width: 600px;">
+				<!-- chromato method -->
+				<li class="list-group-item">
+					Method: <span id="select_spectrum_gas_chromatography_method">${spectrum_chromatography_method}</span>
+					<div id="selectEdit_spectrum_gas_chromatography_method" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_gas_chromatography_method" class="form-control col-xs-3" style="max-width: 200px;"></select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_gas_chromatography_method');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_gas_chromatography_method" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_gas_chromatography_method');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- col. constructor -->
+				<li class="list-group-item">
+					Column constructor: <span id="select_spectrum_gas_chromatography_col_constructor">${fn:escapeXml(spectrum_chromatography_col_constructor)}</span>
+					<div id="selectEdit_spectrum_gas_chromatography_col_constructor" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_gas_chromatography_col_constructor" class="form-control col-xs-3" style="max-width: 200px;"></select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_gas_chromatography_col_constructor');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_gas_chromatography_col_constructor" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_gas_chromatography_col_constructor');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- col. constructor other -->
+<!-- 				<li id="specialDiv_spectrum_gas_chromatography_col_constructor_other" class="list-group-item" style="display:none;"> -->
+<%-- 					Col. Construct. Other: <span id="input_spectrum_gas_chromatography_col_constructor_other">${fn:escapeXml(spectrum_chromatography_col_constructor)} </span> --%>
+<!-- 					<div id="inputEdit_spectrum_gas_chromatography_col_constructor_other" class="form-group input-group" style="max-width: 400px; display: none;"> -->
+<%-- 						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_chromatography_col_constructor)}" placeholder="${fn:escapeXml(spectrum_chromatography_col_constructor)}"> --%>
+<!-- 						<span class="input-group-btn"> -->
+<!-- 							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_gas_chromatography_col_constructor_other');"><i class="fa fa-check-square-o"></i></button> -->
+<!-- 						</span> -->
+<!-- 					</div> -->
+<!-- 					<a id="btn-edit_spectrum_gas_chromatography_col_constructor_other" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_gas_chromatography_col_constructor_other');" href="#"> <i class="fa fa-pencil fa-lg"></i></a> -->
+<!-- 				</li> -->
+				<!-- col. name -->
+				<li class="list-group-item">
+					Column name: <span id="input_spectrum_chromatography_col_name">${fn:escapeXml(spectrum_chromatography_col_name)}</span>
+					<div id="inputEdit_spectrum_chromatography_col_name" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_chromatography_col_name)}" placeholder="${fn:escapeXml(spectrum_chromatography_col_name)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_name');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_name" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_name');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- col. length -->
+				<li class="list-group-item">
+					Column length: <span id="input_spectrum_chromatography_col_length">${fn:escapeXml(spectrum_chromatography_col_length)} (mm)</span>
+					<div id="inputEdit_spectrum_chromatography_col_length" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_col_length}" placeholder="${spectrum_chromatography_col_length}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_length', ' (mm)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_length" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_length');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- col. diameter -->
+				<li class="list-group-item">
+					Column diameter: <span id="input_spectrum_chromatography_col_diameter">${fn:escapeXml(spectrum_chromatography_col_diameter)} (mm)</span>
+					<div id="inputEdit_spectrum_chromatography_col_diameter" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_col_diameter}" placeholder="${spectrum_chromatography_col_diameter}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_diameter', ' (mm)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_diameter" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_diameter');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- particule size -->
+				<li class="list-group-item">
+					Particule size: <span id="input_spectrum_chromatography_col_particule_size">${fn:escapeXml(spectrum_chromatography_col_particule_size)} (&micro;m)</span>
+					<div id="inputEdit_spectrum_chromatography_col_particule_size" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_col_particule_size}" placeholder="${spectrum_chromatography_col_particule_size}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_particule_size', '  (&micro;m)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_particule_size" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_particule_size');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Injection volume -->
+				<li class="list-group-item">
+					Injection volume: <span id="input_spectrum_chromatography_injection_volume">${spectrum_chromatography_injection_volume} (&micro;L)</span>
+					<div id="inputEdit_spectrum_chromatography_injection_volume" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_injection_volume}" placeholder="${spectrum_chromatography_injection_volume}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_injection_volume', ' (&micro;L)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_injection_volume" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_injection_volume');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Injection mode -->
+				<li class="list-group-item">
+					Injection mode: <span id="select_spectrum_chromatography_injection_mode">${spectrum_chromatography_injection_mode_string}</span>
+					<div id="selectEdit_spectrum_chromatography_injection_mode" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_injection_mode" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value="Split">Split</option>
+							<option value="Splitless">Splitless</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_injection_mode');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_injection_mode" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_injection_mode');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Split ratio -->
+				<li class="list-group-item">
+					Split ratio: <span id="input_spectrum_chromatography_split_ratio">${spectrum_chromatography_split_ratio} (:1)</span>
+					<div id="inputEdit_spectrum_chromatography_split_ratio" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="number" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_split_ratio}" placeholder="${spectrum_chromatography_split_ratio}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_split_ratio', ' (:1)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_split_ratio" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_split_ratio');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Carrier gas -->
+				<li class="list-group-item">
+					Carrier gas: <span id="select_spectrum_chromatography_carrier_gas">${spectrum_chromatography_carrier_gas}</span>
+					<div id="selectEdit_spectrum_chromatography_carrier_gas" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_carrier_gas" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value=""></option>
+							<option value="He">He</option>
+							<option value="H2">H2</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_carrier_gas');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_carrier_gas" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_carrier_gas');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- gas flow -->
+				<li class="list-group-item">
+					Gas flow: <span id="input_spectrum_chromatography_gas_flow">${spectrum_chromatography_gas_flow} (mL/min)</span>
+					<div id="inputEdit_spectrum_chromatography_gas_flow" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_gas_flow}" placeholder="${spectrum_chromatography_gas_flow}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_gas_flow', ' (mL/min)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_gas_flow" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_gas_flow');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- gas opt -->
+				<li class="list-group-item">
+					Gas opt: <span id="select_spectrum_chromatography_gas_opt">${spectrum_chromatography_gas_opt}</span>
+					<div id="selectEdit_spectrum_chromatography_gas_opt" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_gas_opt" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value=""></option>
+							<option value="flow constant">flow constant</option>
+							<option value="debit constant">debit constant</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_gas_opt');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_gas_opt" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_gas_opt');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Gas pressure -->
+				<li class="list-group-item">
+					Gas pressure: <span id="input_spectrum_chromatography_gas_pressure">${spectrum_chromatography_gas_pressure} (psi)</span>
+					<div id="inputEdit_spectrum_chromatography_gas_pressure" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_gas_pressure}" placeholder="${spectrum_chromatography_gas_pressure}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_gas_pressure', ' (psi)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_gas_pressure" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_gas_pressure');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- GC mode -->
+				<li class="list-group-item">
+					GC mode: <span id="select_spectrum_chromatography_mode_gc">${spectrum_chromatography_mode_gc}</span>
+					<div id="selectEdit_spectrum_chromatography_mode_gc" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_mode_gc" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+							<option value="gradient">Gradient</option>
+							<option value="isocratic">Isocratic</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_mode_gc');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_mode_gc" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_mode_gc');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Liner Manufacturer -->
+				<li class="list-group-item">
+					Liner Manufacturer: <span id="select_spectrum_chromatography_liner_manufacturer">${spectrum_chromatography_liner_manufacturer}</span>
+					<div id="selectEdit_spectrum_chromatography_liner_manufacturer" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_liner_manufacturer" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+							<option value=""></option>
+							<option value="agilent">Agilent</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_liner_manufacturer');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_liner_manufacturer" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_liner_manufacturer');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- OTHER -->  
+				<li class="list-group-item">
+					Liner Manufacturer: <span id="select_spectrum_chromatography_liner_type">${spectrum_chromatography_liner_type}</span>
+					<div id="selectEdit_spectrum_chromatography_liner_type" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_liner_type" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+							<option value=""></option>
+							<option value="5183-4711 / wool / 1-taper">5183-4711 / wool / 1-taper</option>
+							<option value="5181-3316 / no-wool / 1-taper">5181-3316 / no-wool / 1-taper</option>
+							<option value="5062-3587 / wool / 1-taper">5062-3587 / wool / 1-taper</option>
+							<option value="19251-60540 / wool / straight">19251-60540 / wool / straight</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_liner_type');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_liner_type" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_liner_type');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+			</ul>
+		</td>
+		<td width="50%">
+			<b>Separation flow gradient</b>
+			<br>
+			<table id="tab_spectrum_chromatography_stp_temperature" class="table" style="max-width: 300px;">
+				<thead>
+					<tr>
+						<td style="width: 100px;">Temp. (&#8451;)</td>
+						<td style="width: 100px;">Rate (&#8451;/min)</td>
+						<td style="width: 100px;">Time (min)</td>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="temp" items="${spectrum_chromatography_stp_temperature}">
+					<tr>
+						<td style="width: 100px;">${temp}</td>
+						<td>${spectrum_chromatography_stp.get(temp)[0]}</td>
+						<td>${spectrum_chromatography_stp.get(temp)[1]}
+							<script type="text/javascript">
+							var currentSFP = { 
+									"temp": Number("${temp}"),
+									"r": Number("${spectrum_chromatography_stp.get(temp)[0]}"),
+									"t": Number("${spectrum_chromatography_stp.get(temp)[1]}")
+							}; 
+							gcSFPOriData.push(currentSFP);
+							</script>
+						</td>
+					</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+			<a id="btn-edit_spectrum_chromatography_stp_temperature" class="btn btn-info btn-xs pull-right " onclick="editSpectrumLiveDataTab('spectrum_chromatography_stp_temperature');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+			<div id="tabEdit_spectrum_chromatography_stp_temperature" class="handsontable" style="display:none"></div>
+			<a id="btn-validate_spectrum_chromatography_stp_temperature" class="btn btn-success btn-xs pull-right " style="display:none;" onclick="updateSpectrumLiveDataTab('spectrum_chromatography_stp_temperature');" href="#"> <i class="fa fa-check fa-lg"></i></a>
+			<br />
+		</td>
+	</tr>
+</table>
+			</div>
+	</c:when>
+	<c:when test="${spectrum_chromatography == 'ic'}">
+			<div class="panel-heading">
+				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelICChromato" text="IC Chromatography" /></h3>
+			</div>
+			<div class="panel-body">
+<table style="width:100%">
+	<tr> 
+		<td width="50%">
+			<ul class="list-group" style="max-width: 600px;">
+				<!-- METHOD -->
+				<li class="list-group-item">
+					Method: <span id="select_spectrum_ion_chromatography_method">${spectrum_chromatography_method}</span>
+					<div id="selectEdit_spectrum_ion_chromatography_method" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_ion_chromatography_method" class="form-control col-xs-3" style="max-width: 200px;"></select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success" type="button" onclick="saveSpectrumLiveDataSelect('spectrum_ion_chromatography_method');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_ion_chromatography_method" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_ion_chromatography_method');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- COL. CONSTRUCTOR -->
+				<li class="list-group-item">
+					Column constructor: <span id="select_spectrum_ion_chromatography_col_constructor">${fn:escapeXml(spectrum_chromatography_col_constructor)}</span>
+					<div id="selectEdit_spectrum_ion_chromatography_col_constructor" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_ion_chromatography_col_constructor" class="form-control col-xs-3" style="max-width: 200px;"></select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_ion_chromatography_col_constructor');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_ion_chromatography_col_constructor" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_ion_chromatography_col_constructor');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- COL. CONSTRUCTOR OTHER -->
+				<li id="specialDiv_spectrum_ion_chromatography_col_constructor_other" class="list-group-item" style="display:none;">
+					Col. Construct. Other: <span id="input_spectrum_ion_chromatography_col_constructor_other">${fn:escapeXml(spectrum_chromatography_col_constructor)} </span>
+					<div id="inputEdit_spectrum_ion_chromatography_col_constructor_other" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_chromatography_col_constructor)}" placeholder="${fn:escapeXml(spectrum_chromatography_col_constructor)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ion_chromatography_col_constructor_other');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_ion_chromatography_col_constructor_other" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ion_chromatography_col_constructor_other');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- COL. NAME -->
+				<li class="list-group-item">
+					Column name: <span id="input_spectrum_chromatography_col_name">${fn:escapeXml(spectrum_chromatography_col_name)}</span>
+					<div id="inputEdit_spectrum_chromatography_col_name" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_chromatography_col_name)}" placeholder="${fn:escapeXml(spectrum_chromatography_col_name)}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_name');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_name" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_name');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- ionic config. -->
+				<li class="list-group-item">
+					Ionic config.: 
+					<span id="select_spectrum_chromatography_col_ionic_config">${spectrum_chromatography_col_ionic_config}</span>
+					<div id="selectEdit_spectrum_chromatography_col_ionic_config" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_col_ionic_config" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value="anionic">anionic</option>
+							<option value="cationic">cationic</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success" type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_col_ionic_config');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_ionic_config" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_col_ionic_config');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Suppressor constructor -->
+				<li class="list-group-item">
+					Suppressor constructor: 
+					<span id="select_spectrum_chromatography_col_suppressor_constructor">${spectrum_chromatography_col_suppressor_constructor}</span>
+					<div id="selectEdit_spectrum_chromatography_col_suppressor_constructor" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_col_suppressor_constructor" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value=""></option>
+							<option value="Thermo">Thermo</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success" type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_col_suppressor_constructor');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_suppressor_constructor" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_col_suppressor_constructor');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Suppressor name -->
+				<li class="list-group-item">
+					Suppressor constructor: 
+					<span id="select_spectrum_chromatography_col_suppressor_name">${spectrum_chromatography_col_suppressor_name}</span>
+					<div id="selectEdit_spectrum_chromatography_col_suppressor_name" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_col_suppressor_name" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value=""></option>
+							<option value="AERS 500e">AERS 500e</option>
+							<option value="AERS 300">AERS 300</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success" type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_col_suppressor_name');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_suppressor_name" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_col_suppressor_name');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Make-up -->
+				<li class="list-group-item">
+					Make-up: 
+					<span id="select_spectrum_chromatography_col_makeup">${spectrum_chromatography_col_makeup}</span>
+					<div id="selectEdit_spectrum_chromatography_col_makeup" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_col_makeup" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value=""></option>
+							<option value="NA">NA</option>
+							<option value="IPA/ACETIC ACID 0.1%">IPA/ACETIC ACID 0.1%</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success" type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_col_makeup');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_makeup" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_col_makeup');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Make-up flow rate -->
+				<li class="list-group-item">
+					Make-up flow rate: 
+					<span id="input_spectrum_chromatography_col_makeup_flow_rate">${spectrum_chromatography_col_makeup_flow_rate} (&micro;L/min)</span>
+					<div id="inputEdit_spectrum_chromatography_col_makeup_flow_rate" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_col_makeup_flow_rate}" placeholder="${spectrum_chromatography_col_makeup_flow_rate}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_makeup_flow_rate', ' (&micro;L/min)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_makeup_flow_rate" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_makeup_flow_rate');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Column length -->
+				<li class="list-group-item">
+					Column length: 
+					<span id="input_spectrum_chromatography_col_length">${fn:escapeXml(spectrum_chromatography_col_length)} (mm)</span>
+					<div id="inputEdit_spectrum_chromatography_col_length" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_col_length}" placeholder="${spectrum_chromatography_col_length}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_length', ' (mm)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_length" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_length');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Column diameter -->
+				<li class="list-group-item">
+					Column diameter: 
+					<span id="input_spectrum_chromatography_col_diameter">${fn:escapeXml(spectrum_chromatography_col_diameter)} (mm)</span>
+					<div id="inputEdit_spectrum_chromatography_col_diameter" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_col_diameter}" placeholder="${spectrum_chromatography_col_diameter}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_diameter', ' (mm)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_diameter" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_diameter');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Particule size -->
+				<li class="list-group-item">
+					Particule size: 
+					<span id="input_spectrum_chromatography_col_particule_size">${fn:escapeXml(spectrum_chromatography_col_particule_size)} (&micro;m)</span>
+					<div id="inputEdit_spectrum_chromatography_col_particule_size" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_col_particule_size}" placeholder="${spectrum_chromatography_col_particule_size}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_particule_size', '  (&micro;m)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_particule_size" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_particule_size');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Column temperature -->
+				<li class="list-group-item">
+					Column temperature: 
+					<span id="input_spectrum_chromatography_col_temperature">${fn:escapeXml(spectrum_chromatography_col_temperature)} (&deg;C)</span>
+					<div id="inputEdit_spectrum_chromatography_col_temperature" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_col_temperature}" placeholder="${spectrum_chromatography_col_temperature}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_col_temperature', ' (&deg;C)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_col_temperature" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_col_temperature');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- IC MODE -->
+				<li class="list-group-item">
+					IC mode: 
+					<span id="select_spectrum_chromatography_mode_ic">${spectrum_chromatography_mode_ic}</span>
+					<div id="selectEdit_spectrum_chromatography_mode_ic" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_mode_ic" class="form-control col-xs-3" style="max-width: 200px;">
+							<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>
+							<option value="gradient">Gradient</option>
+							<option value="isocratic">Isocratic</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_mode_ic');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_mode_ic" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_mode_ic');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Separation flow rate -->
+				<li class="list-group-item">
+					Separation flow rate: 
+					<span id="input_spectrum_chromatography_separation_flow_rate">${fn:escapeXml(spectrum_chromatography_separation_flow_rate)} (&micro;L/min)</span>
+					<div id="inputEdit_spectrum_chromatography_separation_flow_rate" class="form-group input-group" style="max-width: 400px; display: none;">
+						<input type="text" class="form-control input-active-enter-key" style="" value="${spectrum_chromatography_separation_flow_rate}" placeholder="${spectrum_chromatography_separation_flow_rate}">
+						<span class="input-group-btn">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_chromatography_separation_flow_rate', ' (&micro;L/min)');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_separation_flow_rate" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_chromatography_separation_flow_rate');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+				</li>
+				<!-- Solvent -->
+				<li class="list-group-item">
+					Solvent: 
+					<span id="select_spectrum_chromatography_solvent">${spectrum_chromatography_solvent}</span>
+					<div id="selectEdit_spectrum_chromatography_solvent" class="form-group  select-group" style="max-width: 400px; display: none;">
+						<select id="selectElem_spectrum_chromatography_solvent" class="form-control col-xs-3" style="max-width: 200px;">
+							<option></option>
+							<option value="KOH">KOH</option>
+						</select>
+						<span class="input-group-btn" style="max-width: 50px;">
+							<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_chromatography_solvent');"><i class="fa fa-check-square-o"></i></button>
+						</span>
+					</div>
+					<a id="btn-edit_spectrum_chromatography_solvent" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_chromatography_solvent');" href="#"> <i class="fa fa-pencil fa-lg"></i></a> 
+				</li>
+			</ul>
+		</td>
+		<td width="50%">
+			<b>Separation flow gradient</b>
+			<br>
+			<table id="tab_spectrum_chromatography_sfg_time_ic" class="table" style="max-width: 300px;">
+				<thead>
+					<tr>
+						<td style="width: 100px;">Time (min)</td>
+						<td style="width: 100px;">Solvent (mM KOH)</td>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="time" items="${spectrum_chromatography_sfg_time}">
+					<tr>
+						<td style="width: 100px;">${time}</td>
+						<td>${spectrum_chromatography_sfg.get(time)}
+							<script type="text/javascript">
+							currentSFG = { 
+									"time": Number("${time}"),
+									"s": Number("${spectrum_chromatography_sfg.get(time)}")
+							}; 
+							icSFGOriData.push(currentSFG);
+							</script>
+						</td>
+					</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+			<a id="btn-edit_spectrum_chromatography_sfg_time_ic" class="btn btn-info btn-xs pull-right " onclick="editSpectrumLiveDataTab('spectrum_chromatography_sfg_time_ic');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+			<div id="tabEdit_spectrum_chromatography_sfg_time_ic" class="handsontable" style="display:none"></div>
+			<a id="btn-validate_spectrum_chromatography_sfg_time_ic" class="btn btn-success btn-xs pull-right " style="display:none;" onclick="updateSpectrumLiveDataTab('spectrum_chromatography_sfg_time_ic');" href="#"> <i class="fa fa-check fa-lg"></i></a>
+			<br />
+		</td>
+	</tr>
+</table>
 			</div>
 	</c:when>
 </c:choose>
 		</div>
 	</div>
-						<!-- #####################################################################################################  ANALYZER MS  -->
+	<!-- #####################################################################################################  ANALYZER LCMS  -->
 	<div class="tab-pane " id="MS_analyzer-modal">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h3 class="panel-title"><spring:message code="page.spectrum.metadata.sample.labelIonization" text="Ionization" /></h3>
 			</div>
 			<div class="panel-body">
+<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation'}">
 				<ul class="list-group" style="max-width: 600px;">
 					<li class="list-group-item">
 						Ionization method: 
@@ -759,6 +1328,137 @@
 						<a id="btn-edit_spectrum_ms_ionization_ionization_voltage" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_ionization_voltage');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 					</li>				
 				</ul>
+</c:if>
+<c:if test="${spectrum_type == 'gc-fullscan'}">
+				<ul class="list-group" style="max-width: 600px;">
+					<!-- ionization method -->
+					<li class="list-group-item">
+						Ionization method: 
+						<span id="select_spectrum_gcms_ionization_ionization_method">${fn:escapeXml(spectrum_ms_ionization.getIonizationAsString())}</span>
+						<div id="selectEdit_spectrum_gcms_ionization_ionization_method" class="form-group  select-group" style="max-width: 400px; display: none;">
+							<select id="selectElem_spectrum_gcms_ionization_ionization_method" class="form-control col-xs-3" style="max-width: 200px;"></select>
+							<span class="input-group-btn" style="max-width: 50px;">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_gcms_ionization_ionization_method');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_gcms_ionization_ionization_method" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_gcms_ionization_ionization_method');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- electron energy -->
+					<li class="list-group-item">
+						Electron energy: 
+						<span id="input_spectrum_ms_ionization_electron_energy">${fn:escapeXml(spectrum_ms_ionization.electronEnergy)} (eV)</span>
+						<div id="inputEdit_spectrum_ms_ionization_electron_energy" class="form-group input-group" style="max-width: 400px; display: none;">
+							<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_ms_ionization.electronEnergy)}" placeholder="${fn:escapeXml(spectrum_ms_ionization.electronEnergy)}">
+							<span class="input-group-btn">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_ionization_electron_energy', ' (eV)');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_electron_energy" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_electron_energy');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- Emission current -->
+					<li class="list-group-item">
+						Emission current: 
+						<span id="input_spectrum_ms_ionization_emission_current">${fn:escapeXml(spectrum_ms_ionization.emissionCurrent)} (&micro;A)</span>
+						<div id="inputEdit_spectrum_ms_ionization_emission_current" class="form-group input-group" style="max-width: 400px; display: none;">
+							<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_ms_ionization.emissionCurrent)}" placeholder="${fn:escapeXml(spectrum_ms_ionization.emissionCurrent)}">
+							<span class="input-group-btn">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_ionization_emission_current', ' (&micro;A)');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_emission_current" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_emission_current');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- Source temperature -->
+					<li class="list-group-item">
+						Source temperature: 
+						<span id="input_spectrum_ms_ionization_source_temperature">${fn:escapeXml(spectrum_ms_ionization.sourceTemperature)} (&#8451;)</span>
+						<div id="inputEdit_spectrum_ms_ionization_source_temperature" class="form-group input-group" style="max-width: 400px; display: none;">
+							<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_ms_ionization.sourceTemperature)}" placeholder="${fn:escapeXml(spectrum_ms_ionization.sourceTemperature)}">
+							<span class="input-group-btn">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_ionization_source_temperature', ' (&#8451;)');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_source_temperature" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_source_temperature');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- Ionization gas (CI) -->
+					<li class="list-group-item">
+						Ionization gas (CI): 
+						<span id="select_spectrum_ms_ionization_ionization_gas">${fn:escapeXml(spectrum_ms_ionization.getIonizationGasAsString())}</span>
+						<div id="selectEdit_spectrum_ms_ionization_ionization_gas" class="form-group select-group" style="max-width: 400px; display: none;">
+							<select id="selectElem_spectrum_ms_ionization_ionization_gas" class="form-control col-xs-3" style="max-width: 200px;">
+								<option value=""></option>
+								<option value="none">none</option>
+								<option value="methane">methane</option>
+								<option value="isobutane">isobutane</option>
+								<option value="ammoniac">ammoniac</option>
+							</select>
+							<span class="input-group-btn" style="max-width: 50px;">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_ms_ionization_ionization_gas');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_ionization_gas" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_ms_ionization_ionization_gas');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- Ionization gas flow (CI) -->
+					<li class="list-group-item">
+						Ionization gas flow (CI): 
+						<span id="input_spectrum_ms_ionization_gas_flow">${fn:escapeXml(spectrum_ms_ionization.ionizationGasFlow)}  </span>
+						<div id="inputEdit_spectrum_ms_ionization_gas_flow" class="form-group input-group" style="max-width: 400px; display: none;">
+							<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_ms_ionization.ionizationGasFlow)}" placeholder="${fn:escapeXml(spectrum_ms_ionization.ionizationGasFlow)}">
+							<span class="input-group-btn">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_ionization_gas_flow', '');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_gas_flow" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_gas_flow');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- Interface temperature -->
+					<li class="list-group-item">
+						Interface temperature: 
+						<span id="input_spectrum_ms_ionization_interface_temperature">${fn:escapeXml(spectrum_ms_ionization.interfaceTemperature)} (&#8451;) </span>
+						<div id="inputEdit_spectrum_ms_ionization_interface_temperature" class="form-group input-group" style="max-width: 400px; display: none;">
+							<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_ms_ionization.interfaceTemperature)}" placeholder="${fn:escapeXml(spectrum_ms_ionization.interfaceTemperature)}">
+							<span class="input-group-btn">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_ionization_interface_temperature', ' (&#8451;)');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_interface_temperature" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_interface_temperature');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- Repeller -->
+					<li class="list-group-item">
+						Repeller: 
+						<span id="input_spectrum_ms_ionization_repeller">${fn:escapeXml(spectrum_ms_ionization.repeller)} (V) </span>
+						<div id="inputEdit_spectrum_ms_ionization_repeller" class="form-group input-group" style="max-width: 400px; display: none;">
+							<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_ms_ionization.repeller)}" placeholder="${fn:escapeXml(spectrum_ms_ionization.repeller)}">
+							<span class="input-group-btn">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_ionization_repeller', ' (V)');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_repeller" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_repeller');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- Extractor -->
+					<li class="list-group-item">
+						Extractor: 
+						<span id="input_spectrum_ms_ionization_extractor">${fn:escapeXml(spectrum_ms_ionization.extractor)} (V) </span>
+						<div id="inputEdit_spectrum_ms_ionization_extractor" class="form-group input-group" style="max-width: 400px; display: none;">
+							<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_ms_ionization.extractor)}" placeholder="${fn:escapeXml(spectrum_ms_ionization.extractor)}">
+							<span class="input-group-btn">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_ionization_extractor', ' (V)');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_extractor" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_extractor');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+					<!-- Ion focus -->
+					<li class="list-group-item">
+						Ion focus: 
+						<span id="input_spectrum_ms_ionization_ion_focus">${fn:escapeXml(spectrum_ms_ionization.ionFocus)} (V) </span>
+						<div id="inputEdit_spectrum_ms_ionization_ion_focus" class="form-group input-group" style="max-width: 400px; display: none;">
+							<input type="text" class="form-control input-active-enter-key" style="" value="${fn:escapeXml(spectrum_ms_ionization.ionFocus)}" placeholder="${fn:escapeXml(spectrum_ms_ionization.ionFocus)}">
+							<span class="input-group-btn">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataInput('spectrum_ms_ionization_ion_focus', ' (V)');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_ionization_ion_focus" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_ionization_ion_focus');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+				</ul>
+</c:if>
 			</div>
 		</div>
 		
@@ -830,9 +1530,10 @@
 						<small>
 							<hr />
 							Ion analyzer types are "B", "E", "FT" (include other types using FT like FTICR or Orbitrap), "IT", "Q", "TOF" (e.g.: "QTOF", "QQQ", "EB", "ITFT"); 
-							for further informations please refer to <a target="_BLANK" href="http://www.massbank.jp/manuals/MassBankRecord_en.pdf">MassBank Record documentation</a>.
+							for further informations please refer to <a target="_BLANK" href="<spring:message code="link.site.massbankdoc" text="https://github.com/MassBank/MassBank-web/blob/main/Documentation/MassBankRecordFormat.md#212-record_title" />">MassBank Record documentation</a>.
 						</small>
 					</li>
+<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation'}">
 					<li class="list-group-item">
 						Model: 
 						<span id="input_spectrum_ms_analyzer_instrument_model">${fn:escapeXml(spectrum_ms_analyzer.instrumentModel)}</span>
@@ -844,6 +1545,30 @@
 						</div>
 						<a id="btn-edit_spectrum_ms_analyzer_instrument_model" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_analyzer_instrument_model');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 					</li>
+</c:if>
+<c:if test="${spectrum_type == 'gc-fullscan'}">
+					<li class="list-group-item">
+						Brand: 
+						<span id="select_spectrum_ms_analyzer_instrument_brand">${fn:escapeXml(spectrum_ms_analyzer.instrumentBrand)}</span>
+						<div id="selectEdit_spectrum_ms_analyzer_instrument_brand" class="form-group  select-group" style="max-width: 400px; display: none;">
+							<select id="selectElem_spectrum_ms_analyzer_instrument_brand" class="form-control col-xs-3" style="max-width: 200px;">
+								<option value=""></option>
+								<option value="Thermo">Thermo</option>
+								<option value="Bruker">Bruker</option>
+								<option value="Waters">Waters</option>
+								<option value="Agilent">Agilent</option>
+								<option value="PE biosystem">PE biosystem</option>
+								<option value="Sciex">Sciex</option>
+								<option value="Shimadzu">Shimadzu</option>
+							</select>
+							<span class="input-group-btn" style="max-width: 50px;">
+								<button class="btn btn-success " type="button" onclick="saveSpectrumLiveDataSelect('spectrum_ms_analyzer_instrument_brand');"><i class="fa fa-check-square-o"></i></button>
+							</span>
+						</div>
+						<a id="btn-edit_spectrum_ms_analyzer_instrument_brand" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataSelect('spectrum_ms_analyzer_instrument_brand');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+					</li>
+</c:if>
+ 
 <!-- 					<li class="list-group-item"> -->
 <!-- 						Resolution FWHM:  -->
 <%-- 						<span id="input_spectrum_ms_analyzer_resolution_fwhm">${spectrum_ms_analyzer.instrumentResolutionFWHMresolution}@${spectrum_ms_analyzer.instrumentResolutionFWHMmass}</span> --%>
@@ -908,6 +1633,7 @@
 								<li class="list-group-item">
 									Resolution: ${fn:escapeXml(spectrum_ms_resolution)}
 								</li>
+<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation' || spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation'}">
 								<li class="list-group-item">
 									Resolution FWHM: 
 									<span id="input_spectrum_ms_analyzer_resolution_fwhm">${spectrum_ms_resolution_FWHM}</span>
@@ -919,7 +1645,7 @@
 									</div>
 									<a id="btn-edit_spectrum_ms_analyzer_resolution_fwhm" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput('spectrum_ms_analyzer_resolution_fwhm');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 								</li>
-								
+</c:if>
 								<!-- // MSMS data -->
 								<c:if test="${spectrum_msms_isMSMS}">
 									<li class="list-group-item">
@@ -964,6 +1690,7 @@
 									</div>
 									<a id="btn-edit_spectrum_ms_rt_min" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput2('spectrum_ms_rt_min');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 								</li>
+<c:if test="${spectrum_type == 'lc-fullscan' || spectrum_type == 'lc-fragmentation'}">
 								<li class="list-group-item">
 									Retention time <small>(MeOH)</small>: 
 									<span id="input_spectrum_ms_rt_meoh">[${spectrum_rt_meoh_from} .. ${spectrum_rt_meoh_to}]</span>
@@ -976,6 +1703,35 @@
 									</div>
 									<a id="btn-edit_spectrum_ms_rt_meoh" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput2('spectrum_ms_rt_meoh');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
 								</li>
+</c:if>
+<c:if test="${spectrum_type == 'ic-fullscan' || spectrum_type == 'ic-fragmentation'}">
+								<li class="list-group-item">
+									Retention time <small>(mM KOH)</small>: 
+									<span id="input_spectrum_ms_rt_koh">[${spectrum_rt_koh_from} .. ${spectrum_rt_koh_to}]</span>
+									<div id="inputEdit_spectrum_ms_rt_koh" class="form-group input-group" style="width: 195px; display: none;">
+										<input type="text" class="form-control input-active-enter-key" style="width:75px;" value="${spectrum_rt_koh_from}" placeholder="${spectrum_rt_koh_from}">
+										<input type="text" class="form-control input-active-enter-key" style="width:75px;" value="${spectrum_rt_koh_to}"   placeholder="${spectrum_rt_koh_to}" > 
+										<span class="input-group-btn">
+											<button class="btn btn-success " style="width: 39px;" type="button" onclick="saveSpectrumLiveDataInput2('spectrum_ms_rt_koh');"><i class="fa fa-check-square-o"></i></button>
+										</span>
+									</div>
+									<a id="btn-edit_spectrum_ms_rt_koh" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput2('spectrum_ms_rt_koh');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+								</li>
+</c:if>
+<c:if test="${spectrum_type == 'gc-fullscan'}">
+								<li class="list-group-item">
+									Retention index <small>(alkane)</small>: 
+									<span id="input_spectrum_ms_rt_alkane">[${spectrum_ri_alkane_from} .. ${spectrum_ri_alkane_to}]</span>
+									<div id="inputEdit_spectrum_ms_rt_alkane" class="form-group input-group" style="width: 195px; display: none;">
+										<input type="text" class="form-control input-active-enter-key" style="width:75px;" value="${spectrum_ri_alkane_from}" placeholder="${spectrum_ri_alkane_from}">
+										<input type="text" class="form-control input-active-enter-key" style="width:75px;" value="${spectrum_ri_alkane_to}"   placeholder="${spectrum_ri_alkane_to}" > 
+										<span class="input-group-btn">
+											<button class="btn btn-success " style="width: 39px;" type="button" onclick="saveSpectrumLiveDataInput2('spectrum_ms_rt_alkane');"><i class="fa fa-check-square-o"></i></button>
+										</span>
+									</div>
+									<a id="btn-edit_spectrum_ms_rt_alkane" class="btn btn-info btn-xs " onclick="editSpectrumLiveDataInput2('spectrum_ms_rt_alkane');" href="#"> <i class="fa fa-pencil fa-lg"></i></a>
+								</li>
+</c:if>
 								<li class="list-group-item">
 									Curation: 
 									<span id="select_spectrum_ms_curation_lvl">${spectrum_ms_peaks_curation_lvl} </span>
@@ -2692,6 +3448,20 @@
 							$("#specialDiv_spectrum_chromatography_col_constructor_other").hide();
 						}
 					}
+					if (key=="spectrum_ion_chromatography_col_constructor") {
+						if ( newVal == 'Other') {
+							$("#specialDiv_spectrum_ion_chromatography_col_constructor_other").show();
+						} else {
+							$("#specialDiv_spectrum_ion_chromatography_col_constructor_other").hide();
+						}
+					}
+// 					if (key=="spectrum_gas_chromatography_col_constructor") {
+// 						if ( newVal == 'Other') {
+// 							$("#specialDiv_spectrum_gas_chromatography_col_constructor_other").show();
+// 						} else {
+// 							$("#specialDiv_spectrum_gas_chromatography_col_constructor_other").hide();
+// 						}
+// 					}
 					if (key=="spectrum_nmr_tube_prep_ref_chemical_shift_indocator") {
 						if ( newVal == 'other') {
 							$("#specialDiv_spectrum_nmr_tube_prep_ref_chemical_shift_indocator_other").show();
@@ -2724,6 +3494,8 @@
 				
 				var container_RCC_ADDED, hot_RCC_ADDED;
 				var container_LC_SFG, hot_LC_SFG;
+				var container_GC_SFP, hot_GC_SFP;
+				var container_IC_SFG, hot_IC_SFG;
 				var container_MS_peaks, hot_MS_peaks;
 				var container_NMR_peaks, hot_NMR_peaks;
 				var container_NMR_peak_patterns, hot_NMR_peak_patterns;
@@ -2817,6 +3589,80 @@
 						bindDumpButton_LC_SFG();
 						$("#tabEdit_spectrum_chromatography_sfg_time table.htCore").css("width","100%");
 						break;
+					case 'spectrum_chromatography_stp_temperature':
+						$("#tabEdit_spectrum_chromatography_stp_temperature").html("");
+						var data_GC_SFP = [];
+						$.each(gcSFPOriData, function (k,v) {
+							var tmpDataArray = [];
+							tmpDataArray ["temp"] = v.temp;
+							tmpDataArray ["r"] = v.r;
+							tmpDataArray ["t"] = v.t;
+							data_GC_SFP.push(tmpDataArray);
+						});		
+						var colHeaderData = [
+			     			{data: "temp", type: 'numeric', format: '0.0'},
+			     			{data: "r", type: 'numeric', format: '0.0'},
+			     			{data: "t", type: 'numeric', format: '0.0'}
+			    		];
+						container_GC_SFP = document.getElementById('tabEdit_spectrum_chromatography_stp_temperature');
+						hot_GC_SFP = new Handsontable(container_GC_SFP, {
+							data : data_GC_SFP,
+							minSpareRows : 1,
+							colHeaders : true,
+							colHeaders: ["temp. (&#8451;)", "Rate (&#8451;/min)", "Time (min)"],
+							contextMenu : false,
+							columns: colHeaderData
+						});
+						function bindDumpButton_GC_SFP() {
+							Handsontable.Dom.addEvent(document.body, 'click', function(e) {
+								var element = e.target || e.srcElement;
+								if (element.nodeName == "BUTTON"&& element.name == 'dump') {
+									var name = element.getAttribute('data-dump');
+									var instance = element.getAttribute('data-instance');
+									var hot_GC_SFP = window[instance];
+									console.log('data of ' + name, hot_GC_SFP.getData());
+								}
+							});
+						}
+						bindDumpButton_GC_SFP();
+						$("#tabEdit_spectrum_chromatography_stp_temperature table.htCore").css("width","100%");
+						break;
+					case 'spectrum_chromatography_sfg_time_ic':
+						$("#tabEdit_spectrum_chromatography_sfg_time_ic").html("");
+						var data_IC_SFG = [];
+						$.each(icSFGOriData, function (k,v) {
+							var tmpDataArray = [];
+							tmpDataArray ["time"] = v.time;
+							tmpDataArray ["s"] = v.s; 
+							data_IC_SFG.push(tmpDataArray);
+						});		
+						var colHeaderData = [
+			     			{data: "time", type: 'numeric', format: '0.0'},
+			     			{data: "s", type: 'numeric', format: '0.0'} 
+			    		];
+						container_IC_SFG = document.getElementById('tabEdit_spectrum_chromatography_sfg_time_ic');
+						hot_IC_SFG = new Handsontable(container_IC_SFG, {
+							data : data_IC_SFG,
+							minSpareRows : 1,
+							colHeaders : true,
+							colHeaders: ["time (min)", "solvent (mM KOH)"],
+							contextMenu : false,
+							columns: colHeaderData
+						});
+						function bindDumpButton_IC_SFG() {
+							Handsontable.Dom.addEvent(document.body, 'click', function(e) {
+								var element = e.target || e.srcElement;
+								if (element.nodeName == "BUTTON" && element.name == 'dump') {
+									var name = element.getAttribute('data-dump');
+									var instance = element.getAttribute('data-instance');
+									var hot_IC_SFG = window[instance];
+									console.log('data of ' + name, hot_IC_SFG.getData());
+								}
+							});
+						}
+						bindDumpButton_IC_SFG();
+						$("#tabEdit_spectrum_chromatography_sfg_time_ic table.htCore").css("width","100%");
+						break;
 					case 'spectrum_ms_peaks':
 // 						var attribTab = {
 // 							data: "attribution",
@@ -2856,6 +3702,7 @@
 							colHeaders : true,
 							colHeaders: ["m/z", "RI (%)", "Theo. Mass", "Delta ppm", "composition", "attribution"],
 							contextMenu : false,
+							height: 'auto',
 							columns: colHeaderData
 						});
 						function bindDumpButton_MS_peaks() {
@@ -2870,6 +3717,7 @@
 							});
 						}
 						bindDumpButton_MS_peaks();
+						hot_MS_peaks.selectCell(data_MS_peaks.length-2 ,0);
 						hot_MS_peaks.selectCell(0,0);
 						$.each(msPeaksOrdiData, function (k,v) {
 							hot_MS_peaks.setDataAtCell(k,5,v.attribution);
@@ -2919,6 +3767,7 @@
 							});
 						}
 						bindDumpButton_NMR_peaks();
+						hot_NMR_peaks.selectCell(data_NMR_peaks.length-2 ,0);
 						hot_NMR_peaks.selectCell(0,0);
 						$("#tabEdit_spectrum_nmr_peaks table.htCore").css("width","100%");
 						break;
@@ -2949,6 +3798,7 @@
 							colHeaders : true,
 							colHeaders: ["index", "&nu; (F2) [ppm]", "&nu; (F1) [ppm]", "intensity [abs]",  "annotation"],
 							contextMenu : false,
+							height: 'auto',
 							columns: colHeaderData
 						});
 						function bindDumpButton_NMR_peaks() {
@@ -2963,6 +3813,7 @@
 							});
 						}
 						bindDumpButton_NMR_peaks();
+						hot_NMR_peaks.selectCell(data_NMR_peaks.length-2 ,0);
 						hot_NMR_peaks.selectCell(0,0);
 						$("#tabEdit_spectrum_nmr_2dpeaks table.htCore").css("width","100%");
 						break;
@@ -2997,6 +3848,7 @@
 							colHeaders : true,
 							colHeaders: ["index", "&nu; (F2) [ppm]", "&nu; (F1) [ppm]", "intensity", "multiplicity", "J",  "annotation"],
 							contextMenu : false,
+							height: 'auto',
 							columns: colHeaderData
 						});
 						function bindDumpButton_NMR_peaks() {
@@ -3011,6 +3863,7 @@
 							});
 						}
 						bindDumpButton_NMR_peaks();
+						hot_NMR_peaks.selectCell(data_NMR_peaks.length-2 ,0);
 						hot_NMR_peaks.selectCell(0,0);
 						$("#tabEdit_spectrum_nmr_jres_peaks table.htCore").css("width","100%");
 						break;
@@ -3046,6 +3899,7 @@
 							// NOTE: not "H's" column
 							colHeaders: ["&nu; (F1) [ppm]", "H's || C's", "type", "J(Hz)", "range from (ppm)", "range to (ppm)", "atoms"],
 							contextMenu : false,
+							height: 'auto',
 							columns: colHeaderData
 						});
 						function bindDumpButton_NMR_peak_patterns() {
@@ -3060,6 +3914,7 @@
 							});
 						}
 						bindDumpButton_NMR_peak_patterns();
+						hot_NMR_peak_patterns.selectCell(data_NMR_peak_patterns.length-2 ,0);
 						hot_NMR_peak_patterns.selectCell(0,0);
 						$("#tabEdit_spectrum_nmr_peak_patterns table.htCore").css("width","100%");
 						break;
@@ -3117,6 +3972,58 @@
 						// update data in html
 						$("#tab_spectrum_chromatography_sfg_time tbody").empty();
 						$("#templateSFG").tmpl(lcSFGOriData).appendTo("#tab_spectrum_chromatography_sfg_time tbody");
+						break;
+					case 'spectrum_chromatography_stp_temperature':
+						jsonSFP = [];
+						$.each(hot_GC_SFP.getData(), function(){
+							var formatData = {};
+							try {
+// 								if (dataT['time']!= NaN) {
+									var dataT = {};
+									dataT['temp'] = Number(this["temp"]);
+									dataT['r'] = Number(this["r"]);
+									dataT['t'] = Number(this["t"]);
+									jsonSFP.push(dataT);
+// 								}
+							} catch(e){}
+						});
+						// update data edit table
+						gcSFPOriData = [];
+						$.each(jsonSFP,function(k,v){
+							if (v.temp==Number(v.temp+""))
+								gcSFPOriData.push(v);
+						});
+						// update data to update in controller
+						jsonDataUpdate[key]=gcSFPOriData;
+						// update data in html
+						$("#tab_spectrum_chromatography_stp_temperature tbody").empty();
+						$("#templateSFP").tmpl(gcSFPOriData).appendTo("#tab_spectrum_chromatography_stp_temperature tbody");
+						break;
+					case 'spectrum_chromatography_sfg_time_ic':
+						jsonSFG = [];
+						$.each(hot_IC_SFG.getData(), function(){
+							var formatData = {};
+							try {
+// 								if (dataT['time']!= NaN) {
+									var dataT = {};
+									dataT['time'] = Number(this["time"]);
+									dataT['s'] = Number(this["s"]); 
+									jsonSFG.push(dataT);
+// 								}
+							} catch(e){}
+						});
+						// update data edit table
+						icSFGOriData = [];
+						$.each(jsonSFG,function(k,v){
+							if (v.time==Number(v.time+"")) {
+								icSFGOriData.push(v);
+							}
+						});
+						// update data to update in controller
+						jsonDataUpdate[key]=icSFGOriData;
+						// update data in html
+						$("#tab_spectrum_chromatography_sfg_time_ic tbody").empty();
+						$("#templateSFG_IC").tmpl(icSFGOriData).appendTo("#tab_spectrum_chromatography_sfg_time_ic tbody");
 						break;
 					case 'spectrum_ms_peaks':
 						jsonMSpeaks = [];
@@ -3294,19 +4201,38 @@ $(document).ready(function() {
 	$('.datepicker').datepicker();
 	
 	// LCMS solents
-	$("#selectElem_select_spectrum_sample_compound_liquid_solvent").append('<option value="" disabled="disabled">choose in list&hellip;</option>');
+	$("#selectElem_spectrum_sample_compound_liquid_solvent").append('<option value="" disabled="disabled">choose in list&hellip;</option>');
 	$.getJSON("resources/json/list-lcms-solvents.json", function(data) {
 		// load data from json
-		$.each(data.solvents,function(){
-			$("#selectElem_select_spectrum_sample_compound_liquid_solvent").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
+		$.each(data.solvents, function(){
+			$("#selectElem_spectrum_sample_compound_liquid_solvent").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
 		});
-		$("#selectElem_select_spectrum_sample_compound_liquid_solvent").val("${select_spectrum_sample_compound_liquid_solvent}");
+		$("#selectElem_spectrum_sample_compound_liquid_solvent").val("${spectrum_sample_compound_liquid_solvent}");
+	});
+	
+	// GCMS solents
+	$("#selectElem_spectrum_sample_compound_gas_solvent").append('<option value="" disabled="disabled">choose in list&hellip;</option>');
+	$.getJSON("resources/json/list-gcms-solvents.json", function(data) {
+		// load data from json
+		$.each(data.solvents, function(){
+			$("#selectElem_spectrum_sample_compound_gas_solvent").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
+		});
+		$("#selectElem_spectrum_sample_compound_gas_solvent").val("${spectrum_sample_compound_gas_solvent}");
+	});
+	// GCMS derivation method
+	$("#selectElem_spectrum_sample_compound_derivation_method").append('<option value="" disabled="disabled">choose in list&hellip;</option>');
+	$.getJSON("resources/json/list-gcms-derivation-methods.json", function(data) {
+		// load data from json
+		$.each(data.methods, function(){
+			$("#selectElem_spectrum_sample_compound_derivation_method").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
+		});
+		$("#selectElem_spectrum_sample_compound_derivation_method").val("${spectrum_sample_compound_derivation_method}");
 	});
 	
 	// LCMS mix solvents
-	$("#selectElem_select_spectrum_sample_compound_liquid_solvent_mix").val("${select_spectrum_sample_compound_liquid_solvent}");
+	$("#selectElem_spectrum_sample_compound_liquid_solvent_mix").val("${spectrum_sample_compound_liquid_solvent}");
 
-	// LC column
+	// LC column methods
 	$.getJSON("resources/json/list-lc-methods.json", function(data) {
 		$("#selectElem_spectrum_chromatography_method").empty();
 		$("#selectElem_spectrum_chromatography_method").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
@@ -3322,7 +4248,53 @@ $(document).ready(function() {
 		$("#selectElem_spectrum_chromatography_method").val("${spectrum_chromatography_method}");
 	});
 	
-	// LC columns
+	// GC column methods
+	$.getJSON("resources/json/list-gc-methods.json", function(data) {
+		$("#selectElem_spectrum_gas_chromatography_method").empty();
+		$("#selectElem_spectrum_gas_chromatography_method").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
+		// load data from json
+		$.each(data.methods,function(){
+			if (this.name !==undefined) {
+				if (this.value !==undefined) {
+					$("#selectElem_spectrum_gas_chromatography_method").append('<option value="' + this.value + '">' + this.name + '</option>');
+				} else {
+					$("#selectElem_spectrum_gas_chromatography_method").append('<option disabled>' + this.name + '</option>');
+				}
+			}
+		});
+		$("#selectElem_spectrum_gas_chromatography_method").val("${spectrum_chromatography_method}");
+	});
+	
+	// IC column methods
+	$.getJSON("resources/json/list-ic-methods.json", function(data) {
+		$("#selectElem_spectrum_ion_chromatography_method").empty();
+		$("#selectElem_spectrum_ion_chromatography_method").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
+		// load data from json
+		$.each(data.methods, function() {
+			if (this.name !== undefined) {
+				if (this.value !== undefined) {
+					$("#selectElem_spectrum_ion_chromatography_method").append('<option value="'+this.value+'">'+this.name+'</option>');
+				} else {
+					$("#selectElem_spectrum_ion_chromatography_method").append('<option disabled>'+this.name+'</option>');
+				}
+			}
+		});
+		$("#selectElem_spectrum_ion_chromatography_method").val("${spectrum_chromatography_method}");
+	});
+	
+	// IC ionic config.
+	$("#selectElem_spectrum_chromatography_col_ionic_config").val("${spectrum_chromatography_col_ionic_config}");
+	
+	// IC suppressor constructor
+	$("#selectElem_spectrum_chromatography_col_suppressor_constructor").val("${spectrum_chromatography_col_suppressor_constructor}");
+	
+	// IC suppressor name
+	$("#selectElem_spectrum_chromatography_col_suppressor_name").val("${spectrum_chromatography_col_suppressor_name}");
+	
+	// IC suppressor name
+	$("#selectElem_spectrum_chromatography_col_makeup").val("${spectrum_chromatography_col_makeup}");
+	
+	// LC columns constructors
 	$.getJSON("resources/json/list-lc-columns.json", function(data) {
 		$("#selectElem_spectrum_chromatography_col_constructor").empty();
 		$("#selectElem_spectrum_chromatography_col_constructor").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
@@ -3344,8 +4316,73 @@ $(document).ready(function() {
 		}
 	});
 	
+	// GC columns constructors
+	$.getJSON("resources/json/list-gc-columns.json", function(data) {
+		$("#selectElem_spectrum_gas_chromatography_col_constructor").empty();
+		$("#selectElem_spectrum_gas_chromatography_col_constructor").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
+		// load data from json
+		$.each(data.columns,function(){
+			if (this.name !==undefined) {
+				if (this.value !==undefined) {
+					$("#selectElem_spectrum_gas_chromatography_col_constructor").append('<option value="'+this.value+'">'+this.name+'</option>');
+				} else {
+					$("#selectElem_spectrum_gas_chromatography_col_constructor").append('<option disabled>'+this.name+'</option>');
+				}
+			}
+		});
+// 		$("#selectElem_spectrum_gas_chromatography_col_constructor").append('<option value="other" >Other</option>');
+		$("#selectElem_spectrum_gas_chromatography_col_constructor").val("${fn:escapeXml(spectrum_chromatography_col_constructor)}");
+// 		if ($("#selectElem_spectrum_gas_chromatography_col_constructor").val() != "${fn:escapeXml(spectrum_chromatography_col_constructor)}") {
+// 			$("#specialDiv_spectrum_gas_chromatography_col_constructor_other").show();
+// 			$("#selectElem_spectrum_gas_chromatography_col_constructor").val("Other");
+// 		}
+	});
+	
+	// IC columns constructors
+	$.getJSON("resources/json/list-ic-columns.json", function(data) {
+		$("#selectElem_spectrum_ion_chromatography_col_constructor").empty();
+		$("#selectElem_spectrum_ion_chromatography_col_constructor").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
+		// load data from json
+		$.each(data.columns,function(){
+			if (this.name !==undefined) {
+				if (this.value !==undefined) {
+					$("#selectElem_spectrum_ion_chromatography_col_constructor").append('<option value="'+this.value+'">'+this.name+'</option>');
+				} else {
+					$("#selectElem_spectrum_ion_chromatography_col_constructor").append('<option disabled>'+this.name+'</option>');
+				}
+			}
+		});
+		$("#selectElem_spectrum_ion_chromatography_col_constructor").append('<option value="other">Other</option>');
+		$("#selectElem_spectrum_ion_chromatography_col_constructor").val("${fn:escapeXml(spectrum_chromatography_col_constructor)}");
+		if ($("#selectElem_spectrum_ion_chromatography_col_constructor").val() != "${fn:escapeXml(spectrum_chromatography_col_constructor)}") {
+			$("#specialDiv_spectrum_ion_chromatography_col_constructor_other").show();
+			$("#selectElem_spectrum_ion_chromatography_col_constructor").val("Other");
+		}
+	});
+	
 	// LC mode
 	$("#selectElem_spectrum_chromatography_mode_lc").val(("${spectrum_chromatography_mode_lc}").toLowerCase());
+	
+	// GC mode
+	$("#selectElem_spectrum_chromatography_mode_gc").val(("${spectrum_chromatography_mode_gc}").toLowerCase());
+	
+	// IC mode
+	$("#selectElem_spectrum_chromatography_mode_ic").val(("${spectrum_chromatography_mode_ic}").toLowerCase());
+	
+	// liner_manufacturer
+	$("#selectElem_spectrum_chromatography_liner_manufacturer").val(("${spectrum_chromatography_liner_manufacturer}").toLowerCase());
+	
+	// liner_type
+	$("#selectElem_spectrum_chromatography_liner_type").val(("${spectrum_chromatography_liner_type}"));
+	
+	// GC injection mode
+	$("#selectElem_spectrum_chromatography_injection_mode").val("${spectrum_chromatography_injection_mode_string}");
+	
+	// GC carrier gas
+	$("#selectElem_spectrum_chromatography_carrier_gas").val("${spectrum_chromatography_carrier_gas}");
+	
+	// GC gas opt
+	$("#selectElem_spectrum_chromatography_gas_opt").val("${spectrum_chromatography_gas_opt}");
 	
 	// LC solvent pH
 	$.getJSON("resources/json/list-lc-solvents.json", function(data) {
@@ -3362,6 +4399,12 @@ $(document).ready(function() {
 		$("#selectElem_spectrum_chromatography_solventB").val("${spectrum_chromatography_solventB}");
 	});
 
+	// IC solvent
+	$("#selectElem_spectrum_chromatography_solvent").val("${spectrum_chromatography_solvent}");
+	
+	// curation lvl
+	$("#selectElem_spectrum_ms_curation_lvl").val("${spectrum_ms_peaks_curation_lvl}");
+	
 	// NMR solents
 	$.getJSON("resources/json/list-nmr-solvents.json", function(data) {
 		$("#selectElem_spectrum_nmr_tube_prep_solvent").empty();
@@ -3429,6 +4472,30 @@ $(document).ready(function() {
 		$("#selectElem_spectrum_ms_ionization_ionization_method").val("${fn:escapeXml(spectrum_ms_ionization.getIonizationAsString())}");
 	});
 	
+	// GC-MASS 
+	$.getJSON("resources/json/list-ms-ionization-methods.json", function(data) {
+		$("#selectElem_spectrum_gcms_ionization_ionization_method").empty();
+		$("#selectElem_spectrum_gcms_ionization_ionization_method").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
+		// load data from json
+		$.each(data.gc_ionization_methods, function(){
+			if (this.name !== undefined) {
+				if (this.value !== undefined) {
+					$("#selectElem_spectrum_gcms_ionization_ionization_method").append('<option value="'+this.value+'">'+this.name+'</option>');
+				} else {
+					$("#selectElem_spectrum_gcms_ionization_ionization_method").append('<option disabled>'+this.name+'</option>');
+				}
+			}
+		});
+		$("#selectElem_spectrum_gcms_ionization_ionization_method").val("${fn:escapeXml(spectrum_ms_ionization.getIonizationAsString())}");
+	});
+
+//<c:if test="${spectrum_type == 'gc-fullscan'}">
+	// GC IONIZATION GAS
+	$("#selectElem_spectrum_ms_ionization_ionization_gas").val("${fn:escapeXml(spectrum_ms_ionization.getIonizationGasAsString())}");
+	
+	// GC instrument brand
+	$("#selectElem_spectrum_ms_analyzer_instrument_brand").val("${fn:escapeXml(spectrum_ms_analyzer.instrumentBrand)}");
+//</c:if>
 	// NMR instrument
 	$.getJSON("resources/json/list-nmr-instrumentOptions.json", function(data) {
 		$("#selectElem_spectrum_nmr_analyzer_name").empty();
@@ -3516,6 +4583,19 @@ $(document).ready(function() {
 	<td style="width: 100px;">{%= time%}</td>
 	<td>{%= a%}</td>
 	<td>{%= b%}</td>
+</tr>
+</script>
+<script  type="text/x-jquery-tmpl" id="templateSFG_IC">
+<tr>
+	<td style="width: 100px;">{%= time%}</td>
+	<td>{%= s%}</td>
+</tr>
+</script>
+<script  type="text/x-jquery-tmpl" id="templateSFP">
+<tr>
+	<td style="width: 100px;">{%= temp%}</td>
+	<td>{%= r%}</td>
+	<td>{%= t%}</td>
 </tr>
 </script>
 <script  type="text/x-jquery-tmpl" id="templateMSpeaks">

@@ -4,7 +4,7 @@
 		"method": "CF_PFEM_plasma_method1_TIMSTOF",
 		"column_constructor": "Waters",
 		"column_constructor_other": null,
-		"column_name": "UPLC HSS T3",
+		"column_name": "ACQUITY UPLC HSS T3",
 		"column_length": 150,
 		"column_diameter": 2.1,
 		"particule_size": 1.8,
@@ -13,7 +13,7 @@
 		"separation_flow_rate": 400,
 		"separation_solvent_a": "H2O + 0.1% Formic Acid",
 		"ph_solvent_a": null,
-		"separation_solvent_b": "Acetonitrile + 0.1% Formic Acid",
+		"separation_solvent_b": "ACN + 0.1% Formic Acid",
 		"ph_solvent_b": null,
 		"separation_flow_gradient" : [
 			{ "time": 0, "solvA": 100, "solvB": 0 },
@@ -25,8 +25,8 @@
 		]
 	},
 	"ms_analyzer" : {
-		"instrument": "TIMSTOF Bruker",
-		"model": "Impact II",
+		"instrument": "TIMSTOF",
+		"model": "Bruker",
 		"resolution_FWHM": "15000",
 		"ion_analyzer_type": "TIMSTOF",
 		"detector": "",
@@ -35,21 +35,21 @@
 	"molecule_ionization" : {
 		"mode_pos": {
 			"ionisation_method": "ESI",
-			"spray_gaz_flow": 40,
+			"spray_gaz_flow": 2.500,
 			"vaporizer_gaz_flow": null,
-			"vaporizer_temperature": 200,
-			"source_gaz_flow": 9,
+			"vaporizer_temperature": 40,
+			"source_gaz_flow": 10,
 			"tube_temperature": null,
-			"voltage": 2.5
+			"voltage": null
 		},
 		"mode_neg": {
 			"ionisation_method": "ESI",
-			"spray_gaz_flow": 40,
+			"spray_gaz_flow": 4.500,
 			"vaporizer_gaz_flow": null,
-			"vaporizer_temperature": 200,
+			"vaporizer_temperature": 40,
 			"source_gaz_flow": 9,
 			"tube_temperature": null,
-			"voltage": 4.5
+			"voltage": null
 		}
 	},
 	"other": {

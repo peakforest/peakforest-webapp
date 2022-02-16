@@ -5,7 +5,7 @@ image: metabohub/pforest-dev
 variables:
   MAVEN_CLI_OPTS: "--batch-mode -Dmaven.repo.local=/root/.m2/repository"
   WGET_LOGIN: "--user none --password $PYDIO_PASSWD"
-  WGET_URL: "https://pfem.clermont.inra.fr/pydio/public/b5e69a/dl"
+  WGET_URL: "https://pfem.clermont.inrae.fr/pydio/public/b5e69a/dl"
   LIB_PATH: "src/main/webapp/WEB-INF/lib/"
   # database
   MYSQL_HOSTNAME: "mysql-test-server"
@@ -18,7 +18,7 @@ variables:
   # SSH / SCP
   SSH_OPTS: " -q -t "
   SSH_USER: "gitlab-bot"
-  SSH_HOST: "147.99.132.187"
+  SSH_HOST: "pfem-lindev.ara.inrae.fr"
   # reports
   FOLDER_REPORT: "code_report_pforest"
   FOLDER_JAVADOC: "javadoc_pforest"
@@ -31,7 +31,7 @@ cache:
     - src/main/webapp/WEB-INF/lib/
     - src/main/webapp/resources/docs/
     - target/
-    
+
 # stages
 stages:
   - get_libs
@@ -47,9 +47,10 @@ get libs:
     - docker
   image: cirrusci/wget
   script:
-    - test -f $LIB_PATH/BioSM.jar || wget $WGET_LOGIN $WGET_URL/BioSM.jar -P $LIB_PATH/
+    - test -f $LIB_PATH/BioSM.jar     || wget $WGET_LOGIN $WGET_URL/BioSM.jar     -P $LIB_PATH/
+    - test -f $LIB_PATH/converter.jar || wget $WGET_LOGIN $WGET_URL/converter.jar -P $LIB_PATH/
     - test -f $LIB_PATH/openbabel.jar || wget $WGET_LOGIN $WGET_URL/openbabel.jar -P $LIB_PATH/
-    - test -f $LIB_PATH/reader.jar || wget $WGET_LOGIN $WGET_URL/reader.jar -P $LIB_PATH/
+    - test -f $LIB_PATH/reader.jar    || wget $WGET_LOGIN $WGET_URL/reader.jar    -P $LIB_PATH/
 
 build:
   stage: build
@@ -59,7 +60,7 @@ build:
     - ./scripts/get_pdf_docs.bash -t $API_TOKEN -b $REF_NAME
   script:
     - mvn $MAVEN_CLI_OPTS -Dmaven.test.skip=true clean package
-    
+
 tests:
   stage: tests
   tags:
@@ -142,3 +143,4 @@ war-lts:
     name: peakforest-webapp-$CI_COMMIT_REF_NAME
     paths:
         - $CI_PROJECT_DIR/artifacts
+

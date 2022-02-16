@@ -92,7 +92,7 @@ showAllMetExplore = function() {
 		<tr class="hiddenMetExplore" style="display:none;" ><!--  white-space: nowrap; -->
 	{%/if%}
 			<td class="">
-				<a href="<spring:message code="resources.maplink.metexplore" text="http://metexplore.toulouse.inra.fr/metexplore2/?idBioSource=" />{%= biosourceId%}" target="_blank">
+				<a href="<spring:message code="resources.maplink.metexplore" text="http://metexplore.toulouse.inrae.fr/metexplore2/?idBioSource=" />{%= biosourceId%}" target="_blank">
 					<em>{%= organism%}</em>
 					<small>{%= biosource%}</small>
 				</a>

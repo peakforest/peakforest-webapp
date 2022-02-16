@@ -529,8 +529,8 @@ $(document).ready(function() {
 	$.getJSON("resources/json/list-lc-methods.json", function(data) {
 		// load data from json
 		$.each(data.methods,function(){
-			if (this.name !==undefined) {
-				if (this.value !==undefined)
+			if (this.name !== undefined) {
+				if (this.value !== undefined)
 					$("#add1spectrum-chromatoLC-method").append('<option value="'+this.value+'">'+this.name+'</option>');
 				else
 					$("#add1spectrum-chromatoLC-method").append('<option disabled>'+this.name+'</option>');
@@ -1148,6 +1148,35 @@ function resetFromColors() {
 		// step 1 ok
 		if ($("#step1sign").hasClass("fa-question-circle"))
 			$("#step1sign").removeClass("fa-question-circle").addClass("fa-check-circle");
+		if (isMS) {
+			$("#add1spectrum-chromatoLC-method").empty();
+			$("#add1spectrum-chromatoLC-method").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
+			$.getJSON("resources/json/list-lc-methods.json", function(data) {
+				// load data from json
+				$.each(data.methods,function(){
+					if (this.name !== undefined) {
+						if (this.value !== undefined)
+							$("#add1spectrum-chromatoLC-method").append('<option value="'+this.value+'">'+this.name+'</option>');
+						else
+							$("#add1spectrum-chromatoLC-method").append('<option disabled>'+this.name+'</option>');
+					}
+				});
+			});
+		} else if (isMSMS) {
+			$("#add1spectrum-chromatoLC-method").empty();
+			$("#add1spectrum-chromatoLC-method").append('<option value="" selected="selected" disabled="disabled">choose in list&hellip;</option>');
+			$.getJSON("resources/json/list-lc-msms-methods.json", function(data) {
+				// load data from json
+				$.each(data.methods,function(){
+					if (this.name !== undefined) {
+						if (this.value !== undefined)
+							$("#add1spectrum-chromatoLC-method").append('<option value="'+this.value+'">'+this.name+'</option>');
+						else
+							$("#add1spectrum-chromatoLC-method").append('<option disabled>'+this.name+'</option>');
+					}
+				});
+			});
+		}
 		// check panel to show
 		if (isLC) {
 			$("#add1spectrum-chromatographyData-LC").show();

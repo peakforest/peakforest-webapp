@@ -36,6 +36,7 @@ import org.springframework.web.servlet.ModelAndView;
 import fr.metabohub.externaltools.nmr.ImageGenerator;
 import fr.metabohub.externaltools.proxy.NMRpro;
 import fr.metabohub.peakforest.dao.compound.GCDerivedCompoundDao;
+import fr.metabohub.peakforest.dao.compound.IReferenceCompoundDao;
 import fr.metabohub.peakforest.dao.metadata.LiquidChromatographyMetadataDao;
 import fr.metabohub.peakforest.model.AbstractDatasetObject;
 import fr.metabohub.peakforest.model.compound.ChemicalCompound;
@@ -49,6 +50,7 @@ import fr.metabohub.peakforest.model.spectrum.MassSpectrum;
 import fr.metabohub.peakforest.model.spectrum.NMR1DSpectrum;
 import fr.metabohub.peakforest.services.SearchService;
 import fr.metabohub.peakforest.services.compound.ChemicalCompoundManagementService;
+import fr.metabohub.peakforest.services.compound.GenerateSdfFileService;
 import fr.metabohub.peakforest.services.compound.GenericCompoundManagementService;
 import fr.metabohub.peakforest.services.peakmatching.LCMSMSPeakMatchingService;
 import fr.metabohub.peakforest.services.peakmatching.LCMSPeakMatchingService;
@@ -197,7 +199,7 @@ public class ToolsController {
 			searchResults.put("error", "exception");
 			searchResults.put("exceptionMessage", e.getMessage());
 		}
-
+		// return data
 		return searchResults;
 	}
 
@@ -239,9 +241,9 @@ public class ToolsController {
 		// search local
 		try {
 			if (entity.equalsIgnoreCase("compounds")) {
-				List<AbstractDatasetObject> primitiveData = new ArrayList<AbstractDatasetObject>();
-				for (ReferenceChemicalCompound rcc : SearchService.searchCompound(query, type, value, value2, value3,
-						SEARCH_NORMAL_RESULTS_SIZE_LIMIT)) {
+				final List<AbstractDatasetObject> primitiveData = new ArrayList<AbstractDatasetObject>();
+				for (final ReferenceChemicalCompound rcc : SearchService.searchCompound(query, type, value, value2,
+						value3, SEARCH_NORMAL_RESULTS_SIZE_LIMIT)) {
 					primitiveData.add(rcc);
 				}
 				// prune
@@ -249,14 +251,11 @@ public class ToolsController {
 				searchResults.put("compoundNames", new ArrayList<AbstractDatasetObject>());
 				searchResults.put("success", true);
 			} else if (entity.equalsIgnoreCase("nmr-spectra")) {
-				// List<AbstractDatasetObject> primitiveData = new
-				// ArrayList<AbstractDatasetObject>();
-
-				List<Double> listOfChemicalShift = new ArrayList<Double>();
-				for (String rawDouble : query.split(","))
+				final List<Double> listOfChemicalShift = new ArrayList<Double>();
+				for (final String rawDouble : query.split(","))
 					try {
 						listOfChemicalShift.add(Double.parseDouble(rawDouble));
-					} catch (NumberFormatException e) {
+					} catch (final NumberFormatException e) {
 					}
 				Double tolerance = 0.02;
 				try {
@@ -278,52 +277,47 @@ public class ToolsController {
 				searchResults.put("compounds", new ArrayList<AbstractDatasetObject>());
 				searchResults.put("compoundNames", new ArrayList<AbstractDatasetObject>());
 				// search spectra
-
+				// QUERY DEMO
 				// query:1.287,1.306,1.321
 				// filerType:-1
 				// filterVal:0.5
 				// filterVal2:one
-				Map<String, Object> rawNMRsearch = NMR1DPeakMatchingService.runPeakMatching(listOfChemicalShift,
-						tolerance, matchingMethod, pH);
-
+				// == search candidates
+				final Map<String, Object> rawNMRsearch = NMR1DPeakMatchingService.runPeakMatching(//
+						listOfChemicalShift, tolerance, matchingMethod, pH);
+				// if candidats => clean
 				if (rawNMRsearch.containsKey("candidates")) {
-					List<NMRCandidate> rawWSresults = (List<NMRCandidate>) rawNMRsearch.get("candidates");
-					for (NMRCandidate candidate : rawWSresults) {
+					final List<NMRCandidate> rawWSresults = (List<NMRCandidate>) rawNMRsearch.get("candidates");
+					for (final NMRCandidate candidate : rawWSresults) {
 						candidate.setDistance(new ArrayList<Double>());
-						// DEBUG
 						candidate.setIntensity(null);
 					}
 					searchResults.put("nmrCandidates", rawWSresults);
 					searchResults.put("success", true);
 				} // candidats
 				if (rawNMRsearch.containsKey("naiveSearch")) {
-					List<NMR1DSpectrum> rawSpectra = (List<NMR1DSpectrum>) rawNMRsearch.get("naiveSearch");
+					final List<NMR1DSpectrum> rawSpectra = (List<NMR1DSpectrum>) rawNMRsearch.get("naiveSearch");
 					// prune
-					rawSpectra = PeakForestPruneUtils.pruneNMR1Dspectra(rawSpectra);
+					rawSpectra.addAll(PeakForestPruneUtils.pruneNMR1Dspectra(rawSpectra));
 					// to map
-					Map<String, Object> nmrMap = new HashMap<String, Object>();
-					for (NMR1DSpectrum nmrS : rawSpectra) {
+					final Map<String, Object> nmrMap = new HashMap<String, Object>();
+					for (final NMR1DSpectrum nmrS : rawSpectra) {
 						nmrMap.put("pf:" + nmrS.getId(), nmrS);
 					}
 					searchResults.put("nmrSpectra", rawSpectra);
 					searchResults.put("success", true);
 				} // naiveSearch
 			} else if (entity.equalsIgnoreCase("lcms-spectra")) {
-
 				// 0 - init
 				String mode = null;
 				String resolution = null;
 				String algo = null;
-
 				Double deltaMass = null;
 				Double deltaRT = null;
-
 				Double[] queryMass = null;
 				Double[] queryRT = null;
 				List<String> filterColumns = null;
-
 				Map<String, Object> results = new HashMap<String, Object>();
-
 				// I - recover query param
 				// I.A - mode / res / algo
 				String[] tabFilterVal = value.split(";");
@@ -781,37 +775,30 @@ public class ToolsController {
 		}
 	}
 
-	@RequestMapping(value = "/mol/{inchikey}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public @ResponseBody String getMolFile(HttpServletResponse response, @PathVariable String inchikey)
-			throws PeakForestManagerException {
-
+	@RequestMapping(//
+			method = RequestMethod.GET, //
+			value = "/mol/{inchikey}", //
+			produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public @ResponseBody String getMolFile(//
+			final HttpServletResponse response, //
+			final @PathVariable String inchikey) throws PeakForestManagerException {
 		// get mol path
 		String molFileRepPath = PeakForestUtils.getBundleConfElement("compoundMolFiles.folder");
 		if (!(new File(molFileRepPath)).exists())
 			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
-
 		// response.setContentType("text/plain");
-
-		File molFilePath = new File(molFileRepPath + File.separator + inchikey + ".mol");
+		final File molFilePath = new File(molFileRepPath + File.separator + inchikey + ".mol");
 		if (!molFilePath.exists()) {
-			throw new PeakForestManagerException("missing_mol_file"); // TODO set as error
+			throw new PeakForestManagerException("missing_mol_file");
 		} else {
 			try {
 				response.setContentType("application/force-download");
-				FileReader fr = new FileReader(molFilePath);
+				final FileReader fr = new FileReader(molFilePath);
 				return IOUtils.toString(fr).replaceAll("OpenBabel\\d*D", "" + inchikey);
-				// // get your file as InputStream
-				// InputStream is = new FileInputStream(molFilePath);
-				// // copy it to response's OutputStream
-				// org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-				// response.flushBuffer();
-			} catch (IOException ex) {
-				// log.info("Error writing file to output stream. Filename was '{}'", fileName,
-				// ex);
+			} catch (final IOException ex) {
 				throw new RuntimeException("IOError writing file to output stream");
 			}
 		}
-
 	}
 
 	@RequestMapping(value = "/json/{fileName}.json")
@@ -979,4 +966,37 @@ public class ToolsController {
 	}
 
 	///////////////////////////////////////////////////////////////////////////
+
+	// new 2.3.1 issue 363 - export SDF
+
+	@RequestMapping(//
+			method = RequestMethod.GET, //
+			value = "/sdf/{inchikey}", //
+			produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public @ResponseBody String getSdfFile(//
+			final HttpServletResponse response, //
+			final @PathVariable String inchikey)//
+			throws PeakForestManagerException {
+		// get mol path
+		String molFileRepPath = PeakForestUtils.getBundleConfElement("compoundMolFiles.folder");
+		if (!(new File(molFileRepPath)).exists()) {
+			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + molFileRepPath);
+		}
+		final File molFile = new File(molFileRepPath + File.separator + inchikey + ".mol");
+		if (!molFile.exists()) {
+			throw new PeakForestManagerException("missing_mol_file");
+		}
+		final StructureChemicalCompound compound = IReferenceCompoundDao.read(//
+				inchikey, StructureChemicalCompound.class, //
+				Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, //
+				Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, //
+				Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
+		final String pforestInstanceUrl = PeakForestUtils.getBundleConfElement("peakforest.webapp.url");
+		try {
+			response.setContentType("application/force-download");
+			return GenerateSdfFileService.generateSdfFile(molFile, compound, pforestInstanceUrl);
+		} catch (final IOException ex) {
+			throw new RuntimeException("IOError writing file to output stream");
+		}
+	}
 }

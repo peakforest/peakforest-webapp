@@ -17,7 +17,7 @@
 			</small>
 			-->
 			<small>
-				<i class="fa fa-question-circle" aria-hidden="true"></i> Powered by <a href="https://metexplore.toulouse.inra.fr/metexploreViz/doc/index.php" targer="_blank">MetExploreViz</a>!
+				<i class="fa fa-question-circle" aria-hidden="true"></i> Powered by <a href="https://metexplore.toulouse.inrae.fr/metexploreViz/doc/index.php" targer="_blank">MetExploreViz</a>!
 				<br />
 			</small>
 			<br />

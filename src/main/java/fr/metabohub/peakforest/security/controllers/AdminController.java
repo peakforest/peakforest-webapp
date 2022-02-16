@@ -40,6 +40,7 @@ import fr.metabohub.peakforest.services.LicenseManager;
 import fr.metabohub.peakforest.services.metadata.AnalyticalMatrixManagementService;
 import fr.metabohub.peakforest.services.metadata.StandardizedMatrixManagementService;
 import fr.metabohub.peakforest.utils.MetExploreRequestJob;
+import fr.metabohub.peakforest.utils.PeakForestApiHibernateUtils;
 import fr.metabohub.peakforest.utils.PeakForestManagerException;
 import fr.metabohub.peakforest.utils.PeakForestUtils;
 import fr.metabohub.peakforest.utils.ProcessBioSMvalues;
@@ -232,15 +233,19 @@ public class AdminController {
 		}
 	}
 
-	@RequestMapping(value = "/update-mass-vs-logp-data", method = RequestMethod.POST)
-	@ResponseBody
-	public boolean updateMassVsLogP() {
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/update-mass-vs-logp-data"//
+	)
+
+	public @ResponseBody boolean updateMassVsLogP() {
 		try {
 			UpdateMassVsLogPStats.updateMassVsLogPstats();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+			return Boolean.TRUE;
+		} catch (final Exception e) {
+			SpectralDatabaseLogger.log("failed to launch admin routine 'compute Mass vs LogP', " + e.getMessage(),
+					SpectralDatabaseLogger.LOG_WARNING);
+			return Boolean.FALSE;
 		}
 	}
 
@@ -297,18 +302,18 @@ public class AdminController {
 		}
 	}
 
-	@RequestMapping(value = "/flush-sessions", method = RequestMethod.POST)
-	@ResponseBody
-	public boolean fushSessionFactories() {
-//		try {
-//			SessionFactoryManager.getInstance().flushSessionFactoryPool();
-//			PeakForestApiHibernateUtils.getSessionFactory().getSessionFactory().get
-//			return true;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-		return Boolean.FALSE;
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/flush-sessions"//
+	)
+	public @ResponseBody boolean fushSessionFactories() {
+		try {
+			PeakForestApiHibernateUtils.restart();
+			return Boolean.TRUE;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return Boolean.FALSE;
+		}
 	}
 
 	// ////////////////////////////////////////////////////////////////////////

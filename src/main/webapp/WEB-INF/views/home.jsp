@@ -1,9 +1,10 @@
+<%@page contentType="text/html;charset=UTF-8" %>
+<%@page session="false" %>
 <%@page import="org.springframework.security.core.context.SecurityContextHolder"%>
 <%@page import="fr.metabohub.peakforest.security.model.User"%>
+<%@page import="fr.metabohub.peakforest.utils.PeakForestUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ page session="false" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,7 +123,10 @@ if (request.getParameter("cpd")!=null) {
 		<!-- content -->
 		<div id="page-wrapper" class="peakforest-main-wrapper">
 		<div id="demo-webapp" style="max-width: 600px;"></div>
-		<% 
+<%
+	// read peakforest instance options
+	boolean showPagePeakMatching = Boolean.parseBoolean(PeakForestUtils.getBundleConfElement("peakforest.gui.option.peakmatching"));
+	// read current user informations 
 	User user = null;
 	if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
 		user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
@@ -148,7 +152,7 @@ if (request.getParameter("cpd")!=null) {
 			%><jsp:include page="pages/tools.jsp" /><%
 		} else if (request.getParameter("page").equalsIgnoreCase("template")) {
 			%><jsp:include page="pages/template.jsp" /><%
-		} else if (request.getParameter("page").equalsIgnoreCase("peakmatching")) {
+		} else if (showPagePeakMatching && request.getParameter("page").equalsIgnoreCase("peakmatching")) {
 			%><jsp:include page="pages/peakmatching.jsp" /><%
 		} else if (request.getParameter("page").equalsIgnoreCase("500")) {
 			%><jsp:include page="pages/500.jsp" /><%

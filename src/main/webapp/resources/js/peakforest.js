@@ -301,11 +301,7 @@ function updateCart() {
 					var rawFromula = this.formula;
 					var formatedFormula = rawFromula + "";
 					try {
-						$.each($.unique( rawFromula.match(/\d+/g)), function (keyF, valF) {
-							var re = new RegExp(valF, "g");
-							formatedFormula = formatedFormula.replace(re, "<sub>" + valF + "</sub>");
-						});
-						formatedFormula = formatedFormula.replace("</sub><sub>", "");
+						formatedFormula = formatedFormula.replace(/\d+/g, '<sub>$&</sub>');
 					} catch (e) {}
 					var type = "?";
 					if (this.hasOwnProperty("parent")) 

@@ -132,7 +132,7 @@
 							//</c:if>
 							//<c:if test="${mode_light}">
 							subtitle : {
-								text : '${spectrum_pf_id}',
+								text : '<a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${spectrum_pf_id}">${spectrum_pf_id}</a>',
 								useHTML: true
 							},
 							//</c:if>

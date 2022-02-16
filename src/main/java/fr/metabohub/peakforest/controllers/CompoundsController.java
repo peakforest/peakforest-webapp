@@ -996,116 +996,133 @@ public class CompoundsController {
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/add-one-compound-search", method = RequestMethod.POST, params = { "query", "filter" })
-	public String addCompoundViewSearchCompound(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			Model model, @RequestParam("query") String query, @RequestParam("filter") int filter) {
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/add-one-compound-search", //
+			params = { "query", "filter" }//
+	)
+	public String addCompoundViewSearchCompound(//
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final Model model, //
+			final @RequestParam("query") String query, //
+			final @RequestParam("filter") int filter) {
 		// init request
-		List<ReferenceChemicalCompound> results = null;
+		final List<ReferenceChemicalCompound> results = new ArrayList<ReferenceChemicalCompound>();
 		// search
 		try {
-			results = SearchService.searchCompound(query, filter, SearchService.MAX_CPD_NAME_PER_CPD);
+			results.addAll(SearchService.searchCompound(query, filter, SearchService.MAX_CPD_NAME_PER_CPD));
 			model.addAttribute("compounds", results);
-		} catch (PeakForestManagerException e) {
-			e.printStackTrace();
-			model.addAttribute("success", false);
-			model.addAttribute("error", e.getMessage());
-			return "block/add-one-compound-search";
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (final Exception e) {
+			SpectralDatabaseLogger.log(//
+					"error in POST '/add-one-compound-search' " + e.getMessage(), //
+					SpectralDatabaseLogger.LOG_WARNING//
+			);
 		}
-
-		if (results == null || results.isEmpty()) {
-			model.addAttribute("success", false);
+		// associate to model
+		if (results.isEmpty()) {
+			model.addAttribute("success", Boolean.FALSE);
 			model.addAttribute("error", PeakForestManagerException.NO_RESULTS_MATCHED_THE_QUERY);
 		} else {
-			model.addAttribute("success", true);
+			model.addAttribute("success", Boolean.TRUE);
 		}
 		return "ajax/add-one-compound-search";
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/add-one-compound-load", method = RequestMethod.POST, params = { "id", "type" })
-	public String addCompoundViewLoadCompound(HttpServletRequest request, HttpServletResponse response, Locale locale,
-			Model model, @RequestParam("id") long id, @RequestParam("type") int type)
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/add-one-compound-load", //
+			params = { "id", "type" }//
+	)
+	public String addCompoundViewLoadCompound(//
+			final HttpServletRequest request, //
+			final HttpServletResponse response, //
+			final Locale locale, //
+			final Model model, //
+			final @RequestParam("id") long id, //
+			final @RequestParam("type") int type)//
 			throws PeakForestManagerException {
-
-		// load
 		// load data
 		StructureChemicalCompound refCompound = null;
 		String typeS = null;
-		if (type == Compound.CHEMICAL_TYPE)
-			try {
+		try {
+			if (type == Compound.CHEMICAL_TYPE) {
 				refCompound = ChemicalCompoundManagementService.read(id);
 				typeS = "chemical";
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		else if (type == Compound.GENERIC_TYPE)
-			try {
+			} else if (type == Compound.GENERIC_TYPE) {
 				refCompound = GenericCompoundManagementService.read(id);
 				typeS = "generic";
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-		// TODO other
-
-		// init var
-
+			// TODO other and init view
+		} catch (final Exception e) {
+			SpectralDatabaseLogger.log(//
+					"error in POST '/add-one-compound-load' " + e.getMessage(), //
+					SpectralDatabaseLogger.LOG_WARNING//
+			);
+		}
 		// load data in model
 		loadCompoundData(typeS, model, refCompound, request);
-
+		// retrun view
 		return "ajax/add-one-compound-load";
 	}
 
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/add-one-compound-search-ext-db", method = RequestMethod.POST, params = { "query",
-			"filter" })
-	public @ResponseBody List<ReferenceChemicalCompound> deepSearch(@RequestParam("query") String query,
-			@RequestParam("filter") int filter) throws Exception {
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/add-one-compound-search-ext-db", //
+			params = { "query", "filter" })
+	public @ResponseBody List<ReferenceChemicalCompound> deepSearch(//
+			final @RequestParam("query") String query, //
+			final @RequestParam("filter") int filter//
+	) throws Exception {
 		// get images path
-		String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
-		if (!(new File(svgImagesPath)).exists())
+		final String svgImagesPath = PeakForestUtils.getBundleConfElement("compoundImagesSVG.folder");
+		if (!(new File(svgImagesPath)).exists()) {
 			throw new PeakForestManagerException(PeakForestManagerException.MISSING_REPOSITORY + svgImagesPath);
-
-		List<ReferenceChemicalCompound> data = null;
-		data = SearchService.searchCompoundInExternalBank(query, filter, 20, svgImagesPath, null);
-		// PeakForestUtils.prune(data);
-		for (ReferenceChemicalCompound rcc : data)
-			for (CompoundName cn : rcc.getListOfCompoundNames())
+		}
+		// search in third par webservice
+		final List<ReferenceChemicalCompound> data = SearchService.searchCompoundInExternalBank(//
+				query, filter, 20, svgImagesPath, null);
+		// prune
+		for (final ReferenceChemicalCompound rcc : data) {
+			for (final CompoundName cn : rcc.getListOfCompoundNames()) {
 				cn.setReferenceChemicalCompound(null);
-		// compoundLog("search chemical compound in ext. db; @query='" + query + "';
-		// @filter=" + filter);
+			}
+		}
+		// return
 		return data;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Secured("ROLE_EDITOR")
-	@RequestMapping(value = "/add-one-compound-from-ext-db", method = RequestMethod.POST, headers = {
-			"Content-type=application/json" })
-	public @ResponseBody Map<String, Object> addCompoundFromExternalDatabase(@RequestBody Map<String, Object> data)
+	@RequestMapping(//
+			method = RequestMethod.POST, //
+			value = "/add-one-compound-from-ext-db", //
+			headers = { "Content-type=application/json" }//
+	)
+	public @ResponseBody Map<String, Object> addCompoundFromExternalDatabase(//
+			final @RequestBody Map<String, Object> data)//
 			throws Exception {
-
 		// init request
-		String inChI = (String) data.get("inChI");
-		String inChIKey = (String) data.get("inChIKey");
+		final String inChI = (String) data.get("inChI");
+		final String inChIKey = (String) data.get("inChIKey");
 		// String canSmiles = (String) data.get("canSmiles");
-		String chEBIID = (String) data.get("chEBIID");
-		String hmdbID = (String) data.get("hmdbID");
+		final String chEBIID = (String) data.get("chEBIID");
+		final String hmdbID = (String) data.get("hmdbID");
 		String pubChemID = (String) data.get("pubChemID");
-		List<String> keggID = (List<String>) data.get("keggID");
-		List<String> names = (List<String>) data.get("namesL");
-
+		final List<String> keggID = (List<String>) data.get("keggID");
+		final List<String> names = (List<String>) data.get("namesL");
 		// names: [Ethanol]
-
 		// check exist AS chemical compound OR generic compound
 		final StructureChemicalCompound sccInBase = StructuralCompoundManagementService.readByInChIKey(inChIKey);
 		if (sccInBase != null) {
-			Map<String, Object> results = new HashMap<String, Object>();
+			final Map<String, Object> results = new HashMap<String, Object>();
 			results.put("id", sccInBase.getId());
 			results.put("type", sccInBase.getType());
 			return results;
 		}
-
 		// ADD NEW COMPOUND
 		final ChemicalCompoundMapper mapper = new ChemicalCompoundMapper(names, inChIKey);
 		mapper.setInChI(inChI);
@@ -1116,13 +1133,12 @@ public class CompoundsController {
 		}
 		mapper.setPubChemId(pubChemID);
 		final StructureChemicalCompound compound = StructuralCompoundManagementService.addOrUpdateCompound(mapper);
-
 		if (compound == null) {
 			throw new PeakForestManagerException(PeakForestManagerException.COULD_NOT_ADD_COMPOUND);
 		} else {
 			// log
 			compoundLog("add new compound @id=" + compound.getId() + "; @inchikey=" + compound.getInChIKey());
-			Map<String, Object> results = new HashMap<String, Object>();
+			final Map<String, Object> results = new HashMap<String, Object>();
 			results.put("id", compound.getId());
 			results.put("type", compound.getType());
 			return results;

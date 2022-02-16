@@ -151,14 +151,19 @@ int randomID = randomGenerator.nextInt(1000000);
 													</tr>
 													<tr>
 														<td style="white-space: nowrap;"><spring:message code="modal.show.basicInfos.peakForestID" text="PeakForest ID" /></td>
-														<td>${pfID}</td>
+														<td><a href="<spring:message code="peakforest.uri.spectrum" text="https://peakforest.org/" />${pfID}">${pfID}</a></td>
 													</tr>
 													<c:if test="${mol_ready}">
 													<tr>
 														<td><spring:message code="modal.show.basicInfos.download" text="Download" /></td>
-														<td>
+														<td class="download-btns">
 															<a class="btn btn-primary" href="mol/${inchikey}.mol" title="${compoundNames.get(0).name}" target="_blank">
 																<spring:message code="modal.show.basicInfos.mol" text="Mol" /> <i class="fa fa-download"></i>
+															</a>
+															
+															<!-- issue #363 -->
+															<a class="btn btn-primary" href="sdf/${inchikey}.sdf" title="${compoundNames.get(0).name}" target="_blank">
+																<spring:message code="modal.show.basicInfos.sdf" text="SDF" /> <i class="fa fa-download"></i>
 															</a>
 														</td>
 													</tr>
@@ -470,9 +475,14 @@ ${mol}</textarea>
 													<c:if test="${mol_ready}">
 													<tr>
 														<td><spring:message code="modal.show.basicInfos.download" text="Download" /></td>
-														<td>
+														<td class="download-btns">
 															<a class="btn btn-primary" href="mol/${inchikey}.mol" title="${compoundNames.get(0).name}" target="_blank">
 																<spring:message code="modal.show.basicInfos.mol" text="Mol" /> <i class="fa fa-download"></i>
+															</a>
+															
+															<!-- issue #363 -->
+															<a class="btn btn-primary" href="sdf/${inchikey}.sdf" title="${compoundNames.get(0).name}" target="_blank">
+																<spring:message code="modal.show.basicInfos.sdf" text="SDF" /> <i class="fa fa-download"></i>
 															</a>
 														</td>
 													</tr>

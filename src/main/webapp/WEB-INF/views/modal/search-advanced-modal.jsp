@@ -34,13 +34,13 @@ function tryLoadNMRdata() {
 			case "1000":
 			case "1100":
 			case "1200":
-				setTimeout(function(){$("#nmr-magneticFieldStrength").val(Number(v));},50);
+				setTimeout(function(){$("#nmr-magneticFieldStrength-value").val(Number(v));},50);
 				break;
 			case "PROTON-1D":
-				$("#nmr-pulseseq").val("Proton-1D");
+				$("#nmr-pulseseq-value").val("Proton-1D");
 				break;
 			case "CARBON-13":
-				$("#nmr-pulseseq").val("Carbon-13");
+				$("#nmr-pulseseq-value").val("Carbon-13");
 				break;
 			case "NOESY-1D":
 			case "CPMG-1D":
@@ -50,14 +50,14 @@ function tryLoadNMRdata() {
 			case "NOESY-2D":
 			case "HMBC-2D":
 			case "HCQC-2D":
-				$("#nmr-pulseseq").val(v.toUpperCase());
+				$("#nmr-pulseseq-value").val(v.toUpperCase());
 				break;
 			case "H2O":
 			case "CDCL3":
 			case "D2O":
 			case "CD3OD":
 			case "H2O/D2O":
-				setTimeout(function(){$("#nmr-solvent").val(v);},50);
+				setTimeout(function(){$("#nmr-solvent-value").val(v);},50);
 				break;
 			case "D":
 				openAdvSearch = true;
@@ -71,19 +71,53 @@ function tryLoadNMRdata() {
 				openAdvSearch = true;
 				$("#isotopic_labelling_Ny").attr('checked',true);
 				break;
+			case "ONLY_WITH_RAW_DATA":
+				setTimeout(function(){ $("#filter_nmr_raw_data").attr('checked',true); }, 150); 
+				break;
 			default:
-				var e = parseInt(v);
-				if (e+'' == v) {
-					if (e < 15 && e > 0)
-						$("#nmr-ph").val(e);
-				} else if ((!/:/i.test(v)))
-					query += v + " ";
+				// exact matcher
+				if ((!/~/i.test(v))) {
+					// ph value
+					var e = parseInt(v);
+					if (e + '' == v && (e < 15 && e > 0) && $("#nmr-ph-value") =="") {
+						$("#nmr-ph-value").val(e);
+					} else if ((!/:/i.test(v))) {
+						query += v + " ";
+					}
+				} else {
+					// exact matcher
+					var nmrField = v.split("~");
+					var linker = nmrField[0];
+					var search = nmrField[1];
+					var value = nmrField[2];
+					switch (search) {
+					case "ph":
+						$("#nmr-ph-linker").val(linker);
+						$("#nmr-ph-value").val(value); 
+						break;
+					case "pulseseq":
+						$("#nmr-pulseseq-linker").val(linker);
+						$("#nmr-pulseseq-value").val(value); 
+						break;
+					case "magneticFieldStrength":
+						setTimeout(function(){ $("#nmr-magneticFieldStrength-linker").val(linker) }, 50); 
+						setTimeout(function(){ $("#nmr-magneticFieldStrength-value").val(Number(value)) }, 50); 
+						break;
+					case "solvent":
+						setTimeout(function(){ $("#nmr-solvent-linker").val(linker)}, 50); 
+						setTimeout(function(){ $("#nmr-solvent-value").val(value)}, 50); ; 
+						break;
+					default:
+						break;
+					}
+				}
 				break;
 			}
 		}
 	});
-	if (openAdvSearch)
+	if (openAdvSearch) {
 		setTimeout(function(){showHideAvancedSearchNmrPanel();},300);
+	}
 	$("#nmr-cpd-name").val(query);
 }
 var alreadyTryLCMSload = false;
@@ -378,7 +412,7 @@ $(document).ready(function() {
 									<i class="fa fa-flask"></i> <spring:message code="modal.advSearch.tabCompounds" text="Compounds" />
 								</a>
 							</li>
-							<!-- new 2.3 - all MS spectra togather -->
+							<!-- new 2.3 - all MS spectra together -->
 							<li>
 								<a id="link-searchAdvance-spectra-ms" href="#searchAdvance-spectra-ms-panel" data-toggle="tab" onclick="searchAdvanceSwitchPanel('ms-spectra');">
 									<i class="fa fa-bar-chart-o"></i> <spring:message code="modal.advSearch.tabSpectrumsMS" text="LC/IC - MS/MSMS Spectra" />
@@ -629,13 +663,29 @@ $(document).ready(function() {
 									<span class="input-group-addon" style="width: 150px;"><spring:message code="modal.advSearch.params.compoundLike" text="Compound like" /></span>
 									<input id="nmr-cpd-name" style="width: 200px;" type="text" class="form-control advancedSearch" placeholder="<spring:message code="modal.advSearch.params.compoundLike.eg" text="e.g.: Gluc" />" value="" >
 								</div>
-								<div class="form-group input-group" style="width: 150px;">
-									<span class="input-group-addon" style="width: 50px;"><spring:message code="modal.advSearch.params.pH" text="pH" /></span>
-									<input id="nmr-ph" style="width: 100px;" type="number" class="form-control advancedSearch" placeholder="<spring:message code="modal.advSearch.params.pH.eg" text="7" />" value="" min="0" max="15">
+								
+								<!-- pH -->
+								<div class="form-group input-group" style="width: 340px;">
+									<select id="nmr-ph-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="or"  selected>OR</option>
+										<option value="and" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">
+										<spring:message code="modal.advSearch.params.pH" text="pH" />&nbsp;
+									</span>
+									<input id="nmr-ph-value" style="width: 100px;" type="number" class="form-control advancedSearch" placeholder="<spring:message code="modal.advSearch.params.pH.eg" text="7" />" value="" min="0" max="15">
 								</div>
-								<div class="form-group input-group" style="width: 300px;">
-									<span class="input-group-addon" style="width: 150px;"><spring:message code="modal.advSearch.params.pulseSeq" text="pulse seq." /></span>
-									<select id="nmr-pulseseq" class="advancedSearch form-control" style="width: 150px;">
+								
+								<!-- pulse sequence -->
+								<div class="form-group input-group" style="width: 340px;">
+									<select id="nmr-pulseseq-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="or"  selected>OR</option>
+										<option value="and" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">
+										<spring:message code="modal.advSearch.params.pulseSeq" text="pulse seq." />&nbsp;
+									</span>
+									<select id="nmr-pulseseq-value" class="form-control advancedSearch" style="width: 200px;">
 										<option value=""></option>
 										<optgroup label="1D-NMR">
 											<option value="Proton-1D">Proton</option>
@@ -653,14 +703,41 @@ $(document).ready(function() {
 										</optgroup>
 									</select>
 								</div>
-								<div class="form-group input-group" style="width: 300px;">
-									<span class="input-group-addon" style="width: 150px;"><spring:message code="modal.advSearch.params.magneticFieldStrength" text="magnetic field strength" /></span>
-									<select id="nmr-magneticFieldStrength" class="advancedSearch form-control" style="width: 150px;"></select>
+								 
+								<!-- magnetic force field -->
+								<div class="form-group input-group" style="width: 340px;">
+									<select id="nmr-magneticFieldStrength-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="or"  selected>OR</option>
+										<option value="and" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">
+										<spring:message code="modal.advSearch.params.magneticFieldStrength" text="magnetic field strength" />&nbsp;
+									</span>
+									<select id="nmr-magneticFieldStrength-value" class="advancedSearch form-control" style="width: 170px;"></select>
 								</div>
-								<div class="form-group input-group" style="width: 300px;">
-									<span class="input-group-addon" style="width: 150px;"><spring:message code="modal.advSearch.params.solvent" text="solvent" /></span>
-									<select id="nmr-solvent" class="advancedSearch form-control" style="width: 150px;"></select>
+								 
+								<!-- solvent -->
+								<div class="form-group input-group" style="width: 340px;">
+									<select id="nmr-solvent-linker" class="form-control advancedSearch" style="width: 100px;">
+										<option value="or"  selected>OR</option>
+										<option value="and" >AND</option> 
+									</select>
+									<span class="input-group-addon" style="width: 140px; min-width: 140px;">
+										<spring:message code="modal.advSearch.params.solvent" text="solvent" />&nbsp;
+									</span>
+									<select id="nmr-solvent-value" class="advancedSearch form-control" style="width: 200px;"></select>
 								</div>
+								
+								<!-- raw filter -->
+								<div class="form-group col-sm-11">
+									<label class="control-label col-sm-6"><spring:message code="modal.advSearch.nmr.filter.onlyRawData" text="Check to search only spectra with RAW data" /></label>
+									<div class="field col-sm-4 field ">
+										<label class="radio-inline">
+											<input class="advancedSearch" id="filter_nmr_raw_data" name="filter_nmr_raw_data" type="checkbox" value="true"> 
+										</label> 
+									</div>
+								</div>
+								
 								<a id="linkShowHideAvancedSearchNmr" href="javascript:void(0)" onclick="showHideAvancedSearchNmrPanel();" class="" style="display: inline;"><spring:message code="modal.advSearch.cpd.more" text="more..." /></a>
 								<div id="avancedSearchNmrPanel" style="display: none;">
 									<form class="form-horizontal" role="form">
@@ -918,20 +995,20 @@ $(document).ready(function() {
 		
 		// NMR instrument
 		$.getJSON("resources/json/list-nmr-instrumentOptions.json", function(data) {
-			$("#nmr-magneticFieldStrength").empty();
-			$("#nmr-magneticFieldStrength").append('<option value="" selected="selected" ></option>');
+			$("#nmr-magneticFieldStrength-value").empty();
+			$("#nmr-magneticFieldStrength-value").append('<option value="" selected="selected" ></option>');
 			// load data from json
 			$.each(data.magnetic_field_strength,function(){
-				$("#nmr-magneticFieldStrength").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
+				$("#nmr-magneticFieldStrength-value").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
 			});
 		});
 		
 		// NMR solvent
-		$("#nmr-solvent").append('<option value="" selected="selected" ></option>');
+		$("#nmr-solvent-value").append('<option value="" selected="selected" ></option>');
 		$.getJSON("resources/json/list-nmr-solvents.json", function(data) {
 			// load data from json
 			$.each(data.solvents,function(){
-				$("#nmr-solvent").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
+				$("#nmr-solvent-value").append('<option value="'+this.value+'" class="'+this.classD+'">'+this.name+'</option>');
 			});
 		});
 						
@@ -1161,39 +1238,27 @@ $(document).ready(function() {
 					mainSearchQuery += "LOGP:" + $("#advancedSearchLogPLogP").val() + "d" + $("#advancedSearchLogPTol").val();
 					break;
 				}
-				break;
-// 			case "lcms-spectra":
-// 				if (!($($("input#searchSpectraF")).length)) {
-// 					$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="lcms" />');
-// 				}
-// 				mainSearchQuery = 'LCMS ' + $("#lcms-cpd-name").val() 
-// 				mainSearchQuery += " " + $("input[name='lcms-polarity']:checked").val();
-// 				mainSearchQuery += " " + $("input[name='lcms-resolution']:checked").val();
-// 				mainSearchQuery += " " + $("#lcms-ionMeth").val();
-// 				mainSearchQuery += " " + $("#lcms-ionAnalyzer").val();
-// 				mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
-// 				break;
-// 			case "lcmsms-spectra":
-// 				if (!($($("input#searchSpectraF")).length)) {
-// 					$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="lcmsms" />');
-// 				}
-// 				mainSearchQuery = 'LCMSMS ' + $("#lcmsms-cpd-name").val() 
-// 				mainSearchQuery += " " + $("input[name='lcmsms-polarity']:checked").val();
-// 				mainSearchQuery += " " + $("input[name='lcmsms-resolution']:checked").val();
-// 				mainSearchQuery += " " + $("#lcmsms-ionMeth").val();
-// 				mainSearchQuery += " " + $("#lcmsms-ionAnalyzer").val();
-// 				mainSearchQuery = mainSearchQuery.replace(/\s+/i, " ")
-// 				break;
+				break; 
 			case "nmr-spectra":
 				if (!($($("input#searchSpectraF")).length)) {
 					$("form#searchForm").append('<input id="searchSpectraF" type="hidden" name="spectra" value="nmr" />');
 				}
-				mainSearchQuery = 'NMR ' + $("#nmr-cpd-name").val() 
-				mainSearchQuery += " " + $("#nmr-ph").val();
-				mainSearchQuery += " " + $("#nmr-pulseseq").val();
-				mainSearchQuery += " " + $("#nmr-magneticFieldStrength").val();
-				if ($("#nmr-solvent").val() !== null)
-					mainSearchQuery += " " + $("#nmr-solvent").val();
+				mainSearchQuery = 'NMR ' + $("#nmr-cpd-name").val();
+				if ($("#nmr-ph-value").val() !== null && $("#nmr-ph-value").val() != "") {
+					mainSearchQuery += " " + $("#nmr-ph-linker").val() + "~ph~" + $("#nmr-ph-value").val();
+				}
+				if ($("#nmr-pulseseq-value").val() !== null && $("#nmr-pulseseq-value").val() != "") {
+					mainSearchQuery += " " + $("#nmr-pulseseq-linker").val() + "~pulseseq~" + $("#nmr-pulseseq-value").val();
+				}
+				if ($("#nmr-magneticFieldStrength-value").val() !== null && $("#nmr-magneticFieldStrength-value").val() != "") {
+					mainSearchQuery += " " + $("#nmr-magneticFieldStrength-linker").val() + "~magneticFieldStrength~" + $("#nmr-magneticFieldStrength-value").val();
+				}
+				if ($("#nmr-solvent-value").val() !== null && $("#nmr-solvent-value").val() != "") {
+					mainSearchQuery += " " + $("#nmr-solvent-linker").val() + "~solvent~" + $("#nmr-solvent-value").val();
+				}
+				if ($("#filter_nmr_raw_data").is(":checked")) {
+					mainSearchQuery += " only_with_raw_data";
+				}
 				if ($("#isotopic_labelling_Dy").is(":checked"))
 					mainSearchQuery += " D";
 				if ($("#isotopic_labelling_Cy").is(":checked"))
@@ -1251,10 +1316,15 @@ $(document).ready(function() {
 			displayAdvancedSearch();
 		}
 						</script>
+						<hr />
+						<small>
+						<spring:message code="modal.advSearch.helpDoubleQuotes" text="Help: you can add double quotes (\") to perform an exact matcher on an expression; e.g. NMR cholic acid COSY-2D" />
+						</small>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
+			
 				<button type="button" class="btn btn-default" data-dismiss="modal" onclick="setTimeout(function(){$('#search').focus();},250);"><spring:message code="modal.close" text="Close" /></button>
 				<button type="button" class="btn btn-primary" onclick="submitAdvancedSearchForm();">
 					<i class="fa fa-search"></i> <spring:message code="modal.advSearch.btnSearch" text="Search" />

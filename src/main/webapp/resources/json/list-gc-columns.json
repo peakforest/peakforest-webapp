@@ -1,0 +1,32 @@
+{
+	"columns": [
+		{
+			"name": "AGILENT",
+			"value": "AGILENT"
+		},
+		{
+			"name": "HPINTERCHIM",
+			"value": "HPINTERCHIM"
+		},
+		{
+			"name": "J&W scientific",
+			"value": "J&W scientific"
+		},
+		{
+			"name": "OV",
+			"value": "OV"
+		},
+		{
+			"name": "VARIAN",
+			"value": "VARIAN"
+		},
+		{
+			"name": "LECO",
+			"value": "LECO"
+		},
+		{
+			"name": "JEOL",
+			"value": "JEOL"
+		}
+	]
+} 
